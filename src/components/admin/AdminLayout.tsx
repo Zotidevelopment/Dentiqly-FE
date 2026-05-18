@@ -19,6 +19,8 @@ import {
   LayoutDashboard,
   ChevronsLeft,
   ChevronsRight,
+  Clock,
+  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -27,6 +29,8 @@ interface AdminLayoutProps {
   currentView: string
   onViewChange: (view: string) => void
   onSearch?: (query: string) => void
+  subscriptionStatus?: any
+  onActivatePlan?: () => void
 }
 
 interface MenuGroup {
@@ -38,7 +42,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   children,
   currentView,
   onViewChange,
-  onSearch
+  onSearch,
+  subscriptionStatus,
+  onActivatePlan
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -179,21 +185,29 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </div>
           </nav>
 
-          {/* User + Logout */}
+          {/* User + Logout -> Plan + Logout */}
           <div className="px-2.5 pb-3 border-t border-white/[0.06] pt-3">
             {!collapsed ? (
               <>
-                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl mb-1">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2563FF] to-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                    {userInitials}
+                {subscriptionStatus?.subscription_status !== 'active' ? (
+                  <button
+                    onClick={onActivatePlan}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold py-2.5 px-3 rounded-xl mb-2 text-[13px] shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Pagar Plan PRO
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl mb-1 bg-white/[0.03]">
+                    <div className="w-8 h-8 rounded-full bg-[#2563FF]/20 flex items-center justify-center text-[#2563FF] shrink-0">
+                      <Sparkles className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-bold text-[#2563FF] truncate leading-tight">Plan PRO</p>
+                      <p className="text-[10px] text-white/50 truncate">Suscripción Activa</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-white/80 truncate leading-tight">
-                      {user?.nombre || 'Admin'} {user?.apellido || ''}
-                    </p>
-                    <p className="text-[10px] text-white/30 truncate">{user?.email || ''}</p>
-                  </div>
-                </div>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
@@ -282,6 +296,27 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <Bell className="h-4 w-4 text-[#9C9489]" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#2563FF] rounded-full" />
             </button>
+            
+            {subscriptionStatus && (
+              <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl mx-1">
+                {subscriptionStatus.subscription_status === 'trialing' ? (
+                  <>
+                    <Clock className="h-4 w-4 text-amber-500" />
+                    <span className="text-xs font-semibold text-amber-700">
+                      Prueba gratis ({Math.max(0, Math.ceil((new Date(subscriptionStatus.trial_ends_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} días)
+                    </span>
+                  </>
+                ) : subscriptionStatus.subscription_status === 'active' ? (
+                  <>
+                    <Sparkles className="h-4 w-4 text-[#2563FF]" />
+                    <span className="text-xs font-bold text-[#2563FF]">Plan PRO</span>
+                  </>
+                ) : (
+                   <span className="text-xs font-semibold text-gray-500">Plan inactivo</span>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 bg-white border border-gray-200 rounded-xl">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2563FF] to-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">
                 {userInitials}

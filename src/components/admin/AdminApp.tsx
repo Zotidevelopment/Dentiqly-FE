@@ -152,6 +152,7 @@ export const AdminApp: React.FC = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [showTrialModal, setShowTrialModal] = useState(false)
+  const [forceActivation, setForceActivation] = useState(false)
 
   const handleNavigate = (view: string, params?: Record<string, any>) => {
     setCurrentView(view)
@@ -193,8 +194,8 @@ export const AdminApp: React.FC = () => {
     )
   }
 
-  if (subscriptionStatus?.subscription_status === 'pending_payment') {
-    return <OnboardingWizard clinicaNombre={subscriptionStatus.nombre} onComplete={() => window.location.reload()} />
+  if (subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) {
+    return <OnboardingWizard clinicaNombre={subscriptionStatus?.nombre} onComplete={() => window.location.reload()} />
   }
 
   const renderCurrentView = () => {
@@ -248,7 +249,13 @@ export const AdminApp: React.FC = () => {
     : 0
 
   return (
-    <AdminLayout currentView={currentView} onViewChange={setCurrentView} onSearch={(q) => handleNavigate('patients', { searchTerm: q })}>
+    <AdminLayout 
+      currentView={currentView} 
+      onViewChange={setCurrentView} 
+      onSearch={(q) => handleNavigate('patients', { searchTerm: q })}
+      subscriptionStatus={subscriptionStatus}
+      onActivatePlan={() => setForceActivation(true)}
+    >
       {subscriptionStatus && <SubscriptionBanner status={subscriptionStatus} onShowModal={() => setShowTrialModal(true)} />}
       {renderCurrentView()}
       {showTrialModal && (

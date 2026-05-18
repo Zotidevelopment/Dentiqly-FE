@@ -478,11 +478,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
               </div>
 
               {/* Payment methods */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="mb-6">
                 <button
                   onClick={handlePayment}
                   disabled={paying}
-                  className="flex items-center justify-center gap-2.5 bg-[#2563FF] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563FF]/25 disabled:opacity-50 text-sm"
+                  className="w-full flex items-center justify-center gap-2.5 bg-[#2563FF] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563FF]/25 disabled:opacity-50 text-sm"
                 >
                   {paying ? (
                     <>
@@ -496,34 +496,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                     </>
                   )}
                 </button>
-
-                <a
-                  href="https://wa.me/5491100000000?text=Hola!%20Quiero%20activar%20mi%20cuenta%20de%20Dentiqly"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2.5 bg-[#22C55E] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#16A34A] transition-all shadow-lg shadow-[#22C55E]/20 text-sm"
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  Transferencia + WhatsApp
-                </a>
-              </div>
-
-              {/* Transfer info */}
-              <div className="bg-[#F7F8FA] rounded-xl p-4 border border-gray-100">
-                <p className="text-xs font-bold text-[#0B1023] mb-2 uppercase tracking-wider">Datos para transferencia</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-[10px] text-[#8A93A8] uppercase font-bold">Alias</p>
-                    <p className="text-sm font-mono font-bold text-[#0B1023]">dentiqly.saas.dental</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-[#8A93A8] uppercase font-bold">CBU</p>
-                    <p className="text-sm font-mono font-bold text-[#0B1023]">0000003100094857362514</p>
-                  </div>
-                </div>
-                <p className="text-[10px] text-[#8A93A8] mt-2">
-                  Envía el comprobante por WhatsApp para activación inmediata.
-                </p>
               </div>
 
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
