@@ -1,4 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+let API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+if (API_BASE_URL && !API_BASE_URL.endsWith('/api')) {
+  API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
+}
+
 export class ApiClient {
   private baseUrl: string
   private token: string | null = null
@@ -34,14 +38,14 @@ export class ApiClient {
    */
   private resolveUrl(endpoint: string): string {
     // Estas rutas son globales y no deben ser reescritas con el slug del tenant
-    const isGlobalEndpoint = endpoint.startsWith('/auth') || 
-                             endpoint.startsWith('/saas') || 
-                             endpoint.startsWith('/billing') ||
-                             endpoint.startsWith('/superadmin') ||
-                             endpoint.startsWith('/usuarios-pacientes') ||
-                             endpoint.startsWith('/whatsapp') ||
-                             endpoint.startsWith('/cuenta-corriente') ||
-                             endpoint.startsWith('/password-reset')
+    const isGlobalEndpoint = endpoint.startsWith('/auth') ||
+      endpoint.startsWith('/saas') ||
+      endpoint.startsWith('/billing') ||
+      endpoint.startsWith('/superadmin') ||
+      endpoint.startsWith('/usuarios-pacientes') ||
+      endpoint.startsWith('/whatsapp') ||
+      endpoint.startsWith('/cuenta-corriente') ||
+      endpoint.startsWith('/password-reset')
 
     // Si estamos en modo "Booking" (hay slug de tenant) y NO estamos logueados (sin token),
     // usamos la API pública del tenant para todo lo que no sea global.
