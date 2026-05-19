@@ -20,6 +20,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cuentaCorrienteApi } from '../../api/cuenta-corriente';
 import { exportApi } from '../../api/export';
+import { useToast } from '../../hooks/use-toast';
 import { NewMovementModal } from './cashflow/NewMovementModal';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
@@ -29,6 +30,7 @@ const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
 export default function CashFlow() {
+    const { toast } = useToast();
     const [movimientos, setMovimientos] = useState<any[]>([]);
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -95,7 +97,7 @@ export default function CashFlow() {
     return (
         <div style={pageWrapper}>
             {/* ── Header ── */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
                 <div>
                     <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
                         Flujo de Caja
@@ -104,9 +106,9 @@ export default function CashFlow() {
                         Movimientos históricos de ingresos y egresos de la clínica
                     </p>
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
+                <div className="flex flex-wrap gap-2.5">
                     <button
-                      onClick={() => exportApi.flujoCaja().catch(() => console.error("Error al exportar"))}
+                      onClick={() => exportApi.flujoCaja().catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar el flujo de caja" }))}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
                         background: tokens.white, color: tokens.grayText,
@@ -190,7 +192,7 @@ export default function CashFlow() {
             </div>
 
             {/* ── Controls ── */}
-            <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+            <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
                 <div style={{
                   flex: 1, display: "flex", alignItems: "center", gap: 10,
                   background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -209,7 +211,7 @@ export default function CashFlow() {
                     }}
                   />
                 </div>
-                
+
                 <div style={{
                   display: "flex", alignItems: "center", gap: 8,
                   background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,

@@ -32,8 +32,6 @@ export function LiquidacionDetailModal({
     onDelete,
     onDownload,
 }: LiquidacionDetailModalProps) {
-    if (!liquidacion) return null
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("es-AR")
     }
@@ -48,6 +46,7 @@ export function LiquidacionDetailModal({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
+                {!liquidacion ? null : (<>
                 <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
                     <DialogTitle className="text-xl font-normal">Liquidación</DialogTitle>
                     {/* Close button is handled by DialogContent usually, but if we need custom one */}
@@ -117,7 +116,7 @@ export function LiquidacionDetailModal({
                                                 -
                                             </TableCell>
                                             <TableCell>
-                                                {liquidacion.observaciones || prestacion.servicio?.nombre}
+                                                {prestacion.servicio?.nombre || '-'}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 {formatCurrency(prestacion.monto_profesional)}
@@ -159,6 +158,7 @@ export function LiquidacionDetailModal({
                         </Button>
                     </div>
                 </DialogFooter>
+                </>)}
             </DialogContent>
         </Dialog>
     )

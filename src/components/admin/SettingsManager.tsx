@@ -13,6 +13,7 @@ import {
   Clock,
   Plus,
   Trash2,
+  Wallet,
 } from "lucide-react"
 import { useToast } from "../../hooks/use-toast"
 
@@ -38,7 +39,9 @@ export const SettingsManager: React.FC = () => {
     bank_account_holder: "",
     bank_cbu: "",
     bank_alias: "",
-    bank_whatsapp: ""
+    bank_whatsapp: "",
+    sena_enabled: false,
+    sena_monto: ""
   })
 
   const [generalData, setGeneralData] = useState({
@@ -84,7 +87,13 @@ export const SettingsManager: React.FC = () => {
       const generalFields: any = { ...generalData }
       
       data.forEach(s => {
-        if (s.clave in bankFields) bankFields[s.clave] = s.valor
+        if (s.clave === "sena_enabled") {
+          bankFields.sena_enabled = s.valor === true || s.valor === "true"
+        } else if (s.clave === "sena_monto") {
+          bankFields.sena_monto = String(s.valor || "")
+        } else if (s.clave in bankFields) {
+          bankFields[s.clave] = s.valor
+        }
         if (s.clave in generalFields) generalFields[s.clave] = s.valor
         if (s.clave === "business_hours" && s.valor) {
           try {
@@ -97,6 +106,7 @@ export const SettingsManager: React.FC = () => {
       setGeneralData(generalFields)
     } catch (error) {
       console.error("Error:", error)
+      toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la configuración" })
     } finally {
       setLoading(false)
     }
@@ -133,10 +143,12 @@ export const SettingsManager: React.FC = () => {
     e.preventDefault()
     setSaving(true)
     try {
-      const entries = Object.entries(bankData)
-      for (const [key, value] of entries) {
+      const { sena_enabled, sena_monto, ...bankFields } = bankData
+      for (const [key, value] of Object.entries(bankFields)) {
         await configuracionApi.crear({ clave: key, valor: value, tipo: "string", categoria: "banking" })
       }
+      await configuracionApi.crear({ clave: "sena_enabled", valor: sena_enabled, tipo: "boolean", categoria: "banking" })
+      await configuracionApi.crear({ clave: "sena_monto", valor: sena_monto ? Number(sena_monto) : 0, tipo: "number", categoria: "banking" })
       toast({ title: "Éxito", description: "Datos bancarios actualizados" })
       fetchSettings()
     } catch (error) {
@@ -205,7 +217,7 @@ export const SettingsManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Configuración del Sistema
@@ -217,7 +229,7 @@ export const SettingsManager: React.FC = () => {
       </div>
 
       {/* ── Tabs ── */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 24, background: tokens.grayRow, padding: 4, borderRadius: 12, width: "fit-content" }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 24, background: tokens.grayRow, padding: 4, borderRadius: 12, overflowX: "auto", maxWidth: "100%" }}>
         {[
           { id: "general", label: "General", icon: Building2 },
           { id: "horarios", label: "Horarios", icon: Clock },
@@ -225,7 +237,7 @@ export const SettingsManager: React.FC = () => {
         ].map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as "general" | "banking" | "horarios")}
             style={{
               display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 9,
               border: "none", background: activeTab === tab.id ? tokens.white : "transparent",
@@ -245,7 +257,7 @@ export const SettingsManager: React.FC = () => {
       <div style={{ background: tokens.white, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}`, overflow: "hidden" }}>
         {activeTab === "general" && (
           <form onSubmit={handleSaveGeneralData} style={{ padding: 32 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: tokens.navy, margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 8 }}>
                   <Building2 size={16} color={tokens.blue} /> Información Básica
@@ -414,7 +426,7 @@ export const SettingsManager: React.FC = () => {
 
         {activeTab === "banking" && (
           <form onSubmit={handleSaveBankData} style={{ padding: 32 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: tokens.navy, margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 8 }}>
                   <CreditCard size={16} color={tokens.blue} /> Datos de Transferencia
@@ -427,7 +439,7 @@ export const SettingsManager: React.FC = () => {
                   <label style={labelStyle}>Titular de Cuenta</label>
                   <input type="text" value={bankData.bank_account_holder} onChange={e => setBankData({...bankData, bank_account_holder: e.target.value})} style={inputStyle} />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label style={labelStyle}>CBU / CVU</label>
                     <input type="text" value={bankData.bank_cbu} onChange={e => setBankData({...bankData, bank_cbu: e.target.value})} style={inputStyle} />
@@ -446,12 +458,60 @@ export const SettingsManager: React.FC = () => {
                 <div>
                   <label style={labelStyle}>Número de WhatsApp</label>
                   <input type="text" value={bankData.bank_whatsapp} onChange={e => setBankData({...bankData, bank_whatsapp: e.target.value})} style={inputStyle} placeholder="54911..." />
-                  <div style={{ marginTop: 20, padding: 16, background: tokens.blueFaint, borderRadius: 12, border: `0.5px solid ${tokens.blue}22` }}>
-                    <p style={{ fontSize: 12, color: tokens.navy, fontWeight: 600, margin: "0 0 4px 0" }}>Importante</p>
-                    <p style={{ fontSize: 11.5, color: tokens.grayText, margin: 0, lineHeight: 1.5 }}>
-                      Estos datos bancarios se presentarán al finalizar una reserva online para que el paciente envíe el comprobante de seña.
-                    </p>
+                </div>
+
+                <div style={{ borderTop: `1px solid ${tokens.grayRow}`, paddingTop: 20, marginTop: 4 }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: tokens.navy, margin: "0 0 12px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                    <Wallet size={16} color={tokens.blue} /> Seña / Depósito
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: bankData.sena_enabled ? tokens.blueFaint : tokens.grayBg, borderRadius: 12, border: `1px solid ${bankData.sena_enabled ? tokens.blue + "33" : tokens.grayBorder}`, marginBottom: 12, transition: "all 0.15s" }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0 }}>Requerir seña en reservas online</p>
+                      <p style={{ fontSize: 11, color: tokens.grayMuted, margin: "2px 0 0 0" }}>
+                        {bankData.sena_enabled ? "Los pacientes verán el paso de pago de seña al reservar" : "El paso de seña no se mostrará en las reservas"}
+                      </p>
+                    </div>
+                    <label style={{ position: "relative", display: "inline-flex", alignItems: "center", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={bankData.sena_enabled}
+                        onChange={e => setBankData({...bankData, sena_enabled: e.target.checked})}
+                        style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+                      />
+                      <div style={{
+                        width: 44, height: 24, borderRadius: 12,
+                        background: bankData.sena_enabled ? tokens.blue : "#D1D5DB",
+                        transition: "background 0.2s", position: "relative"
+                      }}>
+                        <div style={{
+                          width: 20, height: 20, borderRadius: 10,
+                          background: "white", position: "absolute", top: 2,
+                          left: bankData.sena_enabled ? 22 : 2,
+                          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+                        }} />
+                      </div>
+                    </label>
                   </div>
+                  {bankData.sena_enabled && (
+                    <div>
+                      <label style={labelStyle}>Monto de la seña ($)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={bankData.sena_monto}
+                        onChange={e => setBankData({...bankData, sena_monto: e.target.value})}
+                        style={inputStyle}
+                        placeholder="Ej: 5000"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ padding: 16, background: tokens.blueFaint, borderRadius: 12, border: `0.5px solid ${tokens.blue}22` }}>
+                  <p style={{ fontSize: 12, color: tokens.navy, fontWeight: 600, margin: "0 0 4px 0" }}>Importante</p>
+                  <p style={{ fontSize: 11.5, color: tokens.grayText, margin: 0, lineHeight: 1.5 }}>
+                    Estos datos bancarios se presentarán al finalizar una reserva online para que el paciente envíe el comprobante de seña.
+                  </p>
                 </div>
               </div>
             </div>

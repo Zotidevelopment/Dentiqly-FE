@@ -7,6 +7,7 @@ import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, Calendar, X, Pill } from "lucide-react"
 import { prescripcionesApi } from "../../api"
 import type { Prescripcion, CrearPrescripcionData } from "../../types"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface PrescriptionsSectionProps {
   pacienteId: string | number
@@ -19,6 +20,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("view")
   const [selectedPrescripcion, setSelectedPrescripcion] = useState<Prescripcion | null>(null)
   const [formData, setFormData] = useState<Partial<CrearPrescripcionData>>({})
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
 
   useEffect(() => {
     fetchPrescripciones()
@@ -58,15 +60,21 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar esta prescripción?")) {
-      try {
-        await prescripcionesApi.eliminar(id as any)
-        fetchPrescripciones()
-      } catch (error) {
-        console.error("Error deleting prescription:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar esta prescripción?",
+      onConfirm: async () => {
+        try {
+          await prescripcionesApi.eliminar(id)
+          fetchPrescripciones()
+        } catch (error) {
+          console.error("Error deleting prescription:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,6 +151,18 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
             </Card>
           ))}
         </div>
+      )}
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
       )}
 
       {/* Modal */}

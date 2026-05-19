@@ -20,6 +20,7 @@ import {
 import { pacientesApi, obrasSocialesApi, exportApi } from "../../api"
 import { apiClient } from "../../lib/api-client"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { useToast } from "../../hooks/use-toast"
 import type { Paciente, CrearPacienteData, ObraSocial } from "../../types"
 import { PatientDetailView } from "./PatientDetailView"
 import { AdminAppointmentModal } from "../admin/AdminAppointmentModal"
@@ -68,6 +69,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [cropperData, setCropperData] = useState<{ imageSrc: string; patientId: string } | null>(null)
+  const { toast } = useToast()
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
 
@@ -82,6 +84,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
           setViewMode("detail")
         } catch (e) {
           console.error("Error loading patient:", e)
+          toast({ variant: "destructive", title: "Error", description: "No se pudo cargar el paciente" })
         }
       }
       loadInitialPatient()
@@ -99,7 +102,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
     try {
       const res = await obrasSocialesApi.listar()
       setObrasSociales(res || [])
-    } catch (e) { console.error(e) }
+    } catch (e) { console.error(e); toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar las obras sociales" }) }
   }
 
   const fetchPatients = async () => {
@@ -111,6 +114,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       setTotalPatients(res?.pagination?.totalItems || res?.data?.length || 0)
     } catch (e) {
       console.error(e)
+      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los pacientes" })
       setPatients([]); setTotalPages(1); setTotalPatients(0)
     } finally { setLoading(false) }
   }
@@ -138,7 +142,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       await pacientesApi.eliminar(confirmDelete.id)
       fetchPatients()
       setConfirmDelete({ isOpen: false, id: null })
-    } catch { alert("Error al eliminar el paciente") }
+    } catch { toast({ variant: "destructive", title: "Error", description: "Error al eliminar el paciente" }) }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,7 +151,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       if (modalMode === "create") await pacientesApi.crear(formData as CrearPacienteData)
       else if (modalMode === "edit" && selectedPatient) await pacientesApi.actualizar(selectedPatient.id, formData)
       setShowModal(false); fetchPatients()
-    } catch (e) { console.error(e) }
+    } catch (e: any) { toast({ variant: "destructive", title: "Error", description: e.message || "Error al guardar el paciente" }) }
   }
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, patientId: string) => {
@@ -174,7 +178,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       if (selectedPatient?.id === patientId)
         setSelectedPatient({ ...selectedPatient, foto_url: updated.foto_url })
       fetchPatients()
-    } catch { alert("Error al subir la foto") }
+    } catch { toast({ variant: "destructive", title: "Error", description: "Error al subir la foto" }) }
     finally { setUploadingPhoto(false) }
   }
 
@@ -200,7 +204,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       ) : (
         <>
           {/* ── Header ── */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
             <div>
               <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
                 Gestión de Pacientes
@@ -209,9 +213,9 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 Administrá los pacientes registrados en el centro
               </p>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div className="flex flex-wrap gap-2.5">
               <button
-                onClick={() => exportApi.pacientes().catch(() => alert("Error al exportar"))}
+                onClick={() => exportApi.pacientes().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar" }))}
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
                   background: tokens.white, color: tokens.grayText,
@@ -246,7 +250,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
           </div>
 
           {/* ── Controls ── */}
-          <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+          <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
             {/* Search */}
             <div style={{
               flex: 1, display: "flex", alignItems: "center", gap: 10,
@@ -562,7 +566,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
             {/* Form */}
             <form onSubmit={handleSubmit} style={{ padding: 24 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Apellido */}
                 <div>
                   <label style={labelStyle}>Apellido *</label>

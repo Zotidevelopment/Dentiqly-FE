@@ -7,6 +7,8 @@ import { Button } from "../ui/Button"
 import { Trash2, Calendar, X, FileText, Download, Upload, File, Eye } from "lucide-react"
 import { archivosApi } from "../../api"
 import type { Archivo } from "../../types"
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface FilesSectionProps {
   pacienteId: string | number
@@ -21,7 +23,9 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ pacienteId }) => {
   const [descripcion, setDescripcion] = useState("")
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [previewFile, setPreviewFile] = useState<Archivo | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchArchivos()
@@ -53,28 +57,34 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ pacienteId }) => {
 
     try {
       setUploading(true)
-      await archivosApi.subir(selectedFile, pacienteId, descripcion)
+      await archivosApi.subir(selectedFile, Number(pacienteId), descripcion)
       setShowUploadModal(false)
       setSelectedFile(null)
       setDescripcion("")
       fetchArchivos()
     } catch (error) {
       console.error("Error uploading file:", error)
-      alert("Error al subir el archivo")
+      toast({ variant: "destructive", title: "Error", description: "Error al subir el archivo" })
     } finally {
       setUploading(false)
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar este archivo?")) {
-      try {
-        await archivosApi.eliminar(id as any)
-        fetchArchivos()
-      } catch (error) {
-        console.error("Error deleting file:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este archivo?",
+      onConfirm: async () => {
+        try {
+          await archivosApi.eliminar(id)
+          fetchArchivos()
+        } catch (error) {
+          console.error("Error deleting file:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const getBaseUrl = () => {
@@ -154,7 +164,7 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ pacienteId }) => {
                   {archivo.descripcion && <p className="text-xs text-gray-600 mt-1">{archivo.descripcion}</p>}
                   <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
                     <Calendar className="h-3 w-3" />
-                    <span>{new Date(archivo.createdAt || "").toLocaleDateString("es-ES")}</span>
+                    <span>{archivo.createdAt ? new Date(archivo.createdAt).toLocaleDateString("es-ES") : "Sin fecha"}</span>
                   </div>
                 </div>
                 <div className="flex gap-1">
@@ -235,6 +245,17 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ pacienteId }) => {
             </form>
           </div>
         </div>
+      )}
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
       )}
       {/* Preview Modal */}
       {previewUrl && previewFile && (

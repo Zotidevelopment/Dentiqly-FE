@@ -20,6 +20,7 @@ interface PaymentStepProps {
   patientData: CrearPacienteData
   loading: boolean
   onConfirm: () => void
+  senaMonto?: number
 }
 
 export const PaymentStep: React.FC<PaymentStepProps> = ({
@@ -28,10 +29,11 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   dateTime,
   patientData,
   loading: confirmLoading,
-  onConfirm
+  onConfirm,
+  senaMonto
 }) => {
   const [paymentInfo, setPaymentInfo] = useState({
-    amount: 5000,
+    amount: senaMonto || 0,
     cbu: "",
     alias: "",
     whatsapp: "",
@@ -43,14 +45,17 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
     const fetchBankData = async () => {
       try {
         const settings = await configuracionApi.listar()
-        const info = { ...paymentInfo }
-        settings.forEach(s => {
-          if (s.clave === 'bank_cbu') info.cbu = s.valor
-          if (s.clave === 'bank_alias') info.alias = s.valor
-          if (s.clave === 'bank_whatsapp') info.whatsapp = s.valor
-          if (s.clave === 'bank_name') info.bank = s.valor
+        setPaymentInfo(prev => {
+          const info = { ...prev }
+          settings.forEach(s => {
+            if (s.clave === 'bank_cbu') info.cbu = s.valor
+            if (s.clave === 'bank_alias') info.alias = s.valor
+            if (s.clave === 'bank_whatsapp') info.whatsapp = s.valor
+            if (s.clave === 'bank_name') info.bank = s.valor
+            if (s.clave === 'sena_monto' && !senaMonto) info.amount = Number(s.valor) || 0
+          })
+          return info
         })
-        setPaymentInfo(info)
       } catch (error) {
         console.error("Error fetching bank info:", error)
       } finally {

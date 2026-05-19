@@ -119,7 +119,9 @@ const BookingLayout: React.FC = () => {
     // El slug puede estar en user.clinica.slug (de me()) o user.clinica_slug si lo mapeamos
     const userSlug = user?.clinica?.slug || user?.clinica_slug
     
-    apiClient.setTenantSlug(userSlug || 'juan-clinica')
+    if (userSlug) {
+      apiClient.setTenantSlug(userSlug)
+    }
     setIsReady(true)
     
     return () => {

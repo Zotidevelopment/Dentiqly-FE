@@ -6,6 +6,8 @@ import { Card } from "../ui/Card"
 import { Button } from "../ui/Button"
 import { Briefcase, Plus, X, AlertCircle } from 'lucide-react'
 import { adminApi } from "../../api/admin"
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 import type { Profesional, Servicio } from "../../types"
 
 interface ServiceAssignmentProps {
@@ -14,12 +16,17 @@ interface ServiceAssignmentProps {
 }
 
 export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ professional, onServicesUpdate }) => {
+  const { toast } = useToast()
   const [assignedServices, setAssignedServices] = useState<Servicio[]>([])
   const [availableServices, setAvailableServices] = useState<Servicio[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([])
+  const [confirmRemove, setConfirmRemove] = useState<{ isOpen: boolean; id: number | null }>({
+    isOpen: false,
+    id: null,
+  })
 
   useEffect(() => {
     fetchData()
@@ -63,23 +70,27 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
 
       setSelectedServiceIds([])
       setShowAddModal(false)
-      alert("Servicios asignados correctamente")
+      toast({ title: "Éxito", description: "Servicios asignados correctamente" })
     } catch (error) {
       console.error("Error assigning services:", error)
-      alert("Error al asignar servicios. Intente nuevamente.")
+      toast({ variant: "destructive", title: "Error", description: "Error al asignar servicios. Intente nuevamente." })
     } finally {
       setSaving(false)
     }
   }
 
   const handleRemoveService = async (servicioId: number) => {
-    if (!confirm("¿Estás seguro de que quieres remover este servicio?")) return
+    setConfirmRemove({ isOpen: true, id: servicioId })
+  }
+
+  const handleConfirmRemove = async () => {
+    if (!confirmRemove.id) return
 
     try {
-      await adminApi.profesionales.removerServicio(professional.id, servicioId)
+      await adminApi.profesionales.removerServicio(professional.id, confirmRemove.id)
 
-      const removedService = assignedServices.find(s => s.id === servicioId)
-      const newAssigned = assignedServices.filter(s => s.id !== servicioId)
+      const removedService = assignedServices.find(s => s.id === confirmRemove.id)
+      const newAssigned = assignedServices.filter(s => s.id !== confirmRemove.id)
 
       setAssignedServices(newAssigned)
       if (removedService) {
@@ -87,10 +98,12 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
       }
 
       onServicesUpdate?.(newAssigned)
-      alert("Servicio removido correctamente")
+      toast({ title: "Éxito", description: "Servicio removido correctamente" })
     } catch (error) {
       console.error("Error removing service:", error)
-      alert("Error al remover servicio. Intente nuevamente.")
+      toast({ variant: "destructive", title: "Error", description: "Error al remover servicio. Intente nuevamente." })
+    } finally {
+      setConfirmRemove({ isOpen: false, id: null })
     }
   }
 
@@ -175,11 +188,19 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
         )}
       </Card>
 
+      <ConfirmationModal
+        isOpen={confirmRemove.isOpen}
+        onClose={() => setConfirmRemove({ isOpen: false, id: null })}
+        onConfirm={handleConfirmRemove}
+        title="Remover Servicio"
+        message="¿Estás seguro de que quieres remover este servicio?"
+      />
+
       {/* Modal para agregar servicios */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
           <div 
-            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col"
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-8 py-6 border-b border-gray-100 bg-white">

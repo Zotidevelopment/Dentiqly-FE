@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { apiClient } from '../../lib/api-client'
 import { configuracionApi } from '../../api/configuracion'
+import { useToast } from '../../hooks/use-toast'
 import {
   Building2,
   MapPin,
@@ -23,6 +24,7 @@ interface OnboardingWizardProps {
 }
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, onComplete }) => {
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [paying, setPaying] = useState(false)
@@ -54,7 +56,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
       }
       setStep(3)
     } catch {
-      alert('Error al guardar los datos. Intenta nuevamente.')
+      toast({ variant: "destructive", title: "Error", description: "Error al guardar los datos. Intenta nuevamente." })
     } finally {
       setSaving(false)
     }
@@ -70,7 +72,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
       }
       setStep(4)
     } catch {
-      alert('Error al guardar los datos bancarios. Intenta nuevamente.')
+      toast({ variant: "destructive", title: "Error", description: "Error al guardar los datos bancarios. Intenta nuevamente." })
     } finally {
       setSaving(false)
     }
@@ -86,7 +88,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
         window.location.href = response.init_point
       }
     } catch {
-      alert('Hubo un error al conectar con MercadoPago. Intenta de nuevo o contacta a soporte.')
+      toast({ variant: "destructive", title: "Error", description: "Hubo un error al conectar con MercadoPago. Intenta de nuevo o contacta a soporte." })
     } finally {
       setPaying(false)
     }

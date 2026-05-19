@@ -9,6 +9,7 @@ import { DateTimeSelection } from "../booking/DateTimeSelection"
 import { PatientForm } from "../booking/PatientForm"
 import type { Servicio, Profesional, CrearPacienteData } from "../../types"
 import { turnosApi, pacientesApi } from "../../api"
+import { useToast } from "../../hooks/use-toast"
 
 interface AdminBookingModalProps {
   onClose: () => void
@@ -17,12 +18,13 @@ interface AdminBookingModalProps {
   initialPacienteNombre?: string
 }
 
-export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({ 
-  onClose, 
+export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
+  onClose,
   onSuccess,
   initialPacienteId,
   initialPacienteNombre
 }) => {
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [selectedService, setSelectedService] = useState<Servicio | null>(null)
   const [selectedProfessional, setSelectedProfessional] = useState<Profesional | null>(null)
@@ -93,7 +95,7 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
       onSuccess()
     } catch (error) {
       console.error("Error creating appointment:", error)
-      alert("Error al crear el turno. Por favor, verifique los datos e intente nuevamente.")
+      toast({ variant: "destructive", title: "Error", description: "Error al crear el turno. Por favor, verifique los datos e intente nuevamente." })
     } finally {
       setLoading(false)
     }
@@ -114,7 +116,7 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
       await createTurno(pacienteId)
     } catch (error) {
       console.error("Error handling patient:", error)
-      alert("Error al procesar los datos del paciente.")
+      toast({ variant: "destructive", title: "Error", description: "Error al procesar los datos del paciente." })
       setLoading(false)
     }
   }

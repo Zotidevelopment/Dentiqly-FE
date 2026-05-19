@@ -11,8 +11,10 @@ import { BookingSummary } from "./BookingSummary"
 import type { Servicio, Profesional, CrearPacienteData } from "../../types"
 import { turnosApi, pacientesApi } from "../../api"
 import { patientPortalApi, getPatientToken } from "../../api/patient-portal"
+import { configuracionApi } from "../../api/configuracion"
 import { BranchSelection } from "./BranchSelection"
 import { Check, ArrowLeft, MapPin } from "lucide-react"
+import { useToast } from "../../hooks/use-toast"
 
 export const BookingForm: React.FC = () => {
   const [step, setStep] = useState(1)
@@ -26,6 +28,25 @@ export const BookingForm: React.FC = () => {
   const [bookingId, setBookingId] = useState<number | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [mesActualBloqueado, setMesActualBloqueado] = useState(false)
+  const [senaEnabled, setSenaEnabled] = useState(false)
+  const [senaMonto, setSenaMonto] = useState(0)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    const fetchSenaConfig = async () => {
+      try {
+        const settings = await configuracionApi.listar()
+        settings.forEach(s => {
+          if (s.clave === "sena_enabled") setSenaEnabled(s.valor === true || s.valor === "true")
+          if (s.clave === "sena_monto") setSenaMonto(Number(s.valor) || 0)
+        })
+      } catch (e) {
+        console.error("Error fetching sena config:", e)
+        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la configuración de seña" })
+      }
+    }
+    fetchSenaConfig()
+  }, [])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -65,6 +86,7 @@ export const BookingForm: React.FC = () => {
           console.error("Error al obtener perfil:", e)
           localStorage.removeItem("patientToken")
           setIsAuthenticated(false)
+          toast({ variant: "destructive", title: "Sesión expirada", description: "Tu sesión expiró. Completá tus datos nuevamente." })
         }
       }
     }
@@ -89,7 +111,7 @@ export const BookingForm: React.FC = () => {
   const handleDateTimeSelect = (dateTime: string) => {
     setSelectedDateTime(dateTime)
     if (isAuthenticated && patientData) {
-      setStep(6)
+      setStep(senaEnabled ? 6 : 5)
     } else {
       setStep(5)
     }
@@ -101,7 +123,7 @@ export const BookingForm: React.FC = () => {
   }
 
   const handleFinalSubmit = async () => {
-    if (!selectedService || !selectedProfessional || !selectedDateTime || !patientData) return
+    if (!selectedService || !selectedProfessional || !selectedDateTime || !patientData || !selectedBranch) return
 
     setLoading(true)
     try {
@@ -140,7 +162,7 @@ export const BookingForm: React.FC = () => {
     } catch (error: any) {
       console.error("Error creating appointment:", error)
       const message = error.response?.data?.error || "Error al crear el turno. Por favor, intente nuevamente."
-      alert(message)
+      toast({ variant: "destructive", title: "Error", description: message })
     } finally {
       setLoading(false)
     }
@@ -154,6 +176,7 @@ export const BookingForm: React.FC = () => {
     setSelectedDateTime(null)
     setBookingSuccess(false)
     setBookingId(null)
+    if (!isAuthenticated) setPatientData(null)
   }
 
   if (bookingSuccess && selectedService && selectedProfessional && selectedDateTime) {
@@ -190,14 +213,23 @@ export const BookingForm: React.FC = () => {
     }
   }
 
-  const stepTitles = [
-    "SELECCIÓN DE SUCURSAL",
-    "SELECCIÓN DE SERVICIO",
-    "SELECCIÓN DE PROFESIONAL",
-    "FECHA Y HORA",
-    "DATOS PERSONALES",
-    "PAGO DE SEÑA"
-  ]
+  const stepTitles = senaEnabled
+    ? [
+        "SELECCIÓN DE SUCURSAL",
+        "SELECCIÓN DE SERVICIO",
+        "SELECCIÓN DE PROFESIONAL",
+        "FECHA Y HORA",
+        "DATOS PERSONALES",
+        "PAGO DE SEÑA"
+      ]
+    : [
+        "SELECCIÓN DE SUCURSAL",
+        "SELECCIÓN DE SERVICIO",
+        "SELECCIÓN DE PROFESIONAL",
+        "FECHA Y HORA",
+        "DATOS PERSONALES",
+        "CONFIRMAR TURNO"
+      ]
 
   return (
     <div className="h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 selection:text-[#026498] flex flex-col overflow-hidden">
@@ -277,14 +309,35 @@ export const BookingForm: React.FC = () => {
                         />
                       )}
                       {step === 6 && selectedService && selectedProfessional && selectedDateTime && patientData && (
-                        <PaymentStep
-                          service={selectedService}
-                          professional={selectedProfessional}
-                          dateTime={selectedDateTime}
-                          patientData={patientData}
-                          loading={loading}
-                          onConfirm={handleFinalSubmit}
-                        />
+                        senaEnabled ? (
+                          <PaymentStep
+                            service={selectedService}
+                            professional={selectedProfessional}
+                            dateTime={selectedDateTime}
+                            patientData={patientData}
+                            loading={loading}
+                            onConfirm={handleFinalSubmit}
+                            senaMonto={senaMonto}
+                          />
+                        ) : (
+                          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-3">
+                              <p className="text-sm font-bold text-gray-900">Resumen de tu turno</p>
+                              <div className="text-sm text-gray-600 space-y-1">
+                                <p><span className="font-semibold">Servicio:</span> {selectedService.nombre}</p>
+                                <p><span className="font-semibold">Profesional:</span> {selectedProfessional.nombre} {selectedProfessional.apellido}</p>
+                                <p><span className="font-semibold">Paciente:</span> {patientData.nombre} {patientData.apellido}</p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={handleFinalSubmit}
+                              disabled={loading}
+                              className="w-full h-14 bg-[#2563FF] text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
+                            >
+                              {loading ? "Confirmando..." : "CONFIRMAR TURNO"}
+                            </button>
+                          </div>
+                        )
                       )}
                     </div>
                   )}

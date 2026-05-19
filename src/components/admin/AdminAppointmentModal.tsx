@@ -5,6 +5,7 @@ import { Plus, UserPlus, Search, X, Check } from 'lucide-react'
 import { PatientForm } from '../booking/PatientForm'
 import { turnosApi, profesionalesApi, pacientesApi, serviciosApi } from '../../api'
 import type { Profesional, Paciente, Servicio } from '../../types'
+import { useToast } from "../../hooks/use-toast"
 
 interface AdminAppointmentModalProps {
     onClose: () => void
@@ -21,6 +22,7 @@ interface AdminAppointmentModalProps {
 }
 
 export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ onClose, onCreate, initialData }) => {
+    const { toast } = useToast()
     const [formData, setFormData] = useState({
         paciente_id: initialData?.paciente_id || '',
         profesional_id: initialData?.profesional_id || 0,
@@ -48,7 +50,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                 const [profesionalesRes, pacientesRes, serviciosRes] = await Promise.all([
                     profesionalesApi.listar({ limit: 100, estado: 'Activo' }),
                     pacientesApi.listar({ limit: 50 }),
-                    serviciosApi.listar()
+                    serviciosApi.listar({ limit: 100 })
                 ])
                 setProfesionales(profesionalesRes.data || [])
                 setPacientes(pacientesRes.data || [])
@@ -113,10 +115,9 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
             if (servicio) {
                 const duration = servicio.duracion_estimada || 30
                 const [hours, minutes] = formData.hora_inicio.split(':').map(Number)
-                const date = new Date()
-                date.setHours(hours, minutes + duration, 0)
-                const endHours = String(date.getHours()).padStart(2, '0')
-                const endMinutes = String(date.getMinutes()).padStart(2, '0')
+                const totalMinutes = hours * 60 + minutes + duration
+                const endHours = String(Math.floor(totalMinutes / 60)).padStart(2, '0')
+                const endMinutes = String(totalMinutes % 60).padStart(2, '0')
                 setFormData(prev => ({ ...prev, hora_fin: `${endHours}:${endMinutes}` }))
             }
         }
@@ -141,7 +142,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
             onClose()
         } catch (error: any) {
             console.error('Error creating patient and appointment:', error)
-            alert('Error al crear el paciente o el turno.')
+            toast({ variant: "destructive", title: "Error", description: "Error al crear el paciente o el turno." })
         } finally {
             setLoading(false)
         }
@@ -154,7 +155,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
         setLoading(true)
         
         if (!formData.paciente_id || !formData.profesional_id || !formData.servicio_id) {
-            alert('Por favor complete todos los campos requeridos.')
+            toast({ variant: "destructive", title: "Validación", description: "Por favor complete todos los campos requeridos." })
             setLoading(false)
             return
         }
@@ -176,7 +177,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
         } catch (error: any) {
             console.error('Error creating appointment:', error)
             const errorMessage = error.response?.data?.error || 'Error al crear el turno. Verifique solapamientos o habilitar Sobre Turno.'
-            alert(errorMessage)
+            toast({ variant: "destructive", title: "Error", description: errorMessage || "Error inesperado" })
         } finally {
             setLoading(false)
         }
@@ -432,13 +433,13 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                         <textarea
                                             value={formData.observaciones}
                                             onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
-                                            className="w-full h-12 px-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white transition-all resize-none outline-none"
+                                            className="w-full h-24 px-4 py-3 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white transition-all resize-none outline-none"
                                             placeholder="Notas internas..."
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white">
+                                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white border-t border-gray-100 py-4">
                                     <Button 
                                         type="button" 
                                         variant="outline" 

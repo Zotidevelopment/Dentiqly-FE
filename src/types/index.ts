@@ -21,6 +21,8 @@ export interface AuthUser {
   nombre: string
   role?: string
   clinicaId?: string // UUID del tenant
+  clinica?: any
+  clinica_id?: string
 }
 
 export interface AuthResponse {

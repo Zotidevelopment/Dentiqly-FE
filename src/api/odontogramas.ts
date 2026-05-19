@@ -10,10 +10,17 @@ export interface SuperficieDiente {
   distal: string
 }
 
+export interface TratamientoInfo {
+  tratamiento: string
+  estado: string
+}
+
 export interface DatosDiente {
   estado: string
   superficies: SuperficieDiente
   notas?: string
+  tratamientos?: Record<string, TratamientoInfo | undefined>
+  tratamiento_general?: TratamientoInfo
 }
 
 export interface DientesData {

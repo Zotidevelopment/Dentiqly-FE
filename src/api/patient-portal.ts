@@ -1,4 +1,4 @@
-import { apiClient } from "./client"
+import { apiClient } from "../lib/api-client"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
 

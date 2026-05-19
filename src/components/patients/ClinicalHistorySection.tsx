@@ -7,6 +7,7 @@ import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, FileText, Calendar, X } from "lucide-react"
 import { historialesClinicosApi } from "../../api"
 import type { HistorialClinico, CrearHistorialClinicoData } from "../../types"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface ClinicalHistorySectionProps {
   pacienteId: string | number
@@ -19,6 +20,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("view")
   const [selectedHistorial, setSelectedHistorial] = useState<HistorialClinico | null>(null)
   const [formData, setFormData] = useState<Partial<CrearHistorialClinicoData>>({})
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
 
   useEffect(() => {
     fetchHistoriales()
@@ -58,15 +60,21 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar este historial clínico?")) {
-      try {
-        await historialesClinicosApi.eliminar(id as any)
-        fetchHistoriales()
-      } catch (error) {
-        console.error("Error deleting clinical history:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este historial clínico?",
+      onConfirm: async () => {
+        try {
+          await historialesClinicosApi.eliminar(id)
+          fetchHistoriales()
+        } catch (error) {
+          console.error("Error deleting clinical history:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,6 +149,18 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
             </Card>
           ))}
         </div>
+      )}
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
       )}
 
       {/* Modal */}

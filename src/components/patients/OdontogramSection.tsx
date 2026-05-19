@@ -8,6 +8,8 @@ import { Plus, Save, X, Calendar, Trash2, Eye, Edit3, ArrowUp, ArrowDown, Eraser
 import { odontogramasApi } from "../../api/odontogramas"
 import type { DientesData, DatosDiente } from "../../api/odontogramas"
 import type { Odontograma, CrearOdontogramaData } from "../../types"
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { getDienteImageSrc } from "../../utils/dienteImages"
 import { ToothAnatomicalSVG } from "./ToothAnatomicalSVG"
 
@@ -94,6 +96,8 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
   const [selectedTratamiento, setSelectedTratamiento] = useState<string>("")
   const [selectedEstado, setSelectedEstado] = useState<EstadoTipo>("mal_estado")
   const [isBorrarMode, setIsBorrarMode] = useState(false)
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchOdontogramas()
@@ -165,15 +169,21 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar este odontograma?")) {
-      try {
-        await odontogramasApi.eliminar(id as any)
-        fetchOdontogramas()
-      } catch (error) {
-        console.error("Error deleting odontograma:", error)
+  const handleDelete = (id: string) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este odontograma?",
+      onConfirm: async () => {
+        try {
+          await odontogramasApi.eliminar(Number(id))
+          fetchOdontogramas()
+        } catch (error) {
+          console.error("Error deleting odontograma:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSuperficieClick = (numeroDiente: string, superficie: string) => {
@@ -195,7 +205,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
             estado: allSano ? "sano" : currentData.estado,
             superficies: newSuperficies,
             tratamientos: {
-              ...(currentData as any).tratamientos,
+              ...currentData.tratamientos,
               [superficie]: undefined,
             }
           },
@@ -220,7 +230,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
           estado: selectedEstado,
           superficies: newSuperficies,
           tratamientos: {
-            ...(currentData as any).tratamientos,
+            ...currentData.tratamientos,
             [superficie]: { tratamiento: selectedTratamiento, estado: selectedEstado },
           }
         },
@@ -290,7 +300,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
       fetchOdontogramas()
     } catch (error) {
       console.error("Error saving odontograma:", error)
-      alert("Error al guardar el odontograma")
+      toast({ variant: "destructive", title: "Error", description: "Error al guardar el odontograma" })
     }
   }
 
@@ -364,6 +374,18 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
         </div>
       )}
 
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
+      )}
+
       {/* ══════════════════════════════════════ MODAL ══════════════════════════════════════ */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
@@ -386,7 +408,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                   <div className="relative">
                     <select
                       value={tipo}
-                      onChange={(e) => setTipo(e.target.value as any)}
+                      onChange={(e) => setTipo(e.target.value as "Inicial" | "Control" | "Tratamiento")}
                       className="appearance-none px-4 py-2 pr-8 bg-white/10 border border-white/20 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#2563FF] cursor-pointer"
                     >
                       <option value="Inicial" className="text-gray-900">Inicial</option>
@@ -700,8 +722,8 @@ const DienteVisual: React.FC<DienteVisualProps> = ({
   const cursorClass = canClick ? "cursor-pointer" : "cursor-default"
 
   const renderToothImage = () => {
-    const tratamientoGral = (datos as any)?.tratamiento_general?.tratamiento || (datos?.estado !== "sano" ? datos?.estado : null)
-    const color = (datos as any)?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado
+    const tratamientoGral = datos?.tratamiento_general?.tratamiento || (datos?.estado !== "sano" ? datos?.estado : null)
+    const color = datos?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado
 
     return (
       <div
@@ -792,11 +814,11 @@ const DienteVisual: React.FC<DienteVisualProps> = ({
   return (
     <div className={`relative flex flex-col items-center group shrink-0 ${cursorClass}`}>
       {/* Erupción / Extrusión arrows */}
-      {((datos as any)?.tratamiento_general?.tratamiento === "erupcion_up" || (datos as any)?.tratamiento_general?.tratamiento === "extrusion") && (
-        <ArrowUp className="w-4 h-4 absolute -top-4" style={{ color: (datos as any)?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado }} />
+      {(datos?.tratamiento_general?.tratamiento === "erupcion_up" || datos?.tratamiento_general?.tratamiento === "extrusion") && (
+        <ArrowUp className="w-4 h-4 absolute -top-4" style={{ color: datos?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado }} />
       )}
-      {((datos as any)?.tratamiento_general?.tratamiento === "erupcion_down" || (datos as any)?.tratamiento_general?.tratamiento === "intrusion") && (
-        <ArrowDown className="w-4 h-4 absolute -top-4" style={{ color: (datos as any)?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado }} />
+      {(datos?.tratamiento_general?.tratamiento === "erupcion_down" || datos?.tratamiento_general?.tratamiento === "intrusion") && (
+        <ArrowDown className="w-4 h-4 absolute -top-4" style={{ color: datos?.tratamiento_general?.estado === "buen_estado" ? ESTADO_COLORS.buen_estado : ESTADO_COLORS.mal_estado }} />
       )}
 
       {esSuperior ? (

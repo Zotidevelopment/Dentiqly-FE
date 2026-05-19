@@ -103,6 +103,14 @@ export function UsersManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.nombre.trim() || !formData.apellido.trim()) {
+      toast({ variant: "destructive", title: "Error", description: "Nombre y apellido son obligatorios." })
+      return
+    }
+    if (!editingUser && (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(formData.email))) {
+      toast({ variant: "destructive", title: "Error", description: "Ingresá un email válido." })
+      return
+    }
     setSaving(true)
     try {
       if (editingUser) {
@@ -125,12 +133,20 @@ export function UsersManager() {
     }
   }
 
+  const [confirmDelete, setConfirmDelete] = useState<UsuarioClinica | null>(null)
+
   const handleDelete = async (u: UsuarioClinica) => {
-    if (u.id === user?.id) {
+    if (String(u.id) === String(user?.id)) {
       toast({ variant: "destructive", title: "Error", description: "No podés eliminarte a vos mismo." })
       return
     }
-    if (!confirm(`¿Estás seguro de eliminar a ${u.nombre} ${u.apellido}?`)) return
+    setConfirmDelete(u)
+  }
+
+  const handleConfirmDelete = async () => {
+    const u = confirmDelete
+    if (!u) return
+    setConfirmDelete(null)
 
     try {
       await usuariosClinicaApi.eliminar(u.id)
@@ -170,7 +186,7 @@ export function UsersManager() {
   return (
     <div style={pageStyle}>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Equipo
@@ -198,7 +214,7 @@ export function UsersManager() {
       </div>
 
       {/* Controls */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div
           style={{
             flex: 1, display: "flex", alignItems: "center", gap: 10,
@@ -211,7 +227,7 @@ export function UsersManager() {
             type="text"
             placeholder="Buscar por nombre, email o rol..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1) }}
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, flex: 1,
@@ -281,7 +297,7 @@ export function UsersManager() {
                 paginated.map((u, idx) => {
                   const isLast = idx === paginated.length - 1
                   const avatar = getAvatarStyle(u.id)
-                  const isSelf = u.id === user?.id
+                  const isSelf = String(u.id) === String(user?.id)
                   return (
                     <tr
                       key={u.id}
@@ -347,7 +363,7 @@ export function UsersManager() {
                           </button>
                           {!isSelf && (
                             <button
-                              onClick={() => handleDelete(u)}
+                              onClick={(e) => { e.stopPropagation(); handleDelete(u) }}
                               title="Eliminar"
                               style={{
                                 width: 30, height: 30, borderRadius: 7, border: "none",
@@ -408,7 +424,7 @@ export function UsersManager() {
             </div>
 
             <form onSubmit={handleSubmit} style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                   <label style={labelStyle}>Nombre</label>
                   <input
@@ -447,7 +463,7 @@ export function UsersManager() {
 
               <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>Rol</label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                   {ROLES.map((r) => (
                     <label
                       key={r.value}
@@ -510,6 +526,22 @@ export function UsersManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div style={modalOverlay} onClick={() => setConfirmDelete(null)}>
+          <div style={{ ...modalCard, maxWidth: 400, padding: 24 }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: tokens.navy, margin: "0 0 8px 0" }}>Confirmar eliminación</h3>
+            <p style={{ fontSize: 13, color: tokens.grayText, margin: "0 0 20px 0" }}>
+              ¿Estás seguro de eliminar a <strong>{confirmDelete.nombre} {confirmDelete.apellido}</strong>? Esta acción no se puede deshacer.
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <button onClick={() => setConfirmDelete(null)} style={btnSecondary}>Cancelar</button>
+              <button onClick={handleConfirmDelete} style={btnDanger}>Eliminar</button>
+            </div>
           </div>
         </div>
       )}

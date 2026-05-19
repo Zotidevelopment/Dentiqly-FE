@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { patientPortalApi } from "../../api/patient-portal"
 import { Calendar, Clock, User, ArrowRight } from "lucide-react"
-import { format, parseISO, isAfter } from "date-fns"
+import { format, parseISO, isAfter, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
+import { useToast } from "../../hooks/use-toast"
 
 export const MisTurnos: React.FC = () => {
   const [turnos, setTurnos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
   const [filtro, setFiltro] = useState<"todos" | "proximos" | "pasados" | "cancelados">("todos")
 
   useEffect(() => {
@@ -17,6 +19,7 @@ export const MisTurnos: React.FC = () => {
         setTurnos(data)
       } catch (error) {
         console.error("Error al cargar turnos:", error)
+        toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar tus turnos" })
       } finally {
         setLoading(false)
       }
@@ -33,9 +36,9 @@ export const MisTurnos: React.FC = () => {
 
       switch (filtro) {
         case "proximos":
-          return isAfter(fechaTurno, hoy) && turno.estado !== "Cancelado"
+          return (isAfter(fechaTurno, hoy) || isSameDay(fechaTurno, hoy)) && turno.estado !== "Cancelado"
         case "pasados":
-          return !isAfter(fechaTurno, hoy) && turno.estado !== "Cancelado"
+          return !isAfter(fechaTurno, hoy) && !isSameDay(fechaTurno, hoy) && turno.estado !== "Cancelado"
         case "cancelados":
           return turno.estado === "Cancelado"
         default:

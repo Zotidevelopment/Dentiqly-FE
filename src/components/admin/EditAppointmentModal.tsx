@@ -4,6 +4,7 @@ import { Input } from '../ui/Input'
 import { turnosApi, adminApi, recordatoriosApi } from '../../api'
 import type { Turno, Profesional } from '../../types'
 import { Mail } from 'lucide-react'
+import { useToast } from "../../hooks/use-toast"
 
 interface EditAppointmentModalProps {
     appointment: Turno
@@ -12,8 +13,9 @@ interface EditAppointmentModalProps {
 }
 
 export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appointment, onClose, onUpdate }) => {
+    const { toast } = useToast()
     const [formData, setFormData] = useState({
-        fecha: appointment.fecha,
+        fecha: appointment.fecha.split('T')[0],
         hora_inicio: appointment.hora_inicio,
         hora_fin: appointment.hora_fin,
         profesional_id: appointment.profesional_id,
@@ -39,6 +41,10 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (formData.hora_fin <= formData.hora_inicio) {
+            toast({ variant: "destructive", title: "Validación", description: "La hora de fin debe ser posterior a la hora de inicio" })
+            return
+        }
         setLoading(true)
         try {
             await turnosApi.actualizar(appointment.id, formData)
@@ -46,14 +52,14 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
             onClose()
         } catch (error) {
             console.error('Error updating appointment:', error)
-            alert('Error al actualizar el turno')
+            toast({ variant: "destructive", title: "Error", description: "Error al actualizar el turno" })
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
             <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 border border-gray-100">
                 <h3 className="text-2xl font-bold mb-6 text-gray-900">Editar Turno</h3>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -156,9 +162,9 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                                 try {
                                     setSendingReminder(true)
                                     await recordatoriosApi.enviar(appointment.id)
-                                    alert('Recordatorio enviado correctamente')
+                                    toast({ title: "Éxito", description: "Recordatorio enviado correctamente" })
                                 } catch (error: any) {
-                                    alert(error.message || 'Error al enviar recordatorio')
+                                    toast({ variant: "destructive", title: "Error", description: error.message || "Error al enviar recordatorio" })
                                 } finally {
                                     setSendingReminder(false)
                                 }

@@ -7,6 +7,8 @@ import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, Calendar, X, ClipboardList, DollarSign } from "lucide-react"
 import { planesTratamientoApi } from "../../api"
 import type { PlanTratamiento, CrearPlanTratamientoData } from "../../types"
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface TreatmentPlansSectionProps {
   pacienteId: string | number
@@ -19,6 +21,8 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("view")
   const [selectedPlan, setSelectedPlan] = useState<PlanTratamiento | null>(null)
   const [formData, setFormData] = useState<Partial<CrearPlanTratamientoData>>({})
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchPlanes()
@@ -59,15 +63,21 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar este plan de tratamiento?")) {
-      try {
-        await planesTratamientoApi.eliminar(id as any)
-        fetchPlanes()
-      } catch (error) {
-        console.error("Error deleting treatment plan:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este plan de tratamiento?",
+      onConfirm: async () => {
+        try {
+          await planesTratamientoApi.eliminar(id)
+          fetchPlanes()
+        } catch (error) {
+          console.error("Error deleting treatment plan:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +86,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
     // Validación de fechas
     if (formData.fecha_inicio && formData.fecha_fin) {
       if (new Date(formData.fecha_fin) < new Date(formData.fecha_inicio)) {
-        alert("La fecha de fin no puede ser anterior a la fecha de inicio.")
+        toast({ variant: "destructive", title: "Validación", description: "La fecha de fin no puede ser anterior a la fecha de inicio." })
         return
       }
     }
@@ -92,7 +102,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
     } catch (error: any) {
       console.error("Error saving treatment plan:", error)
       const errorMsg = error.response?.data?.errors?.[0]?.msg || error.response?.data?.error || "Error al guardar el plan de tratamiento. Por favor, intente nuevamente."
-      alert(errorMsg)
+      toast({ variant: "destructive", title: "Error", description: errorMsg })
     }
   }
 
@@ -171,6 +181,18 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
             </Card>
           ))}
         </div>
+      )}
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
       )}
 
       {/* Modal */}
@@ -292,7 +314,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                     type="number"
                     step="0.01"
                     value={formData.costo_estimado || ""}
-                    onChange={(e) => setFormData({ ...formData, costo_estimado: Number.parseFloat(e.target.value) })}
+                    onChange={(e) => setFormData({ ...formData, costo_estimado: e.target.value ? Number.parseFloat(e.target.value) : 0 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="0.00"
                   />

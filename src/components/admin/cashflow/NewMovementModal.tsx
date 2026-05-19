@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
@@ -25,8 +25,30 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
         descripcion: ''
     });
 
+    useEffect(() => {
+        if (isOpen) {
+            setFormData({
+                fecha: new Date().toISOString().split('T')[0],
+                monto: '',
+                forma_pago: 'Efectivo',
+                descripcion: ''
+            });
+        }
+    }, [isOpen]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const montoValue = parseFloat(formData.monto);
+        if (isNaN(montoValue) || montoValue <= 0) {
+            toast({
+                title: "Error",
+                description: "El monto debe ser un número mayor a 0",
+                variant: "destructive"
+            });
+            return;
+        }
+
         try {
             setLoading(true);
             await cuentaCorrienteApi.registrarCaja({
@@ -41,6 +63,7 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
                 description: "Movimiento registrado correctamente"
             });
             onSuccess();
+            onClose();
         } catch (error: any) {
             console.error("Error registering movement:", error);
             toast({
