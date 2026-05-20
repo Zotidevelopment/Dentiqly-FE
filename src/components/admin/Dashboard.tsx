@@ -7,9 +7,11 @@ import {
   ClipboardList, Sparkles, UserPlus,
 } from 'lucide-react';
 import { turnosApi, profesionalesApi, serviciosApi, pacientesApi } from '../../api';
+import { configuracionApi } from '../../api/configuracion';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/use-toast';
 import type { Turno } from '../../types';
+import { OnboardingChecklist } from './OnboardingChecklist';
 
 interface DashboardStats {
   totalTurnos: number;
@@ -139,6 +141,13 @@ export const Dashboard: React.FC<{
     turnosDeHoy: []
   });
   const [loading, setLoading] = useState(true);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() =>
+    localStorage.getItem('onboarding_checklist_dismissed') === 'true'
+  );
+  const [clinicConfig, setClinicConfig] = useState<{ hasClinicInfo: boolean; hasSchedule: boolean }>({
+    hasClinicInfo: false,
+    hasSchedule: false,
+  });
 
   const handleCopyLink = () => {
     if (!bookingUrl) return;
@@ -218,7 +227,44 @@ export const Dashboard: React.FC<{
 
   useEffect(() => {
     fetchStats();
+    fetchClinicConfig();
   }, []);
+
+  const fetchClinicConfig = async () => {
+    try {
+      const settings = await configuracionApi.listar();
+      const getValue = (key: string) => {
+        const s = settings.find((s: any) => s.clave === key);
+        return s?.valor;
+      };
+      const clinicAddress = getValue('clinic_address');
+      const clinicPhone = getValue('clinic_phone');
+      const hasClinicInfo = !!(clinicAddress && clinicPhone);
+      const businessHours = getValue('business_hours');
+      let hasSchedule = false;
+      if (businessHours) {
+        try {
+          const hours = typeof businessHours === 'string' ? JSON.parse(businessHours) : businessHours;
+          hasSchedule = Object.values(hours).some((day: any) => day?.activo);
+        } catch { hasSchedule = false; }
+      }
+      setClinicConfig({ hasClinicInfo, hasSchedule });
+    } catch {
+      // silencioso
+    }
+  };
+
+  const handleDismissOnboarding = () => {
+    localStorage.setItem('onboarding_checklist_dismissed', 'true');
+    setOnboardingDismissed(true);
+  };
+
+  const isNewClinic =
+    !onboardingDismissed &&
+    (stats.totalProfesionales === 0 ||
+      stats.totalPacientes === 0 ||
+      !clinicConfig.hasClinicInfo ||
+      !clinicConfig.hasSchedule);
 
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
     try {
@@ -321,10 +367,26 @@ export const Dashboard: React.FC<{
               {getGreeting()}, {user?.nombre || 'Doc'}!
             </h1>
             <p className="text-gray-400 mt-1 text-sm leading-relaxed max-w-xl">
-              Hoy tenés <span className="font-semibold text-[#0B1023]">{stats.turnosHoy} turnos</span> programados.
-              Controlá los pacientes y el rendimiento de tu clínica.
+              {isNewClinic
+                ? 'Bienvenido a Dentiqly. Seguí estos pasos para dejar tu clínica lista.'
+                : <>Hoy tenés <span className="font-semibold text-[#0B1023]">{stats.turnosHoy} turnos</span> programados. Controlá los pacientes y el rendimiento de tu clínica.</>
+              }
             </p>
           </div>
+
+          {/* ═══ ONBOARDING CHECKLIST ═══ */}
+          {isNewClinic && (
+            <OnboardingChecklist
+              totalProfesionales={stats.totalProfesionales}
+              totalServicios={stats.totalServicios}
+              totalPacientes={stats.totalPacientes}
+              hasClinicInfo={clinicConfig.hasClinicInfo}
+              hasSchedule={clinicConfig.hasSchedule}
+              slug={slug}
+              onNavigate={(view) => onNavigate?.(view)}
+              onDismiss={handleDismissOnboarding}
+            />
+          )}
 
           {/* ═══ STAT CARDS — 2×2 GRID ═══ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 stagger-children">
