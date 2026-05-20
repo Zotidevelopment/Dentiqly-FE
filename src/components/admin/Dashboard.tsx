@@ -148,6 +148,7 @@ export const Dashboard: React.FC<{
     hasClinicInfo: false,
     hasSchedule: false,
   });
+  const [clinicConfigLoaded, setClinicConfigLoaded] = useState(false);
 
   const handleCopyLink = () => {
     if (!bookingUrl) return;
@@ -226,7 +227,6 @@ export const Dashboard: React.FC<{
   };
 
   useEffect(() => {
-    localStorage.removeItem('onboarding_checklist_dismissed');
     fetchStats();
     fetchClinicConfig();
   }, []);
@@ -252,6 +252,8 @@ export const Dashboard: React.FC<{
       setClinicConfig({ hasClinicInfo, hasSchedule });
     } catch {
       // silencioso
+    } finally {
+      setClinicConfigLoaded(true);
     }
   };
 
@@ -261,6 +263,8 @@ export const Dashboard: React.FC<{
   };
 
   const isNewClinic =
+    !loading &&
+    clinicConfigLoaded &&
     !onboardingDismissed &&
     (stats.totalProfesionales === 0 ||
       stats.totalPacientes === 0 ||
