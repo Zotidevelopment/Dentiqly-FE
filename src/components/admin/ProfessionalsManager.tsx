@@ -121,16 +121,20 @@ export const ProfessionalsManager: React.FC = () => {
     try {
       if (editingProfessional) {
         await adminApi.profesionales.actualizar(editingProfessional.id, formData)
+        toast({ title: "Éxito", description: "Profesional actualizado correctamente" })
+        resetForm()
+        fetchProfessionals()
       } else {
-        await adminApi.profesionales.crear(formData)
+        const created = await adminApi.profesionales.crear(formData)
+        toast({ title: "Éxito", description: "Profesional creado. Ahora configurá sus horarios." })
+        resetForm()
+        await fetchProfessionals()
+        const newProf = created as any
+        if (newProf?.id) {
+          setSelectedProfessional(newProf)
+          setViewMode('schedule')
+        }
       }
-
-      toast({
-        title: "Éxito",
-        description: editingProfessional ? "Profesional actualizado correctamente" : "Profesional creado correctamente"
-      })
-      resetForm()
-      fetchProfessionals()
     } catch (error: any) {
       console.error("Error saving professional:", error)
       toast({
@@ -640,7 +644,7 @@ export const ProfessionalsManager: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} style={{ padding: 24 }}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label style={labelStyle}>Nombre *</label>
                   <input

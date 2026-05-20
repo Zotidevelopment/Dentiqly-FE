@@ -38,6 +38,7 @@ export const ServicesManager: React.FC = () => {
   })
 
   const [errors, setErrors] = useState<Partial<Record<keyof CrearServicioData, string>>>({})
+  const [durTouched, setDurTouched] = useState(false)
 
   const categorias = [
     'Odontología General',
@@ -149,6 +150,7 @@ export const ServicesManager: React.FC = () => {
       categoria: ''
     })
     setErrors({})
+    setDurTouched(false)
     setEditingService(null)
     setShowForm(false)
   }
@@ -476,9 +478,12 @@ export const ServicesManager: React.FC = () => {
                     <div style={{ position: "relative" }}>
                       <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: tokens.grayMuted }}>$</span>
                       <input
-                        type="number" required step="0.01"
-                        value={formData.precio_base}
-                        onChange={e => handleChange('precio_base', parseFloat(e.target.value) || 0)}
+                        type="text" inputMode="decimal" required
+                        value={formData.precio_base === 0 && focusedField === "precio" ? "" : formData.precio_base}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/[^0-9.]/g, "")
+                          handleChange('precio_base', raw === "" ? 0 : parseFloat(raw))
+                        }}
                         style={{ ...inputStyle, paddingLeft: 22, borderColor: (focusedField === "precio" || errors.precio_base) ? (errors.precio_base ? tokens.red : tokens.blue) : tokens.grayBorder }}
                         onFocus={() => setFocusedField("precio")}
                         onBlur={() => setFocusedField(null)}
@@ -490,12 +495,19 @@ export const ServicesManager: React.FC = () => {
                     <label style={labelStyle}>Duración (min) *</label>
                     <div style={{ position: "relative" }}>
                       <input
-                        type="number" required
-                        value={formData.duracion_estimada}
-                        onChange={e => handleChange('duracion_estimada', parseInt(e.target.value) || 30)}
+                        type="text" inputMode="numeric" required
+                        value={formData.duracion_estimada === 30 && focusedField === "dur" && !durTouched ? "" : formData.duracion_estimada}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/[^0-9]/g, "")
+                          setDurTouched(true)
+                          handleChange('duracion_estimada', raw === "" ? 0 : parseInt(raw))
+                        }}
                         style={{ ...inputStyle, borderColor: (focusedField === "dur" || errors.duracion_estimada) ? (errors.duracion_estimada ? tokens.red : tokens.blue) : tokens.grayBorder }}
                         onFocus={() => setFocusedField("dur")}
-                        onBlur={() => setFocusedField(null)}
+                        onBlur={() => {
+                          setFocusedField(null)
+                          if (formData.duracion_estimada === 0) handleChange('duracion_estimada', 30)
+                        }}
                       />
                     </div>
                     {errors.duracion_estimada && <p style={{ color: tokens.red, fontSize: 11, marginTop: 4 }}>{errors.duracion_estimada}</p>}
