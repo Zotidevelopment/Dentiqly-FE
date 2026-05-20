@@ -127,14 +127,14 @@ export default function CashFlow() {
                       onClick={() => handleOpenModal('Egreso')}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
-                        background: tokens.white, color: tokens.redText,
-                        border: `0.5px solid ${tokens.red}44`, borderRadius: 10, padding: "9px 18px",
-                        fontSize: 13, fontWeight: 500, cursor: "pointer",
+                        background: "#2563FF", color: "#FFFFFF",
+                        border: "none", borderRadius: 10, padding: "9px 18px",
+                        fontSize: 13, fontWeight: 700, cursor: "pointer",
                         fontFamily: "Inter, -apple-system, sans-serif",
-                        transition: "all 0.15s",
+                        transition: "background 0.15s",
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = tokens.redFaint)}
-                      onMouseLeave={e => (e.currentTarget.style.background = tokens.white)}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#1E40AF")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "#2563FF")}
                     >
                       <Minus size={15} />
                       Extraer / Deuda
@@ -143,14 +143,14 @@ export default function CashFlow() {
                       onClick={() => handleOpenModal('Ingreso')}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
-                        background: tokens.blue, color: tokens.white,
+                        background: "#2563FF", color: "#FFFFFF",
                         border: "none", borderRadius: 10, padding: "9px 18px",
                         fontSize: 13, fontWeight: 700, cursor: "pointer",
                         fontFamily: "Inter, -apple-system, sans-serif",
                         transition: "background 0.15s",
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
-                      onMouseLeave={e => (e.currentTarget.style.background = tokens.blue)}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#1E40AF")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "#2563FF")}
                     >
                       <Plus size={15} />
                       Registrar Ingreso
