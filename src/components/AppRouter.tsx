@@ -162,7 +162,7 @@ export const AppRouter: React.FC = () => {
       <Route path="/sobre-nosotros" element={<AboutPage />} />
       
       {/* Booking público por slug de clínica */}
-      <Route path="/booking/:slug" element={<BookingWithSlug />} />
+      <Route path="/:slug" element={<BookingWithSlug />} />
       
       {/* Legacy booking sin slug */}
       <Route path="/reserva" element={<BookingLayout />} />

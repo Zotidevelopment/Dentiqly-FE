@@ -130,7 +130,7 @@ export const Dashboard: React.FC<{
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [hideBanner, setHideBanner] = useState(false);
-  const bookingUrl = slug ? `${window.location.origin}/booking/${slug}` : '';
+  const bookingUrl = slug ? `${window.location.origin}/${slug}` : '';
 
   const [stats, setStats] = useState<DashboardStats>({
     totalTurnos: 0, turnosHoy: 0, totalProfesionales: 0,

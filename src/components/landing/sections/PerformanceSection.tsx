@@ -295,6 +295,7 @@ export const PerformanceSection: React.FC = () => {
 
   return (
     <section
+      id="metricas"
       ref={sectionRef}
       data-navbar-theme="dark"
       className="relative overflow-hidden"
@@ -302,11 +303,11 @@ export const PerformanceSection: React.FC = () => {
     >
       <div
         ref={pinWrapperRef}
-        className="bg-[#0A0F2D] text-white py-24 sm:py-32 border-t border-white/5"
+        className="bg-[#0A0F2D] text-white py-12 sm:py-16 border-t border-white/5"
         style={{ minHeight: "100vh" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
             {/* Left Sidebar */}
             <div className="hidden lg:flex flex-col gap-6 w-48 shrink-0 pt-2 border-l border-white/10 pl-6">
               {tabsData.map((tab, index) => {
@@ -381,7 +382,7 @@ export const PerformanceSection: React.FC = () => {
             {/* Main Content */}
             <div className="flex-1" ref={metricsRef}>
               <div className="perf-metric-animate max-w-3xl">
-                <h2 className="text-2xl sm:text-3xl font-semibold leading-relaxed tracking-[-2px] text-white mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold leading-relaxed tracking-[-1px] text-white mb-4">
                   {current.headline}
                   <span className="text-white/60">
                     {" "}
@@ -398,15 +399,15 @@ export const PerformanceSection: React.FC = () => {
               </div>
 
               {/* Metrics List */}
-              <div className="mt-20 flex flex-col gap-16">
+              <div className="mt-10 flex flex-col gap-8">
                 {current.metrics.map((metric, idx) => (
                   <div
                     key={`${current.key}-${idx}`}
-                    className="perf-metric-animate flex flex-col md:flex-row gap-6 md:gap-16 items-start"
+                    className="perf-metric-animate flex flex-col md:flex-row gap-4 md:gap-10 items-start"
                   >
                     {/* Big Number */}
-                    <div className="w-full md:w-56 shrink-0">
-                      <div className="text-5xl sm:text-6xl font-semibold tracking-[-3px] text-white mb-2">
+                    <div className="w-full md:w-48 shrink-0">
+                      <div className="text-4xl sm:text-5xl font-semibold tracking-[-3px] text-white mb-1">
                         {metric.multiplier}
                       </div>
                       <div className="text-[#0047FF] text-sm font-semibold tracking-wide">
@@ -415,7 +416,7 @@ export const PerformanceSection: React.FC = () => {
                     </div>
 
                     {/* Bars */}
-                    <div className="flex-1 w-full pt-2 flex flex-col gap-5">
+                    <div className="flex-1 w-full pt-1 flex flex-col gap-3">
                       {/* Competition Bar */}
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between text-[10px] font-mono tracking-[-2px] text-white/40 uppercase font-semibold">

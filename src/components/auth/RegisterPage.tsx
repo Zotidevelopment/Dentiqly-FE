@@ -256,7 +256,7 @@ export const RegisterPage: React.FC = () => {
                         />
                       </div>
                       <p className="mt-1.5 text-xs text-[#8A93A8]">
-                        Tus pacientes reservarán en: <br/><span className="font-semibold text-[#2563FF]">dentiqly.com/booking/{formData.web_url || 'tu-centro'}</span>
+                        Tus pacientes reservarán en: <br/><span className="font-semibold text-[#2563FF]">dentiqly.com/{formData.web_url || 'tu-centro'}</span>
                       </p>
                     </div>
                   </div>
