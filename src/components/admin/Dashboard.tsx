@@ -142,7 +142,7 @@ export const Dashboard: React.FC<{
   });
   const [loading, setLoading] = useState(true);
   const [onboardingDismissed, setOnboardingDismissed] = useState(() =>
-    localStorage.getItem('onboarding_checklist_dismissed') === 'true'
+    sessionStorage.getItem('onboarding_checklist_dismissed_session') === 'true'
   );
   const [clinicConfig, setClinicConfig] = useState<{ hasClinicInfo: boolean; hasSchedule: boolean }>({
     hasClinicInfo: false,
@@ -226,6 +226,7 @@ export const Dashboard: React.FC<{
   };
 
   useEffect(() => {
+    localStorage.removeItem('onboarding_checklist_dismissed');
     fetchStats();
     fetchClinicConfig();
   }, []);
@@ -255,7 +256,7 @@ export const Dashboard: React.FC<{
   };
 
   const handleDismissOnboarding = () => {
-    localStorage.setItem('onboarding_checklist_dismissed', 'true');
+    sessionStorage.setItem('onboarding_checklist_dismissed_session', 'true');
     setOnboardingDismissed(true);
   };
 

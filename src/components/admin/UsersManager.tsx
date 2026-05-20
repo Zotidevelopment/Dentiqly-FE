@@ -12,6 +12,11 @@ import {
   Shield,
   Loader2,
   UserPlus,
+  Copy,
+  Check,
+  Key,
+  Eye,
+  EyeOff,
 } from "lucide-react"
 import { usuariosClinicaApi } from "../../api/usuarios-clinica"
 import type { UsuarioClinica } from "../../api/usuarios-clinica"
@@ -69,9 +74,24 @@ export function UsersManager() {
   const [editingUser, setEditingUser] = useState<UsuarioClinica | null>(null)
   const [formData, setFormData] = useState({ nombre: "", apellido: "", email: "", role: "recepcionista" })
   const [saving, setSaving] = useState(false)
+  const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string; nombre: string } | null>(null)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
   const { user } = useAuth()
   const { toast } = useToast()
   const itemsPerPage = 12
+
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+    let pwd = ''
+    for (let i = 0; i < 10; i++) pwd += chars[Math.floor(Math.random() * chars.length)]
+    return pwd
+  }
+
+  const handleCopyCredential = (text: string, field: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
 
   useEffect(() => {
     cargarUsuarios()
@@ -116,11 +136,17 @@ export function UsersManager() {
       if (editingUser) {
         await usuariosClinicaApi.actualizar(editingUser.id, formData)
         toast({ title: "Usuario actualizado", description: `${formData.nombre} ${formData.apellido} fue actualizado.` })
+        setShowModal(false)
       } else {
-        await usuariosClinicaApi.crear(formData)
-        toast({ title: "Usuario creado", description: `Se envió una invitación a ${formData.email} con las credenciales de acceso.` })
+        const tempPassword = generatePassword()
+        await usuariosClinicaApi.crear({ ...formData, password: tempPassword })
+        setShowModal(false)
+        setCreatedCredentials({
+          email: formData.email,
+          password: tempPassword,
+          nombre: `${formData.nombre} ${formData.apellido}`.trim(),
+        })
       }
-      setShowModal(false)
       cargarUsuarios()
     } catch (error: any) {
       toast({
@@ -526,6 +552,93 @@ export function UsersManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Credentials Modal */}
+      {createdCredentials && (
+        <div style={modalOverlay} onClick={() => setCreatedCredentials(null)}>
+          <div style={{ ...modalCard, maxWidth: 460, padding: 0 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: "20px 24px", borderBottom: `1px solid ${tokens.grayBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: tokens.greenFaint, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Key size={18} color={tokens.greenText} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: tokens.navy, margin: 0 }}>Usuario creado</h2>
+                  <p style={{ fontSize: 12, color: tokens.grayMuted, margin: 0 }}>{createdCredentials.nombre}</p>
+                </div>
+              </div>
+              <button onClick={() => setCreatedCredentials(null)} style={{ background: "none", border: "none", cursor: "pointer", color: tokens.grayMuted, padding: 4 }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: "20px 24px" }}>
+              <div style={{ padding: 16, borderRadius: 12, background: tokens.grayBg, border: `1px solid ${tokens.grayBorder}`, marginBottom: 16 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 12px 0" }}>
+                  Credenciales de acceso
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderRadius: 8, background: tokens.white, border: `1px solid ${tokens.grayBorder}` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Mail size={14} color={tokens.grayMuted} />
+                      <div>
+                        <p style={{ fontSize: 10, color: tokens.grayMuted, margin: 0 }}>Email</p>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0, fontFamily: "monospace" }}>{createdCredentials.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleCopyCredential(createdCredentials.email, "email")}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: copiedField === "email" ? tokens.greenText : tokens.grayMuted, padding: 4 }}
+                      title="Copiar email"
+                    >
+                      {copiedField === "email" ? <Check size={16} /> : <Copy size={16} />}
+                    </button>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderRadius: 8, background: tokens.white, border: `1px solid ${tokens.grayBorder}` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Key size={14} color={tokens.grayMuted} />
+                      <div>
+                        <p style={{ fontSize: 10, color: tokens.grayMuted, margin: 0 }}>Contraseña temporal</p>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0, fontFamily: "monospace" }}>{createdCredentials.password}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleCopyCredential(createdCredentials.password, "password")}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: copiedField === "password" ? tokens.greenText : tokens.grayMuted, padding: 4 }}
+                      title="Copiar contraseña"
+                    >
+                      {copiedField === "password" ? <Check size={16} /> : <Copy size={16} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF3C7", border: "1px solid #FDE68A", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>
+                <strong>Importante:</strong> Guardá estas credenciales. La contraseña no se podrá ver de nuevo después de cerrar este diálogo.
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 16 }}>
+                <button
+                  onClick={() => {
+                    const text = `Email: ${createdCredentials.email}\nContraseña: ${createdCredentials.password}`
+                    navigator.clipboard.writeText(text)
+                    handleCopyCredential(text, "all")
+                  }}
+                  style={btnSecondary}
+                >
+                  {copiedField === "all" ? <Check size={14} /> : <Copy size={14} />}
+                  {copiedField === "all" ? "¡Copiado!" : "Copiar todo"}
+                </button>
+                <button onClick={() => setCreatedCredentials(null)} style={btnPrimary}>
+                  Entendido
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

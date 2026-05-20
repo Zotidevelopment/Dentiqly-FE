@@ -30,11 +30,8 @@ export const usuariosClinicaApi = {
     return Array.isArray(res) ? res : (res.usuarios || [])
   },
 
-  crear: async (data: CrearUsuarioClinicaData): Promise<UsuarioClinica> => {
-    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
-    let tempPassword = ''
-    for (let i = 0; i < 10; i++) tempPassword += chars[Math.floor(Math.random() * chars.length)]
-    return apiClient.post<UsuarioClinica>('/usuarios-clinica', { ...data, password: tempPassword })
+  crear: async (data: CrearUsuarioClinicaData & { password: string }): Promise<UsuarioClinica> => {
+    return apiClient.post<UsuarioClinica>('/usuarios-clinica', data)
   },
 
   actualizar: async (id: number, data: ActualizarUsuarioClinicaData): Promise<UsuarioClinica> => {
