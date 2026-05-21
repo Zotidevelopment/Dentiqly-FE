@@ -30,7 +30,7 @@ import { CookiesPage } from './legal/CookiesPage'
 import { AboutPage } from './legal/AboutPage'
 
 // Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth()
   const location = useLocation()
 
@@ -44,6 +44,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role || '')) {
+    const slug = user.clinica?.slug
+    if (slug) {
+      return <Navigate to={`/${slug}/admin`} replace />
+    }
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>
@@ -168,7 +176,7 @@ export const AppRouter: React.FC = () => {
       <Route
         path="/admin/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['superadmin']}>
             <SuperAdminApp />
           </ProtectedRoute>
         }

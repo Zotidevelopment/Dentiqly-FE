@@ -23,6 +23,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import { canAccessView } from '../../config/permissions'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -51,7 +52,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const { user } = useAuth()
 
-  const menuGroups: MenuGroup[] = [
+  const userRole = user?.role
+
+  const allMenuGroups: MenuGroup[] = [
     {
       label: 'General',
       items: [
@@ -89,12 +92,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     }
   ]
 
+  const menuGroups = allMenuGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => canAccessView(userRole, item.id)),
+    }))
+    .filter((group) => group.items.length > 0)
+
   const filterChips = [
     { label: 'Pacientes', view: 'patients' },
     { label: 'Turnos', view: 'calendar' },
     { label: 'Servicios', view: 'services' },
     { label: 'Profesionales', view: 'professionals' },
-  ]
+  ].filter((chip) => canAccessView(userRole, chip.view))
 
   const userInitials = user
     ? `${(user.nombre || '').charAt(0)}${(user.apellido || '').charAt(0)}`.toUpperCase()
