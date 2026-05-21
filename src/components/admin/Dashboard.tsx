@@ -300,7 +300,8 @@ export const Dashboard: React.FC<{
     !loading &&
     clinicConfigLoaded &&
     onboardingExtraLoaded &&
-    !onboardingDismissed;
+    !onboardingDismissed &&
+    user?.role === 'admin';
 
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
     try {
