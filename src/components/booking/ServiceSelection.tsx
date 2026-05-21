@@ -24,7 +24,6 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
   const loadServices = async () => {
     try {
       setLoading(true)
-      setError(null)
       const response = await serviciosApi.listar({ estado: "Activo", solo_con_profesionales: true })
       if (response && response.data) {
         setServices(response.data)
@@ -45,14 +44,6 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="h-24 bg-gray-50 rounded-xl animate-pulse" data-testid="loading-skeleton"></div>
         ))}
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 text-red-500 rounded-xl text-sm font-medium text-center">
-        {error}
       </div>
     )
   }
