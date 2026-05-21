@@ -20,8 +20,9 @@ describe('ServiceSelection', () => {
   })
 
   it('should render loading state initially', () => {
+    vi.mocked(serviciosApi.listar).mockReturnValue(new Promise(() => {}))
     render(<ServiceSelection selectedService={null} onServiceSelect={() => {}} />)
-    expect(screen.getByText('Seleccionar Servicio')).toBeInTheDocument()
+    expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(5)
   })
 
   it('should render services after loading', async () => {

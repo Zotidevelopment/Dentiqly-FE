@@ -8,6 +8,7 @@ export const serviciosApi = {
     search?: string
     categoria?: string
     estado?: string
+    solo_con_profesionales?: boolean
   }): Promise<PaginatedResponse<Servicio>> {
     const queryParams = new URLSearchParams()
     if (params?.page) queryParams.append("page", params.page.toString())
@@ -15,6 +16,7 @@ export const serviciosApi = {
     if (params?.search) queryParams.append("search", params.search)
     if (params?.categoria) queryParams.append("categoria", params.categoria)
     if (params?.estado) queryParams.append("estado", params.estado)
+    if (params?.solo_con_profesionales) queryParams.append("solo_con_profesionales", "true")
 
     const endpoint = `/servicios${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
     const response = await apiClient.get<{ servicios: Servicio[]; pagination: any }>(endpoint)
