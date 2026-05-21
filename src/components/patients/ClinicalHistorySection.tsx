@@ -5,8 +5,9 @@ import { useState, useEffect } from "react"
 import { Card } from "../ui/Card"
 import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, FileText, Calendar, X } from "lucide-react"
-import { historialesClinicosApi } from "../../api"
+import { historialesClinicosApi, profesionalesApi } from "../../api"
 import type { HistorialClinico, CrearHistorialClinicoData } from "../../types"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface ClinicalHistorySectionProps {
   pacienteId: string | number
@@ -19,9 +20,17 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("view")
   const [selectedHistorial, setSelectedHistorial] = useState<HistorialClinico | null>(null)
   const [formData, setFormData] = useState<Partial<CrearHistorialClinicoData>>({})
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const [defaultProfesionalId, setDefaultProfesionalId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchHistoriales()
+    profesionalesApi.listar({ estado: 'Activo', limit: 1 })
+      .then(res => {
+        const profs = res.data || res
+        if (Array.isArray(profs) && profs.length > 0) setDefaultProfesionalId(profs[0].id)
+      })
+      .catch(() => {})
   }, [pacienteId])
 
   const fetchHistoriales = async () => {
@@ -58,24 +67,39 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar este historial clínico?")) {
-      try {
-        await historialesClinicosApi.eliminar(id as any)
-        fetchHistoriales()
-      } catch (error) {
-        console.error("Error deleting clinical history:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este historial clínico?",
+      onConfirm: async () => {
+        try {
+          await historialesClinicosApi.eliminar(id)
+          fetchHistoriales()
+        } catch (error) {
+          console.error("Error deleting clinical history:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      const payload: any = {
+        ...formData,
+        profesional_id: defaultProfesionalId,
+        examen_clinico: formData.examen_fisico || (formData as any).examen_clinico,
+        tratamiento_realizado: formData.tratamiento || (formData as any).tratamiento_realizado,
+      }
+      delete payload.examen_fisico
+      delete payload.tratamiento
+
       if (modalMode === "create") {
-        await historialesClinicosApi.crear(formData as CrearHistorialClinicoData)
+        await historialesClinicosApi.crear(payload)
       } else if (modalMode === "edit" && selectedHistorial) {
-        await historialesClinicosApi.actualizar(selectedHistorial.id, formData)
+        await historialesClinicosApi.actualizar(selectedHistorial.id, payload)
       }
       setShowModal(false)
       fetchHistoriales()
@@ -143,6 +167,18 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
         </div>
       )}
 
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
+      )}
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -190,10 +226,10 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                     <p className="text-sm">{selectedHistorial.antecedentes_familiares}</p>
                   </div>
                 )}
-                {selectedHistorial.examen_fisico && (
+                {(selectedHistorial.examen_fisico || (selectedHistorial as any).examen_clinico) && (
                   <div>
-                    <p className="text-xs text-gray-500">Examen Físico</p>
-                    <p className="text-sm">{selectedHistorial.examen_fisico}</p>
+                    <p className="text-xs text-gray-500">Examen Clínico</p>
+                    <p className="text-sm">{selectedHistorial.examen_fisico || (selectedHistorial as any).examen_clinico}</p>
                   </div>
                 )}
                 {selectedHistorial.diagnostico && (
@@ -202,10 +238,10 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                     <p className="text-sm">{selectedHistorial.diagnostico}</p>
                   </div>
                 )}
-                {selectedHistorial.tratamiento && (
+                {(selectedHistorial.tratamiento || (selectedHistorial as any).tratamiento_realizado) && (
                   <div>
                     <p className="text-xs text-gray-500">Tratamiento</p>
-                    <p className="text-sm">{selectedHistorial.tratamiento}</p>
+                    <p className="text-sm">{selectedHistorial.tratamiento || (selectedHistorial as any).tratamiento_realizado}</p>
                   </div>
                 )}
                 {selectedHistorial.observaciones && (

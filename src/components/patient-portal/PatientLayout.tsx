@@ -14,8 +14,8 @@ export const PatientLayout: React.FC = () => {
     const cargarPerfil = async () => {
       try {
         const perfil = await patientPortalApi.obtenerPerfil()
-        setNombre(perfil.paciente.nombre)
-        setApellido(perfil.paciente.apellido || "")
+        setNombre(perfil.paciente?.nombre || "")
+        setApellido(perfil.paciente?.apellido || "")
       } catch (error) {
         console.error("Error al cargar perfil:", error)
       } finally {

@@ -2,24 +2,27 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { 
-  Calendar, 
-  Trash2, 
-  Plus, 
-  X, 
-  ArrowUpDown, 
-  ChevronLeft, 
+import {
+  Calendar,
+  Trash2,
+  Plus,
+  X,
+  ArrowUpDown,
+  ChevronLeft,
   ChevronRight,
   AlertCircle
 } from "lucide-react"
 import { feriadosApi, type Feriado } from "../../api/feriados"
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 const tokens = sharedTokens
 const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
 export const FeriadosManager: React.FC = () => {
+  const { toast } = useToast()
   const [feriados, setFeriados] = useState<Feriado[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -27,6 +30,7 @@ export const FeriadosManager: React.FC = () => {
   const [saving, setSaving] = useState(false)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
 
   useEffect(() => {
     fetchFeriados()
@@ -54,21 +58,27 @@ export const FeriadosManager: React.FC = () => {
       setFormData({ fecha: "", descripcion: "" })
       fetchFeriados()
     } catch (error: any) {
-      alert(error.message || "Error al crear feriado")
+      toast({ variant: "destructive", title: "Error", description: error.message || "Error al crear feriado" })
     } finally {
       setSaving(false)
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("¿Estás seguro de eliminar este feriado?")) {
-      try {
-        await feriadosApi.eliminar(id)
-        fetchFeriados()
-      } catch (error) {
-        console.error("Error deleting holiday:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar este feriado?",
+      onConfirm: async () => {
+        try {
+          await feriadosApi.eliminar(id)
+          fetchFeriados()
+        } catch (error) {
+          console.error("Error deleting holiday:", error)
+          toast({ variant: "destructive", title: "Error", description: "Error al eliminar el feriado" })
+        }
       }
-    }
+    })
   }
 
   const formatDate = (dateStr: string) => {
@@ -82,7 +92,7 @@ export const FeriadosManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Gestión de Feriados
@@ -91,7 +101,7 @@ export const FeriadosManager: React.FC = () => {
             Administrá los días no laborables para el calendario de turnos
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex flex-wrap gap-2.5">
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -247,6 +257,22 @@ export const FeriadosManager: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => {
+            confirmAction.onConfirm()
+            setConfirmAction(null)
+          }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Eliminar"
+          variant="destructive"
+        />
+      )}
 
       {/* Modal Crear Feriado */}
       {showModal && (

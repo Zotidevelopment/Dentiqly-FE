@@ -7,6 +7,7 @@ import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
 import { Clock, Save, RotateCcw, AlertCircle, Plus, Trash2 } from 'lucide-react'
 import { profesionalesApi } from "../../api/profesionales"
+import { useToast } from "../../hooks/use-toast"
 import type { Profesional, HorariosSemanales, HorarioDia, RangoHorario } from "../../types"
 
 interface ScheduleManagerProps {
@@ -35,6 +36,7 @@ const horariosPorDefecto: HorariosSemanales = {
 }
 
 export const ScheduleManager: React.FC<ScheduleManagerProps> = ({ professional, onScheduleUpdate }) => {
+  const { toast } = useToast()
   const [horarios, setHorarios] = useState<HorariosSemanales>(horariosPorDefecto)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -222,10 +224,10 @@ export const ScheduleManager: React.FC<ScheduleManagerProps> = ({ professional, 
       setErrors({})
       onScheduleUpdate?.(horarios)
 
-      alert("Horarios actualizados correctamente")
+      toast({ title: "Éxito", description: "Horarios actualizados correctamente" })
     } catch (error) {
       console.error("Error saving schedules:", error)
-      alert("Error al guardar los horarios. Intente nuevamente.")
+      toast({ variant: "destructive", title: "Error", description: "Error al guardar los horarios. Intente nuevamente." })
     } finally {
       setSaving(false)
     }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit, Trash2, Briefcase, Clock, DollarSign, Tag, X, ArrowUpDown, Layers } from 'lucide-react'
 import { adminApi } from '../../api/admin'
+import { useToast } from '../../hooks/use-toast'
 import { ConfirmationModal } from '../ui/ConfirmationModal'
 import type { Servicio, CrearServicioData } from '../../types'
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
@@ -16,6 +17,7 @@ const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
 export const ServicesManager: React.FC = () => {
+  const { toast } = useToast()
   const [services, setServices] = useState<Servicio[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -36,6 +38,7 @@ export const ServicesManager: React.FC = () => {
   })
 
   const [errors, setErrors] = useState<Partial<Record<keyof CrearServicioData, string>>>({})
+  const [durTouched, setDurTouched] = useState(false)
 
   const categorias = [
     'Odontología General',
@@ -134,7 +137,7 @@ export const ServicesManager: React.FC = () => {
       setConfirmDelete({ isOpen: false, id: null })
     } catch (error) {
       console.error('Error deleting service:', error)
-      alert('Error al eliminar el servicio')
+      toast({ variant: "destructive", title: "Error", description: "Error al eliminar el servicio" })
     }
   }
 
@@ -147,6 +150,7 @@ export const ServicesManager: React.FC = () => {
       categoria: ''
     })
     setErrors({})
+    setDurTouched(false)
     setEditingService(null)
     setShowForm(false)
   }
@@ -161,7 +165,7 @@ export const ServicesManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Gestión de Servicios
@@ -189,7 +193,7 @@ export const ServicesManager: React.FC = () => {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -327,7 +331,7 @@ export const ServicesManager: React.FC = () => {
                       <td style={{ padding: "11px 16px" }}>
                         <div style={{ fontSize: 13.5, fontWeight: 700, color: tokens.navy }}>
                           <span style={{ fontSize: 11, fontWeight: 600, color: tokens.grayMuted, marginRight: 4 }}>$</span>
-                          {parseFloat(service.precio_base as any || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                          {parseFloat(String(service.precio_base || 0)).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                         </div>
                       </td>
 
@@ -468,15 +472,18 @@ export const ServicesManager: React.FC = () => {
                   />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label style={labelStyle}>Precio Base *</label>
                     <div style={{ position: "relative" }}>
                       <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: tokens.grayMuted }}>$</span>
                       <input
-                        type="number" required step="0.01"
-                        value={formData.precio_base}
-                        onChange={e => handleChange('precio_base', parseFloat(e.target.value) || 0)}
+                        type="text" inputMode="decimal" required
+                        value={formData.precio_base === 0 && focusedField === "precio" ? "" : formData.precio_base}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/[^0-9.]/g, "")
+                          handleChange('precio_base', raw === "" ? 0 : parseFloat(raw))
+                        }}
                         style={{ ...inputStyle, paddingLeft: 22, borderColor: (focusedField === "precio" || errors.precio_base) ? (errors.precio_base ? tokens.red : tokens.blue) : tokens.grayBorder }}
                         onFocus={() => setFocusedField("precio")}
                         onBlur={() => setFocusedField(null)}
@@ -488,12 +495,19 @@ export const ServicesManager: React.FC = () => {
                     <label style={labelStyle}>Duración (min) *</label>
                     <div style={{ position: "relative" }}>
                       <input
-                        type="number" required
-                        value={formData.duracion_estimada}
-                        onChange={e => handleChange('duracion_estimada', parseInt(e.target.value) || 30)}
+                        type="text" inputMode="numeric" required
+                        value={formData.duracion_estimada === 30 && focusedField === "dur" && !durTouched ? "" : formData.duracion_estimada}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/[^0-9]/g, "")
+                          setDurTouched(true)
+                          handleChange('duracion_estimada', raw === "" ? 0 : parseInt(raw))
+                        }}
                         style={{ ...inputStyle, borderColor: (focusedField === "dur" || errors.duracion_estimada) ? (errors.duracion_estimada ? tokens.red : tokens.blue) : tokens.grayBorder }}
                         onFocus={() => setFocusedField("dur")}
-                        onBlur={() => setFocusedField(null)}
+                        onBlur={() => {
+                          setFocusedField(null)
+                          if (formData.duracion_estimada === 0) handleChange('duracion_estimada', 30)
+                        }}
                       />
                     </div>
                     {errors.duracion_estimada && <p style={{ color: tokens.red, fontSize: 11, marginTop: 4 }}>{errors.duracion_estimada}</p>}

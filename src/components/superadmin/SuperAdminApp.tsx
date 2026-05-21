@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { apiClient } from '../../lib/api-client';
 import { useToast } from '../../hooks/use-toast';
+import { ConfirmationModal } from '../ui/ConfirmationModal';
 
 interface ClinicStats {
   pacientes: number;
@@ -274,6 +275,7 @@ export const SuperAdminApp: React.FC = () => {
   const [view, setView] = useState<View>('dashboard');
   const [selectedClinicId, setSelectedClinicId] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState<string>('clinics');
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null);
 
   const fetchClinics = async () => {
     try {
@@ -292,20 +294,26 @@ export const SuperAdminApp: React.FC = () => {
     fetchClinics();
   }, []);
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
-    if (!window.confirm(`¿Estás seguro de cambiar el estado a ${statusConfig[newStatus]?.label || newStatus}?`)) return;
-
-    setUpdating(id);
-    try {
-      await apiClient.put(`/superadmin/clinics/${id}/status`, { status: newStatus });
-      toast({ title: 'Estado actualizado', description: 'La clínica ha sido actualizada correctamente.' });
-      fetchClinics();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive' });
-    } finally {
-      setUpdating(null);
-    }
+  const handleUpdateStatus = (id: string, newStatus: string) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar cambio de estado",
+      message: `¿Estás seguro de cambiar el estado a ${statusConfig[newStatus]?.label || newStatus}?`,
+      onConfirm: async () => {
+        setConfirmAction(null);
+        setUpdating(id);
+        try {
+          await apiClient.put(`/superadmin/clinics/${id}/status`, { status: newStatus });
+          toast({ title: 'Estado actualizado', description: 'La clínica ha sido actualizada correctamente.' });
+          fetchClinics();
+        } catch (error) {
+          console.error('Error updating status:', error);
+          toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive' });
+        } finally {
+          setUpdating(null);
+        }
+      }
+    });
   };
 
   const handleViewDetail = (clinicId: string) => {
@@ -313,7 +321,7 @@ export const SuperAdminApp: React.FC = () => {
     setView('detail');
   };
 
-  const isSuperAdmin = !((user as any)?.clinica_id || user?.clinicaId) || user?.email === 'riostiziano6@gmail.com';
+  const isSuperAdmin = !(user?.clinica_id || user?.clinicaId) || user?.role === 'superadmin';
 
   if (!isSuperAdmin) {
     return (
@@ -394,6 +402,18 @@ export const SuperAdminApp: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
+      )}
 
       {/* Main Content */}
       <div className="flex-1 ml-64">
@@ -577,7 +597,7 @@ const ConfigSection: React.FC = () => {
   useEffect(() => {
     const stored = localStorage.getItem('dentiqly_superadmin_config');
     if (stored) {
-      try { setConfig(JSON.parse(stored)); } catch {}
+      try { setConfig(JSON.parse(stored)); } catch { localStorage.removeItem('dentiqly_superadmin_config'); }
     }
   }, []);
 

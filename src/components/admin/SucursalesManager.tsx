@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { sucursalesApi } from '../../api';
 import { useToast } from '../../hooks/use-toast';
+import { ConfirmationModal } from '../ui/ConfirmationModal';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
 interface Sucursal {
@@ -38,6 +39,7 @@ export const SucursalesManager: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -74,15 +76,22 @@ export const SucursalesManager: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('¿Estás seguro de que deseas eliminar esta sucursal?')) return;
-    try {
-      await sucursalesApi.eliminar(id);
-      toast({ title: "Éxito", description: "Sucursal eliminada correctamente." });
-      fetchSucursales();
-    } catch (error) {
-      toast({ title: "Error", description: "No se pudo eliminar la sucursal.", variant: "destructive" });
-    }
+  const handleDelete = (id: string) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de que deseas eliminar esta sucursal?",
+      onConfirm: async () => {
+        try {
+          await sucursalesApi.eliminar(id);
+          toast({ title: "Éxito", description: "Sucursal eliminada correctamente." });
+          fetchSucursales();
+        } catch (error) {
+          toast({ title: "Error", description: "No se pudo eliminar la sucursal.", variant: "destructive" });
+        }
+        setConfirmAction(null);
+      }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,7 +121,7 @@ export const SucursalesManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Gestión de Sucursales
@@ -140,7 +149,7 @@ export const SucursalesManager: React.FC = () => {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -228,6 +237,18 @@ export const SucursalesManager: React.FC = () => {
         )}
       </div>
 
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
+      )}
+
       {/* Modal */}
       {showModal && (
         <div style={{
@@ -287,7 +308,7 @@ export const SucursalesManager: React.FC = () => {
                     onBlur={() => setFocusedField(null)}
                   />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label style={labelStyle}>Teléfono</label>
                     <input

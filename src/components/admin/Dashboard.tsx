@@ -6,10 +6,14 @@ import {
   TrendingUp, TrendingDown, ChevronLeft, ChevronRight,
   ClipboardList, Sparkles, UserPlus,
 } from 'lucide-react';
-import { turnosApi, profesionalesApi, serviciosApi, pacientesApi } from '../../api';
+import { turnosApi, profesionalesApi, serviciosApi, pacientesApi, sucursalesApi, obrasSocialesApi } from '../../api';
+import { configuracionApi } from '../../api/configuracion';
+import { liquidacionesApi } from '../../api/liquidaciones';
+import { cuentaCorrienteApi } from '../../api/cuenta-corriente';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/use-toast';
 import type { Turno } from '../../types';
+import { OnboardingChecklist } from './OnboardingChecklist';
 
 interface DashboardStats {
   totalTurnos: number;
@@ -130,7 +134,7 @@ export const Dashboard: React.FC<{
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [hideBanner, setHideBanner] = useState(false);
-  const bookingUrl = slug ? `${window.location.origin}/booking/${slug}` : '';
+  const bookingUrl = slug ? `${window.location.origin}/${slug}` : '';
 
   const [stats, setStats] = useState<DashboardStats>({
     totalTurnos: 0, turnosHoy: 0, totalProfesionales: 0,
@@ -139,6 +143,22 @@ export const Dashboard: React.FC<{
     turnosDeHoy: []
   });
   const [loading, setLoading] = useState(true);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() =>
+    sessionStorage.getItem('onboarding_checklist_dismissed_session') === 'true'
+  );
+  const [clinicConfig, setClinicConfig] = useState<{ hasClinicInfo: boolean; hasSchedule: boolean }>({
+    hasClinicInfo: false,
+    hasSchedule: false,
+  });
+  const [clinicConfigLoaded, setClinicConfigLoaded] = useState(false);
+  const [onboardingExtra, setOnboardingExtra] = useState({
+    hasSucursales: false,
+    hasObrasSociales: false,
+    hasLiquidaciones: false,
+    hasCashflowIngresos: false,
+    hasCashflowEgresos: false,
+  });
+  const [onboardingExtraLoaded, setOnboardingExtraLoaded] = useState(false);
 
   const handleCopyLink = () => {
     if (!bookingUrl) return;
@@ -216,9 +236,72 @@ export const Dashboard: React.FC<{
     }
   };
 
+  const fetchOnboardingExtra = async () => {
+    try {
+      const [sucursales, obrasSociales, liquidaciones, flujoCaja] = await Promise.all([
+        sucursalesApi.listar().catch(() => []),
+        obrasSocialesApi.listar().catch(() => []),
+        liquidacionesApi.listar({ limit: 1 }).catch(() => ({ data: [] })),
+        cuentaCorrienteApi.getFlujoCaja().catch(() => ({ movimientos: [] })),
+      ]);
+      const movimientos = flujoCaja?.movimientos || [];
+      setOnboardingExtra({
+        hasSucursales: Array.isArray(sucursales) && sucursales.length > 0,
+        hasObrasSociales: Array.isArray(obrasSociales) && obrasSociales.length > 0,
+        hasLiquidaciones: (liquidaciones?.data?.length || 0) > 0,
+        hasCashflowIngresos: movimientos.some((m: any) => m.tipo === 'Ingreso'),
+        hasCashflowEgresos: movimientos.some((m: any) => m.tipo === 'Egreso'),
+      });
+    } catch {
+      // silent
+    } finally {
+      setOnboardingExtraLoaded(true);
+    }
+  };
+
   useEffect(() => {
     fetchStats();
+    fetchClinicConfig();
+    fetchOnboardingExtra();
   }, []);
+
+  const fetchClinicConfig = async () => {
+    try {
+      const settings = await configuracionApi.listar();
+      const getValue = (key: string) => {
+        const s = settings.find((s: any) => s.clave === key);
+        return s?.valor;
+      };
+      const clinicAddress = getValue('clinic_address');
+      const clinicPhone = getValue('clinic_phone');
+      const hasClinicInfo = !!(clinicAddress && clinicPhone);
+      const businessHours = getValue('business_hours');
+      let hasSchedule = false;
+      if (businessHours) {
+        try {
+          const hours = typeof businessHours === 'string' ? JSON.parse(businessHours) : businessHours;
+          hasSchedule = Object.values(hours).some((day: any) => day?.activo);
+        } catch { hasSchedule = false; }
+      }
+      setClinicConfig({ hasClinicInfo, hasSchedule });
+    } catch {
+      // silencioso
+    } finally {
+      setClinicConfigLoaded(true);
+    }
+  };
+
+  const handleDismissOnboarding = () => {
+    sessionStorage.setItem('onboarding_checklist_dismissed_session', 'true');
+    setOnboardingDismissed(true);
+  };
+
+  const showOnboarding =
+    !loading &&
+    clinicConfigLoaded &&
+    onboardingExtraLoaded &&
+    !onboardingDismissed &&
+    user?.role === 'admin';
 
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
     try {
@@ -321,10 +404,31 @@ export const Dashboard: React.FC<{
               {getGreeting()}, {user?.nombre || 'Doc'}!
             </h1>
             <p className="text-gray-400 mt-1 text-sm leading-relaxed max-w-xl">
-              Hoy tenés <span className="font-semibold text-[#0B1023]">{stats.turnosHoy} turnos</span> programados.
-              Controlá los pacientes y el rendimiento de tu clínica.
+              {showOnboarding
+                ? 'Bienvenido a Dentiqly. Seguí estos pasos para dejar tu clínica lista.'
+                : <>Hoy tenés <span className="font-semibold text-[#0B1023]">{stats.turnosHoy} turnos</span> programados. Controlá los pacientes y el rendimiento de tu clínica.</>
+              }
             </p>
           </div>
+
+          {/* ═══ ONBOARDING CHECKLIST ═══ */}
+          {showOnboarding && (
+            <OnboardingChecklist
+              totalProfesionales={stats.totalProfesionales}
+              totalServicios={stats.totalServicios}
+              totalPacientes={stats.totalPacientes}
+              hasClinicInfo={clinicConfig.hasClinicInfo}
+              hasSchedule={clinicConfig.hasSchedule}
+              hasSucursales={onboardingExtra.hasSucursales}
+              hasObrasSociales={onboardingExtra.hasObrasSociales}
+              hasLiquidaciones={onboardingExtra.hasLiquidaciones}
+              hasCashflowIngresos={onboardingExtra.hasCashflowIngresos}
+              hasCashflowEgresos={onboardingExtra.hasCashflowEgresos}
+              slug={slug}
+              onNavigate={(view) => onNavigate?.(view)}
+              onDismiss={handleDismissOnboarding}
+            />
+          )}
 
           {/* ═══ STAT CARDS — 2×2 GRID ═══ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 stagger-children">

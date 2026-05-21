@@ -23,6 +23,8 @@ import {
   MailWarning
 } from 'lucide-react'
 import { turnosApi, recordatoriosApi } from '../../api'
+import { useToast } from '../../hooks/use-toast'
+import { ConfirmationModal } from '../ui/ConfirmationModal'
 import type { Turno } from '../../types'
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
@@ -32,6 +34,8 @@ const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
 export const RemindersView: React.FC = () => {
+  const { toast } = useToast()
+  const [confirmSendAll, setConfirmSendAll] = useState(false)
   const [selectedDate, setSelectedDate] = useState(() => {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -80,6 +84,7 @@ export const RemindersView: React.FC = () => {
       setTemplateLoaded(true)
     } catch (error) {
       console.error('Error loading template:', error)
+      toast({ variant: "destructive", title: "Error", description: "No se pudo cargar el template de recordatorio" })
       setTemplateLoaded(true)
     }
   }
@@ -99,6 +104,7 @@ export const RemindersView: React.FC = () => {
       setTurnos(turnosFecha)
     } catch (error) {
       console.error('Error fetching turnos:', error)
+      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los turnos" })
     } finally {
       setLoading(false)
     }
@@ -116,6 +122,7 @@ export const RemindersView: React.FC = () => {
       setSentIds((prev) => new Set(prev).add(turnoId))
     } catch (error) {
       console.error('Error sending reminder:', error)
+      toast({ variant: "destructive", title: "Error", description: "Error al enviar el recordatorio" })
       setErrorIds((prev) => new Set(prev).add(turnoId))
     } finally {
       setSendingId(null)
@@ -123,7 +130,6 @@ export const RemindersView: React.FC = () => {
   }
 
   const handleSendAll = async () => {
-    if (!window.confirm(`¿Enviar recordatorio a todos los pacientes con turno el ${formatDateStr(selectedDate)}?`)) return
     try {
       setSendingAll(true)
       const result = await recordatoriosApi.enviarMasivo(selectedDate)
@@ -132,9 +138,10 @@ export const RemindersView: React.FC = () => {
       setSentIds(allIds)
     } catch (error) {
       console.error('Error:', error)
-      alert('Error al enviar recordatorios masivos')
+      toast({ variant: "destructive", title: "Error", description: "Error al enviar recordatorios masivos" })
     } finally {
       setSendingAll(false)
+      setConfirmSendAll(false)
     }
   }
 
@@ -143,9 +150,10 @@ export const RemindersView: React.FC = () => {
       setSavingTemplate(true)
       await recordatoriosApi.guardarTemplate(templateText)
       setSavedTemplate(templateText)
-      alert('Mensaje guardado correctamente')
+      toast({ title: "Éxito", description: "Mensaje guardado correctamente" })
     } catch (error) {
       console.error('Error:', error)
+      toast({ variant: "destructive", title: "Error", description: "Error al guardar el template" })
     } finally {
       setSavingTemplate(false)
     }
@@ -197,13 +205,12 @@ export const RemindersView: React.FC = () => {
   const pageStyle: React.CSSProperties = {
     ...pageWrapper,
     background: tokens.grayBg,
-    padding: "28px 32px",
   }
 
   return (
     <div style={pageStyle}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Recordatorios
@@ -212,7 +219,7 @@ export const RemindersView: React.FC = () => {
             Automatizá el envío de emails de recordatorio para minimizar el ausentismo
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex flex-wrap gap-2.5">
           <button
             onClick={() => setShowTemplateEditor(!showTemplateEditor)}
             style={{
@@ -230,7 +237,7 @@ export const RemindersView: React.FC = () => {
             Configurar Mensaje
           </button>
           <button
-            onClick={handleSendAll}
+            onClick={() => setConfirmSendAll(true)}
             disabled={sendingAll || turnosWithEmail.length === 0}
             style={{
               display: "flex", alignItems: "center", gap: 7,
@@ -262,7 +269,7 @@ export const RemindersView: React.FC = () => {
             </h3>
             <button onClick={() => setShowTemplateEditor(false)} style={{ border: "none", background: "transparent", cursor: "pointer", color: tokens.grayMuted }}><X size={18} /></button>
           </div>
-          <div style={{ display: "flex", gap: 20 }}>
+          <div className="flex flex-col sm:flex-row gap-4">
             <div style={{ flex: 1 }}>
               <textarea
                 value={templateText}
@@ -274,12 +281,12 @@ export const RemindersView: React.FC = () => {
                   fontFamily: "Inter, -apple-system, sans-serif", outline: "none", resize: "none"
                 }}
               />
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+              <div className="flex flex-wrap justify-end gap-2.5 mt-3">
                 <button onClick={() => handlePreview()} style={{ padding: "7px 14px", borderRadius: 8, border: `0.5px solid ${tokens.grayBorder}`, background: tokens.white, fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Eye size={14} /> Vista Previa</button>
                 <button onClick={handleSaveTemplate} disabled={savingTemplate} style={{ padding: "7px 14px", borderRadius: 8, border: "none", background: tokens.blue, color: tokens.white, fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }} onMouseEnter={e => { if(!savingTemplate) e.currentTarget.style.background = tokens.blueHover }} onMouseLeave={e => { if(!savingTemplate) e.currentTarget.style.background = tokens.blue }}><Save size={14} /> {savingTemplate ? 'Guardando...' : 'Guardar Mensaje'}</button>
               </div>
             </div>
-            <div style={{ width: 220, background: tokens.grayBg, borderRadius: 12, padding: 16 }}>
+            <div className="sm:w-[220px] w-full" style={{ background: tokens.grayBg, borderRadius: 12, padding: 16 }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: tokens.grayMuted, textTransform: "uppercase", marginBottom: 8, letterSpacing: 0.4 }}>Variables</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                 {['nombre', 'apellido', 'fecha', 'hora_inicio', 'profesional', 'servicio'].map(v => (
@@ -292,7 +299,7 @@ export const RemindersView: React.FC = () => {
       )}
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 24, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
           <div style={{
             flex: 1, display: "flex", alignItems: "center", gap: 10,
             background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -311,7 +318,7 @@ export const RemindersView: React.FC = () => {
               }}
             />
           </div>
-          
+
           <div style={{ display: "flex", alignItems: "center", gap: 3, background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "3px" }}>
             <button onClick={() => navigateDate('prev')} style={{ width: 34, height: 34, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: tokens.grayMuted }} onMouseEnter={e => e.currentTarget.style.background = tokens.grayBg} onMouseLeave={e => e.currentTarget.style.background = "transparent"}><ChevronLeft size={16} /></button>
             <div style={{ position: "relative", padding: "0 8px" }}>
@@ -488,6 +495,14 @@ export const RemindersView: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={confirmSendAll}
+        onClose={() => setConfirmSendAll(false)}
+        onConfirm={handleSendAll}
+        title="Enviar recordatorios"
+        message={`¿Enviar recordatorio a todos los pacientes con turno el ${formatDateStr(selectedDate)}?`}
+      />
 
       {/* Preview Modal */}
       {showPreview && (

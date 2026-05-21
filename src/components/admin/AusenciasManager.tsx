@@ -1,33 +1,37 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { 
-  CalendarOff, 
-  Plus, 
-  Trash2, 
-  User, 
-  X, 
-  Search, 
-  ArrowUpDown, 
-  Clock, 
-  Calendar, 
-  RefreshCcw 
+import {
+  CalendarOff,
+  Plus,
+  Trash2,
+  User,
+  X,
+  Search,
+  ArrowUpDown,
+  Clock,
+  Calendar,
+  RefreshCcw
 } from 'lucide-react';
 import { ausenciasApi, Ausencia } from '../../api/ausencias';
 import { profesionalesApi } from '../../api/profesionales';
 import type { Profesional } from '../../types';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 const tokens = sharedTokens
 const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
 export const AusenciasManager: React.FC = () => {
+  const { toast } = useToast()
   const [ausencias, setAusencias] = useState<Ausencia[]>([]);
   const [profesionales, setProfesionales] = useState<Profesional[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null);
 
   // Form state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,27 +61,34 @@ export const AusenciasManager: React.FC = () => {
       setProfesionales(profesionalesData.data || []);
     } catch (err) {
       console.error('Error loading data:', err);
+      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los datos de ausencias" });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('¿Está seguro de eliminar este registro de ausencia/vacaciones?')) return;
-    
-    try {
-      await ausenciasApi.eliminar(id);
-      setAusencias(ausencias.filter(a => a.id !== id));
-    } catch (err) {
-      console.error('Error al eliminar:', err);
-    }
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Está seguro de eliminar este registro de ausencia/vacaciones?",
+      onConfirm: async () => {
+        try {
+          await ausenciasApi.eliminar(id);
+          setAusencias(ausencias.filter(a => a.id !== id));
+        } catch (err) {
+          console.error('Error al eliminar:', err);
+          toast({ variant: "destructive", title: "Error", description: "Error al eliminar la ausencia" });
+        }
+      }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (!formData.profesional_id || !formData.fecha_inicio || !formData.fecha_fin) {
-        alert('Por favor complete todos los campos obligatorios');
+        toast({ variant: "destructive", title: "Validación", description: "Por favor complete todos los campos obligatorios" });
         return;
       }
 
@@ -97,7 +108,7 @@ export const AusenciasManager: React.FC = () => {
       fetchData();
     } catch (err) {
       console.error('Error al crear:', err);
-      alert('Error al crear el registro de ausencia');
+      toast({ variant: "destructive", title: "Error", description: "Error al crear el registro de ausencia" });
     }
   };
 
@@ -111,7 +122,7 @@ export const AusenciasManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Ausencias y Vacaciones
@@ -139,7 +150,7 @@ export const AusenciasManager: React.FC = () => {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -320,6 +331,22 @@ export const AusenciasManager: React.FC = () => {
         </div>
       </div>
 
+      {/* Confirmation Modal */}
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => {
+            confirmAction.onConfirm()
+            setConfirmAction(null)
+          }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Eliminar"
+          variant="destructive"
+        />
+      )}
+
       {/* Modal Crear Ausencia */}
       {isModalOpen && (
         <div style={{
@@ -374,7 +401,7 @@ export const AusenciasManager: React.FC = () => {
                   </select>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label style={labelStyle}>Desde Fecha *</label>
                     <input
@@ -400,7 +427,7 @@ export const AusenciasManager: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label style={labelStyle}>Hora Inicio (Opcional)</label>
                     <input

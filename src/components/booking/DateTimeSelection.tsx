@@ -6,6 +6,7 @@ import type { Profesional, Servicio } from "../../types"
 import { profesionalesApi } from "../../api/profesionales"
 import { feriadosApi } from "../../api/feriados"
 import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from "lucide-react"
+import { useToast } from "../../hooks/use-toast"
 
 interface DateTimeSelectionProps {
   selectedService: Servicio | null
@@ -24,6 +25,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   mesActualBloqueado = false,
   isAdmin = false,
 }) => {
+  const { toast } = useToast()
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [availableSlots, setAvailableSlots] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -40,6 +42,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         setHolidays(holidayDates)
       } catch (e) {
         console.error('Error loading holidays:', e)
+        toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los feriados" })
       }
     }
     loadHolidays()
@@ -53,6 +56,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         if (response.horarios) setProfessionalSchedule(response.horarios)
       } catch (error) {
         console.error('Error loading schedule:', error)
+        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar el horario del profesional" })
       }
     }
     loadProfessionalSchedule()
@@ -122,8 +126,8 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
           </button>
         </div>
         <div className="grid grid-cols-7 gap-1">
-          {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(d => (
-            <div key={d} className="text-center text-[10px] font-bold text-gray-400 py-1">{d}</div>
+          {['D', 'L', 'Ma', 'Mi', 'J', 'V', 'S'].map((d, idx) => (
+            <div key={idx} className="text-center text-[10px] font-bold text-gray-400 py-1">{d}</div>
           ))}
           {days.map((day, i) => {
             if (!day) return <div key={`empty-${i}`} />

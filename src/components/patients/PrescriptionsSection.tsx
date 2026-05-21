@@ -5,8 +5,9 @@ import { useState, useEffect } from "react"
 import { Card } from "../ui/Card"
 import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, Calendar, X, Pill } from "lucide-react"
-import { prescripcionesApi } from "../../api"
+import { prescripcionesApi, profesionalesApi } from "../../api"
 import type { Prescripcion, CrearPrescripcionData } from "../../types"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface PrescriptionsSectionProps {
   pacienteId: string | number
@@ -19,9 +20,17 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("view")
   const [selectedPrescripcion, setSelectedPrescripcion] = useState<Prescripcion | null>(null)
   const [formData, setFormData] = useState<Partial<CrearPrescripcionData>>({})
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const [defaultProfesionalId, setDefaultProfesionalId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchPrescripciones()
+    profesionalesApi.listar({ estado: 'Activo', limit: 1 })
+      .then(res => {
+        const profs = res.data || res
+        if (Array.isArray(profs) && profs.length > 0) setDefaultProfesionalId(profs[0].id)
+      })
+      .catch(() => {})
   }, [pacienteId])
 
   const fetchPrescripciones = async () => {
@@ -47,7 +56,14 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
 
   const handleEdit = (prescripcion: Prescripcion) => {
     setSelectedPrescripcion(prescripcion)
-    setFormData(prescripcion)
+    const med = ((prescripcion as any).medicamentos || [])[0] || {}
+    setFormData({
+      ...prescripcion,
+      medicamento: med.medicamento || '',
+      dosis: med.dosis || '',
+      frecuencia: med.frecuencia || '',
+      duracion: med.duracion || '',
+    })
     setModalMode("edit")
     setShowModal(true)
   }
@@ -58,24 +74,43 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
     setShowModal(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("¿Estás seguro de eliminar esta prescripción?")) {
-      try {
-        await prescripcionesApi.eliminar(id as any)
-        fetchPrescripciones()
-      } catch (error) {
-        console.error("Error deleting prescription:", error)
+  const handleDelete = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Confirmar eliminación",
+      message: "¿Estás seguro de eliminar esta prescripción?",
+      onConfirm: async () => {
+        try {
+          await prescripcionesApi.eliminar(id)
+          fetchPrescripciones()
+        } catch (error) {
+          console.error("Error deleting prescription:", error)
+        }
+        setConfirmAction(null)
       }
-    }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      const payload: any = {
+        paciente_id: formData.paciente_id,
+        profesional_id: defaultProfesionalId,
+        fecha: formData.fecha,
+        medicamentos: [{
+          medicamento: formData.medicamento,
+          dosis: formData.dosis,
+          frecuencia: formData.frecuencia,
+          duracion: formData.duracion,
+        }],
+        indicaciones: formData.indicaciones,
+      }
+
       if (modalMode === "create") {
-        await prescripcionesApi.crear(formData as CrearPrescripcionData)
+        await prescripcionesApi.crear(payload)
       } else if (modalMode === "edit" && selectedPrescripcion) {
-        await prescripcionesApi.actualizar(selectedPrescripcion.id, formData)
+        await prescripcionesApi.actualizar(selectedPrescripcion.id, payload)
       }
       setShowModal(false)
       fetchPrescripciones()
@@ -118,18 +153,16 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
                       {new Date(prescripcion.fecha).toLocaleDateString("es-ES")}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">{prescripcion.medicamento}</p>
-                  <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
-                    <div>
-                      <span className="font-medium">Dosis:</span> {prescripcion.dosis}
+                  {((prescripcion as any).medicamentos || []).map((med: any, idx: number) => (
+                    <div key={idx} className="mb-1">
+                      <p className="text-sm font-semibold text-gray-900">{med.medicamento}</p>
+                      <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
+                        <div><span className="font-medium">Dosis:</span> {med.dosis}</div>
+                        <div><span className="font-medium">Frecuencia:</span> {med.frecuencia}</div>
+                        <div><span className="font-medium">Duración:</span> {med.duracion}</div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-medium">Frecuencia:</span> {prescripcion.frecuencia}
-                    </div>
-                    <div>
-                      <span className="font-medium">Duración:</span> {prescripcion.duracion}
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => handleEdit(prescripcion)}>
@@ -143,6 +176,18 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
             </Card>
           ))}
         </div>
+      )}
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() => { confirmAction.onConfirm(); }}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
       )}
 
       {/* Modal */}
@@ -168,24 +213,26 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
                   <p className="text-xs text-gray-500">Fecha</p>
                   <p className="font-medium">{new Date(selectedPrescripcion.fecha).toLocaleDateString("es-ES")}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500">Medicamento</p>
-                  <p className="font-medium">{selectedPrescripcion.medicamento}</p>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-500">Dosis</p>
-                    <p className="text-sm">{selectedPrescripcion.dosis}</p>
+                {((selectedPrescripcion as any).medicamentos || []).map((med: any, idx: number) => (
+                  <div key={idx} className="border-b pb-3">
+                    <p className="text-xs text-gray-500">Medicamento</p>
+                    <p className="font-medium">{med.medicamento}</p>
+                    <div className="grid grid-cols-3 gap-4 mt-2">
+                      <div>
+                        <p className="text-xs text-gray-500">Dosis</p>
+                        <p className="text-sm">{med.dosis}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Frecuencia</p>
+                        <p className="text-sm">{med.frecuencia}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Duración</p>
+                        <p className="text-sm">{med.duracion}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Frecuencia</p>
-                    <p className="text-sm">{selectedPrescripcion.frecuencia}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Duración</p>
-                    <p className="text-sm">{selectedPrescripcion.duracion}</p>
-                  </div>
-                </div>
+                ))}
                 {selectedPrescripcion.indicaciones && (
                   <div>
                     <p className="text-xs text-gray-500">Indicaciones</p>

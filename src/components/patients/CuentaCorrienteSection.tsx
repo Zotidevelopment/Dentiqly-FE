@@ -4,6 +4,8 @@ import { Button } from '../ui/Button'
 import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, X } from 'lucide-react'
 import { cuentaCorrienteApi } from '../../api/cuenta-corriente'
 import type { MovimientoCuenta } from '../../types'
+import { useToast } from '../../hooks/use-toast'
+import { ConfirmationModal } from '../ui/ConfirmationModal'
 
 interface CuentaCorrienteSectionProps {
     pacienteId: string
@@ -21,6 +23,8 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
     const [loading, setLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
     const [modalType, setModalType] = useState<'Ingreso' | 'Deuda'>('Ingreso')
+    const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+    const { toast } = useToast()
 
     // Form state
     const [formData, setFormData] = useState({
@@ -47,15 +51,22 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
         }
     }
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar este movimiento?')) return
-        try {
-            await cuentaCorrienteApi.eliminar(id)
-            fetchData()
-        } catch (error) {
-            console.error('Error deleting movement:', error)
-            alert('Error al eliminar el movimiento')
-        }
+    const handleDelete = (id: number) => {
+        setConfirmAction({
+            isOpen: true,
+            title: "Confirmar eliminación",
+            message: "¿Estás seguro de que deseas eliminar este movimiento?",
+            onConfirm: async () => {
+                try {
+                    await cuentaCorrienteApi.eliminar(id)
+                    fetchData()
+                } catch (error) {
+                    console.error('Error deleting movement:', error)
+                    toast({ variant: "destructive", title: "Error", description: "Error al eliminar el movimiento" })
+                }
+                setConfirmAction(null)
+            }
+        })
     }
 
     const handleOpenModal = (type: 'Ingreso' | 'Deuda') => {
@@ -71,11 +82,16 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        const montoNum = parseFloat(formData.monto)
+        if (isNaN(montoNum) || montoNum <= 0) {
+            toast({ variant: "destructive", title: "Validación", description: "Por favor, ingrese un monto válido mayor a 0." })
+            return
+        }
         try {
             await cuentaCorrienteApi.registrar(pacienteId, {
                 fecha: formData.fecha,
                 tipo: modalType,
-                monto: parseFloat(formData.monto),
+                monto: montoNum,
                 forma_pago: modalType === 'Ingreso' ? formData.forma_pago : undefined,
                 descripcion: formData.descripcion
             })
@@ -83,7 +99,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
             fetchData()
         } catch (error) {
             console.error('Error registering movement:', error)
-            alert('Error al registrar el movimiento')
+            toast({ variant: "destructive", title: "Error", description: "Error al registrar el movimiento" })
         }
     }
 
@@ -282,6 +298,18 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
                         </form>
                     </div>
                 </div>
+            )}
+
+            {confirmAction && (
+                <ConfirmationModal
+                    isOpen={confirmAction.isOpen}
+                    onClose={() => setConfirmAction(null)}
+                    onConfirm={() => { confirmAction.onConfirm(); }}
+                    title={confirmAction.title}
+                    message={confirmAction.message}
+                    confirmText="Confirmar"
+                    variant="destructive"
+                />
             )}
         </div>
     )

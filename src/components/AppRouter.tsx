@@ -30,7 +30,7 @@ import { CookiesPage } from './legal/CookiesPage'
 import { AboutPage } from './legal/AboutPage'
 
 // Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth()
   const location = useLocation()
 
@@ -44,6 +44,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role || '')) {
+    const slug = user.clinica?.slug
+    if (slug) {
+      return <Navigate to={`/${slug}/admin`} replace />
+    }
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>
@@ -119,7 +127,9 @@ const BookingLayout: React.FC = () => {
     // El slug puede estar en user.clinica.slug (de me()) o user.clinica_slug si lo mapeamos
     const userSlug = user?.clinica?.slug || user?.clinica_slug
     
-    apiClient.setTenantSlug(userSlug || 'juan-clinica')
+    if (userSlug) {
+      apiClient.setTenantSlug(userSlug)
+    }
     setIsReady(true)
     
     return () => {
@@ -159,33 +169,34 @@ export const AppRouter: React.FC = () => {
       <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/sobre-nosotros" element={<AboutPage />} />
       
-      {/* Booking público por slug de clínica */}
-      <Route path="/booking/:slug" element={<BookingWithSlug />} />
-      
       {/* Legacy booking sin slug */}
       <Route path="/reserva" element={<BookingLayout />} />
-      
+
       {/* Super Admin Protected Routes */}
-      <Route 
-        path="/admin/*" 
+      <Route
+        path="/admin/*"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['superadmin']}>
             <SuperAdminApp />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Tenant Admin Protected Routes */}
-      <Route 
-        path="/:slug/admin/*" 
+      <Route
+        path="/:slug/admin/*"
         element={
           <ProtectedRoute>
             <AdminApp />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       <Route path="/paciente/*" element={<PatientApp />} />
+
+      {/* Booking público por slug — debe ir después de todas las rutas estáticas */}
+      <Route path="/:slug" element={<BookingWithSlug />} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>

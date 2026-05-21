@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getDeudores } from '../../api/cuenta-corriente';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
+import { useToast } from "../../hooks/use-toast"
 
 interface Deudor {
     paciente: {
@@ -37,6 +38,7 @@ const inputStyle = sharedInputStyle
 const DebtorsReport = () => {
     const [deudores, setDeudores] = useState<Deudor[]>([]);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 12;
@@ -49,6 +51,7 @@ const DebtorsReport = () => {
                 setDeudores(data || []);
             } catch (error) {
                 console.error("Error fetching debtors:", error);
+                toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los datos de deudores" });
             } finally {
                 setLoading(false);
             }
@@ -96,7 +99,7 @@ const DebtorsReport = () => {
     return (
         <div style={pageWrapper}>
             {/* ── Header ── */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
                 <div>
                     <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
                         Reporte de Deudores
@@ -105,7 +108,7 @@ const DebtorsReport = () => {
                         Control de pacientes con saldo pendiente y cuentas corrientes
                     </p>
                 </div>
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div className="flex flex-wrap gap-2.5 items-center">
                   <div style={{
                     display: "flex", alignItems: "center", gap: 10,
                     background: tokens.redFaint, padding: "8px 16px", borderRadius: 10,
@@ -123,7 +126,7 @@ const DebtorsReport = () => {
             </div>
 
             {/* ── Controls ── */}
-            <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+            <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
                 <div style={{
                   flex: 1, display: "flex", alignItems: "center", gap: 10,
                   background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -142,7 +145,7 @@ const DebtorsReport = () => {
                     }}
                   />
                 </div>
-                
+
                 <div style={{
                   display: "flex", alignItems: "center", gap: 8,
                   background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,

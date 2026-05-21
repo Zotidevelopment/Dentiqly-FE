@@ -16,6 +16,8 @@ import { SucursalesManager } from './SucursalesManager'
 import { SettingsManager } from './SettingsManager'
 import { UsersManager } from './UsersManager'
 import { apiClient } from '../../lib/api-client'
+import { useAuth } from '../../hooks/useAuth'
+import { getPermissionsForRole, canAccessView } from '../../config/permissions'
 import { OnboardingWizard } from './OnboardingWizard'
 import { AlertTriangle, XCircle, Clock, Sparkles, ArrowRight, X } from 'lucide-react'
 
@@ -147,16 +149,31 @@ const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal: ()
 }
 
 export const AdminApp: React.FC = () => {
-  const [currentView, setCurrentView] = useState('dashboard')
+  const { user } = useAuth()
+  const rolePerms = getPermissionsForRole(user?.role)
+  const [currentView, setCurrentView] = useState(rolePerms.defaultView)
   const [navParams, setNavParams] = useState<Record<string, any>>({})
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [showTrialModal, setShowTrialModal] = useState(false)
   const [forceActivation, setForceActivation] = useState(false)
 
+  const handleViewChange = (view: string) => {
+    if (canAccessView(user?.role, view)) {
+      setCurrentView(view)
+    } else {
+      setCurrentView(rolePerms.defaultView)
+    }
+  }
+
   const handleNavigate = (view: string, params?: Record<string, any>) => {
-    setCurrentView(view)
-    setNavParams(params || {})
+    if (canAccessView(user?.role, view)) {
+      setCurrentView(view)
+      setNavParams(params || {})
+    } else {
+      setCurrentView(rolePerms.defaultView)
+      setNavParams({})
+    }
   }
 
   useEffect(() => {
@@ -199,6 +216,10 @@ export const AdminApp: React.FC = () => {
   }
 
   const renderCurrentView = () => {
+    if (!canAccessView(user?.role, currentView)) {
+      return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} />
+    }
+
     switch (currentView) {
       case 'dashboard':
         return <Dashboard
@@ -234,7 +255,7 @@ export const AdminApp: React.FC = () => {
       case 'settings':
         return <SettingsManager />
       default:
-        return <Dashboard />
+        return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} />
     }
   }
 
@@ -249,9 +270,9 @@ export const AdminApp: React.FC = () => {
     : 0
 
   return (
-    <AdminLayout 
-      currentView={currentView} 
-      onViewChange={setCurrentView} 
+    <AdminLayout
+      currentView={currentView}
+      onViewChange={handleViewChange}
       onSearch={(q) => handleNavigate('patients', { searchTerm: q })}
       subscriptionStatus={subscriptionStatus}
       onActivatePlan={() => setForceActivation(true)}

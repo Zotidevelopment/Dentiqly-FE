@@ -3,7 +3,7 @@ import { apiClient } from "../lib/api-client"
 export interface UsuarioClinica {
   id: number
   nombre: string
-  apellido: string
+  apellido?: string
   email: string
   role: 'admin' | 'recepcionista' | 'odontologo' | 'staff'
   activo: boolean
@@ -26,11 +26,11 @@ export interface ActualizarUsuarioClinicaData {
 
 export const usuariosClinicaApi = {
   listar: async (): Promise<UsuarioClinica[]> => {
-    const res = await apiClient.get<{ usuarios: UsuarioClinica[] }>('/usuarios-clinica')
-    return res.usuarios || []
+    const res = await apiClient.get<UsuarioClinica[] | { usuarios: UsuarioClinica[] }>('/usuarios-clinica')
+    return Array.isArray(res) ? res : (res.usuarios || [])
   },
 
-  crear: async (data: CrearUsuarioClinicaData): Promise<UsuarioClinica> => {
+  crear: async (data: CrearUsuarioClinicaData & { password: string }): Promise<UsuarioClinica> => {
     return apiClient.post<UsuarioClinica>('/usuarios-clinica', data)
   },
 

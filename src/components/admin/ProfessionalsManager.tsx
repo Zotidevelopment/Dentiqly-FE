@@ -48,6 +48,7 @@ export const ProfessionalsManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; id: string | number | null }>({
     isOpen: false,
     id: null
@@ -71,6 +72,15 @@ export const ProfessionalsManager: React.FC = () => {
   useEffect(() => {
     fetchProfessionals()
   }, [searchTerm, statusFilter])
+
+  useEffect(() => {
+    if (!showForm) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") resetForm()
+    }
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [showForm])
 
   const fetchProfessionals = async () => {
     try {
@@ -107,19 +117,24 @@ export const ProfessionalsManager: React.FC = () => {
     e.preventDefault()
     if (!validateForm()) return
 
+    setSaving(true)
     try {
       if (editingProfessional) {
         await adminApi.profesionales.actualizar(editingProfessional.id, formData)
+        toast({ title: "Éxito", description: "Profesional actualizado correctamente" })
+        resetForm()
+        fetchProfessionals()
       } else {
-        await adminApi.profesionales.crear(formData)
+        const created = await adminApi.profesionales.crear(formData)
+        toast({ title: "Éxito", description: "Profesional creado. Ahora configurá sus horarios." })
+        resetForm()
+        await fetchProfessionals()
+        const newProf = created as any
+        if (newProf?.id) {
+          setSelectedProfessional(newProf)
+          setViewMode('schedule')
+        }
       }
-
-      toast({
-        title: "Éxito",
-        description: editingProfessional ? "Profesional actualizado correctamente" : "Profesional creado correctamente"
-      })
-      resetForm()
-      fetchProfessionals()
     } catch (error: any) {
       console.error("Error saving professional:", error)
       toast({
@@ -127,6 +142,8 @@ export const ProfessionalsManager: React.FC = () => {
         description: error.response?.data?.error || "No se pudo guardar el profesional",
         variant: "destructive"
       })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -158,9 +175,10 @@ export const ProfessionalsManager: React.FC = () => {
       await adminApi.profesionales.eliminar(confirmDelete.id)
       fetchProfessionals()
       setConfirmDelete({ isOpen: false, id: null })
+      toast({ title: "Éxito", description: "Profesional eliminado correctamente" })
     } catch (error) {
       console.error("Error deleting professional:", error)
-      alert("Error al eliminar el profesional")
+      toast({ variant: "destructive", title: "Error", description: "Error al eliminar el profesional" })
     }
   }
 
@@ -218,13 +236,12 @@ export const ProfessionalsManager: React.FC = () => {
   const page: React.CSSProperties = {
     ...pageWrapper,
     background: tokens.grayBg,
-    padding: "28px 32px",
   }
 
   if (viewMode === 'schedule' && selectedProfessional) {
     return (
       <div style={page}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
               Gestión de Horarios
@@ -255,7 +272,7 @@ export const ProfessionalsManager: React.FC = () => {
   if (viewMode === 'services' && selectedProfessional) {
     return (
       <div style={page}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
               Gestión de Servicios
@@ -286,7 +303,7 @@ export const ProfessionalsManager: React.FC = () => {
   return (
     <div style={page}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Gestión de Profesionales
@@ -314,7 +331,7 @@ export const ProfessionalsManager: React.FC = () => {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         {/* Search */}
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
@@ -591,12 +608,12 @@ export const ProfessionalsManager: React.FC = () => {
 
       {/* ── Modal Create / Edit ── */}
       {showForm && (
-        <div style={{
+        <div onClick={resetForm} style={{
           position: "fixed", inset: 0, background: "rgba(11,16,35,0.45)",
           display: "flex", alignItems: "center", justifyContent: "center",
           zIndex: 50, padding: 16,
         }}>
-          <div style={{
+          <div onClick={(e) => e.stopPropagation()} style={{
             background: tokens.white, borderRadius: 16,
             maxWidth: 640, width: "100%", maxHeight: "90vh", overflowY: "auto",
             boxShadow: "0 24px 48px rgba(11,16,35,0.12)",
@@ -627,7 +644,7 @@ export const ProfessionalsManager: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} style={{ padding: 24 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label style={labelStyle}>Nombre *</label>
                   <input
@@ -757,16 +774,18 @@ export const ProfessionalsManager: React.FC = () => {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   style={{
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
-                    background: tokens.blue, color: tokens.white,
-                    border: "none", borderRadius: 9, cursor: "pointer",
+                    background: saving ? tokens.grayBorder : tokens.blue, color: tokens.white,
+                    border: "none", borderRadius: 9, cursor: saving ? "not-allowed" : "pointer",
                     fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
+                    opacity: saving ? 0.7 : 1,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = tokens.blueHover }}
-                  onMouseLeave={e => { e.currentTarget.style.background = tokens.blue }}
+                  onMouseEnter={e => { if (!saving) e.currentTarget.style.background = tokens.blueHover }}
+                  onMouseLeave={e => { if (!saving) e.currentTarget.style.background = tokens.blue }}
                 >
-                  {editingProfessional ? "Actualizar" : "Crear"} Profesional
+                  {saving ? "Guardando..." : `${editingProfessional ? "Actualizar" : "Crear"} Profesional`}
                 </button>
               </div>
             </form>

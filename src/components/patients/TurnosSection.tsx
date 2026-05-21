@@ -6,6 +6,21 @@ import { turnosApi } from "../../api"
 import type { Turno } from "../../types"
 import { Calendar, Clock, User, Stethoscope, AlertCircle } from "lucide-react"
 
+const getStatusBorderColor = (estado: string): string => {
+  const colors: Record<string, string> = {
+    'Pendiente': '#EAB308',
+    'Creado': '#3B82F6',
+    'Confirmado': '#22C55E',
+    'Confirmado por email': '#22C55E',
+    'Confirmado por SMS': '#22C55E',
+    'Confirmado por Whatsapp': '#22C55E',
+    'Atendido': '#3B82F6',
+    'Cancelado': '#EF4444',
+    'Ausente': '#6B7280',
+  }
+  return colors[estado] || '#6B7280'
+}
+
 interface PatientAppointmentsSectionProps {
   pacienteId: string
 }
@@ -75,7 +90,7 @@ export const TurnosSection: React.FC<PatientAppointmentsSectionProps> = ({ pacie
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {appointments.map((turno) => (
-            <Card key={turno.id} className="overflow-hidden border-l-4 transition-all hover:shadow-md" style={{ borderLeftColor: getStatusStyles(turno.estado).split(' ')[1].replace('text-', '') }}>
+            <Card key={turno.id} className="overflow-hidden border-l-4 transition-all hover:shadow-md" style={{ borderLeftColor: getStatusBorderColor(turno.estado) }}>
               <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">

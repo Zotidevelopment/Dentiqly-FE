@@ -39,16 +39,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (data: LoginData) => {
     const response = await authApi.login(data);
-    const userWithClinic = { ...response.user, clinica: response.clinica };
-    setUser(userWithClinic as any);
+    const userWithClinic: AuthUser = { ...response.user, clinica: response.clinica };
+    setUser(userWithClinic);
     localStorage.setItem('user', JSON.stringify(userWithClinic));
     return response;
   };
 
   const register = async (data: SaasRegisterData) => {
     const response = await authApi.register(data);
-    const userWithClinic = { ...response.user, clinica: response.clinica };
-    setUser(userWithClinic as any);
+    const userWithClinic: AuthUser = { ...response.user, clinica: response.clinica };
+    setUser(userWithClinic);
     localStorage.setItem('user', JSON.stringify(userWithClinic));
     return response;
   };

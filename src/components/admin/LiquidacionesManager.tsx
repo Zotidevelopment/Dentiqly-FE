@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { 
   Users, 
   Plus, 
@@ -38,6 +39,7 @@ export function LiquidacionesManager() {
   const [searchTerm, setSearchTerm] = useState("")
   const itemsPerPage = 12
   const { toast } = useToast()
+  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
 
   useEffect(() => {
     cargarDatos()
@@ -72,24 +74,30 @@ export function LiquidacionesManager() {
     }
   }
 
-  const handleAnular = async (id: number) => {
-    if (!confirm("¿Está seguro de anular esta liquidación?")) return
-
-    try {
-      await liquidacionesApi.anular(id)
-      toast({
-        title: "Éxito",
-        description: "Liquidación anulada correctamente",
-      })
-      setSelectedLiquidacion(null)
-      cargarDatos()
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "No se pudo anular la liquidación",
-      })
-    }
+  const handleAnular = (id: number) => {
+    setConfirmAction({
+      isOpen: true,
+      title: "Anular liquidación",
+      message: "¿Está seguro de anular esta liquidación?",
+      onConfirm: async () => {
+        try {
+          await liquidacionesApi.anular(id)
+          toast({
+            title: "Éxito",
+            description: "Liquidación anulada correctamente",
+          })
+          setSelectedLiquidacion(null)
+          cargarDatos()
+        } catch (error: any) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: error.message || "No se pudo anular la liquidación",
+          })
+        }
+        setConfirmAction(null)
+      }
+    })
   }
 
   const formatDateRange = (start: string, end: string) => {
@@ -127,13 +135,12 @@ export function LiquidacionesManager() {
   const pageStyle: React.CSSProperties = {
     ...pageWrapper,
     background: tokens.grayBg,
-    padding: "28px 32px",
   }
 
   return (
     <div style={pageStyle}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Liquidaciones
@@ -142,7 +149,7 @@ export function LiquidacionesManager() {
             Gestioná el pago de honorarios a tus profesionales
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex flex-wrap gap-2.5">
           <button
             onClick={() => exportApi.liquidaciones().catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar" }))}
             style={{
@@ -179,7 +186,7 @@ export function LiquidacionesManager() {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -198,7 +205,7 @@ export function LiquidacionesManager() {
             }}
           />
         </div>
-        
+
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
@@ -388,6 +395,18 @@ export function LiquidacionesManager() {
         onDelete={handleAnular}
         onDownload={(id) => console.log("Download", id)}
       />
+
+      {confirmAction && (
+        <ConfirmationModal
+          isOpen={confirmAction.isOpen}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={confirmAction.onConfirm}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Confirmar"
+          variant="destructive"
+        />
+      )}
     </div>
   )
 }

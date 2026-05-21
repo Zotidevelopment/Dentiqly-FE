@@ -4,7 +4,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import type { Servicio } from "../../types"
 import { serviciosApi } from "../../api/servicios"
-import { Clock, Plus } from "lucide-react"
+import { Clock, Plus, AlertCircle } from "lucide-react"
+import { useToast } from "../../hooks/use-toast"
 
 interface ServiceSelectionProps {
   selectedService: Servicio | null
@@ -14,7 +15,7 @@ interface ServiceSelectionProps {
 export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedService, onServiceSelect }) => {
   const [services, setServices] = useState<Servicio[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     loadServices()
@@ -32,7 +33,7 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
       }
     } catch (error) {
       console.error("Error loading services:", error)
-      setError("Error al cargar los servicios")
+      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los servicios disponibles" })
     } finally {
       setLoading(false)
     }

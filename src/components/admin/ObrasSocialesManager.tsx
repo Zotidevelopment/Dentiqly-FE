@@ -110,7 +110,7 @@ export const ObrasSocialesManager: React.FC = () => {
   return (
     <div style={pageWrapper}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
             Obras Sociales
@@ -138,7 +138,7 @@ export const ObrasSocialesManager: React.FC = () => {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
           background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
