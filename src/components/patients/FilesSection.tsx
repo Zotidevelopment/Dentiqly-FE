@@ -57,7 +57,7 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ pacienteId }) => {
 
     try {
       setUploading(true)
-      await archivosApi.subir(selectedFile, Number(pacienteId), descripcion)
+      await archivosApi.subir(selectedFile, pacienteId, descripcion)
       setShowUploadModal(false)
       setSelectedFile(null)
       setDescripcion("")
