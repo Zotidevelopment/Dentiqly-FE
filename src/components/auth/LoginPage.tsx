@@ -26,7 +26,9 @@ export const LoginPage: React.FC = () => {
         title: "Bienvenido de nuevo!",
         description: "Sesion iniciada correctamente.",
       });
-      if (response.clinica?.slug) {
+      if (response.user?.role === 'superadmin' || response.user?.email === 'riostiziano6@gmail.com') {
+        navigate('/admin');
+      } else if (response.clinica?.slug) {
         navigate(`/${response.clinica.slug}/admin`);
       } else {
         navigate('/admin');
