@@ -761,69 +761,75 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
     return (
       <div className="flex flex-col h-full bg-white relative">
-        <div className="grid grid-cols-7 gap-px bg-[#E8E0D6]/30 overflow-hidden h-full">
+        {/* Sticky day-of-week headers */}
+        <div className="grid grid-cols-7 sticky top-0 z-10 bg-white border-b border-[#E8E0D6]/40">
           {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
-            <div key={day} className="bg-gray-50/50 p-2 text-center border-b border-[#E8E0D6]/40">
+            <div key={day} className="py-2.5 text-center">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A93A8]">
                 {day}
               </span>
             </div>
           ))}
+        </div>
 
-          {days.map((day, index) => {
-            const dayAppointments = getAppointmentsForDate(day.date)
-            const isToday = day.date.toDateString() === new Date().toDateString()
+        {/* Scrollable month grid */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="grid grid-cols-7 gap-px bg-[#E8E0D6]/30 min-h-full">
+            {days.map((day, index) => {
+              const dayAppointments = getAppointmentsForDate(day.date)
+              const isToday = day.date.toDateString() === new Date().toDateString()
 
-            return (
-              <div
-                key={index}
-                className={`bg-white min-h-[80px] sm:min-h-[100px] md:min-h-[120px] p-1.5 sm:p-2 border-r border-b border-[#E8E0D6]/20 transition-colors hover:bg-gray-50/30 ${!day.isCurrentMonth ? 'opacity-40' : ''}`}
-                onClick={() => {
-                  setCurrentDate(day.date)
-                  setViewType('day')
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className={`text-sm font-semibold mb-2 flex justify-end ${isToday ? 'text-[#2563FF]' : 'text-[#0B1023]'}`}>
-                   <span className={`${isToday ? 'bg-[#EEF3FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
-                     {day.date.getDate()}
-                   </span>
-                </div>
+              return (
+                <div
+                  key={index}
+                  className={`bg-white min-h-[100px] sm:min-h-[110px] md:min-h-[120px] p-1.5 sm:p-2 border-r border-b border-[#E8E0D6]/20 transition-colors hover:bg-gray-50/30 ${!day.isCurrentMonth ? 'opacity-40' : ''}`}
+                  onClick={() => {
+                    setCurrentDate(day.date)
+                    setViewType('day')
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className={`text-sm font-semibold mb-2 flex justify-end ${isToday ? 'text-[#2563FF]' : 'text-[#0B1023]'}`}>
+                     <span className={`${isToday ? 'bg-[#EEF3FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
+                       {day.date.getDate()}
+                     </span>
+                  </div>
 
-                <div className="space-y-1">
-                  {dayAppointments.slice(0, 3).map((appointment) => {
-                    const profColor = getProfColor(appointment.profesional_id)
-                    const statusIcon = getStatusIcon(appointment.estado)
-                    return (
-                      <div
-                        key={appointment.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedAppointment(appointment)
-                        }}
-                        className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
-                        style={{ backgroundColor: `${profColor}15`, border: `1px solid ${profColor}40` }}
-                      >
-                        <span className="font-bold shrink-0 text-gray-900">{appointment.hora_inicio.substring(0, 5)}</span>
-                        <span className="truncate font-semibold text-gray-700 pr-3">{appointment.paciente?.apellido}</span>
-                        {statusIcon && (
-                          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-60">
-                            {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5" })}
-                          </div>
-                        )}
+                  <div className="space-y-1">
+                    {dayAppointments.slice(0, 3).map((appointment) => {
+                      const profColor = getProfColor(appointment.profesional_id)
+                      const statusIcon = getStatusIcon(appointment.estado)
+                      return (
+                        <div
+                          key={appointment.id}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedAppointment(appointment)
+                          }}
+                          className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
+                          style={{ backgroundColor: `${profColor}15`, border: `1px solid ${profColor}40` }}
+                        >
+                          <span className="font-bold shrink-0 text-gray-900">{appointment.hora_inicio.substring(0, 5)}</span>
+                          <span className="truncate font-semibold text-gray-700 pr-3">{appointment.paciente?.apellido}</span>
+                          {statusIcon && (
+                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-60">
+                              {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5" })}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+
+                    {dayAppointments.length > 3 && (
+                      <div className="text-[9px] font-bold text-gray-400 text-center py-0.5">
+                        +{dayAppointments.length - 3} más
                       </div>
-                    )
-                  })}
-
-                  {dayAppointments.length > 3 && (
-                    <div className="text-[9px] font-bold text-gray-400 text-center py-0.5">
-                      +{dayAppointments.length - 3} más
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       </div>
     )
@@ -961,7 +967,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
          {/* Calendar Grid */}
          <div className="flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
             {/* Navigation Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
                <div className="flex flex-wrap items-center gap-4">
                   <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
                   <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
@@ -970,16 +976,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                      <button onClick={() => navigate('next')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronRight className="w-4 h-4 text-[#8A93A8]" /></button>
                   </div>
                </div>
-               <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 rounded-lg text-amber-700 border border-amber-100"><Hourglass className="w-3 h-3" /> Pendiente</div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-lg text-blue-700 border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-500/20 border-[1.5px] border-blue-500"></div> Confirmado</div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg text-green-700 border border-green-100"><CheckCircle2 className="w-3 h-3" /> Atendido</div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-lg text-red-700 border border-red-100"><XCircle className="w-3 h-3" /> Cancelado</div>
-                  <button onClick={() => setShowNewModal(true)} className="ml-1 px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3"/> Sobreturno</button>
+               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 rounded-lg text-amber-700 border border-amber-100"><Hourglass className="w-3 h-3" /> Pendiente</div>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-lg text-blue-700 border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-500/20 border-[1.5px] border-blue-500"></div> Confirmado</div>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg text-green-700 border border-green-100"><CheckCircle2 className="w-3 h-3" /> Atendido</div>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-lg text-red-700 border border-red-100"><XCircle className="w-3 h-3" /> Cancelado</div>
+                  <button onClick={() => setShowNewModal(true)} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3"/> Sobreturno</button>
                </div>
             </div>
 
-            <div className="flex-1 overflow-hidden min-h-0 bg-white">
+            <div className="flex-1 min-h-0 bg-white">
                {viewType === 'day' && renderDayView()}
                {viewType === 'week' && renderWeekView()}
                {viewType === 'month' && renderMonthView()}
