@@ -10,9 +10,9 @@ export const archivosApi = {
     return apiClient.get<Archivo>(`/archivos/${id}`)
   },
 
-  subir: async (file: File, pacienteId: number, descripcion?: string): Promise<Archivo> => {
+  subir: async (file: File, pacienteId: string | number, descripcion?: string): Promise<Archivo> => {
     return apiClient.uploadFile<Archivo>("/archivos", file, {
-      paciente_id: pacienteId,
+      paciente_id: String(pacienteId),
       descripcion: descripcion || "",
     })
   },

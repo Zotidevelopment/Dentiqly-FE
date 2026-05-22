@@ -31,21 +31,8 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
     contacto_emergencia: "",
     telefono_emergencia: "",
     observaciones: "",
-    obra_social_nombre_custom: "",
+    obra_social_nombre_custom: undefined,
   })
-
-  const COMMON_OBRAS_SOCIALES = [
-    "Particular",
-    "OSDE",
-    "Swiss Medical",
-    "Galeno",
-    "Medicus",
-    "Sancor Salud",
-    "IOMA",
-    "PAMI",
-    "Omint",
-    "Prevención Salud"
-  ];
 
   const [errors, setErrors] = useState<Partial<Record<keyof CrearPacienteData, string>>>({})
   const [nombreCompleto, setNombreCompleto] = useState("")
@@ -180,11 +167,10 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
         obra_social_nombre_custom: undefined 
       }))
     } else {
-      // Common one selected
       setFormData(prev => ({ 
         ...prev, 
         obra_social_id: undefined, 
-        obra_social_nombre_custom: value 
+        obra_social_nombre_custom: undefined 
       }))
     }
   }
@@ -382,23 +368,20 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
             value={
               formData.obra_social_id 
                 ? `ID:${formData.obra_social_id}` 
-                : (formData.obra_social_nombre_custom === "" || formData.obra_social_nombre_custom === undefined)
-                  ? "" 
-                  : COMMON_OBRAS_SOCIALES.includes(formData.obra_social_nombre_custom || "")
-                    ? formData.obra_social_nombre_custom
-                    : "OTRO"
+                : formData.obra_social_nombre_custom !== undefined
+                  ? "OTRO"
+                  : ""
             }
             onChange={(e) => handleObraSocialChange(e.target.value)}
             options={[
               { value: "", label: "Seleccione una opción" },
               ...obrasSociales.map((os) => ({ value: `ID:${os.id}`, label: os.nombre })),
-              ...COMMON_OBRAS_SOCIALES.filter(name => !obrasSociales.some(os => os.nombre === name)).map(name => ({ value: name, label: name })),
               { value: "OTRO", label: "Otra (especificar)" }
             ]}
             className="bg-white"
           />
           
-          {(formData.obra_social_id || (formData.obra_social_nombre_custom && COMMON_OBRAS_SOCIALES.includes(formData.obra_social_nombre_custom))) ? (
+          {formData.obra_social_id ? (
             <Input
               label="Número de Afiliado"
               value={formData.numero_afiliado || ""}
@@ -419,7 +402,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
           )}
         </div>
 
-        {(!formData.obra_social_id && formData.obra_social_nombre_custom !== undefined && !COMMON_OBRAS_SOCIALES.includes(formData.obra_social_nombre_custom || "") && formData.obra_social_nombre_custom !== undefined) && (
+        {(!formData.obra_social_id && formData.obra_social_nombre_custom !== undefined) && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300">
             <Input
               label="Número de Afiliado"

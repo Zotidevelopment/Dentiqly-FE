@@ -42,7 +42,7 @@ export const BookingSuccess: React.FC<BookingSuccessProps> = ({ appointmentData,
       <div className="bg-white rounded-[3.5rem] shadow-[0_32px_64px_-16px_rgba(37,99,255,0.12)] border border-blue-50/50 overflow-hidden relative printable-card">
         {/* Background Accent */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none no-print" />
-        
+
         <div className="p-10 sm:p-14 text-center relative z-10">
           {/* Success Ring */}
           <div className="relative inline-block mb-10">
@@ -51,10 +51,10 @@ export const BookingSuccess: React.FC<BookingSuccessProps> = ({ appointmentData,
               <Check size={52} strokeWidth={3.5} />
             </div>
             <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center border-4 border-[#2563FF] no-print">
-                <div className="w-2 h-2 rounded-full bg-[#2563FF]" />
+              <div className="w-2 h-2 rounded-full bg-[#2563FF]" />
             </div>
           </div>
-          
+
           <h2 className="text-4xl font-black text-gray-900 mb-3 tracking-tight">¡Turno Confirmado!</h2>
           <p className="text-gray-400 font-medium mb-12 text-lg no-print">
             Todo listo, <span className="text-[#2563FF] font-bold">{appointmentData.patientName.split(' ')[0]}</span>. Tu cita ha sido agendada con éxito.
@@ -101,7 +101,7 @@ export const BookingSuccess: React.FC<BookingSuccessProps> = ({ appointmentData,
               Descargar Comprobante
               <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            
+
             <div className="flex items-center justify-center gap-6 pt-4">
               <button
                 onClick={onNewBooking}
@@ -121,9 +121,6 @@ export const BookingSuccess: React.FC<BookingSuccessProps> = ({ appointmentData,
         </div>
       </div>
 
-      <p className="text-center mt-10 text-gray-400 text-sm font-medium">
-        ¿Necesitas ayuda? <a href="#" className="text-[#2563FF] font-bold hover:underline">Contactar soporte</a>
-      </p>
     </div>
   )
 }

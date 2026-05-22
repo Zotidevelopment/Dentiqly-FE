@@ -24,8 +24,12 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
   const loadServices = async () => {
     try {
       setLoading(true)
-      const response = await serviciosApi.listar({ estado: "Activo" })
-      setServices(response.data)
+      const response = await serviciosApi.listar({ estado: "Activo", solo_con_profesionales: true })
+      if (response && response.data) {
+        setServices(response.data)
+      } else {
+        setServices([])
+      }
     } catch (error) {
       console.error("Error loading services:", error)
       toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los servicios disponibles" })
@@ -38,7 +42,7 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-24 bg-gray-50 rounded-xl animate-pulse"></div>
+          <div key={i} className="h-24 bg-gray-50 rounded-xl animate-pulse" data-testid="loading-skeleton"></div>
         ))}
       </div>
     )

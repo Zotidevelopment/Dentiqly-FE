@@ -9,6 +9,13 @@ vi.mock('@/api/servicios', () => ({
   }
 }))
 
+const mockToast = vi.fn()
+vi.mock('@/hooks/use-toast', () => ({
+  useToast: () => ({
+    toast: mockToast
+  })
+}))
+
 const mockServices = [
   { id: 1, nombre: 'Limpieza Dental', descripcion: 'Limpieza completa', duracion_estimada: 60, categoria: 'Preventivo', precio_base: 5000 },
   { id: 2, nombre: 'Ortodoncia', descripcion: 'Tratamiento de ortodoncia', duracion_estimada: 120, categoria: 'Ortodoncia', precio_base: 50000 }
@@ -20,8 +27,9 @@ describe('ServiceSelection', () => {
   })
 
   it('should render loading state initially', () => {
+    vi.mocked(serviciosApi.listar).mockReturnValue(new Promise(() => {}))
     render(<ServiceSelection selectedService={null} onServiceSelect={() => {}} />)
-    expect(screen.getByText('Seleccionar Servicio')).toBeInTheDocument()
+    expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(5)
   })
 
   it('should render services after loading', async () => {
@@ -48,13 +56,17 @@ describe('ServiceSelection', () => {
     expect(onSelect).toHaveBeenCalledWith(mockServices[0])
   })
 
-  it('should render error state when API fails', async () => {
+  it('should call toast when API fails', async () => {
     vi.mocked(serviciosApi.listar).mockRejectedValue(new Error('API Error'))
 
     render(<ServiceSelection selectedService={null} onServiceSelect={() => {}} />)
 
     await waitFor(() => {
-      expect(screen.getByText('Error al cargar los servicios')).toBeInTheDocument()
+      expect(mockToast).toHaveBeenCalledWith({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudieron cargar los servicios disponibles"
+      })
     })
   })
 })
