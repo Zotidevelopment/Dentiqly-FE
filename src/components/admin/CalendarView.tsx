@@ -111,6 +111,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [newAppointmentData, setNewAppointmentData] = useState<{ fecha: string, hora_inicio: string, sobre_turno: boolean } | null>(null)
   const [draggingAppointment, setDraggingAppointment] = useState<Turno | null>(null)
+  const [hoveredApptId, setHoveredApptId] = useState<number | null>(null)
 
   const [showFilterPanel, setShowFilterPanel] = useState(false)
 
@@ -334,17 +335,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     })))
   }
 
-  const handleQuickConfirm = async (id: number) => {
-    try {
-      await turnosApi.confirmarPago(id, true)
-      toast({ title: "Éxito", description: "Pago confirmado exitosamente" })
-      fetchAppointments() // Refresh appointments
-    } catch (error) {
-      console.error('Error confirming payment:', error)
-      toast({ variant: "destructive", title: "Error", description: "Error al confirmar el pago" })
-    }
-  }
-
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
     try {
       await turnosApi.actualizar(id, { estado: nuevoEstado })
@@ -555,6 +545,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         e.stopPropagation()
                         setSelectedAppointment(appt)
                       }}
+                      onMouseEnter={() => setHoveredApptId(appt.id)}
+                      onMouseLeave={() => setHoveredApptId(null)}
                       className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-2 relative group"
                       style={{
                         backgroundColor: `${profColor}15`,
@@ -568,22 +560,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       )}
 
                       {/* Quick Actions */}
-                      <div className="absolute top-2 right-8 flex flex-row gap-1.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
-                          className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-md transition-all scale-90 hover:scale-110"
-                          title="Marcar como Atendido"
-                        >
-                          <Check className="w-4 h-4" strokeWidth={4} />
-                        </button>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
-                          className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md transition-all scale-90 hover:scale-110"
-                          title="Marcar como Cancelado"
-                        >
-                          <X className="w-4 h-4" strokeWidth={4} />
-                        </button>
-                      </div>
+                      {hoveredApptId === appt.id && (
+                        <div className="absolute top-2 right-8 flex flex-row gap-1.5 z-20 transition-opacity">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
+                            className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-md transition-all scale-90 hover:scale-110"
+                            title="Marcar como Atendido"
+                          >
+                            <Check className="w-4 h-4" strokeWidth={4} />
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
+                            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md transition-all scale-90 hover:scale-110"
+                            title="Marcar como Cancelado"
+                          >
+                            <X className="w-4 h-4" strokeWidth={4} />
+                          </button>
+                        </div>
+                      )}
 
                       <div className="relative z-10">
                         <div className="flex items-start justify-between mb-0.5">
@@ -701,6 +695,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 e.stopPropagation()
                                 setSelectedAppointment(appt)
                               }}
+                              onMouseEnter={() => setHoveredApptId(appt.id)}
+                              onMouseLeave={() => setHoveredApptId(null)}
                               className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
                               style={{
                                 backgroundColor: `${profColor}15`,
@@ -714,22 +710,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                               )}
 
                               {/* Quick Actions */}
-                              <div className="absolute top-1 right-5 flex flex-row gap-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
-                                  className="w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-sm transition-all scale-75 hover:scale-100"
-                                  title="Atendido"
-                                >
-                                  <Check className="w-3 h-3" strokeWidth={4} />
-                                </button>
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
-                                  className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-sm transition-all scale-75 hover:scale-100"
-                                  title="Cancelado"
-                                >
-                                  <X className="w-3 h-3" strokeWidth={4} />
-                                </button>
-                              </div>
+                              {hoveredApptId === appt.id && (
+                                <div className="absolute top-1 right-5 flex flex-row gap-1 z-20 transition-opacity">
+                                  <button 
+                                    onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
+                                    className="w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-sm transition-all scale-75 hover:scale-100"
+                                    title="Atendido"
+                                  >
+                                    <Check className="w-3 h-3" strokeWidth={4} />
+                                  </button>
+                                  <button 
+                                    onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
+                                    className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-sm transition-all scale-75 hover:scale-100"
+                                    title="Cancelado"
+                                  >
+                                    <X className="w-3 h-3" strokeWidth={4} />
+                                  </button>
+                                </div>
+                              )}
 
                               <div className="relative z-10">
                                 <div className="flex justify-between items-start">
