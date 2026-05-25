@@ -14,6 +14,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/use-toast';
 import type { Turno } from '../../types';
 import { OnboardingChecklist } from './OnboardingChecklist';
+import { onboardingApi } from '../../api/onboarding';
+import type { OnboardingStatus } from '../../api/onboarding';
 
 interface DashboardStats {
   totalTurnos: number;
@@ -159,6 +161,15 @@ export const Dashboard: React.FC<{
     hasCashflowEgresos: false,
   });
   const [onboardingExtraLoaded, setOnboardingExtraLoaded] = useState(false);
+  const [patientOnboarding, setPatientOnboarding] = useState<OnboardingStatus>({
+    hasHistoriaClinica: false,
+    hasOdontograma: false,
+    hasPrescripcion: false,
+    hasTratamiento: false,
+    hasArchivos: false,
+    hasCuentaCorriente: false,
+  });
+  const [patientOnboardingLoaded, setPatientOnboardingLoaded] = useState(false);
 
   const handleCopyLink = () => {
     if (!bookingUrl) return;
@@ -263,6 +274,7 @@ export const Dashboard: React.FC<{
     fetchStats();
     fetchClinicConfig();
     fetchOnboardingExtra();
+    fetchPatientOnboarding();
   }, []);
 
   const fetchClinicConfig = async () => {
@@ -291,6 +303,17 @@ export const Dashboard: React.FC<{
     }
   };
 
+  const fetchPatientOnboarding = async () => {
+    try {
+      const status = await onboardingApi.getStatus();
+      setPatientOnboarding(status);
+    } catch {
+      // silent
+    } finally {
+      setPatientOnboardingLoaded(true);
+    }
+  };
+
   const handleDismissOnboarding = () => {
     sessionStorage.setItem('onboarding_checklist_dismissed_session', 'true');
     setOnboardingDismissed(true);
@@ -300,6 +323,7 @@ export const Dashboard: React.FC<{
     !loading &&
     clinicConfigLoaded &&
     onboardingExtraLoaded &&
+    patientOnboardingLoaded &&
     !onboardingDismissed &&
     user?.role === 'admin';
 
@@ -424,6 +448,12 @@ export const Dashboard: React.FC<{
               hasLiquidaciones={onboardingExtra.hasLiquidaciones}
               hasCashflowIngresos={onboardingExtra.hasCashflowIngresos}
               hasCashflowEgresos={onboardingExtra.hasCashflowEgresos}
+              hasHistoriaClinica={patientOnboarding.hasHistoriaClinica}
+              hasOdontograma={patientOnboarding.hasOdontograma}
+              hasPrescripcion={patientOnboarding.hasPrescripcion}
+              hasTratamiento={patientOnboarding.hasTratamiento}
+              hasArchivos={patientOnboarding.hasArchivos}
+              hasCuentaCorriente={patientOnboarding.hasCuentaCorriente}
               slug={slug}
               onNavigate={(view) => onNavigate?.(view)}
               onDismiss={handleDismissOnboarding}
