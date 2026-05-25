@@ -47,6 +47,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: strin
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role || '')) {
+    const isSuperAdmin = user.email === 'riostiziano6@gmail.com'
+    if (isSuperAdmin && allowedRoles.includes('superadmin')) {
+      return <>{children}</>
+    }
     const slug = user.clinica?.slug
     if (slug) {
       return <Navigate to={`/${slug}/admin`} replace />
