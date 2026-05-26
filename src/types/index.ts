@@ -253,6 +253,7 @@ export interface Turno {
   profesional?: Profesional
   servicio?: Servicio
   subservicio?: SubServicio
+  sobre_turno?: boolean
 }
 
 export interface CrearTurnoData {

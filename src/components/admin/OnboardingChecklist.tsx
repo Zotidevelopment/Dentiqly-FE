@@ -44,6 +44,12 @@ interface OnboardingChecklistProps {
   hasLiquidaciones: boolean
   hasCashflowIngresos: boolean
   hasCashflowEgresos: boolean
+  hasHistoriaClinica: boolean
+  hasOdontograma: boolean
+  hasPrescripcion: boolean
+  hasTratamiento: boolean
+  hasArchivos: boolean
+  hasCuentaCorriente: boolean
   slug?: string
   onNavigate: (view: string) => void
   onDismiss: () => void
@@ -77,6 +83,12 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
   hasLiquidaciones,
   hasCashflowIngresos,
   hasCashflowEgresos,
+  hasHistoriaClinica,
+  hasOdontograma,
+  hasPrescripcion,
+  hasTratamiento,
+  hasArchivos,
+  hasCuentaCorriente,
   slug,
   onNavigate,
   onDismiss,
@@ -171,7 +183,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "historia-clinica",
       title: "Cargá una historia clínica",
       icon: <FileText className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasHistoriaClinica,
       navigateTo: "patients",
       cta: "Pacientes",
     },
@@ -179,7 +191,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "odontograma",
       title: "Completá un odontograma",
       icon: <Smile className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasOdontograma,
       navigateTo: "patients",
       cta: "Pacientes",
     },
@@ -187,7 +199,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "prescripcion",
       title: "Creá una prescripción",
       icon: <Pill className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasPrescripcion,
       navigateTo: "patients",
       cta: "Pacientes",
     },
@@ -195,7 +207,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "tratamiento",
       title: "Creá un plan de tratamiento",
       icon: <ClipboardList className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasTratamiento,
       navigateTo: "patients",
       cta: "Pacientes",
     },
@@ -203,7 +215,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "archivos",
       title: "Subí un archivo a un paciente",
       icon: <Paperclip className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasArchivos,
       navigateTo: "patients",
       cta: "Pacientes",
     },
@@ -211,7 +223,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       id: "cuenta-corriente",
       title: "Registrá un movimiento en cuenta corriente",
       icon: <CreditCard className="w-4 h-4" />,
-      autoCompleted: false,
+      autoCompleted: hasCuentaCorriente,
       navigateTo: "patients",
       cta: "Pacientes",
     },
