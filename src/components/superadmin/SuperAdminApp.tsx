@@ -100,7 +100,26 @@ const StatCard: React.FC<{ label: string; value: number | string; icon: React.El
 const ClinicDetailView: React.FC<{ clinicId: string; onBack: () => void }> = ({ clinicId, onBack }) => {
   const [detail, setDetail] = useState<ClinicDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [generatingPayment, setGeneratingPayment] = useState(false);
   const { toast } = useToast();
+
+  const handleGenerateTestPayment = async () => {
+    setGeneratingPayment(true);
+    try {
+      const response = await apiClient.post<{ init_point: string }>(`/superadmin/clinics/${clinicId}/test-payment`);
+      if (response.init_point) {
+        window.open(response.init_point, '_blank');
+        toast({ title: 'Preferencia creada', description: 'Se abrió la pasarela de MercadoPago en una pestaña nueva.' });
+      } else {
+        toast({ title: 'Error', description: 'No se pudo obtener el punto de inicio de pago.', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('Error generating test payment:', error);
+      toast({ title: 'Error', description: 'Error al generar el pago de prueba.', variant: 'destructive' });
+    } finally {
+      setGeneratingPayment(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -144,7 +163,21 @@ const ClinicDetailView: React.FC<{ clinicId: string; onBack: () => void }> = ({ 
             {clinica.telefono && <span className="ml-3">{clinica.telefono}</span>}
           </p>
         </div>
-        <StatusBadge status={clinica.subscription_status} />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleGenerateTestPayment}
+            disabled={generatingPayment}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 transition-all shrink-0"
+          >
+            {generatingPayment ? (
+              <Activity className="h-4 w-4 animate-spin" />
+            ) : (
+              <CreditCard className="h-4 w-4" />
+            )}
+            Pago de Prueba ($1)
+          </button>
+          <StatusBadge status={clinica.subscription_status} />
+        </div>
       </div>
 
       {/* Info cards */}
@@ -276,6 +309,7 @@ export const SuperAdminApp: React.FC = () => {
   const [selectedClinicId, setSelectedClinicId] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState<string>('clinics');
   const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null);
+  const [generatingPaymentId, setGeneratingPaymentId] = useState<string | null>(null);
 
   const fetchClinics = async () => {
     try {
@@ -287,6 +321,24 @@ export const SuperAdminApp: React.FC = () => {
       toast({ title: 'Error', description: 'No se pudieron cargar las clínicas', variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateTestPayment = async (clinicId: string) => {
+    setGeneratingPaymentId(clinicId);
+    try {
+      const response = await apiClient.post<{ init_point: string }>(`/superadmin/clinics/${clinicId}/test-payment`);
+      if (response.init_point) {
+        window.open(response.init_point, '_blank');
+        toast({ title: 'Preferencia creada', description: 'Se abrió la pasarela de MercadoPago en una pestaña nueva.' });
+      } else {
+        toast({ title: 'Error', description: 'No se pudo obtener el punto de inicio de pago.', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('Error generating test payment:', error);
+      toast({ title: 'Error', description: 'Error al generar el pago de prueba.', variant: 'destructive' });
+    } finally {
+      setGeneratingPaymentId(null);
     }
   };
 
@@ -542,6 +594,18 @@ export const SuperAdminApp: React.FC = () => {
                                   title="Ver detalle"
                                 >
                                   <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleGenerateTestPayment(clinic.id)}
+                                  disabled={generatingPaymentId === clinic.id}
+                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-emerald-600 hover:text-emerald-800 disabled:opacity-50"
+                                  title="Generar Pago de Prueba ($1)"
+                                >
+                                  {generatingPaymentId === clinic.id ? (
+                                    <Activity className="w-4 h-4 animate-spin text-emerald-600" />
+                                  ) : (
+                                    <CreditCard className="w-4 h-4" />
+                                  )}
                                 </button>
                                 <select
                                   className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#2563FF] bg-white"

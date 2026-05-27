@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Card } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { dentalColors } from '../../config/colors'
 import { useToast } from '../../hooks/use-toast'
@@ -13,8 +12,6 @@ import {
   Briefcase,
   Phone,
   Mail,
-  List,
-  LayoutGrid,
   Plus,
   Search,
   Download,
@@ -93,7 +90,7 @@ interface CalendarViewProps {
 
 export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   const { toast } = useToast()
-  const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [appointments, setAppointments] = useState<Turno[]>([])
   const [professionals, setProfessionals] = useState<Profesional[]>([])
@@ -194,10 +191,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       // Calculate date range based on current view with generous buffer
       let fecha_desde: string
       let fecha_hasta: string
-      
+
       const year = currentDate.getFullYear()
       const month = currentDate.getMonth()
-      
+
       if (viewType === 'day') {
         // Fetch a week around the day
         const start = new Date(currentDate)
@@ -295,11 +292,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     })
 
     const clusters: { appointments: any[], maxColumns: number }[] = []
-    
+
     sorted.forEach(appt => {
       const start = getMinutesSinceStart(appt.hora_inicio)
       const end = getMinutesSinceStart(appt.hora_fin) || (start + 30)
-      
+
       let cluster = clusters.find(c => c.appointments.some(a => {
         const aStart = getMinutesSinceStart(a.hora_inicio)
         const aEnd = getMinutesSinceStart(a.hora_fin) || (aStart + 30)
@@ -333,6 +330,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       width: 100 / cluster.maxColumns,
       left: (a.column * 100) / cluster.maxColumns
     })))
+  }
+
+  const handleQuickConfirm = async (id: number) => {
+    try {
+      await turnosApi.confirmarPago(id, true)
+      toast({ title: "Éxito", description: "Pago confirmado exitosamente" })
+      fetchAppointments() // Refresh appointments
+    } catch (error) {
+      console.error('Error confirming payment:', error)
+      toast({ variant: "destructive", title: "Error", description: "Error al confirmar el pago" })
+    }
   }
 
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
@@ -435,7 +443,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         hora_inicio: slot,
         hora_fin
       })
-      
+
       fetchAppointments()
     } catch (error) {
       console.error('Error rescheduling appointment:', error)
@@ -502,7 +510,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 <div className="p-1 text-[10px] font-semibold text-[#8A93A8] border-r border-[#E8E0D6]/30 text-center flex items-center justify-center">
                   {slot}
                 </div>
-                <div 
+                <div
                   className={`relative group h-[56px] cursor-pointer transition-colors ${draggingAppointment ? 'bg-blue-50/10' : 'hover:bg-blue-50/20'}`}
                   onClick={() => {
                     setNewAppointmentData({ fecha: dateString, hora_inicio: slot, sobre_turno: false })
@@ -522,7 +530,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               {getAppointmentLayout(dayAppointments).map((appt) => {
                 const profColor = getProfColor(appt.profesional_id)
                 const statusIcon = getStatusIcon(appt.estado)
-                
+
                 return (
                   <div
                     key={appt.id}
@@ -562,14 +570,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       {/* Quick Actions */}
                       {hoveredApptId === appt.id && (
                         <div className="absolute top-2 right-8 flex flex-row gap-1.5 z-20 transition-opacity">
-                          <button 
+                          <button
                             onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
                             className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-md transition-all scale-90 hover:scale-110"
                             title="Marcar como Atendido"
                           >
                             <Check className="w-4 h-4" strokeWidth={4} />
                           </button>
-                          <button 
+                          <button
                             onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
                             className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md transition-all scale-90 hover:scale-110"
                             title="Marcar como Cancelado"
@@ -672,7 +680,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       {getAppointmentLayout(getAppointmentsForDate(day)).map((appt) => {
                         const profColor = getProfColor(appt.profesional_id)
                         const statusIcon = getStatusIcon(appt.estado)
-                        
+
                         return (
                           <div
                             key={appt.id}
@@ -712,14 +720,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                               {/* Quick Actions */}
                               {hoveredApptId === appt.id && (
                                 <div className="absolute top-1 right-5 flex flex-row gap-1 z-20 transition-opacity">
-                                  <button 
+                                  <button
                                     onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
                                     className="w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-sm transition-all scale-75 hover:scale-100"
                                     title="Atendido"
                                   >
                                     <Check className="w-3 h-3" strokeWidth={4} />
                                   </button>
-                                  <button 
+                                  <button
                                     onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
                                     className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-sm transition-all scale-75 hover:scale-100"
                                     title="Cancelado"
@@ -788,9 +796,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className={`text-sm font-semibold mb-2 flex justify-end ${isToday ? 'text-[#2563FF]' : 'text-[#0B1023]'}`}>
-                     <span className={`${isToday ? 'bg-[#EEF3FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
-                       {day.date.getDate()}
-                     </span>
+                    <span className={`${isToday ? 'bg-[#EEF3FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
+                      {day.date.getDate()}
+                    </span>
                   </div>
 
                   <div className="space-y-1">
@@ -842,153 +850,153 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           <p className="text-[13px] text-[#8A93A8] mt-1">Gestión de agenda y citas</p>
         </div>
         <Button onClick={() => setShowBookingModal(true)} className="bg-dental-secondary hover:opacity-90 text-white rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-sm text-[13px] font-bold transition-all">
-           <Plus className="w-4 h-4" /> Nuevo Turno
+          <Plus className="w-4 h-4" /> Nuevo Turno
         </Button>
       </div>
 
       {/* Sub Header */}
       <div className="flex flex-wrap justify-between items-center mb-3 gap-3 shrink-0">
-         <div className="flex flex-wrap items-center gap-2 relative">
-            {/* Filters */}
-            <div className="relative">
-              <button
-                onClick={() => setShowFilterPanel(!showFilterPanel)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
-              >
-                <Filter className="w-4 h-4 text-[#8A93A8]" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-[#2563FF]"></span>}
-              </button>
-
-              {showFilterPanel && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowFilterPanel(false)} />
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl p-4 z-50">
-                    <div className="space-y-4">
-                       <div>
-                         <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Profesional</label>
-                         <select
-                           value={selectedProfessionalId || ''}
-                           onChange={(e) => setSelectedProfessionalId(e.target.value ? parseInt(e.target.value) : null)}
-                           className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
-                         >
-                            <option value="">Todos los profesionales</option>
-                            {professionals.map(p => (
-                              <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
-                            ))}
-                         </select>
-                       </div>
-                       <div>
-                         <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Servicio</label>
-                         <select
-                           value={selectedServiceId || ''}
-                           onChange={(e) => setSelectedServiceId(e.target.value ? parseInt(e.target.value) : null)}
-                           className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
-                         >
-                            <option value="">Todos los servicios</option>
-                            {servicios.map(s => (
-                              <option key={s.id} value={s.id}>{s.nombre}</option>
-                            ))}
-                         </select>
-                       </div>
-                       {(selectedProfessionalId || selectedServiceId) && (
-                         <Button
-                           variant="ghost"
-                           className="w-full text-xs font-bold text-red-500 hover:bg-red-50"
-                           onClick={() => { setSelectedProfessionalId(null); setSelectedServiceId(null); }}
-                         >
-                           Limpiar Filtros
-                         </Button>
-                       )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-            <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
-               <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
-               <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
-               <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
-            </div>
+        <div className="flex flex-wrap items-center gap-2 relative">
+          {/* Filters */}
+          <div className="relative">
             <button
-              onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
+              onClick={() => setShowFilterPanel(!showFilterPanel)}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
             >
-              <Download className="w-4 h-4 text-[#8A93A8]" /> Exportar
+              <Filter className="w-4 h-4 text-[#8A93A8]" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-[#2563FF]"></span>}
             </button>
-         </div>
-         {/* Patient search inside subheader */}
-         <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 text-[#8A93A8] absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Buscar paciente..."
-                value={patientSearch}
-                onChange={(e) => setPatientSearch(e.target.value)}
-                onFocus={() => patientSearch.trim().length >= 2 && setShowSearchResults(true)}
-                className="pl-9 pr-4 py-2 bg-white border border-[#E8E0D6] rounded-xl text-[13px] text-[#0B1023] outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 w-full sm:w-64 placeholder:text-[#B5AFA8] transition-all" />
-              {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full right-0 mt-2 w-full sm:w-80 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] max-h-60 overflow-y-auto no-scrollbar">
-                  <div className="p-2">
-                    {searchResults.map((turno) => (
-                      <div
-                        key={turno.id}
-                        onClick={() => {
-                          setCurrentDate(new Date(turno.fecha + 'T12:00:00'))
-                          setViewType('day')
-                          setPatientSearch('')
-                          setShowSearchResults(false)
-                          setSelectedAppointment(turno)
-                        }}
-                        className="p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors border-b border-[#E8E0D6]/30 last:border-0"
+
+            {showFilterPanel && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowFilterPanel(false)} />
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl p-4 z-50">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Profesional</label>
+                      <select
+                        value={selectedProfessionalId || ''}
+                        onChange={(e) => setSelectedProfessionalId(e.target.value ? parseInt(e.target.value) : null)}
+                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
                       >
-                        <div className="text-[12px] font-semibold text-[#0B1023] capitalize">
-                          {turno.paciente?.nombre} {turno.paciente?.apellido}
-                        </div>
-                        <div className="flex justify-between text-[10px] text-[#8A93A8] font-medium mt-1">
-                          <span>{new Date(turno.fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
-                          <span>{turno.hora_inicio.substring(0, 5)} hs</span>
-                        </div>
-                      </div>
-                    ))}
+                        <option value="">Todos los profesionales</option>
+                        {professionals.map(p => (
+                          <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Servicio</label>
+                      <select
+                        value={selectedServiceId || ''}
+                        onChange={(e) => setSelectedServiceId(e.target.value ? parseInt(e.target.value) : null)}
+                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
+                      >
+                        <option value="">Todos los servicios</option>
+                        {servicios.map(s => (
+                          <option key={s.id} value={s.id}>{s.nombre}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {(selectedProfessionalId || selectedServiceId) && (
+                      <Button
+                        variant="ghost"
+                        className="w-full text-xs font-bold text-red-500 hover:bg-red-50"
+                        onClick={() => { setSelectedProfessionalId(null); setSelectedServiceId(null); }}
+                      >
+                        Limpiar Filtros
+                      </Button>
+                    )}
                   </div>
                 </div>
-              )}
-              {showSearchResults && searchResults.length === 0 && patientSearch.trim().length >= 2 && (
-                <div className="absolute top-full right-0 mt-2 w-full bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] p-4 text-center">
-                  <p className="text-[11px] font-semibold text-[#8A93A8]">No se encontraron turnos</p>
+              </>
+            )}
+          </div>
+          <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
+            <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
+            <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
+            <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
+          </div>
+          <button
+            onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
+          >
+            <Download className="w-4 h-4 text-[#8A93A8]" /> Exportar
+          </button>
+        </div>
+        {/* Patient search inside subheader */}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
+            <Search className="w-4 h-4 text-[#8A93A8] absolute left-3 top-1/2 -translate-y-1/2" />
+            <input type="text" placeholder="Buscar paciente..."
+              value={patientSearch}
+              onChange={(e) => setPatientSearch(e.target.value)}
+              onFocus={() => patientSearch.trim().length >= 2 && setShowSearchResults(true)}
+              className="pl-9 pr-4 py-2 bg-white border border-[#E8E0D6] rounded-xl text-[13px] text-[#0B1023] outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 w-full sm:w-64 placeholder:text-[#B5AFA8] transition-all" />
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="absolute top-full right-0 mt-2 w-full sm:w-80 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] max-h-60 overflow-y-auto no-scrollbar">
+                <div className="p-2">
+                  {searchResults.map((turno) => (
+                    <div
+                      key={turno.id}
+                      onClick={() => {
+                        setCurrentDate(new Date(turno.fecha + 'T12:00:00'))
+                        setViewType('day')
+                        setPatientSearch('')
+                        setShowSearchResults(false)
+                        setSelectedAppointment(turno)
+                      }}
+                      className="p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors border-b border-[#E8E0D6]/30 last:border-0"
+                    >
+                      <div className="text-[12px] font-semibold text-[#0B1023] capitalize">
+                        {turno.paciente?.nombre} {turno.paciente?.apellido}
+                      </div>
+                      <div className="flex justify-between text-[10px] text-[#8A93A8] font-medium mt-1">
+                        <span>{new Date(turno.fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
+                        <span>{turno.hora_inicio.substring(0, 5)} hs</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-         </div>
+              </div>
+            )}
+            {showSearchResults && searchResults.length === 0 && patientSearch.trim().length >= 2 && (
+              <div className="absolute top-full right-0 mt-2 w-full bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] p-4 text-center">
+                <p className="text-[11px] font-semibold text-[#8A93A8]">No se encontraron turnos</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main Area: Calendar Grid */}
       <div className="flex-1 flex flex-col min-h-0">
-         {/* Calendar Grid */}
-         <div className="flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-            {/* Navigation Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
-               <div className="flex flex-wrap items-center gap-4">
-                  <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
-                  <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
-                     <button onClick={goToToday} className="px-3 py-1 text-[11px] font-semibold text-[#4B5568] hover:bg-white rounded-lg transition-colors">Hoy</button>
-                     <button onClick={() => navigate('prev')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronLeft className="w-4 h-4 text-[#8A93A8]" /></button>
-                     <button onClick={() => navigate('next')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronRight className="w-4 h-4 text-[#8A93A8]" /></button>
-                  </div>
-               </div>
-               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
-                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 rounded-lg text-amber-700 border border-amber-100"><Hourglass className="w-3 h-3" /> Pendiente</div>
-                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-lg text-blue-700 border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-500/20 border-[1.5px] border-blue-500"></div> Confirmado</div>
-                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg text-green-700 border border-green-100"><CheckCircle2 className="w-3 h-3" /> Atendido</div>
-                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-lg text-red-700 border border-red-100"><XCircle className="w-3 h-3" /> Cancelado</div>
-                  <button onClick={() => setShowNewModal(true)} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3"/> Sobreturno</button>
-               </div>
+        {/* Calendar Grid */}
+        <div className="flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+          {/* Navigation Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
+            <div className="flex flex-wrap items-center gap-4">
+              <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
+              <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
+                <button onClick={goToToday} className="px-3 py-1 text-[11px] font-semibold text-[#4B5568] hover:bg-white rounded-lg transition-colors">Hoy</button>
+                <button onClick={() => navigate('prev')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronLeft className="w-4 h-4 text-[#8A93A8]" /></button>
+                <button onClick={() => navigate('next')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronRight className="w-4 h-4 text-[#8A93A8]" /></button>
+              </div>
             </div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 rounded-lg text-amber-700 border border-amber-100"><Hourglass className="w-3 h-3" /> Pendiente</div>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-lg text-blue-700 border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-500/20 border-[1.5px] border-blue-500"></div> Confirmado</div>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg text-green-700 border border-green-100"><CheckCircle2 className="w-3 h-3" /> Atendido</div>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-lg text-red-700 border border-red-100"><XCircle className="w-3 h-3" /> Cancelado</div>
+              <button onClick={() => setShowNewModal(true)} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
+            </div>
+          </div>
 
-            <div className="flex-1 min-h-0 bg-white">
-               {viewType === 'day' && renderDayView()}
-               {viewType === 'week' && renderWeekView()}
-               {viewType === 'month' && renderMonthView()}
-            </div>
-         </div>
+          <div className="flex-1 min-h-0 bg-white">
+            {viewType === 'day' && renderDayView()}
+            {viewType === 'week' && renderWeekView()}
+            {viewType === 'month' && renderMonthView()}
+          </div>
+        </div>
       </div>
 
       {selectedAppointment && (
@@ -1153,7 +1161,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           }}
         />
       )}
-      
+
       {showNewModal && (
         <AdminAppointmentModal
           initialData={newAppointmentData || undefined}
