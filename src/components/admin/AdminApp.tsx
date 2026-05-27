@@ -156,7 +156,9 @@ export const AdminApp: React.FC = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [showTrialModal, setShowTrialModal] = useState(false)
-  const [forceActivation, setForceActivation] = useState(false)
+  const [forceActivation, setForceActivation] = useState(() => {
+    return window.location.search.includes('activate=true');
+  });
 
   const handleViewChange = (view: string) => {
     if (canAccessView(user?.role, view)) {
@@ -212,7 +214,14 @@ export const AdminApp: React.FC = () => {
   }
 
   if (subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) {
-    return <OnboardingWizard clinicaNombre={subscriptionStatus?.nombre} onComplete={() => window.location.reload()} />
+    const isActivationFlow = window.location.search.includes('activate=true') || subscriptionStatus?.subscription_status !== 'pending_payment';
+    return (
+      <OnboardingWizard
+        clinicaNombre={subscriptionStatus?.nombre}
+        onComplete={() => window.location.reload()}
+        initialStep={isActivationFlow ? 4 : 1}
+      />
+    );
   }
 
   const renderCurrentView = () => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { apiClient } from '../../lib/api-client'
 import { configuracionApi } from '../../api/configuracion'
 import { useToast } from '../../hooks/use-toast'
+import { useAuth } from '../../hooks/useAuth'
 import {
   Building2,
   MapPin,
@@ -21,11 +22,13 @@ import {
 interface OnboardingWizardProps {
   clinicaNombre?: string
   onComplete?: () => void
+  initialStep?: number
 }
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, onComplete }) => {
+export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, onComplete, initialStep = 1 }) => {
   const { toast } = useToast()
-  const [step, setStep] = useState(1)
+  const { user } = useAuth()
+  const [step, setStep] = useState(initialStep)
   const [saving, setSaving] = useState(false)
   const [paying, setPaying] = useState(false)
 
@@ -78,7 +81,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     }
   }
 
-  const [billingPlan, setBillingPlan] = useState<'monthly' | 'annual'>('monthly')
+  const [billingPlan, setBillingPlan] = useState<'monthly' | 'annual' | 'test'>('monthly')
+  const showTestPlan = user?.role === 'superadmin' || user?.email === 'riostiziano6@gmail.com' || window.location.search.includes('test=true')
 
   const handlePayment = async () => {
     setPaying(true)
@@ -424,6 +428,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                     -10%
                   </span>
                 </button>
+                {showTestPlan && (
+                  <button
+                    onClick={() => setBillingPlan('test')}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      billingPlan === 'test'
+                        ? 'bg-emerald-500 text-white shadow-md'
+                        : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
+                    }`}
+                  >
+                    Prueba ($1)
+                  </button>
+                )}
               </div>
 
               {/* Plan card */}
@@ -439,19 +455,22 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                       <div className="flex items-center gap-2 mb-1">
                         <ShieldCheck className="h-4 w-4 text-[#02E3FF]" />
                         <span className="text-xs font-bold text-[#02E3FF] uppercase tracking-wider">
-                          Plan Pro {billingPlan === 'annual' ? 'Anual' : 'Mensual'}
+                          {billingPlan === 'test' ? 'Plan de Prueba (SuperAdmin)' : `Plan Pro ${billingPlan === 'annual' ? 'Anual' : 'Mensual'}`}
                         </span>
                       </div>
                       <h3 className="text-2xl font-extrabold">Dentiqly</h3>
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-extrabold">
-                        ${billingPlan === 'monthly' ? '80.000' : '72.000'}
+                        {billingPlan === 'test' ? '$1' : billingPlan === 'monthly' ? '$80.000' : '$72.000'}
                       </p>
                       <p className="text-xs text-white/40">
                         ARS / mes
                         {billingPlan === 'annual' && (
                           <span className="block text-[#22C55E]">$864.000 /año</span>
+                        )}
+                        {billingPlan === 'test' && (
+                          <span className="block text-[#22C55E]">Cobro único de prueba</span>
                         )}
                       </p>
                     </div>
