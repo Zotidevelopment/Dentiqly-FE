@@ -115,7 +115,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           </div>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-7 w-auto brightness-0 invert" />
+              <img src="/assets/dentiqly-logo-white.png?v=2" alt="Dentiqly" className="h-7 w-auto" />
               <span className="text-white/30 text-xs font-medium">|</span>
               <span className="text-white/50 text-xs font-medium">Configuración inicial</span>
             </div>

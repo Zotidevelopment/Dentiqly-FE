@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -396,7 +396,7 @@ html.lenis, html.lenis body {
 
 /* ─── Premium Buttons (Wayflyer Style) ────────────────────────────── */
 .btn-wayflyer-primary {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   background-color: #0047FF;
   color: #FFFFFF;
   font-weight: 600;
@@ -414,7 +414,7 @@ html.lenis, html.lenis body {
 }
 
 .btn-wayflyer-secondary {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   background-color: transparent;
   border: 1px solid #0047FF;
   color: #0047FF;

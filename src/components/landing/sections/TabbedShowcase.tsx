@@ -37,7 +37,6 @@ const tabs = [
 export const TabbedShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   const sectionRef = useRef<HTMLElement>(null)
-  const pinWrapperRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const prevTabRef = useRef(0)
 
@@ -52,6 +51,7 @@ export const TabbedShowcase: React.FC = () => {
     )
   }, [])
 
+  // Entrance animation only
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
@@ -67,33 +67,18 @@ export const TabbedShowcase: React.FC = () => {
           start: "top 75%",
         },
       })
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${window.innerHeight * (tabs.length - 1)}`,
-        pin: pinWrapperRef.current,
-        scrub: 0.3,
-        onUpdate: (self) => {
-          const progress = self.progress
-          const newTab = Math.min(
-            tabs.length - 1,
-            Math.floor(progress * tabs.length)
-          )
-          setActiveTab((prev) => {
-            if (prev !== newTab) {
-              const direction = newTab > prev ? "down" : "up"
-              prevTabRef.current = prev
-              requestAnimationFrame(() => animateContent(direction))
-            }
-            return newTab
-          })
-        },
-      })
     }, section)
 
     return () => ctx.revert()
-  }, [animateContent])
+  }, [])
+
+  const handleTabClick = useCallback((index: number) => {
+    if (index === activeTab) return
+    const direction = index > activeTab ? "down" : "up"
+    prevTabRef.current = activeTab
+    setActiveTab(index)
+    requestAnimationFrame(() => animateContent(direction))
+  }, [activeTab, animateContent])
 
   const current = tabs[activeTab]
 
@@ -102,12 +87,10 @@ export const TabbedShowcase: React.FC = () => {
       ref={sectionRef}
       id="funcionalidades-tabs"
       className="relative overflow-hidden"
-      style={{ minHeight: `${100 * tabs.length}vh` }}
     >
       <div
-        ref={pinWrapperRef}
-        className="bg-[#FAFCFF]"
-        style={{ height: "100vh", display: "flex", alignItems: "center" }}
+        className="bg-[#FAFCFF] py-16 sm:py-24"
+        style={{ display: "flex", alignItems: "center", minHeight: "80vh" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="tabbed-showcase-inner">
@@ -125,11 +108,12 @@ export const TabbedShowcase: React.FC = () => {
                   return (
                     <button
                       key={tab.number}
-                      className="relative flex items-center gap-2 transition-all duration-300 focus:outline-none cursor-default"
+                      onClick={() => handleTabClick(index)}
+                      className="relative flex items-center gap-2 transition-all duration-300 focus:outline-none cursor-pointer"
                       style={{
                         padding: "10px 20px",
                         borderRadius: "999px",
-                        background: isActive ? "#0A0F2D" : "transparent",
+                        background: isActive ? "#0047FF" : "transparent",
                         color: isActive ? "#FFFFFF" : "#64748B",
                       }}
                     >
@@ -174,27 +158,7 @@ export const TabbedShowcase: React.FC = () => {
               </div>
             </div>
 
-            {/* Progress bar */}
-            <div className="flex justify-center mb-6 lg:mb-8">
-              <div className="flex items-center gap-2">
-                {tabs.map((_, index) => (
-                  <div
-                    key={index}
-                    className="h-1 rounded-full transition-all duration-500"
-                    style={{
-                      width: activeTab === index ? "32px" : "8px",
-                      background:
-                        activeTab === index
-                          ? "#0047FF"
-                          : activeTab > index
-                          ? "#0047FF"
-                          : "#E2E8F0",
-                      opacity: activeTab >= index ? 1 : 0.4,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+
 
             {/* Content Area */}
             <div
@@ -244,11 +208,11 @@ export const TabbedShowcase: React.FC = () => {
                   <div
                     className="absolute inset-0 pointer-events-none opacity-20 blur-[60px] transition-colors duration-1000"
                     style={{
-                      background: activeTab === 0 
+                      background: activeTab === 0
                         ? 'radial-gradient(circle at center, #2563FF 0%, transparent 70%)'
-                        : activeTab === 1 
-                        ? 'radial-gradient(circle at center, #02E3FF 0%, transparent 70%)'
-                        : 'radial-gradient(circle at center, #8B5CF6 0%, transparent 70%)'
+                        : activeTab === 1
+                          ? 'radial-gradient(circle at center, #02E3FF 0%, transparent 70%)'
+                          : 'radial-gradient(circle at center, #8B5CF6 0%, transparent 70%)'
                     }}
                   />
 

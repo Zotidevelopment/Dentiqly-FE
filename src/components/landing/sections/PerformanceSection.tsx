@@ -237,7 +237,6 @@ const tabsData: TabData[] = [
 export const PerformanceSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   const sectionRef = useRef<HTMLElement>(null)
-  const pinWrapperRef = useRef<HTMLDivElement>(null)
   const metricsRef = useRef<HTMLDivElement>(null)
   const prevTabRef = useRef(0)
 
@@ -259,37 +258,34 @@ export const PerformanceSection: React.FC = () => {
     )
   }, [])
 
+  // Entrance animation only (no scroll-driven tab switching)
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${window.innerHeight * (tabsData.length - 1)}`,
-        pin: pinWrapperRef.current,
-        scrub: 0.3,
-        onUpdate: (self) => {
-          const progress = self.progress
-          const newTab = Math.min(
-            tabsData.length - 1,
-            Math.floor(progress * tabsData.length)
-          )
-          setActiveTab((prev) => {
-            if (prev !== newTab) {
-              const direction = newTab > prev ? "down" : "up"
-              prevTabRef.current = prev
-              requestAnimationFrame(() => animateMetrics(direction))
-            }
-            return newTab
-          })
+      gsap.from(".perf-section-inner", {
+        y: 60,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 75%",
         },
       })
     }, section)
 
     return () => ctx.revert()
-  }, [animateMetrics])
+  }, [])
+
+  const handleTabClick = useCallback((index: number) => {
+    if (index === activeTab) return
+    const direction = index > activeTab ? "down" : "up"
+    prevTabRef.current = activeTab
+    setActiveTab(index)
+    requestAnimationFrame(() => animateMetrics(direction))
+  }, [activeTab, animateMetrics])
 
   const current = tabsData[activeTab]
 
@@ -299,60 +295,43 @@ export const PerformanceSection: React.FC = () => {
       ref={sectionRef}
       data-navbar-theme="dark"
       className="relative overflow-hidden"
-      style={{ minHeight: `${100 * tabsData.length}vh` }}
     >
       <div
-        ref={pinWrapperRef}
-        className="bg-[#0A0F2D] text-white py-12 sm:py-16 border-t border-white/5"
+        className="bg-[#0A0F2D] text-white py-16 sm:py-24"
         style={{ minHeight: "100vh" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+          <div className="perf-section-inner flex flex-col lg:flex-row gap-8 lg:gap-16">
             {/* Left Sidebar */}
-            <div className="hidden lg:flex flex-col gap-6 w-48 shrink-0 pt-2 border-l border-white/10 pl-6">
+            <div className="hidden lg:flex flex-col gap-6 w-48 shrink-0 pt-2">
               {tabsData.map((tab, index) => {
                 const isActive = activeTab === index
                 return (
-                  <div key={tab.key} className="relative">
+                  <button
+                    key={tab.key}
+                    onClick={() => handleTabClick(index)}
+                    className="relative text-left cursor-pointer group"
+                  >
                     {isActive && (
                       <div
-                        className="absolute -left-[25px] top-0 w-[2px] h-full bg-[#0047FF]"
+                        className="absolute -left-0 top-0 w-[2px] h-full bg-[#0047FF]"
                         style={{
                           boxShadow: "0 0 8px rgba(0,71,255,0.5)",
                         }}
                       />
                     )}
                     <span
-                      className="text-[11px] font-semibold tracking-[-2px] text-left uppercase transition-all duration-300 block"
+                      className="text-[11px] font-semibold tracking-[0.05em] text-left uppercase transition-all duration-300 block pl-4"
                       style={{
                         color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.4)",
                       }}
                     >
                       {tab.label}
                     </span>
-                  </div>
+                  </button>
                 )
               })}
 
-              {/* Progress dots */}
-              <div className="flex items-center gap-1.5 mt-4">
-                {tabsData.map((_, index) => (
-                  <div
-                    key={index}
-                    className="h-1 rounded-full transition-all duration-500"
-                    style={{
-                      width: activeTab === index ? "20px" : "6px",
-                      background:
-                        activeTab === index
-                          ? "#0047FF"
-                          : activeTab > index
-                          ? "#0047FF"
-                          : "rgba(255,255,255,0.15)",
-                      opacity: activeTab >= index ? 1 : 0.4,
-                    }}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Mobile tabs */}
@@ -360,9 +339,10 @@ export const PerformanceSection: React.FC = () => {
               {tabsData.map((tab, index) => {
                 const isActive = activeTab === index
                 return (
-                  <span
+                  <button
                     key={tab.key}
-                    className="text-[11px] font-semibold tracking-wide uppercase whitespace-nowrap transition-all duration-300 px-3 py-1.5 rounded-full"
+                    onClick={() => handleTabClick(index)}
+                    className="text-[11px] font-semibold tracking-wide uppercase whitespace-nowrap transition-all duration-300 px-3 py-1.5 rounded-full cursor-pointer"
                     style={{
                       color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.4)",
                       background: isActive
@@ -374,7 +354,7 @@ export const PerformanceSection: React.FC = () => {
                     }}
                   >
                     {tab.label}
-                  </span>
+                  </button>
                 )
               })}
             </div>
@@ -390,11 +370,9 @@ export const PerformanceSection: React.FC = () => {
                   </span>
                 </h2>
 
-                <Link to="/register" className="btn-wayflyer-primary">
+                <Link to="/register" className="btn-wayflyer-primary gap-2">
                   {current.cta}
-                  <div className="btn-icon-circle">
-                    <ArrowRight size={14} />
-                  </div>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
@@ -410,7 +388,7 @@ export const PerformanceSection: React.FC = () => {
                       <div className="text-4xl sm:text-5xl font-semibold tracking-[-3px] text-white mb-1">
                         {metric.multiplier}
                       </div>
-                      <div className="text-[#0047FF] text-sm font-semibold tracking-wide">
+                      <div className="text-[#0047FF] text-sm font-semibold tracking-normal">
                         {metric.label}
                       </div>
                     </div>
@@ -419,7 +397,7 @@ export const PerformanceSection: React.FC = () => {
                     <div className="flex-1 w-full pt-1 flex flex-col gap-3">
                       {/* Competition Bar */}
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-[10px] font-mono tracking-[-2px] text-white/40 uppercase font-semibold">
+                        <div className="flex items-center justify-between text-[10px] font-mono tracking-normal text-white/40 uppercase font-semibold">
                           <span>{metric.competitionLabel}</span>
                           <span>{metric.competitionValue}</span>
                         </div>
@@ -437,7 +415,7 @@ export const PerformanceSection: React.FC = () => {
 
                       {/* Dentiqly Bar */}
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-[10px] font-semibold font-mono tracking-[-2px] text-[#0047FF] uppercase">
+                        <div className="flex items-center justify-between text-[10px] font-semibold font-mono tracking-normal text-[#0047FF] uppercase">
                           <span>{metric.dentiqlyLabel}</span>
                           <span>{metric.dentiqlyValue}</span>
                         </div>

@@ -44,7 +44,7 @@ export const LoginPaciente: React.FC = () => {
 
         <div className="relative z-10">
           <Link to="/">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto brightness-0 invert" />
+            <img src="/assets/dentiqly-logo-white.png?v=2" alt="Dentiqly" className="h-10 w-auto" />
           </Link>
         </div>
 
@@ -96,7 +96,7 @@ export const LoginPaciente: React.FC = () => {
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-10">
             <Link to="/">
-              <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto" />
+              <img src="/assets/dentiqly-logo.png?v=2" alt="Dentiqly" className="h-10 w-auto" />
             </Link>
           </div>
 

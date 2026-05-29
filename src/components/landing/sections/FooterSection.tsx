@@ -27,9 +27,9 @@ export const FooterSection: React.FC = () => {
           {/* Brand & Description */}
           <div className="lg:col-span-1">
             <img
-              src="/assets/dentiqly-logo.png"
+              src="/assets/dentiqly-logo-white.png?v=2"
               alt="Dentiqly - Software de gestión dental para clínicas odontológicas"
-              className="h-8 w-auto mb-6 brightness-0 invert"
+              className="h-8 w-auto mb-6"
             />
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               Dentiqly es el software dental todo en uno para clínicas odontológicas en Argentina.

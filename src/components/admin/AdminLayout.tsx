@@ -123,7 +123,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       {/* ═══ MOBILE TOP BAR ═══ */}
       <div className="lg:hidden h-14 bg-[#0B1023] flex items-center justify-between px-4 sticky top-0 z-[45]">
         <div className="flex items-center gap-2">
-          <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-7 w-auto brightness-0 invert" />
+          <img src="/assets/dentiqly-logo-white.png?v=2" alt="Dentiqly" className="h-7 w-auto" />
         </div>
         <button
           onClick={() => setSidebarOpen(true)}
@@ -142,7 +142,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {/* Logo + Collapse toggle */}
           <div className={`flex items-center ${collapsed ? 'justify-center px-2' : 'justify-between px-5'} h-[64px] border-b border-white/[0.06]`}>
             {!collapsed && (
-              <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-8 w-auto brightness-0 invert" />
+              <img src="/assets/dentiqly-logo-white.png?v=2" alt="Dentiqly" className="h-8 w-auto" />
             )}
             <button
               onClick={() => setCollapsed(!collapsed)}

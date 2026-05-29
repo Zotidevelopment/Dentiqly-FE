@@ -59,7 +59,7 @@ export const ResetPasswordPage: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <Link to="/">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto mx-auto mb-6" />
+            <img src="/assets/dentiqly-logo-blue.png" alt="Dentiqly" className="h-8 w-auto mx-auto mb-6" />
           </Link>
           <h1 className="text-2xl font-extrabold text-[#0B1023] mb-1">Nueva contraseña</h1>
           <p className="text-[#8A93A8] text-sm">Ingresá tu nueva contraseña</p>
@@ -120,7 +120,7 @@ export const ResetPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-none font-bold text-sm hover:bg-[#1D4ED8] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

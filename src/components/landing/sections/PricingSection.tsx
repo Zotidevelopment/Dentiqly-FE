@@ -143,22 +143,6 @@ export const PricingSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Testimonial snippet */}
-            <div className="hidden lg:block bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6">
-              <p className="text-blue-100/50 text-sm italic leading-relaxed mb-4">
-                "Desde que implementamos Dentiqly, redujimos un 40% las inasistencias
-                y triplicamos la eficiencia de nuestro equipo administrativo."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#2563FF]/20 flex items-center justify-center">
-                  <span className="text-xs font-bold text-[#2563FF]">DR</span>
-                </div>
-                <div>
-                  <p className="text-white text-sm font-semibold">Dr. Ramírez</p>
-                  <p className="text-blue-200/30 text-xs">Director, Clínica Dental Palermo</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* ── Right Column: Plan Card ── */}
@@ -211,12 +195,10 @@ export const PricingSection: React.FC = () => {
                 {/* CTA */}
                 <Link
                   to="/register"
-                  className="w-full btn-wayflyer-primary py-4 text-lg"
+                  className="w-full btn-wayflyer-primary py-4 text-lg gap-2"
                 >
                   Comenzar 14 días gratis
-                  <div className="btn-icon-circle">
-                    <ArrowRight size={16} />
-                  </div>
+                  <ArrowRight size={16} />
                 </Link>
 
                 <p className="text-center text-blue-200/20 text-xs mt-4">

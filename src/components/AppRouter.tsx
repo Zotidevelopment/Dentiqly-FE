@@ -72,7 +72,7 @@ const DentiqlyBookingHeader: React.FC = () => (
       </span>
       <div className="flex items-center gap-3">
         <img
-          src="/assets/dentiqly-logo.png"
+          src="/assets/dentiqly-logo.png?v=2"
           alt="Dentiqly - Dental Software SaaS"
           className="h-8 sm:h-9 w-auto object-contain"
         />

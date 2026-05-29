@@ -71,7 +71,7 @@ export const PatientLayout: React.FC = () => {
         {/* Brand */}
         <div className="p-6 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-8 w-auto brightness-0 invert" />
+            <img src="/assets/dentiqly-logo-white.png?v=2" alt="Dentiqly" className="h-8 w-auto" />
           </div>
           <p className="text-white/30 text-xs font-medium mt-2 uppercase tracking-wider">Portal del Paciente</p>
         </div>

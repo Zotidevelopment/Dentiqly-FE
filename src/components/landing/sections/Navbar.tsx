@@ -114,13 +114,13 @@ export const Navbar: React.FC = () => {
             className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
           >
             <img
-              src="/assets/dentiqly-logo.png"
+              src={isDark ? "/assets/dentiqly-logo-white.png?v=2" : "/assets/dentiqly-logo-blue.png"}
               alt="Dentiqly - Software de gestión dental"
-              className={`h-[28px] w-auto transition-all duration-300 ${isDark ? "brightness-0 invert" : ""}`}
+              className="h-[28px] w-auto transition-all duration-300"
             />
           </Link>
 
-          {/* ═══ Center: Nav Links pill ═══ */}
+          {/* ══ center: Nav Links pill ══ */}
           <div className="hidden md:flex items-center gap-1 lg:gap-1.5 bg-[#0047FF] rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2">
             {navLinks.map((item) => (
               <a
@@ -157,16 +157,14 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-lg font-semibold gap-3 ${
+              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-lg font-semibold gap-2 ${
                 isDark
-                  ? "bg-white text-[#0A0F2D] hover:bg-white/90"
+                  ? "bg-white text-[#2563FF] hover:bg-gray-50"
                   : "bg-[#0047FF] text-white hover:bg-[#0036CC]"
               }`}
             >
               Registrarse
-              <div className={`flex items-center justify-center w-5 h-5 rounded-full ${isDark ? "bg-[#0047FF] text-white" : "bg-white text-[#0047FF]"}`}>
-                <ArrowRight size={11} />
-              </div>
+              <ArrowRight size={14} className={isDark ? "text-[#2563FF]" : "text-white"} />
             </Link>
           </div>
         </div>

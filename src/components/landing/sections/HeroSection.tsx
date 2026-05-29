@@ -171,11 +171,9 @@ export const HeroSection: React.FC = () => {
             >
               Ver demo
             </a>
-            <Link to="/register" className="btn-wayflyer-primary min-w-[165px]">
+            <Link to="/register" className="btn-wayflyer-primary min-w-[165px] gap-2">
               Comenzar gratis
-              <div className="btn-icon-circle">
-                <ArrowRight size={14} />
-              </div>
+              <ArrowRight size={14} />
             </Link>
           </motion.div>
         </div>
