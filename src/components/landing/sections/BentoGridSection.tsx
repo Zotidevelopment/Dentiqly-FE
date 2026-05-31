@@ -18,7 +18,7 @@ export const BentoGridSection: React.FC = () => {
           >
             {/* Placeholder for 3D Icon */}
             <div className="absolute top-8 right-8 w-32 h-32 md:w-48 md:h-48">
-              <div className="w-full h-full bg-gradient-to-br from-[#ffffff] to-blue-100/50 rounded-2xl border-2 border-dashed border-blue-200 flex items-center justify-center relative transform rotate-12 transition-transform hover:rotate-0 duration-500">
+              <div className="w-full h-full bg-white/10 rounded-2xl border-2 border-dashed border-white/30 flex items-center justify-center relative transform rotate-12 transition-transform hover:rotate-0 duration-500">
                 <span className="text-[#ffffff] text-sm font-medium absolute -bottom-6 text-center w-full">Espacio 3D</span>
                 <Award className="w-16 h-16 text-[#ffffff]/50" />
               </div>

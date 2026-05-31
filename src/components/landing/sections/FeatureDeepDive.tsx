@@ -121,12 +121,11 @@ export const FeatureDeepDive: React.FC = () => {
                 >
                   <Icon className="w-6 h-6" style={{ color: feature.color }} />
                 </div>
-                <p
-                  className="feature-text-reveal text-sm font-bold tracking-widest uppercase mb-3"
-                  style={{ color: feature.color }}
-                >
-                  {feature.subtitle}
-                </p>
+                <div className="mb-3">
+                  <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none feature-text-reveal">
+                    {feature.subtitle}
+                  </span>
+                </div>
                 <h3 className="feature-text-reveal text-3xl sm:text-4xl font-semibold text-[#0A0F2D] tracking-[-2px] mb-5">
                   {feature.title}
                 </h3>

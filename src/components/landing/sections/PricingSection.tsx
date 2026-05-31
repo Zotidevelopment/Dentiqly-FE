@@ -84,6 +84,10 @@ export const PricingSection: React.FC = () => {
       id="precios"
       data-navbar-theme="dark"
       className="py-28 sm:py-36 bg-[#0A0F2D] relative overflow-hidden"
+      style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)`,
+        backgroundSize: "28px 28px",
+      }}
     >
       {/* Background effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#2563FF] rounded-[100%] blur-[150px] opacity-15 pointer-events-none" />
@@ -95,9 +99,11 @@ export const PricingSection: React.FC = () => {
 
           {/* ── Left Column: Title + Description ── */}
           <div className="pricing-left flex-1 lg:max-w-[480px] lg:sticky lg:top-32 pt-4">
-            <p className="text-sm font-bold text-[#2563FF] tracking-widest uppercase mb-5">
-              Precios
-            </p>
+            <div className="mb-5">
+              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+                Precios
+              </span>
+            </div>
 
             <h2 className="text-4xl md:text-5xl xl:text-[3.4rem] font-semibold text-white mb-6 tracking-[-3px] leading-[1.1]">
               Un solo plan,
@@ -147,17 +153,14 @@ export const PricingSection: React.FC = () => {
 
           {/* ── Right Column: Plan Card ── */}
           <div className="pricing-card-wrapper flex-1 lg:max-w-[560px] w-full">
-            <div className="relative p-[1px] rounded-[2rem] bg-gradient-to-b from-white/20 via-white/5 to-transparent overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-b from-[#2563FF]/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative bg-[#0F1535] rounded-[2rem] p-8 sm:p-10 backdrop-blur-xl">
+            <div className="relative border border-white/15 overflow-hidden bg-[#0F1535] p-8 sm:p-10">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-1">Plan Pro</h3>
                     <p className="text-blue-200/30 text-sm">Todo lo que tu clínica necesita</p>
                   </div>
-                  <span className="px-4 py-1.5 rounded-full bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0">
+                  <span className="px-4 py-1.5 bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0">
                     Más Popular
                   </span>
                 </div>
@@ -172,7 +175,7 @@ export const PricingSection: React.FC = () => {
                 </p>
 
                 {/* Divider */}
-                <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
+                <div className="h-px bg-white/10 mb-8" />
 
                 {/* Features */}
                 <p className="text-xs font-bold text-blue-200/40 uppercase tracking-widest mb-5">
@@ -204,7 +207,6 @@ export const PricingSection: React.FC = () => {
                 <p className="text-center text-blue-200/20 text-xs mt-4">
                   Sin tarjeta de crédito requerida
                 </p>
-              </div>
             </div>
           </div>
 

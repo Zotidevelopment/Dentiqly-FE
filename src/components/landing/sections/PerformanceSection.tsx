@@ -297,8 +297,12 @@ export const PerformanceSection: React.FC = () => {
       className="relative overflow-hidden"
     >
       <div
-        className="bg-[#0A0F2D] text-white py-16 sm:py-24"
-        style={{ minHeight: "100vh" }}
+        className="bg-[#0A0F2D] text-white py-16 sm:py-24 relative overflow-hidden"
+        style={{
+          minHeight: "100vh",
+          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+          backgroundSize: "28px 28px",
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="perf-section-inner flex flex-col lg:flex-row gap-8 lg:gap-16">

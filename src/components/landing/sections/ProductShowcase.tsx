@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react"
-import { LayoutDashboard, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Link } from "react-router-dom"
@@ -68,10 +68,9 @@ export const ProductShowcase: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
           <div className="showcase-header-left flex-1 max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
-              <LayoutDashboard className="w-4 h-4 text-[#2563FF]" />
-              <p className="text-sm font-extrabold text-[#2563FF] tracking-widest uppercase">
+              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
                 Casos de uso
-              </p>
+              </span>
             </div>
             <h2 className="text-4xl md:text-5xl xl:text-[3.4rem] font-semibold text-[#0A0F2D] tracking-[-3px] leading-[1.1]">
               Todo lo que necesitas

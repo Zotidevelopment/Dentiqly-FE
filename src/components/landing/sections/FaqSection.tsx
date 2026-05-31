@@ -137,15 +137,23 @@ export const FaqSection: React.FC = () => {
     <section ref={sectionRef} id="faq" className="py-28 sm:py-36 bg-[#FAFCFF]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="faq-heading text-center mb-16">
-          <p className="text-sm font-extrabold text-[#2563FF] tracking-widest uppercase mb-4">
-            Preguntas Frecuentes
-          </p>
+          <div className="flex justify-center mb-4">
+            <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+              Preguntas frecuentes
+            </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1023] tracking-tight">
             Todo lo que necesitas saber sobre Dentiqly
           </h2>
         </div>
 
-        <div className="faq-list bg-[#0047FF] rounded-3xl border border-[#0047FF]/20 shadow-[0_20px_50px_rgba(0,71,255,0.25)] overflow-hidden">
+        <div
+          className="faq-list bg-[#0047FF] rounded-3xl border border-[#0047FF]/20 shadow-[0_20px_50px_rgba(0,71,255,0.25)] overflow-hidden relative"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)`,
+            backgroundSize: "24px 24px",
+          }}
+        >
           {faqs.map((faq, i) => (
             <FaqItem key={i} question={faq.question} answer={faq.answer} index={i} />
           ))}

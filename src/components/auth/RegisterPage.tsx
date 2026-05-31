@@ -106,7 +106,13 @@ export const RegisterPage: React.FC = () => {
       <div className="h-screen w-screen flex font-sans overflow-hidden">
 
         {/* ════════ Left Panel — Branding ════════ */}
-        <div className="hidden lg:flex lg:w-[45%] h-full relative overflow-hidden flex-col justify-between p-12 xl:p-16 bg-[#0047FF] border-r border-[#E5E7EB]">
+        <div
+          className="hidden lg:flex lg:w-[45%] h-full relative overflow-hidden flex-col justify-between p-12 xl:p-16 bg-[#0047FF] border-r border-[#E5E7EB]"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)`,
+            backgroundSize: "28px 28px",
+          }}
+        >
           {/* Logo */}
           <div className="relative z-10">
             <Link to="/">

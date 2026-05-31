@@ -83,7 +83,7 @@ export const TestimonialSection: React.FC = () => {
           </blockquote>
 
           <div className="testimonial-author flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#2563FF] to-[#0047FF] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#0047FF] flex items-center justify-center">
               <span className="text-white text-sm font-bold">MG</span>
             </div>
             <div>

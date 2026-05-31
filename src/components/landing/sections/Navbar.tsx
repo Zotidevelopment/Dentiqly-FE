@@ -6,6 +6,7 @@ import gsap from "gsap"
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const navRef = useRef<HTMLElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
@@ -27,6 +28,15 @@ export const Navbar: React.FC = () => {
     },
     [isLanding, navigate]
   )
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40)
+    }
+    window.addEventListener("scroll", handleScroll)
+    handleScroll()
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   useEffect(() => {
     if (isLanding && location.hash) {
@@ -104,7 +114,11 @@ export const Navbar: React.FC = () => {
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-3"
+        className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+          isScrolled
+            ? "top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
+            : "top-0 w-full max-w-full bg-transparent py-4 px-4 sm:px-6 lg:px-8"
+        }`}
       >
         <div className="w-full flex items-center justify-between h-[54px]">
 
@@ -114,14 +128,16 @@ export const Navbar: React.FC = () => {
             className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
           >
             <img
-              src={isDark ? "/assets/dentiqly-logo-white.png?v=2" : "/assets/dentiqly-logo-blue.png"}
+              src={isDark || isScrolled ? "/assets/dentiqly-logo-white.png?v=2" : "/assets/dentiqly-logo-blue.png"}
               alt="Dentiqly - Software de gestión dental"
               className="h-[28px] w-auto transition-all duration-300"
             />
           </Link>
 
           {/* ══ center: Nav Links pill ══ */}
-          <div className="hidden md:flex items-center gap-1 lg:gap-1.5 bg-[#0047FF] rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2">
+          <div className={`hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors ${
+            isScrolled ? "bg-transparent" : "bg-[#0047FF]"
+          }`}>
             {navLinks.map((item) => (
               <a
                 key={item.label}
@@ -136,7 +152,7 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className={`md:hidden p-1.5 transition-colors duration-300 ${isDark ? "text-white" : "text-[#0047FF]"}`}
+            className={`md:hidden p-1.5 transition-colors duration-300 ${isDark || isScrolled ? "text-white" : "text-[#0047FF]"}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -146,9 +162,9 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-lg font-medium ${
-                isDark
-                  ? "border border-white/30 text-white hover:bg-white/10"
+              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-none font-medium ${
+                isDark || isScrolled
+                  ? "bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
                   : "bg-white border border-[#0047FF] text-[#0047FF] hover:bg-gray-50"
               }`}
             >
@@ -157,14 +173,14 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-lg font-semibold gap-2 ${
-                isDark
-                  ? "bg-white text-[#2563FF] hover:bg-gray-50"
+              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-none font-semibold gap-2 ${
+                isDark || isScrolled
+                  ? "bg-white text-[#0047FF] hover:bg-gray-50"
                   : "bg-[#0047FF] text-white hover:bg-[#0036CC]"
               }`}
             >
               Registrarse
-              <ArrowRight size={14} className={isDark ? "text-[#2563FF]" : "text-white"} />
+              <ArrowRight size={14} className={isDark || isScrolled ? "text-[#0047FF]" : "text-white"} />
             </Link>
           </div>
         </div>
@@ -191,14 +207,14 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white font-medium transition-all"
+                className="h-12 flex items-center justify-center rounded-none bg-white/5 border border-white/10 text-white font-medium transition-all"
               >
                 Ingresar
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-xl bg-[#0047FF] text-white font-semibold shadow-lg shadow-blue-500/20 transition-all"
+                className="h-12 flex items-center justify-center rounded-none bg-[#0047FF] text-white font-semibold transition-all"
               >
                 Registrarse
               </Link>

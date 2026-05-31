@@ -12,7 +12,7 @@ const tabs = [
       "Cada diente con su historial completo, accesible con un clic.",
     description:
       "Registrá hallazgos, tratamientos y evoluciones en un odontograma digital interactivo. Vista por diente, códigos de colores y exportación en PDF.",
-    image: "/assets/features/3d-odontograma.png",
+    image: "/assets/features/diente.jpg",
   },
   {
     number: "02",
@@ -21,7 +21,7 @@ const tabs = [
       "Reduce ausencias hasta un 80% sin mover un dedo.",
     description:
       "Tus pacientes reciben recordatorios automáticos por email antes de cada turno. Confirmación, cancelación y mensajes personalizables.",
-    image: "/assets/features/3d-email.png",
+    image: "/assets/features/secretaria.jpg",
   },
   {
     number: "03",
@@ -30,7 +30,7 @@ const tabs = [
       "Todas tus sedes, un solo panel de control.",
     description:
       "Administrá todas tus sucursales desde un único panel. Compará rendimiento, gestioná profesionales y unificá la gestión en un solo lugar.",
-    image: "/assets/features/3d-multi.png",
+    image: "/assets/features/dentista.jpg",
   },
 ]
 
@@ -187,42 +187,15 @@ export const TabbedShowcase: React.FC = () => {
               {/* Right: Image Container */}
               <div className="order-1 lg:order-2">
                 <div
-                  className="tab-content-animate relative rounded-3xl overflow-hidden bg-[#FAFCFF] isolate transform-gpu"
-                  style={{
-                    border: "1px solid #E2E8F0",
-                    boxShadow: "0 20px 40px -10px rgba(0,0,0,0.05)",
-                  }}
+                  className="tab-content-animate relative rounded-none overflow-hidden bg-[#FAFCFF] isolate transform-gpu border border-[#E2E8F0] shadow-xl"
                 >
-                  <div
-                    className="absolute inset-0 pointer-events-none opacity-50"
-                    style={{
-                      backgroundImage: `
-                        linear-gradient(to right, #CBD5E1 1px, transparent 1px),
-                        linear-gradient(to bottom, #CBD5E1 1px, transparent 1px)
-                      `,
-                      backgroundSize: "40px 40px",
-                    }}
-                  />
-
-                  {/* Dynamic glow based on active tab */}
-                  <div
-                    className="absolute inset-0 pointer-events-none opacity-20 blur-[60px] transition-colors duration-1000"
-                    style={{
-                      background: activeTab === 0
-                        ? 'radial-gradient(circle at center, #2563FF 0%, transparent 70%)'
-                        : activeTab === 1
-                          ? 'radial-gradient(circle at center, #02E3FF 0%, transparent 70%)'
-                          : 'radial-gradient(circle at center, #8B5CF6 0%, transparent 70%)'
-                    }}
-                  />
-
-                  <div className="relative z-10 p-4 lg:p-8 flex items-center justify-center min-h-[220px] lg:min-h-[400px]">
+                  <div className="relative z-0 w-full h-[280px] lg:h-[420px] overflow-hidden">
                     <img
                       key={current.image}
                       src={current.image}
                       alt={`Dentiqly - ${current.label}: ${current.title}`}
                       loading="lazy"
-                      className="max-w-full max-h-[220px] lg:max-h-[400px] object-contain drop-shadow-[0_20px_40px_rgba(37,99,255,0.15)] animate-float scale-110 mix-blend-multiply"
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     />
                   </div>
                 </div>
