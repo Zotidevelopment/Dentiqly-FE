@@ -68,7 +68,7 @@ export const ProductShowcase: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
           <div className="showcase-header-left flex-1 max-w-2xl">
             <div className="flex items-center gap-2 mb-5">
-              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
                 Casos de uso
               </span>
             </div>

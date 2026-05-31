@@ -169,7 +169,7 @@ export const RegisterPage: React.FC = () => {
                           required
                           value={formData.nombre_clinica}
                           onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                           placeholder="Ej: Clínica Dental"
                         />
                       </div>
@@ -187,7 +187,7 @@ export const RegisterPage: React.FC = () => {
                           required
                           value={formData.nombre_admin}
                           onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                           placeholder="Tu nombre"
                         />
                       </div>
@@ -207,7 +207,7 @@ export const RegisterPage: React.FC = () => {
                           name="telefono"
                           value={formData.telefono}
                           onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                           placeholder="+54 11 ..."
                         />
                       </div>
@@ -224,7 +224,7 @@ export const RegisterPage: React.FC = () => {
                           name="web_url"
                           value={formData.web_url}
                           onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                          className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                           placeholder="tu-centro"
                         />
                       </div>
@@ -247,7 +247,7 @@ export const RegisterPage: React.FC = () => {
                         required
                         value={formData.email_admin}
                         onChange={handleChange}
-                        className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                        className="block w-full pl-10 pr-3 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                         placeholder="ejemplo@clinica.com"
                       />
                     </div>
@@ -266,7 +266,7 @@ export const RegisterPage: React.FC = () => {
                         required
                         value={formData.password}
                         onChange={handleChange}
-                        className="block w-full pl-10 pr-11 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                        className="block w-full pl-10 pr-11 py-2.5 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                         placeholder="Mínimo 6 caracteres"
                       />
                       <button
@@ -282,10 +282,10 @@ export const RegisterPage: React.FC = () => {
                   {/* Submit */}
                   <button
                     type="submit"
-                    className="w-full bg-[#0B1023] text-white py-3 px-6 rounded-none font-semibold text-sm hover:bg-[#131B3A] transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full bg-[#0B1023] text-white py-3 px-6 rounded-full font-semibold text-sm hover:bg-[#131B3A] transition-all shadow-sm flex items-center justify-center gap-2"
                   >
                     Continuar
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                    <ArrowRight className="h-4 w-4" strokeWidth={1.2} />
                   </button>
 
                   {/* Divider */}
@@ -324,11 +324,11 @@ export const RegisterPage: React.FC = () => {
                 <button
                   onClick={() => handlePlanSelect('trial')}
                   disabled={loading}
-                  className="w-full mb-4 bg-white rounded-none border-2 border-[#02E3FF]/30 p-5 text-left hover:border-[#02E3FF] hover:shadow-[0_4px_20px_rgba(2,227,255,0.1)] transition-all group disabled:opacity-50"
+                  className="w-full mb-4 bg-white rounded-[2rem] border-2 border-[#02E3FF]/30 p-5 text-left hover:border-[#02E3FF] hover:shadow-[0_4px_20px_rgba(2,227,255,0.1)] transition-all group disabled:opacity-50"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-none bg-gradient-to-br from-[#02E3FF]/20 to-[#02E3FF]/5 flex items-center justify-center">
+                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#02E3FF]/20 to-[#02E3FF]/5 flex items-center justify-center">
                         <Sparkles className="h-5 w-5 text-[#02E3FF]" />
                       </div>
                       <div>
@@ -336,7 +336,7 @@ export const RegisterPage: React.FC = () => {
                         <p className="text-sm text-[#9CA3AF]">14 días sin compromiso</p>
                       </div>
                     </div>
-                    <span className="px-3 py-1 rounded-none bg-[#02E3FF]/10 text-[#0891B2] text-xs font-bold uppercase">
+                    <span className="px-3 py-1 rounded-full bg-[#02E3FF]/10 text-[#0891B2] text-xs font-bold uppercase">
                       Gratis
                     </span>
                   </div>
@@ -346,7 +346,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
                   <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#02E3FF] group-hover:text-[#0891B2] transition-colors">
                     Comenzar prueba gratuita
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                    <ArrowRight className="h-4 w-4" strokeWidth={1.2} />
                   </div>
                 </button>
 
@@ -363,7 +363,7 @@ export const RegisterPage: React.FC = () => {
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <button
                     onClick={() => setBillingCycle('monthly')}
-                    className={`px-4 py-2 rounded-none text-sm font-bold transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                       billingCycle === 'monthly'
                         ? 'bg-[#0B1023] text-white shadow-md'
                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -373,14 +373,14 @@ export const RegisterPage: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setBillingCycle('annual')}
-                    className={`px-4 py-2 rounded-none text-sm font-bold transition-all flex items-center gap-1.5 ${
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-1.5 ${
                       billingCycle === 'annual'
                         ? 'bg-[#0B1023] text-white shadow-md'
                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                   >
                     Anual
-                    <span className={`text-xs px-1.5 py-0.5 rounded-none ${
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                       billingCycle === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
                     }`}>
                       -10%
@@ -392,11 +392,11 @@ export const RegisterPage: React.FC = () => {
                 <button
                   onClick={() => handlePlanSelect(billingCycle)}
                   disabled={loading}
-                  className="w-full bg-white rounded-none border-2 border-[#0B1023]/20 p-5 text-left hover:border-[#0B1023] hover:shadow-[0_4px_20px_rgba(11,16,37,0.05)] transition-all group disabled:opacity-50"
+                  className="w-full bg-white rounded-[2rem] border-2 border-[#0B1023]/20 p-5 text-left hover:border-[#0B1023] hover:shadow-[0_4px_20px_rgba(11,16,37,0.05)] transition-all group disabled:opacity-50"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-none bg-[#0B1023]/10 flex items-center justify-center">
+                      <div className="w-11 h-11 rounded-2xl bg-[#0B1023]/10 flex items-center justify-center">
                         <CreditCard className="h-5 w-5 text-[#0B1023]" />
                       </div>
                       <div>
@@ -449,7 +449,7 @@ export const RegisterPage: React.FC = () => {
                     ) : (
                       <>
                         Avanzar con el plan de pago
-                        <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                        <ArrowRight className="h-4 w-4" strokeWidth={1.2} />
                       </>
                     )}
                   </div>

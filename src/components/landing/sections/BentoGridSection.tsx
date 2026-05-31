@@ -18,7 +18,7 @@ export const BentoGridSection: React.FC = () => {
           >
             {/* Placeholder for 3D Icon */}
             <div className="absolute top-8 right-8 w-32 h-32 md:w-48 md:h-48">
-              <div className="w-full h-full bg-white/10 rounded-2xl border-2 border-dashed border-white/30 flex items-center justify-center relative transform rotate-12 transition-transform hover:rotate-0 duration-500">
+              <div className="w-full h-full bg-white/10 rounded-3xl border-2 border-dashed border-white/30 flex items-center justify-center relative transform rotate-12 transition-transform hover:rotate-0 duration-500">
                 <span className="text-[#ffffff] text-sm font-medium absolute -bottom-6 text-center w-full">Espacio 3D</span>
                 <Award className="w-16 h-16 text-[#ffffff]/50" />
               </div>
@@ -64,7 +64,7 @@ export const BentoGridSection: React.FC = () => {
           >
             {/* Placeholder for 3D Icon */}
             <div className="absolute top-10 left-10 w-24 h-24 md:w-32 md:h-32">
-              <div className="w-full h-full bg-[#ffffff] rounded-2xl border-2 border-dashed border-amber-200 flex items-center justify-center relative transform -rotate-6 transition-transform hover:rotate-0 duration-500">
+              <div className="w-full h-full bg-[#ffffff] rounded-3xl border-2 border-dashed border-amber-200 flex items-center justify-center relative transform -rotate-6 transition-transform hover:rotate-0 duration-500">
                 <span className="text-[#ffffff] text-xs font-medium absolute -bottom-6 text-center w-full">Espacio 3D</span>
                 <ShieldCheck className="w-12 h-12 text-[#ffffff]" />
               </div>

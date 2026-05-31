@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { Menu, X, User, ArrowRight } from "lucide-react"
+import { Menu, X, User } from "lucide-react"
+import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 
 export const Navbar: React.FC = () => {
@@ -162,7 +163,7 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-none font-medium ${
+              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium ${
                 isDark || isScrolled
                   ? "bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
                   : "bg-white border border-[#0047FF] text-[#0047FF] hover:bg-gray-50"
@@ -173,14 +174,14 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-none font-semibold gap-2 ${
+              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-semibold gap-2 ${
                 isDark || isScrolled
                   ? "bg-white text-[#0047FF] hover:bg-gray-50"
                   : "bg-[#0047FF] text-white hover:bg-[#0036CC]"
               }`}
             >
               Registrarse
-              <ArrowRight size={14} className={isDark || isScrolled ? "text-[#0047FF]" : "text-white"} />
+              <ThinArrow size={20} className={`${isDark || isScrolled ? "text-[#0047FF]" : "text-white"} group-hover:translate-x-1 transition-transform duration-200`} />
             </Link>
           </div>
         </div>
@@ -207,14 +208,14 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-none bg-white/5 border border-white/10 text-white font-medium transition-all"
+                className="h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white font-medium transition-all"
               >
                 Ingresar
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-none bg-[#0047FF] text-white font-semibold transition-all"
+                className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-semibold transition-all"
               >
                 Registrarse
               </Link>

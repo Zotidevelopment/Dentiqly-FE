@@ -37,7 +37,7 @@ export const ForgotPasswordPage: React.FC = () => {
         <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/80 p-8">
           {sent ? (
             <div className="text-center py-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#22C55E]/10 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-full bg-[#22C55E]/10 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="h-7 w-7 text-[#22C55E]" />
               </div>
               <p className="text-sm text-[#4B5568] mb-6 leading-relaxed">
@@ -64,7 +64,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
                     placeholder="tu@email.com"
                   />
                 </div>
@@ -73,7 +73,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-none font-bold text-sm hover:bg-[#1D4ED8] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-full font-bold text-sm hover:bg-[#1D4ED8] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

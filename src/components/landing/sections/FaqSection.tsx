@@ -138,7 +138,7 @@ export const FaqSection: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="faq-heading text-center mb-16">
           <div className="flex justify-center mb-4">
-            <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+            <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
               Preguntas frecuentes
             </span>
           </div>

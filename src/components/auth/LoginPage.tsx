@@ -112,7 +112,7 @@ export const LoginPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-3 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                    className="block w-full pl-10 pr-3 py-3 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                     placeholder="ejemplo@clinica.com"
                   />
                 </div>
@@ -131,7 +131,7 @@ export const LoginPage: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-11 py-3 text-sm bg-white border border-[#E5E7EB] rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
+                    className="block w-full pl-10 pr-11 py-3 text-sm bg-white border border-[#E5E7EB] rounded-full focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all text-[#0A0F2D] placeholder:text-[#9CA3AF]"
                     placeholder="••••••••"
                   />
                   <button
@@ -153,14 +153,14 @@ export const LoginPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#0B1023] text-white py-3.5 px-6 rounded-none font-semibold text-sm hover:bg-[#131B3A] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                className="w-full bg-[#0B1023] text-white py-3.5 px-6 rounded-full font-semibold text-sm hover:bg-[#131B3A] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
                     Ingresar al sistema
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                    <ArrowRight className="h-4 w-4" strokeWidth={1.2} />
                   </>
                 )}
               </button>

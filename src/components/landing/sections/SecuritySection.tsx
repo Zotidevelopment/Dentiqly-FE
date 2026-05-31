@@ -47,7 +47,7 @@ export const SecuritySection: React.FC = () => {
                 viewport={{ once: true }}
                 className="flex justify-center mb-6"
               >
-                <span className="inline-block bg-[#0A0F2D] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none ">
+                <span className="inline-block bg-[#0A0F2D] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
                   Seguridad de nivel empresarial
                 </span>
               </motion.div>

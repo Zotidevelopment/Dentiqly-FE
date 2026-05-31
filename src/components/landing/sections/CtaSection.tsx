@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowRight, Mail, Phone, Send } from "lucide-react"
+import { Mail, Phone, Send } from "lucide-react"
+import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -103,7 +104,7 @@ export const CtaSection: React.FC = () => {
           {/* ── Left: headline + contact info ── */}
           <div className="cta-left flex-1 lg:max-w-[540px]">
             <div className="mb-5">
-              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
                 Contacto
               </span>
             </div>
@@ -125,7 +126,7 @@ export const CtaSection: React.FC = () => {
                 href="mailto:hola@dentiqly.com"
                 className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5">
+                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5 rounded-full">
                   <Mail className="w-5 h-5" />
                 </div>
                 <span className="text-base font-medium">hola@dentiqly.com</span>
@@ -134,7 +135,7 @@ export const CtaSection: React.FC = () => {
                 href="tel:+5491100000000"
                 className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
               >
-                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5">
+                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5 rounded-full">
                   <Phone className="w-5 h-5" />
                 </div>
                 <span className="text-base font-medium">+54 9 11 0000-0000</span>
@@ -143,10 +144,10 @@ export const CtaSection: React.FC = () => {
 
             <Link
               to="/register"
-              className="inline-flex items-center gap-3 bg-white text-[#0047FF] px-8 py-4 font-bold text-base hover:bg-blue-50 transition-colors group"
+              className="inline-flex items-center gap-3 bg-white text-[#0047FF] px-8 py-4 font-bold text-base hover:bg-blue-50 transition-colors group rounded-full"
             >
               Crear mi cuenta gratis
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
 
@@ -155,7 +156,7 @@ export const CtaSection: React.FC = () => {
             <div className="bg-white rounded-[2rem] p-8 sm:p-12 border border-gray-100/50 shadow-[0_24px_50px_rgba(0,0,0,0.06)]">
               {sent ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-16 h-16 flex items-center justify-center bg-[#0047FF]/10 border border-[#0047FF]/20 mb-6">
+                  <div className="w-16 h-16 flex items-center justify-center bg-[#0047FF]/10 border border-[#0047FF]/20 rounded-full mb-6">
                     <Send className="w-7 h-7 text-[#0047FF]" />
                   </div>
                   <h3 className="text-2xl font-bold text-[#0A0F2D] mb-2">¡Mensaje enviado!</h3>
@@ -280,7 +281,7 @@ export const CtaSection: React.FC = () => {
 
                     <button
                       type="submit"
-                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold  hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-none"
+                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold  hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full"
                     >
                       Enviar
                     </button>

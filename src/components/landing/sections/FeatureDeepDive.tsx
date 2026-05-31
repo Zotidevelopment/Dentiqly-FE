@@ -116,13 +116,13 @@ export const FeatureDeepDive: React.FC = () => {
             >
               <div className={isReversed ? "lg:order-2" : ""}>
                 <div
-                  className="feature-text-reveal w-12 h-12 rounded-xl flex items-center justify-center mb-6"
+                  className="feature-text-reveal w-12 h-12 rounded-full flex items-center justify-center mb-6"
                   style={{ background: `${feature.color}15` }}
                 >
                   <Icon className="w-6 h-6" style={{ color: feature.color }} />
                 </div>
                 <div className="mb-3">
-                  <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none feature-text-reveal">
+                  <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full feature-text-reveal">
                     {feature.subtitle}
                   </span>
                 </div>

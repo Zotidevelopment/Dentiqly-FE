@@ -404,7 +404,7 @@ html.lenis, html.lenis body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0;
+  border-radius: 9999px;
   padding: 12px 24px;
   gap: 12px;
 }
@@ -423,7 +423,7 @@ html.lenis, html.lenis body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0;
+  border-radius: 9999px;
   padding: 12px 24px;
   box-shadow: none;
 }

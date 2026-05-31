@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ThinArrow } from "../components/ThinArrow"
 
 const useSectionMouse = (sectionRef: React.RefObject<HTMLElement | null>) => {
   const [mouse, setMouse] = useState({ x: 0, y: 0 })
@@ -173,7 +173,7 @@ export const HeroSection: React.FC = () => {
             </a>
             <Link to="/register" className="btn-wayflyer-primary min-w-[165px] gap-2">
               Comenzar gratis
-              <ArrowRight size={14} />
+              <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </motion.div>
         </div>

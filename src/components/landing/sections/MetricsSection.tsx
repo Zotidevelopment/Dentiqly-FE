@@ -181,7 +181,7 @@ export const MetricsSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Card container with border */}
         <div
-          className="rounded-2xl overflow-hidden"
+          className="rounded-3xl overflow-hidden"
           style={{
             border: "1px solid #E2E8F0",
             background: "#FFFFFF",

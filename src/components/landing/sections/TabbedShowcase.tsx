@@ -187,7 +187,7 @@ export const TabbedShowcase: React.FC = () => {
               {/* Right: Image Container */}
               <div className="order-1 lg:order-2">
                 <div
-                  className="tab-content-animate relative rounded-none overflow-hidden bg-[#FAFCFF] isolate transform-gpu border border-[#E2E8F0] shadow-xl"
+                  className="tab-content-animate relative rounded-[2rem] overflow-hidden bg-[#FAFCFF] isolate transform-gpu border border-[#E2E8F0] shadow-xl"
                 >
                   <div className="relative z-0 w-full h-[280px] lg:h-[420px] overflow-hidden">
                     <img

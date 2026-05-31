@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { ArrowRight } from "lucide-react"
+import { ThinArrow } from "../components/ThinArrow"
 import { Link } from "react-router-dom"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -376,7 +376,7 @@ export const PerformanceSection: React.FC = () => {
 
                 <Link to="/register" className="btn-wayflyer-primary gap-2">
                   {current.cta}
-                  <ArrowRight size={14} />
+                  <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </Link>
               </div>
 
@@ -405,9 +405,9 @@ export const PerformanceSection: React.FC = () => {
                           <span>{metric.competitionLabel}</span>
                           <span>{metric.competitionValue}</span>
                         </div>
-                        <div className="h-3 w-full bg-transparent rounded-sm overflow-hidden">
+                        <div className="h-3 w-full bg-transparent rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-sm transition-all duration-700 ease-out"
+                            className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
                               width: metric.competitionWidth,
                               background:
@@ -423,9 +423,9 @@ export const PerformanceSection: React.FC = () => {
                           <span>{metric.dentiqlyLabel}</span>
                           <span>{metric.dentiqlyValue}</span>
                         </div>
-                        <div className="h-3 w-full bg-transparent rounded-sm overflow-hidden flex items-center">
+                        <div className="h-3 w-full bg-transparent rounded-full overflow-hidden flex items-center">
                           <div
-                            className="h-full bg-[#0047FF] rounded-sm shadow-[0_0_15px_rgba(0,71,255,0.4)] transition-all duration-700 ease-out"
+                            className="h-full bg-[#0047FF] rounded-full shadow-[0_0_15px_rgba(0,71,255,0.4)] transition-all duration-700 ease-out"
                             style={{
                               width: metric.dentiqlyWidth,
                             }}

@@ -178,8 +178,8 @@ export const FooterSection: React.FC = () => {
         </div>
 
         {/* CTA Bar */}
-        <div className="border-t border-white/10 pt-10 mb-10">
-          <div className="border border-white/10 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="border-t border-white/10 pt-10 mb-10 ">
+          <div className="border border-white/10 bg-[#0047FF] p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <p className="text-white font-semibold text-lg mb-1">
                 Probá Dentiqly gratis por 14 días
@@ -190,7 +190,7 @@ export const FooterSection: React.FC = () => {
             </div>
             <Link
               to="/register"
-              className="shrink-0 bg-[#2563FF] hover:bg-[#1d4ed8] text-white px-8 py-3 rounded-none font-semibold transition-colors text-sm"
+              className="shrink-0 bg-[#0A0F2D] hover:bg-[#0A0F2D] text-white px-8 py-3 rounded-full font-semibold transition-colors text-sm"
             >
               Comenzar prueba gratuita
             </Link>

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
 import {
   Check,
-  ArrowRight,
   Calendar,
   FileText,
   CreditCard,
@@ -16,6 +15,7 @@ import {
   Globe,
   Zap,
 } from "lucide-react"
+import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -100,7 +100,7 @@ export const PricingSection: React.FC = () => {
           {/* ── Left Column: Title + Description ── */}
           <div className="pricing-left flex-1 lg:max-w-[480px] lg:sticky lg:top-32 pt-4">
             <div className="mb-5">
-              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-none">
+              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
                 Precios
               </span>
             </div>
@@ -130,20 +130,20 @@ export const PricingSection: React.FC = () => {
             {/* Trust signals */}
             <div className="space-y-4 mb-10">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#22C55E]/15 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-[#22C55E]" />
+                <div className="w-8 h-8 rounded-full bg-[#2563FF]/15 flex items-center justify-center">
+                  <Check className="w-4 h-4 text-[#2563FF]" />
                 </div>
                 <span className="text-blue-100/60 text-sm">Sin tarjeta de crédito para empezar</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#22C55E]/15 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-[#22C55E]" />
+                <div className="w-8 h-8 rounded-full bg-[#2563FF]/15 flex items-center justify-center">
+                  <Check className="w-4 h-4 text-[#2563FF]" />
                 </div>
                 <span className="text-blue-100/60 text-sm">Cancelá cuando quieras, sin penalidades</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#22C55E]/15 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-[#22C55E]" />
+                <div className="w-8 h-8 rounded-full bg-[#2563FF]/15 flex items-center justify-center">
+                  <Check className="w-4 h-4 text-[#2563FF]" />
                 </div>
                 <span className="text-blue-100/60 text-sm">Migración de datos gratuita y asistida</span>
               </div>
@@ -151,16 +151,15 @@ export const PricingSection: React.FC = () => {
 
           </div>
 
-          {/* ── Right Column: Plan Card ── */}
           <div className="pricing-card-wrapper flex-1 lg:max-w-[560px] w-full">
-            <div className="relative border border-white/15 overflow-hidden bg-[#0F1535] p-8 sm:p-10">
+            <div className="relative border border-white/15 overflow-hidden bg-[#0F1535] rounded-[2rem] p-8 sm:p-10">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-1">Plan Pro</h3>
                     <p className="text-blue-200/30 text-sm">Todo lo que tu clínica necesita</p>
                   </div>
-                  <span className="px-4 py-1.5 bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0">
+                  <span className="px-4 py-1.5 bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0 rounded-full">
                     Más Popular
                   </span>
                 </div>
@@ -171,7 +170,7 @@ export const PricingSection: React.FC = () => {
                   <span className="text-blue-200/40 text-lg ml-2">ARS / mes</span>
                 </div>
                 <p className="text-blue-200/30 text-sm mb-8">
-                  o $864.000 /año <span className="text-[#22C55E] font-bold">(ahorrá 10%)</span>
+                  o $864.000 /año <span className="text-[#2563FF] font-bold">(ahorrá 10%)</span>
                 </p>
 
                 {/* Divider */}
@@ -186,7 +185,7 @@ export const PricingSection: React.FC = () => {
                     const Icon = feat.icon
                     return (
                       <div key={i} className="pricing-feature-item flex items-start gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-[#2563FF]/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-7 h-7 rounded-full bg-[#2563FF]/10 flex items-center justify-center shrink-0 mt-0.5">
                           <Icon className="w-3.5 h-3.5 text-[#2563FF]" />
                         </div>
                         <span className="text-blue-50/70 text-sm leading-snug">{feat.text}</span>
@@ -201,7 +200,7 @@ export const PricingSection: React.FC = () => {
                   className="w-full btn-wayflyer-primary py-4 text-lg gap-2"
                 >
                   Comenzar 14 días gratis
-                  <ArrowRight size={16} />
+                  <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </Link>
 
                 <p className="text-center text-blue-200/20 text-xs mt-4">
