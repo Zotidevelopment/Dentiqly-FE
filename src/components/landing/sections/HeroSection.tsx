@@ -5,9 +5,9 @@ import { ThinArrow } from "../components/ThinArrow"
 import { CheckCircle2, Star, Shield, Clock } from "lucide-react"
 
 const trustBadges = [
-  { icon: Shield, text: "Datos 100% seguros" },
-  { icon: Clock, text: "Configuración en 10 min" },
-  { icon: Star, text: "Sin tarjeta de crédito" },
+  { icon: Shield, text: "Seguridad de nivel bancario" },
+  { icon: Clock, text: "Configuración rápida en 10 min" },
+  { icon: Star, text: "14 días de prueba gratis" },
 ]
 
 const AnimatedCounter: React.FC<{ end: number; suffix: string; label: string; delay: number }> = ({ end, suffix, label, delay }) => {
@@ -39,11 +39,11 @@ const AnimatedCounter: React.FC<{ end: number; suffix: string; label: string; de
   }, [end, delay])
 
   return (
-    <div ref={ref} className="text-center">
-      <div className="text-3xl sm:text-4xl font-extrabold text-[#0047FF]">
+    <div ref={ref} className="text-center px-4">
+      <div className="text-2xl sm:text-3xl font-bold text-[#0047FF] tracking-tight">
         +{count}{suffix}
       </div>
-      <div className="text-sm text-gray-500 font-medium mt-1">{label}</div>
+      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mt-1.5">{label}</div>
     </div>
   )
 }
@@ -54,19 +54,24 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-8 lg:pt-24 lg:pb-4"
+      className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-[#FAFCFF]"
     >
       {/* ── Background ── */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F0F4FF] via-white to-[#FAFCFF]" />
-        {/* Subtle dot pattern */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Soft, professional gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#EEF4FF] via-white to-[#FAFCFF]" />
+        
+        {/* Soft grid lines (extremely subtle) */}
         <div
-          className="absolute inset-0 opacity-[0.35]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
-            backgroundImage: `radial-gradient(circle, #0047FF 0.8px, transparent 0.8px)`,
-            backgroundSize: "32px 32px",
+            backgroundImage: `linear-gradient(to right, #0047FF 1px, transparent 1px), linear-gradient(to bottom, #0047FF 1px, transparent 1px)`,
+            backgroundSize: "64px 64px",
           }}
         />
+        
+        {/* Very soft glow behind content */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0047FF]/5 rounded-full blur-[100px]" />
       </div>
 
       {/* ── Content ── */}
@@ -74,63 +79,57 @@ export const HeroSection: React.FC = () => {
 
         {/* Credibility badge */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.05 }}
           className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 bg-[#0047FF]/[0.08] border border-[#0047FF]/20 text-[#0047FF] px-5 py-2 rounded-full text-sm font-bold">
-            <Star className="w-4 h-4 fill-[#0047FF]" />
-            El software dental #1 para clínicas en Argentina
+          <span className="inline-flex items-center gap-2 bg-[#0047FF]/[0.05] border border-[#0047FF]/10 text-[#0047FF] px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+            <Star className="w-3.5 h-3.5 fill-[#0047FF] text-[#0047FF]" />
+            Software de gestión odontológica en Argentina
           </span>
         </motion.div>
 
         {/* Main headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="text-[2.4rem] sm:text-[3rem] md:text-[3.6rem] lg:text-[4.2rem] font-extrabold tracking-[-3px] leading-[1.05] text-[#0A0F2D] mb-6 max-w-[900px]"
+          className="text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[4rem] font-bold tracking-[-1.5px] leading-[1.12] text-[#0A0F2D] mb-6 max-w-[850px]"
         >
-          Gestioná tu clínica dental
-          <br />
-          <span className="text-[#0047FF]">sin esfuerzo</span>
+          La plataforma inteligente para la gestión de tu <span className="text-[#0047FF]">clínica dental</span>
         </motion.h1>
 
         {/* Sub-headline — pain + benefit */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-[640px] mb-8"
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-[620px] mb-8"
         >
-          Dejá de perder pacientes por turnos olvidados.{" "}
-          <span className="font-semibold text-[#0A0F2D]">
-            Automatizá turnos, historias clínicas y recordatorios
-          </span>{" "}
-          en una sola plataforma.
+          Centralizá y automatizá tu agenda de turnos, fichas de pacientes y recordatorios automáticos. Dentiqly simplifica tu administración diaria para que te enfoques en la salud de tus pacientes.
         </motion.p>
 
         {/* Double CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full mb-6"
+          transition={{ duration: 0.7, delay: 0.35 }}
+          className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full mb-5"
         >
           <Link
             to="/register"
-            className="group relative overflow-hidden bg-[#0047FF] text-white px-10 py-4 rounded-full text-lg font-extrabold shadow-xl shadow-[#0047FF]/30 hover:shadow-2xl hover:shadow-[#0047FF]/40 hover:bg-[#0036CC] transition-all duration-300 flex items-center gap-3 min-w-[260px] justify-center"
+            className="group bg-[#0047FF] text-white px-8 py-3.5 rounded-full text-[15px] font-semibold shadow-lg shadow-[#0047FF]/15 hover:shadow-xl hover:shadow-[#0047FF]/25 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 justify-center min-w-[220px]"
           >
-            <span className="relative z-10">Probá 14 días GRATIS</span>
-            <ThinArrow size={22} className="relative z-10 group-hover:translate-x-1 transition-transform duration-200" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0047FF] via-[#2563FF] to-[#0047FF] bg-[length:200%_100%] animate-[shimmer_3s_ease-in-out_infinite] opacity-0 group-hover:opacity-100 transition-opacity" />
+            <span>Probar gratis por 14 días</span>
+            <ThinArrow size={18} className="group-hover:translate-x-0.5 transition-transform duration-200" />
           </Link>
+          
           <a
             href="mailto:hola@dentiqly.com?subject=Solicitud de Demo - Dentiqly&body=Hola equipo de Dentiqly,%0D%0A%0D%0AMe gustaría agendar una demo personalizada para conocer más sobre la plataforma.%0D%0A%0D%0AMuchas gracias!"
-            className="bg-white border-2 border-gray-200 text-[#0A0F2D] px-8 py-4 rounded-full text-lg font-bold hover:border-[#0047FF]/30 hover:bg-[#F0F4FF] transition-all duration-300 flex items-center gap-2 min-w-[220px] justify-center"
+            className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-8 py-3.5 rounded-full text-[15px] font-semibold transition-all duration-200 flex items-center gap-2 justify-center min-w-[200px]"
           >
-            ▶ Ver demo en vivo
+            <span>Ver demostración en vivo</span>
           </a>
         </motion.div>
 
@@ -138,74 +137,60 @@ export const HeroSection: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex items-center gap-2 text-sm text-gray-400 mb-10"
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="flex items-center gap-1.5 text-xs text-gray-400 mb-12"
         >
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-          Sin tarjeta de crédito · Cancelá cuando quieras
-        </motion.div>
-
-        {/* Trust badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.55 }}
-          className="flex flex-wrap justify-center gap-6 mb-12"
-        >
-          {trustBadges.map((badge, i) => {
-            const Icon = badge.icon
-            return (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-white/80 backdrop-blur-sm border border-gray-100 px-4 py-2 rounded-full shadow-sm">
-                <Icon className="w-4 h-4 text-[#0047FF]" />
-                <span className="font-medium">{badge.text}</span>
-              </div>
-            )
-          })}
+          <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+          Sin compromisos ni tarjeta de crédito
         </motion.div>
 
         {/* Product Screenshot */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative w-full max-w-[1050px] mx-auto"
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 1, 0.5, 1] }}
+          className="relative w-full max-w-[1000px] mx-auto mb-14"
         >
-          {/* Glow behind screenshot */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-[#0047FF]/20 via-[#2563FF]/10 to-[#0047FF]/20 rounded-[2rem] blur-2xl opacity-60" />
-
-          <div className="relative rounded-2xl overflow-hidden border border-gray-200/60 shadow-2xl shadow-gray-900/10 bg-white">
+          {/* Subtle drop shadow instead of heavy glowing gradient */}
+          <div className="relative rounded-xl overflow-hidden border border-gray-200/50 shadow-[0_12px_40px_rgba(0,0,0,0.06)] bg-white">
             {/* Browser chrome bar */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400/70" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400/70" />
-                <div className="w-3 h-3 rounded-full bg-green-400/70" />
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
               </div>
               <div className="flex-1 flex justify-center">
-                <div className="bg-white border border-gray-200 rounded-md px-4 py-1 text-xs text-gray-400 font-mono">
+                <div className="bg-white border border-gray-150 rounded px-3 py-0.5 text-[10px] text-gray-400 font-mono">
                   app.dentiqly.com
                 </div>
               </div>
             </div>
             <img
               src="/assets/screenshots/dashboard.png"
-              alt="Dentiqly - Dashboard de gestión dental con métricas, turnos y pacientes"
+              alt="Dentiqly - Dashboard de gestión odontológica"
               loading="eager"
-              className="w-full h-auto"
+              className="w-full h-auto object-contain"
             />
           </div>
         </motion.div>
 
         {/* Stats counters */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.8 }}
-          className="grid grid-cols-3 gap-8 sm:gap-16 mt-14 mb-4"
+          transition={{ duration: 0.7, delay: 0.65 }}
+          className="flex flex-wrap items-center justify-center divide-y sm:divide-y-0 sm:divide-x divide-gray-150 gap-y-4 sm:gap-y-0 w-full max-w-2xl mx-auto py-4"
         >
-          <AnimatedCounter end={500} suffix="" label="Clínicas confían en nosotros" delay={0} />
-          <AnimatedCounter end={2000} suffix="" label="Profesionales activos" delay={200} />
-          <AnimatedCounter end={40} suffix="%" label="Menos inasistencias" delay={400} />
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={500} suffix="" label="Clínicas activas" delay={0} />
+          </div>
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={2000} suffix="" label="Profesionales" delay={150} />
+          </div>
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={40} suffix="%" label="Menos ausencias" delay={300} />
+          </div>
         </motion.div>
       </div>
     </section>
