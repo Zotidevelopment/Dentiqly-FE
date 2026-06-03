@@ -115,11 +115,7 @@ export const Navbar: React.FC = () => {
     <>
       <nav
         ref={navRef}
-        className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-          isScrolled
-            ? "top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
-            : "top-0 w-full max-w-full bg-transparent py-4 px-4 sm:px-6 lg:px-8"
-        }`}
+        className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
       >
         <div className="w-full flex items-center justify-between h-[54px]">
 
@@ -131,14 +127,12 @@ export const Navbar: React.FC = () => {
             <img
               src="/assets/dentiqly-logo.png"
               alt="Dentiqly - Software de gestión dental"
-              className={`h-[28px] w-auto transition-all duration-300 ${isDark || isScrolled ? "brightness-0 invert" : ""}`}
+              className="h-[28px] w-auto transition-all duration-300 brightness-0 invert"
             />
           </Link>
 
           {/* ══ center: Nav Links pill ══ */}
-          <div className={`hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors ${
-            isScrolled ? "bg-transparent" : "bg-[#0047FF]"
-          }`}>
+          <div className="hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors bg-transparent">
             {navLinks.map((item) => (
               <a
                 key={item.label}
@@ -153,7 +147,7 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className={`md:hidden p-1.5 transition-colors duration-300 ${isDark || isScrolled ? "text-white" : "text-[#0047FF]"}`}
+            className="md:hidden p-1.5 transition-colors duration-300 text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -163,25 +157,17 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium ${
-                isDark || isScrolled
-                  ? "bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
-                  : "bg-white border border-[#0047FF] text-[#0047FF] hover:bg-gray-50"
-              }`}
+              className="h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
             >
               <User size={14} className="mr-2" />
               Ingresar
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-7 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group ${
-                isDark || isScrolled
-                  ? "bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
-                  : "bg-[#0047FF] text-white hover:bg-[#0036CC] shadow-[#0047FF]/30"
-              }`}
+              className="h-[42px] px-7 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
             >
               Probá GRATIS
-              <ThinArrow size={20} className={`${isDark || isScrolled ? "text-[#0047FF]" : "text-white"} group-hover:translate-x-1 transition-transform duration-200`} />
+              <ThinArrow size={20} className="text-[#0047FF] group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
         </div>
