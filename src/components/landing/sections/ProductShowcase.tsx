@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Calendar,
   Users,
@@ -6,9 +6,11 @@ import {
   LayoutDashboard,
   Building2,
   ArrowRight,
+  Sparkles
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
+import { MockDemoViewer } from "../components/MockDemoViewer"
 
 const features = [
   {
@@ -20,6 +22,7 @@ const features = [
     span: "lg:col-span-2",
     imgHeight: "h-[220px] sm:h-[300px]",
     highlight: true,
+    demoTab: "calendar",
   },
   {
     icon: Users,
@@ -29,6 +32,7 @@ const features = [
     src: "/assets/screenshots/paciente-detalle.png",
     span: "lg:col-span-1",
     imgHeight: "h-[160px] sm:h-[200px]",
+    demoTab: "patients",
   },
   {
     icon: Bell,
@@ -38,6 +42,7 @@ const features = [
     src: "/assets/screenshots/recordatorios.png",
     span: "lg:col-span-1",
     imgHeight: "h-[160px] sm:h-[200px]",
+    demoTab: "reminders",
   },
   {
     icon: LayoutDashboard,
@@ -47,6 +52,7 @@ const features = [
     src: "/assets/screenshots/dashboard.png",
     span: "lg:col-span-1",
     imgHeight: "h-[160px] sm:h-[200px]",
+    demoTab: "dashboard",
   },
   {
     icon: Building2,
@@ -56,10 +62,13 @@ const features = [
     src: "/assets/screenshots/booking.png",
     span: "lg:col-span-1",
     imgHeight: "h-[160px] sm:h-[200px]",
+    demoTab: "booking",
   },
 ]
 
 export const ProductShowcase: React.FC = () => {
+  const [activeDemo, setActiveDemo] = useState<"dashboard" | "calendar" | "patients" | "reminders" | "booking" | null>(null)
+
   return (
     <section
       id="funcionalidades"
@@ -99,12 +108,21 @@ export const ProductShowcase: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: i * 0.05 }}
-                className={`bento-card group relative rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl flex flex-col justify-between h-full ${feat.span} ${
+                onClick={() => setActiveDemo(feat.demoTab as any)}
+                className={`bento-card group relative rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl flex flex-col justify-between h-full cursor-pointer ${feat.span} ${
                   feat.highlight
                     ? "bg-[#0A0F2D] border-[#0A0F2D] text-white"
                     : "bg-white border-gray-100 hover:border-[#0047FF]/20"
                 }`}
               >
+                {/* Hover Demo Trigger Overlay */}
+                <div className="absolute inset-0 bg-[#0047FF]/5 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+                  <span className="bg-[#0047FF] text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                    <Sparkles size={14} className="animate-pulse" />
+                    Probar Demo Interactiva
+                  </span>
+                </div>
+
                 <div className="p-6 pb-4">
                   <div className="flex items-center gap-2 mb-3">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
@@ -131,12 +149,12 @@ export const ProductShowcase: React.FC = () => {
                 </div>
 
                 {/* Screenshot pinned to the bottom */}
-                <div className="mt-auto px-6 overflow-hidden">
+                <div className="mt-auto px-6 overflow-hidden relative">
                   <img
                     src={feat.src}
                     alt={`Dentiqly - ${feat.title}`}
                     loading="lazy"
-                    className={`w-full ${feat.imgHeight} object-cover object-left-top rounded-t-xl border border-gray-200/20 shadow-md transition-transform duration-500 group-hover:scale-[1.02]`}
+                    className={`w-full ${feat.imgHeight} object-cover object-left-top rounded-t-xl border border-gray-200/20 shadow-md transition-transform duration-500 group-hover:scale-[1.01]`}
                   />
                 </div>
               </motion.div>
@@ -162,6 +180,16 @@ export const ProductShowcase: React.FC = () => {
           <p className="text-xs text-gray-400 mt-3">Sin tarjeta de crédito · 14 días gratis</p>
         </motion.div>
       </div>
+
+      {/* Interactive Mock App Playground Modal */}
+      <AnimatePresence>
+        {activeDemo && (
+          <MockDemoViewer 
+            initialTab={activeDemo} 
+            onClose={() => setActiveDemo(null)} 
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }

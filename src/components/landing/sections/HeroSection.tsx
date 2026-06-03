@@ -162,7 +162,7 @@ export const HeroSection: React.FC = () => {
               </div>
               <div className="flex-1 flex justify-center">
                 <div className="bg-white border border-gray-150 rounded px-3 py-0.5 text-[10px] text-gray-400 font-mono">
-                  app.dentiqly.com
+                  dentiqly.com
                 </div>
               </div>
             </div>
