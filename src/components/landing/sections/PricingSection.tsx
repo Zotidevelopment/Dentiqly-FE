@@ -99,11 +99,15 @@ export const PricingSection: React.FC = () => {
               Precios
             </p>
 
-            <h2 className="text-4xl md:text-5xl xl:text-[3.4rem] font-semibold text-white mb-6 tracking-[-3px] leading-[1.1]">
+            <h2 className="text-4xl md:text-5xl xl:text-[3.4rem] font-semibold text-white mb-4 tracking-[-3px] leading-[1.1]">
               Un solo plan,
               <br />
               <span className="text-[#2563FF]">todo ilimitado.</span>
             </h2>
+
+            <div className="inline-flex items-center gap-1.5 bg-[#2563FF]/10 border border-[#2563FF]/20 text-[#00E5FF] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
+              🚀 PROBÁ 14 DÍAS GRATIS — SIN TARJETA
+            </div>
 
             <p className="text-lg text-blue-200/50 leading-relaxed mb-10 max-w-[420px]">
               Sin sorpresas ni costos ocultos. Un único plan que incluye
@@ -173,8 +177,8 @@ export const PricingSection: React.FC = () => {
                     <h3 className="text-2xl font-bold text-white mb-1">Plan Pro</h3>
                     <p className="text-blue-200/30 text-sm">Todo lo que tu clínica necesita</p>
                   </div>
-                  <span className="px-4 py-1.5 rounded-full bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0">
-                    Más Popular
+                  <span className="px-4 py-1.5 rounded-full bg-[#2563FF]/15 border border-[#2563FF]/25 text-[#2563FF] text-xs font-bold uppercase tracking-wider shrink-0 animate-pulse">
+                    MÁS ELEGIDO ⚡
                   </span>
                 </div>
 
@@ -183,9 +187,14 @@ export const PricingSection: React.FC = () => {
                   <span className="text-6xl font-semibold text-white tracking-[-3px]">$80.000</span>
                   <span className="text-blue-200/40 text-lg ml-2">ARS / mes</span>
                 </div>
-                <p className="text-blue-200/30 text-sm mb-8">
-                  o $864.000 /año <span className="text-[#22C55E] font-bold">(ahorrá 10%)</span>
-                </p>
+                <div className="flex flex-col gap-2 mb-8">
+                  <p className="text-blue-200/30 text-sm">
+                    o $864.000 /año <span className="text-[#22C55E] font-extrabold">(ahorrás 10%)</span>
+                  </p>
+                  <span className="text-xs text-[#00E5FF] font-medium bg-[#00E5FF]/10 px-3 py-1 rounded-md inline-block w-fit">
+                    💡 Menos de $2.700 al día para gestionar TODA tu clínica
+                  </span>
+                </div>
 
                 {/* Divider */}
                 <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
@@ -211,16 +220,16 @@ export const PricingSection: React.FC = () => {
                 {/* CTA */}
                 <Link
                   to="/register"
-                  className="w-full btn-wayflyer-primary py-4 text-lg"
+                  className="w-full btn-wayflyer-primary py-4 text-base font-extrabold tracking-wider uppercase text-center flex items-center justify-center gap-2 group/btn"
                 >
-                  Comenzar 14 días gratis
-                  <div className="btn-icon-circle">
+                  <span>COMENZAR MI PRUEBA GRATIS</span>
+                  <div className="btn-icon-circle group-hover/btn:translate-x-1 transition-transform">
                     <ArrowRight size={16} />
                   </div>
                 </Link>
 
                 <p className="text-center text-blue-200/20 text-xs mt-4">
-                  Sin tarjeta de crédito requerida
+                  Sin tarjeta de crédito requerida • 14 días gratis
                 </p>
               </div>
             </div>

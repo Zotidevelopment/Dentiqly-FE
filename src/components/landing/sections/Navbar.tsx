@@ -105,10 +105,10 @@ export const Navbar: React.FC = () => {
   }, [mobileMenuOpen])
 
   const navLinks = [
-    { label: "Producto", href: "#producto" },
-    { label: "Funcionalidades", href: "#funcionalidades-tabs" },
-    { label: "Metricas", href: "#metricas" },
+    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Por qué Dentiqly", href: "#por-que-dentiqly" },
     { label: "Precios", href: "#precios" },
+    { label: "Preguntas", href: "#faq" },
   ]
 
   return (
@@ -174,13 +174,13 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-semibold gap-2 ${
+              className={`h-[42px] px-7 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group ${
                 isDark || isScrolled
-                  ? "bg-white text-[#0047FF] hover:bg-gray-50"
-                  : "bg-[#0047FF] text-white hover:bg-[#0036CC]"
+                  ? "bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
+                  : "bg-[#0047FF] text-white hover:bg-[#0036CC] shadow-[#0047FF]/30"
               }`}
             >
-              Registrarse
+              Probá GRATIS
               <ThinArrow size={20} className={`${isDark || isScrolled ? "text-[#0047FF]" : "text-white"} group-hover:translate-x-1 transition-transform duration-200`} />
             </Link>
           </div>
@@ -215,9 +215,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-semibold transition-all"
+                className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-extrabold transition-all shadow-lg shadow-[#0047FF]/30"
               >
-                Registrarse
+                🚀 Probá GRATIS
               </Link>
             </div>
           </div>

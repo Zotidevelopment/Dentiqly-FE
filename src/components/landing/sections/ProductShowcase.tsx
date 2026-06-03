@@ -1,66 +1,73 @@
-import React, { useEffect, useRef, useState } from "react"
-import { Calendar, Users, Bell, Settings, LayoutDashboard, ArrowUpRight } from "lucide-react"
+import React, { useEffect, useRef } from "react"
+import {
+  Calendar,
+  Users,
+  Bell,
+  LayoutDashboard,
+  Building2,
+  ArrowRight,
+} from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Link } from "react-router-dom"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const useCases = [
+const features = [
   {
-    key: "dashboard",
-    src: "/assets/screenshots/dashboard.png",
-    label: "DASHBOARD",
-    title: "Panel de control inteligente",
-    desc: "Métricas, agenda y resumen del día en una vista clara y accionable.",
-    icon: LayoutDashboard,
-    cta: "Descubrí el Dashboard",
-  },
-  {
-    key: "calendario",
+    icon: Calendar,
+    tag: "TURNOS",
+    title: "Tus pacientes agendan solos, 24/7",
+    desc: "Agenda online inteligente. Tus pacientes reservan sin llamadas ni demoras. Vos solo atendés.",
     src: "/assets/screenshots/calendario.png",
-    label: "CALENDARIO",
-    title: "Agenda dental online",
-    desc: "Agenda visual con turnos, disponibilidad y gestión por profesional.",
-    icon: Calendar,
-    cta: "Descubrí el Calendario",
+    span: "lg:col-span-2 lg:row-span-2",
+    imgClass: "h-[260px] lg:h-[340px]",
+    highlight: true,
   },
   {
-    key: "pacientes",
-    src: "/assets/screenshots/paciente-detalle.png",
-    label: "PACIENTES",
-    title: "Ficha completa del paciente",
-    desc: "Historial clínico, odontograma y tratamientos en un solo lugar.",
     icon: Users,
-    cta: "Descubrí Pacientes",
+    tag: "HISTORIAS CLÍNICAS",
+    title: "Todo el historial en un clic",
+    desc: "Ficha completa del paciente: datos, odontograma, tratamientos, pagos y más.",
+    src: "/assets/screenshots/paciente-detalle.png",
+    span: "lg:col-span-1",
+    imgClass: "h-[180px]",
   },
   {
-    key: "recordatorios",
-    src: "/assets/screenshots/recordatorios.png",
-    label: "RECORDATORIOS",
-    title: "Notificaciones automáticas",
-    desc: "Recordatorios por email para reducir inasistencias hasta un 80%.",
     icon: Bell,
-    cta: "Descubrí Recordatorios",
+    tag: "RECORDATORIOS",
+    title: "40% menos ausencias",
+    desc: "Recordatorios automáticos por email para que ningún paciente falte.",
+    src: "/assets/screenshots/recordatorios.png",
+    span: "lg:col-span-1",
+    imgClass: "h-[180px]",
   },
   {
-    key: "booking",
+    icon: LayoutDashboard,
+    tag: "DASHBOARD",
+    title: "Toda tu clínica en una pantalla",
+    desc: "Métricas de facturación, turnos del día, inasistencias y rendimiento en tiempo real.",
+    src: "/assets/screenshots/dashboard.png",
+    span: "lg:col-span-1",
+    imgClass: "h-[180px]",
+  },
+  {
+    icon: Building2,
+    tag: "MULTI-SUCURSAL",
+    title: "Todas tus sedes, un solo panel",
+    desc: "Gestioná múltiples clínicas desde un único lugar. Comparar rendimiento nunca fue tan fácil.",
     src: "/assets/screenshots/booking.png",
-    label: "RESERVA ONLINE",
-    title: "Tus pacientes agendan 24/7",
-    desc: "Plataforma de autogestión de turnos para que tus pacientes reserven sin llamadas ni demoras.",
-    icon: Calendar,
-    cta: "Descubrí el Booking",
+    span: "lg:col-span-1",
+    imgClass: "h-[180px]",
   },
 ]
 
 export const ProductShowcase: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null)
-  const [active, setActive] = useState(0)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".showcase-header-left > *", {
+      gsap.from(".bento-header > *", {
         y: 40,
         opacity: 0,
         duration: 0.8,
@@ -69,154 +76,104 @@ export const ProductShowcase: React.FC = () => {
         scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
       })
 
-      gsap.from(".showcase-header-right", {
-        y: 30,
+      gsap.from(".bento-card", {
+        y: 50,
         opacity: 0,
-        duration: 0.8,
-        delay: 0.2,
+        duration: 0.7,
+        stagger: 0.1,
         ease: "power3.out",
-        scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
-      })
-
-      gsap.from(".showcase-gallery", {
-        y: 60,
-        opacity: 0,
-        duration: 1,
-        delay: 0.3,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".showcase-gallery", start: "top 85%" },
+        scrollTrigger: { trigger: ".bento-grid", start: "top 85%" },
       })
     }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
-  useEffect(() => {
-    const mainImg = document.querySelector(".showcase-main-img")
-    const overlay = document.querySelector(".showcase-overlay-content")
-    if (mainImg) {
-      gsap.fromTo(mainImg, { opacity: 0, scale: 1.02 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" })
-    }
-    if (overlay) {
-      gsap.fromTo(overlay, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.1, ease: "power3.out" })
-    }
-  }, [active])
-
-  const current = useCases[active]
-  const others = useCases.filter((_, i) => i !== active)
-
   return (
     <section
       ref={sectionRef}
-      id="producto"
-      className="min-h-screen flex flex-col justify-center py-16 sm:py-20 bg-[#FAFCFF] relative overflow-hidden"
+      id="funcionalidades"
+      className="py-20 sm:py-28 bg-[#FAFCFF] relative overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Header ── */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
-          <div className="showcase-header-left flex-1 max-w-2xl">
-            <div className="flex items-center gap-2 mb-5">
-              <LayoutDashboard className="w-4 h-4 text-[#2563FF]" />
-              <p className="text-sm font-extrabold text-[#2563FF] tracking-widest uppercase">
-                Casos de uso
-              </p>
-            </div>
-            <h2 className="text-4xl md:text-5xl xl:text-[3.4rem] font-semibold text-[#0A0F2D] tracking-[-3px] leading-[1.1]">
-              Todo lo que necesitas
-              <br />
-              para gestionar tu clínica
-            </h2>
-          </div>
-
-          <div className="showcase-header-right lg:max-w-sm lg:text-right">
-            <p className="text-base text-gray-500 leading-relaxed">
-              <span className="font-semibold text-[#0A0F2D]">Automatizá la gestión, controlá turnos</span>
-              {" "}y ofrecé una experiencia excepcional a tus pacientes.
-            </p>
-          </div>
+        {/* Header */}
+        <div className="bento-header text-center mb-14">
+          <span className="inline-block bg-[#0047FF]/[0.08] text-[#0047FF] px-4 py-1.5 text-[13px] font-bold tracking-wide rounded-full mb-4">
+            Funcionalidades
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0A0F2D] tracking-[-2px] leading-[1.1] mb-4">
+            Todo lo que tu clínica necesita.
+            <br />
+            <span className="text-[#0047FF]">Nada que no necesite.</span>
+          </h2>
+          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+            Cada función está diseñada para que <span className="font-semibold text-[#0A0F2D]">atiendas más pacientes en menos tiempo</span> y factures más.
+          </p>
         </div>
 
-        {/* ── Gallery ── */}
-        <div className="showcase-gallery flex flex-col lg:flex-row gap-2 items-stretch">
-
-          {/* Main Image — shows full screenshot */}
-          <div className="relative rounded-2xl overflow-hidden group w-full lg:flex-1 lg:min-w-0 flex flex-col bg-[#0A0F2D] lg:bg-transparent shadow-xl lg:shadow-none">
-            <div className="relative w-full">
-              <img
-                key={current.src}
-                src={current.src}
-                alt={`Dentiqly - ${current.title}`}
-                className="showcase-main-img w-full h-auto block rounded-t-2xl lg:rounded-2xl"
-                style={{ imageRendering: "auto", maxWidth: "1024px" }}
-              />
-              {/* Gradient for overlay blending on desktop */}
-              <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-2xl" />
-            </div>
-
-            <div className="showcase-overlay-content p-6 lg:absolute lg:bottom-0 lg:left-0 lg:right-0">
-              <span className="inline-block px-3 py-1 rounded-md bg-white/10 lg:bg-white/15 backdrop-blur-sm text-white text-[11px] font-bold tracking-widest uppercase mb-3 border border-white/10">
-                {current.label}
-              </span>
-              <h3 className="text-xl font-semibold text-white mb-1 tracking-[-1px]">
-                {current.title}
-              </h3>
-              <p className="text-white/70 lg:text-white/60 text-sm max-w-sm leading-relaxed mb-4">
-                {current.desc}
-              </p>
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#0A0F2D] text-sm font-semibold hover:bg-white/90 transition-colors"
+        {/* Bento Grid */}
+        <div className="bento-grid grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {features.map((feat, i) => {
+            const Icon = feat.icon
+            return (
+              <div
+                key={i}
+                className={`bento-card group relative rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl ${feat.span} ${
+                  feat.highlight
+                    ? "bg-[#0A0F2D] border-[#0A0F2D] text-white"
+                    : "bg-white border-gray-100 hover:border-[#0047FF]/20"
+                }`}
               >
-                {current.cta}
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Thumbnails — 2x2 grid */}
-          <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-2 shrink-0" style={{ width: "280px" }}>
-            {others.map((uc) => {
-              const idx = useCases.findIndex((u) => u.key === uc.key)
-              return (
-                <button
-                  key={uc.key}
-                  onClick={() => setActive(idx)}
-                  className="relative rounded-xl overflow-hidden group/thumb transition-all duration-300 hover:ring-2 hover:ring-[#2563FF]/30"
-                >
-                  <img
-                    src={uc.src}
-                    alt={`Dentiqly - ${uc.title}`}
-                    loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover object-left-top transition-transform duration-500 group-hover/thumb:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/15 transition-colors duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                    <span className="text-white text-[10px] font-bold tracking-wider uppercase">
-                      {uc.label}
+                <div className="p-6 pb-0">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      feat.highlight ? "bg-[#0047FF]/20" : "bg-[#0047FF]/[0.08]"
+                    }`}>
+                      <Icon className={`w-4 h-4 ${feat.highlight ? "text-[#0047FF]" : "text-[#0047FF]"}`} />
+                    </div>
+                    <span className={`text-[10px] font-bold tracking-widest uppercase ${
+                      feat.highlight ? "text-[#0047FF]" : "text-[#0047FF]"
+                    }`}>
+                      {feat.tag}
                     </span>
                   </div>
-                </button>
-              )
-            })}
-          </div>
+                  <h3 className={`text-xl font-bold mb-2 tracking-[-0.5px] ${
+                    feat.highlight ? "text-white" : "text-[#0A0F2D]"
+                  }`}>
+                    {feat.title}
+                  </h3>
+                  <p className={`text-sm leading-relaxed mb-4 ${
+                    feat.highlight ? "text-white/60" : "text-gray-500"
+                  }`}>
+                    {feat.desc}
+                  </p>
+                </div>
+
+                {/* Screenshot */}
+                <div className={`px-6 ${feat.imgClass} overflow-hidden`}>
+                  <img
+                    src={feat.src}
+                    alt={`Dentiqly - ${feat.title}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover object-left-top rounded-t-lg transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
+              </div>
+            )
+          })}
         </div>
 
-        {/* Mobile thumbnails */}
-        <div className="flex lg:hidden gap-2 mt-4 overflow-x-auto">
-          {useCases.map((uc, i) => (
-            <button
-              key={uc.key}
-              onClick={() => setActive(i)}
-              className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                active === i
-                  ? "bg-[#0A0F2D] text-white"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              }`}
-            >
-              {uc.label}
-            </button>
-          ))}
+        {/* Bottom CTA */}
+        <div className="text-center mt-12">
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-2 bg-[#0047FF] text-white px-8 py-4 rounded-full font-bold text-base shadow-lg shadow-[#0047FF]/25 hover:bg-[#0036CC] hover:shadow-xl transition-all duration-300 group"
+          >
+            Empezá gratis y descubrí todas las funcionalidades
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <p className="text-xs text-gray-400 mt-3">Sin tarjeta de crédito · 14 días gratis</p>
         </div>
       </div>
     </section>

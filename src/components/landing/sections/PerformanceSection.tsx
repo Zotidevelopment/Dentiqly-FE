@@ -1,462 +1,219 @@
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useEffect, useRef } from "react"
+import { Link } from "react-router-dom"
+import { 
+  CheckCircle2, 
+  Zap, 
+  ShieldAlert, 
+  Headphones, 
+  Database, 
+  ArrowRight,
+  TrendingUp,
+  Sparkles
+} from "lucide-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { ArrowRight } from "lucide-react"
-import { Link } from "react-router-dom"
 
 gsap.registerPlugin(ScrollTrigger)
 
-interface MetricData {
-  multiplier: string
-  label: string
-  competitionLabel: string
-  competitionValue: string
-  competitionWidth: string
-  dentiqlyLabel: string
-  dentiqlyValue: string
-  dentiqlyWidth: string
+interface BenefitItem {
+  icon: React.ReactNode
+  title: string
+  description: string
+  tag?: string
 }
 
-interface TabData {
-  key: string
-  label: string
-  headline: string
-  headlineFaded: string
-  cta: string
-  metrics: MetricData[]
-}
-
-const tabsData: TabData[] = [
+const benefits: BenefitItem[] = [
   {
-    key: "eficiencia",
-    label: "Eficiencia",
-    headline:
-      "La gestión clínica moderna requiere precisión y velocidad. El software tradicional o planillas sueltas limitan tu crecimiento.",
-    headlineFaded:
-      "Dentiqly está diseñado para optimizar flujos de trabajo, permitiéndote atender a más pacientes en menos tiempo.",
-    cta: "Conoce el impacto de Dentiqly",
-    metrics: [
-      {
-        multiplier: "6.0x",
-        label: "Gestión de turnos más rápida",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "180 s",
-        competitionWidth: "100%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "30 s",
-        dentiqlyWidth: "15%",
-      },
-      {
-        multiplier: "7.0x",
-        label: "Menor tasa de inasistencia",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "35 %",
-        competitionWidth: "80%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "5 %",
-        dentiqlyWidth: "12%",
-      },
-      {
-        multiplier: "5.3x",
-        label: "Carga de historias clínicas rápida",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "8 min",
-        competitionWidth: "90%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "1.5 min",
-        dentiqlyWidth: "18%",
-      },
-    ],
+    icon: <Zap className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Configuración en 10 minutos",
+    description: "Importamos tus datos y configuramos tu agenda al instante para que no pierdas ni un solo turno.",
+    tag: "Rápido"
   },
   {
-    key: "pacientes",
-    label: "Pacientes",
-    headline:
-      "Un paciente bien gestionado vuelve. Los datos dispersos generan errores, olvidos y mala experiencia.",
-    headlineFaded:
-      "Dentiqly centraliza toda la información de cada paciente: historial, odontograma, tratamientos y comunicación en un solo lugar.",
-    cta: "Descubrí la experiencia del paciente",
-    metrics: [
-      {
-        multiplier: "100%",
-        label: "Historial clínico digitalizado",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "Parcial",
-        competitionWidth: "45%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "Completo",
-        dentiqlyWidth: "100%",
-      },
-      {
-        multiplier: "3.2x",
-        label: "Más retención de pacientes",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "42 %",
-        competitionWidth: "42%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "89 %",
-        dentiqlyWidth: "89%",
-      },
-      {
-        multiplier: "80%",
-        label: "Reducción de errores en fichas",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "12 err/mes",
-        competitionWidth: "85%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "2 err/mes",
-        dentiqlyWidth: "15%",
-      },
-    ],
+    icon: <ShieldAlert className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Sin contratos ni permanencia",
+    description: "Creemos en la calidad de nuestro producto. Sos libre de cancelar cuando quieras, sin trabas ni letra chica.",
+    tag: "Flexible"
   },
   {
-    key: "finanzas",
-    label: "Finanzas",
-    headline:
-      "El descontrol financiero es el enemigo silencioso de las clínicas. Cobros pendientes, liquidaciones incorrectas y falta de visibilidad.",
-    headlineFaded:
-      "Dentiqly controla cuentas corrientes y genera liquidaciones precisas para cada profesional de forma automática.",
-    cta: "Mirá cómo optimizar tus finanzas",
-    metrics: [
-      {
-        multiplier: "4.5x",
-        label: "Liquidaciones más rápidas",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "45 min",
-        competitionWidth: "90%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "10 min",
-        dentiqlyWidth: "20%",
-      },
-      {
-        multiplier: "95%",
-        label: "Cobros al día",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "60 %",
-        competitionWidth: "60%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "95 %",
-        dentiqlyWidth: "95%",
-      },
-      {
-        multiplier: "0",
-        label: "Errores en liquidaciones",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "8 %",
-        competitionWidth: "70%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "0 %",
-        dentiqlyWidth: "3%",
-      },
-    ],
+    icon: <Headphones className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Soporte humano 24/7",
+    description: "Un equipo real de expertos listo para ayudarte por WhatsApp, teléfono o email cuando lo necesites.",
+    tag: "VIP"
   },
   {
-    key: "integraciones",
-    label: "Integraciones",
-    headline:
-      "Tu clínica no opera en un vacío. Email, obras sociales, sistemas contables: todo necesita conectarse.",
-    headlineFaded:
-      "Dentiqly se integra nativamente con los servicios que ya usás, eliminando la doble carga de datos y errores manuales.",
-    cta: "Explorá las integraciones",
-    metrics: [
-      {
-        multiplier: "80%",
-        label: "Menos ausencias con email",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "Manual",
-        competitionWidth: "100%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "Automático",
-        dentiqlyWidth: "20%",
-      },
-      {
-        multiplier: "10+",
-        label: "Obras sociales integradas",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "2-3",
-        competitionWidth: "25%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "10+",
-        dentiqlyWidth: "100%",
-      },
-      {
-        multiplier: "1",
-        label: "Carga única de datos",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "3 sistemas",
-        competitionWidth: "100%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "1 sistema",
-        dentiqlyWidth: "33%",
-      },
-    ],
+    icon: <Database className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Migración gratuita de datos",
+    description: "¿Usás planillas, Excel u otro sistema? Nos encargamos de mudar todo a Dentiqly sin ningún costo.",
+    tag: "Gratis"
   },
   {
-    key: "escalabilidad",
-    label: "Escalabilidad",
-    headline:
-      "Crecer no debería significar más caos. Cada nueva sucursal o profesional amplifica los problemas de gestión.",
-    headlineFaded:
-      "Dentiqly escala con vos: multi-sucursal, multi-profesional, roles y permisos, todo desde un panel unificado.",
-    cta: "Descubrí cómo escalar tu clínica",
-    metrics: [
-      {
-        multiplier: "∞",
-        label: "Sucursales sin límite",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "1-2 sedes",
-        competitionWidth: "20%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "Ilimitadas",
-        dentiqlyWidth: "100%",
-      },
-      {
-        multiplier: "1",
-        label: "Panel para todo",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "Múltiples logins",
-        competitionWidth: "100%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "Un solo panel",
-        dentiqlyWidth: "30%",
-      },
-      {
-        multiplier: "50+",
-        label: "Profesionales gestionados",
-        competitionLabel: "COMPETENCIA",
-        competitionValue: "Hasta 10",
-        competitionWidth: "20%",
-        dentiqlyLabel: "DENTIQLY",
-        dentiqlyValue: "50+",
-        dentiqlyWidth: "100%",
-      },
-    ],
+    icon: <Sparkles className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Actualizaciones incluidas",
+    description: "Accedé a todas las nuevas herramientas y mejoras del sistema automáticamente, sin pagar de más.",
+    tag: "Siempre al día"
   },
+  {
+    icon: <TrendingUp className="h-6 w-6 text-[#00E5FF]" />,
+    title: "Capacitación a tu equipo",
+    description: "Te guiamos con entrenamientos rápidos y personalizados para que tu personal domine el sistema en un día.",
+    tag: "Acompañamiento"
+  }
 ]
 
 export const PerformanceSection: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(0)
   const sectionRef = useRef<HTMLElement>(null)
-  const pinWrapperRef = useRef<HTMLDivElement>(null)
-  const metricsRef = useRef<HTMLDivElement>(null)
-  const prevTabRef = useRef(0)
-
-  const animateMetrics = useCallback((direction: "down" | "up") => {
-    if (!metricsRef.current) return
-    const els = metricsRef.current.querySelectorAll(".perf-metric-animate")
-    const yFrom = direction === "down" ? 40 : -40
-    gsap.fromTo(
-      els,
-      { opacity: 0, y: yFrom },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out",
-        overwrite: true,
-      }
-    )
-  }, [])
+  const cardsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return
+    if (!sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${window.innerHeight * (tabsData.length - 1)}`,
-        pin: pinWrapperRef.current,
-        scrub: 0.3,
-        onUpdate: (self) => {
-          const progress = self.progress
-          const newTab = Math.min(
-            tabsData.length - 1,
-            Math.floor(progress * tabsData.length)
-          )
-          setActiveTab((prev) => {
-            if (prev !== newTab) {
-              const direction = newTab > prev ? "down" : "up"
-              prevTabRef.current = prev
-              requestAnimationFrame(() => animateMetrics(direction))
-            }
-            return newTab
-          })
+      // Header Animation
+      gsap.from(".why-dentiqly-header", {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
         },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
       })
-    }, section)
+
+      // Cards stagger animation
+      const cards = cardsRef.current?.querySelectorAll(".benefit-card")
+      if (cards && cards.length > 0) {
+        gsap.from(cards, {
+          scrollTrigger: {
+            trigger: cardsRef.current,
+            start: "top 75%",
+          },
+          y: 60,
+          opacity: 0,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power3.out",
+        })
+      }
+
+      // CTA Box Animation
+      gsap.from(".why-dentiqly-cta", {
+        scrollTrigger: {
+          trigger: ".why-dentiqly-cta",
+          start: "top 85%",
+        },
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      })
+    }, sectionRef)
 
     return () => ctx.revert()
-  }, [animateMetrics])
-
-  const current = tabsData[activeTab]
+  }, [])
 
   return (
     <section
-      id="metricas"
+      id="por-que-dentiqly"
       ref={sectionRef}
       data-navbar-theme="dark"
-      className="relative overflow-hidden"
-      style={{ minHeight: `${100 * tabsData.length}vh` }}
+      className="relative bg-[#0A0F2D] text-white py-24 sm:py-32 overflow-hidden border-t border-white/5"
     >
-      <div
-        ref={pinWrapperRef}
-        className="bg-[#0A0F2D] text-white py-12 sm:py-16 border-t border-white/5"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-            {/* Left Sidebar */}
-            <div className="hidden lg:flex flex-col gap-6 w-48 shrink-0 pt-2 border-l border-white/10 pl-6">
-              {tabsData.map((tab, index) => {
-                const isActive = activeTab === index
-                return (
-                  <div key={tab.key} className="relative">
-                    {isActive && (
-                      <div
-                        className="absolute -left-[25px] top-0 w-[2px] h-full bg-[#0047FF]"
-                        style={{
-                          boxShadow: "0 0 8px rgba(0,71,255,0.5)",
-                        }}
-                      />
-                    )}
-                    <span
-                      className="text-[11px] font-semibold tracking-[-2px] text-left uppercase transition-all duration-300 block"
-                      style={{
-                        color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.4)",
-                      }}
-                    >
-                      {tab.label}
+      {/* Background glow effects */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#0047FF]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-[#00E5FF]/5 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Header */}
+        <div className="why-dentiqly-header text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-white/5 border border-white/10 text-white/80 mb-6">
+            <CheckCircle2 size={12} className="text-[#00E5FF]" /> Por qué elegirnos
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-6">
+            La transición más simple. <br />
+            <span className="bg-gradient-to-r from-[#00E5FF] to-[#0047FF] bg-clip-text text-transparent">
+              El impacto más grande.
+            </span>
+          </h2>
+          <p className="text-lg text-white/60 font-medium max-w-2xl mx-auto leading-relaxed">
+            Diseñamos Dentiqly para resolver las fricciones de la gestión diaria. Sin contratos forzados, sin sorpresas y con todo el soporte que necesitás.
+          </p>
+        </div>
+
+        {/* Benefits Grid */}
+        <div 
+          ref={cardsRef}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20"
+        >
+          {benefits.map((benefit, index) => (
+            <div
+              key={index}
+              className="benefit-card group relative bg-white/5 border border-white/10 hover:border-[#0047FF]/50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,71,255,0.15)] flex flex-col justify-between"
+            >
+              {/* Card glowing border gradient hover */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#00E5FF]/20 to-[#0047FF]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -z-10 blur-sm" />
+              
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    {benefit.icon}
+                  </div>
+                  {benefit.tag && (
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-white/40 group-hover:text-[#00E5FF] transition-colors">
+                      {benefit.tag}
                     </span>
-                  </div>
-                )
-              })}
+                  )}
+                </div>
+                
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-white transition-colors">
+                  {benefit.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-white/50 group-hover:text-white/70 transition-colors">
+                  {benefit.description}
+                </p>
+              </div>
 
-              {/* Progress dots */}
-              <div className="flex items-center gap-1.5 mt-4">
-                {tabsData.map((_, index) => (
-                  <div
-                    key={index}
-                    className="h-1 rounded-full transition-all duration-500"
-                    style={{
-                      width: activeTab === index ? "20px" : "6px",
-                      background:
-                        activeTab === index
-                          ? "#0047FF"
-                          : activeTab > index
-                          ? "#0047FF"
-                          : "rgba(255,255,255,0.15)",
-                      opacity: activeTab >= index ? 1 : 0.4,
-                    }}
-                  />
-                ))}
+              {/* Decorative small checkmark */}
+              <div className="flex items-center gap-1.5 mt-6 text-xs text-[#00E5FF] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                <span>Garantizado</span>
+                <CheckCircle2 size={12} />
               </div>
             </div>
+          ))}
+        </div>
 
-            {/* Mobile tabs */}
-            <div className="flex lg:hidden overflow-x-auto no-scrollbar gap-3 -mx-4 px-4">
-              {tabsData.map((tab, index) => {
-                const isActive = activeTab === index
-                return (
-                  <span
-                    key={tab.key}
-                    className="text-[11px] font-semibold tracking-wide uppercase whitespace-nowrap transition-all duration-300 px-3 py-1.5 rounded-full"
-                    style={{
-                      color: isActive ? "#FFFFFF" : "rgba(255,255,255,0.4)",
-                      background: isActive
-                        ? "rgba(0,71,255,0.2)"
-                        : "transparent",
-                      border: isActive
-                        ? "1px solid rgba(0,71,255,0.3)"
-                        : "1px solid transparent",
-                    }}
-                  >
-                    {tab.label}
-                  </span>
-                )
-              })}
+        {/* Action / CTA Box */}
+        <div className="why-dentiqly-cta max-w-4xl mx-auto">
+          <div className="relative rounded-3xl bg-gradient-to-r from-[#0047FF] to-[#002699] p-8 sm:p-12 shadow-2xl overflow-hidden text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-8">
+            {/* Background elements */}
+            <div className="absolute -right-10 -bottom-10 w-60 h-60 bg-[#00E5FF]/20 rounded-full blur-[50px] pointer-events-none" />
+            
+            <div className="relative z-10 max-w-lg">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-3">
+                ¿Listo para ver la diferencia?
+              </h3>
+              <p className="text-white/80 text-sm sm:text-base mb-2 font-medium">
+                Probá Dentiqly GRATIS por 14 días con todas las funciones activas.
+              </p>
+              <p className="text-white/55 text-xs font-normal">
+                No requiere tarjeta de crédito • Configuración en minutos • Cancelá en cualquier momento.
+              </p>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1" ref={metricsRef}>
-              <div className="perf-metric-animate max-w-3xl">
-                <h2 className="text-xl sm:text-2xl font-semibold leading-relaxed tracking-[-1px] text-white mb-4">
-                  {current.headline}
-                  <span className="text-white/60">
-                    {" "}
-                    {current.headlineFaded}
-                  </span>
-                </h2>
-
-                <Link to="/register" className="btn-wayflyer-primary">
-                  {current.cta}
-                  <div className="btn-icon-circle">
-                    <ArrowRight size={14} />
-                  </div>
-                </Link>
-              </div>
-
-              {/* Metrics List */}
-              <div className="mt-10 flex flex-col gap-8">
-                {current.metrics.map((metric, idx) => (
-                  <div
-                    key={`${current.key}-${idx}`}
-                    className="perf-metric-animate flex flex-col md:flex-row gap-4 md:gap-10 items-start"
-                  >
-                    {/* Big Number */}
-                    <div className="w-full md:w-48 shrink-0">
-                      <div className="text-4xl sm:text-5xl font-semibold tracking-[-3px] text-white mb-1">
-                        {metric.multiplier}
-                      </div>
-                      <div className="text-[#0047FF] text-sm font-semibold tracking-wide">
-                        {metric.label}
-                      </div>
-                    </div>
-
-                    {/* Bars */}
-                    <div className="flex-1 w-full pt-1 flex flex-col gap-3">
-                      {/* Competition Bar */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-[10px] font-mono tracking-[-2px] text-white/40 uppercase font-semibold">
-                          <span>{metric.competitionLabel}</span>
-                          <span>{metric.competitionValue}</span>
-                        </div>
-                        <div className="h-3 w-full bg-transparent rounded-sm overflow-hidden">
-                          <div
-                            className="h-full rounded-sm transition-all duration-700 ease-out"
-                            style={{
-                              width: metric.competitionWidth,
-                              background:
-                                "repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 4px, transparent 4px, transparent 8px)",
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Dentiqly Bar */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-[10px] font-semibold font-mono tracking-[-2px] text-[#0047FF] uppercase">
-                          <span>{metric.dentiqlyLabel}</span>
-                          <span>{metric.dentiqlyValue}</span>
-                        </div>
-                        <div className="h-3 w-full bg-transparent rounded-sm overflow-hidden flex items-center">
-                          <div
-                            className="h-full bg-[#0047FF] rounded-sm shadow-[0_0_15px_rgba(0,71,255,0.4)] transition-all duration-700 ease-out"
-                            style={{
-                              width: metric.dentiqlyWidth,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="relative z-10 shrink-0">
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#0047FF] font-extrabold text-sm rounded-full hover:bg-gray-50 transition-all shadow-lg hover:shadow-white/20 hover:scale-[1.02]"
+              >
+                Empezá GRATIS ahora
+                <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   )

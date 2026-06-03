@@ -4,8 +4,8 @@ import { SEO, PAGE_SEO } from "../seo/SEO"
 import { CustomCursor } from "./components/CustomCursor"
 import { Navbar } from "./sections/Navbar"
 import { HeroSection } from "./sections/HeroSection"
+import { SocialProofBar } from "./sections/SocialProofBar"
 import { ProductShowcase } from "./sections/ProductShowcase"
-import { ScrollRevealSection } from "./sections/ScrollRevealSection"
 import { TabbedShowcase } from "./sections/TabbedShowcase"
 import { FeatureDeepDive } from "./sections/FeatureDeepDive"
 import { TestimonialSection } from "./sections/TestimonialSection"
@@ -30,8 +30,8 @@ export const LandingPage: React.FC = () => {
       <Navbar />
       <main>
         <HeroSection />
+        <SocialProofBar />
         <ProductShowcase />
-        <ScrollRevealSection />
         <TabbedShowcase />
         <PerformanceSection />
         <SecuritySection />
