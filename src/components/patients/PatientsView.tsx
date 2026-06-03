@@ -184,7 +184,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
   const getPhotoUrl = (patient: Paciente) => {
     if (!patient.foto_url) return null
-    if (patient.foto_url.startsWith("http")) return patient.foto_url
+    if (patient.foto_url.startsWith("http") || patient.foto_url.startsWith("/") || patient.foto_url.startsWith("data:")) return patient.foto_url
     return `${API_BASE_URL.replace(/\/api$/, "")}/${patient.foto_url.replace(/^src\//, "")}`
   }
 

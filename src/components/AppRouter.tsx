@@ -198,6 +198,9 @@ export const AppRouter: React.FC = () => {
 
       <Route path="/paciente/*" element={<PatientApp />} />
 
+      {/* Demo Admin Route */}
+      <Route path="/demo/*" element={<AdminApp />} />
+
       {/* Booking público por slug — debe ir después de todas las rutas estáticas */}
       <Route path="/:slug" element={<BookingWithSlug />} />
 

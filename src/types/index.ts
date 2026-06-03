@@ -87,6 +87,8 @@ export interface Paciente {
   etiquetas?: string[]
   informacion_adicional?: string
   obra_social_nombre_custom?: string
+  contacto_emergencia?: string
+  telefono_emergencia?: string
   createdAt: string
   updatedAt: string
 

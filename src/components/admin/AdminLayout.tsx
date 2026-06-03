@@ -113,7 +113,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    window.location.href = '/login'
+    if (window.location.pathname.startsWith('/demo')) {
+      window.location.href = '/'
+    } else {
+      window.location.href = '/login'
+    }
   }
 
   const sidebarWidth = collapsed ? 'w-[72px]' : 'w-[250px]'

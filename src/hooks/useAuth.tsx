@@ -19,6 +19,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+        setUser({
+          id: 'demo-user-id',
+          email: 'demo@dentiqly.com',
+          nombre: 'Dr. Demóstenes',
+          apellido: 'Mock',
+          role: 'admin',
+          clinicaId: 'demo-clinica-id',
+          clinica: {
+            id: 'demo-clinica-id',
+            nombre: 'Clínica Dental Demo',
+            slug: 'demo',
+            subscription_status: 'active'
+          }
+        });
+        setLoading(false);
+        return;
+      }
       const token = localStorage.getItem('token');
       if (token) {
         try {

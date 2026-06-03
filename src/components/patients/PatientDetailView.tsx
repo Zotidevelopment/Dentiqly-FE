@@ -207,6 +207,14 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     <span className="text-[12px] text-[#8A93A8]">Ocupación</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">{patient.ocupacion || "-"}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Recomendado por</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.recomendado_por || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Condición IVA</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.condicion_iva || "-"}</span>
+                  </div>
                 </div>
               </div>
 
@@ -234,6 +242,18 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Afiliado Nº</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">{patient.numero_afiliado || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Contacto Emerg.</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.contacto_emergencia || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Tel. Emergencia</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.telefono_emergencia || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Facturación</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">Factura {patient.tipo_facturacion} {patient.numero_facturacion ? `(${patient.numero_facturacion})` : ""}</span>
                   </div>
                 </div>
               </div>
