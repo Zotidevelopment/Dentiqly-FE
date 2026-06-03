@@ -105,10 +105,10 @@ export const Navbar: React.FC = () => {
   }, [mobileMenuOpen])
 
   const navLinks = [
-    { label: "Producto", href: "#producto" },
-    { label: "Funcionalidades", href: "#funcionalidades-tabs" },
-    { label: "Metricas", href: "#metricas" },
-    { label: "Precios", href: "#precios" },
+    { label: "Plataforma", href: "/plataforma", isPage: true },
+    { label: "Funcionalidades", href: "#funcionalidades-tabs", isPage: false },
+    { label: "Metricas", href: "#metricas", isPage: false },
+    { label: "Precios", href: "#precios", isPage: false },
   ]
 
   return (
@@ -139,16 +139,26 @@ export const Navbar: React.FC = () => {
           <div className={`hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors ${
             isScrolled ? "bg-transparent" : "bg-[#0047FF]"
           }`}>
-            {navLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleAnchorClick(e, item.href)}
-                className="px-3 py-1.5 text-[13px] font-medium text-white hover:bg-white/15 rounded-full transition-all tracking-normal"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navLinks.map((item) =>
+              item.isPage ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className="px-3 py-1.5 text-[13px] font-medium text-white hover:bg-white/15 rounded-full transition-all tracking-normal"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleAnchorClick(e, item.href)}
+                  className="px-3 py-1.5 text-[13px] font-medium text-white hover:bg-white/15 rounded-full transition-all tracking-normal"
+                >
+                  {item.label}
+                </a>
+              )
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -194,16 +204,27 @@ export const Navbar: React.FC = () => {
           className="fixed inset-0 z-40 bg-[#0A0F2D]/95 backdrop-blur-xl pt-20 px-8 md:hidden"
         >
           <div className="flex flex-col gap-2">
-            {navLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleAnchorClick(e, item.href)}
-                className="mobile-nav-link text-xl font-bold text-white/80 hover:text-white py-4 border-b border-white/5 transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navLinks.map((item) =>
+              item.isPage ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mobile-nav-link text-xl font-bold text-white/80 hover:text-white py-4 border-b border-white/5 transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleAnchorClick(e, item.href)}
+                  className="mobile-nav-link text-xl font-bold text-white/80 hover:text-white py-4 border-b border-white/5 transition-colors"
+                >
+                  {item.label}
+                </a>
+              )
+            )}
             <div className="flex flex-col gap-3 mt-8">
               <Link
                 to="/login"

@@ -28,6 +28,7 @@ import { PrivacyPage } from './legal/PrivacyPage'
 import { TermsPage } from './legal/TermsPage'
 import { CookiesPage } from './legal/CookiesPage'
 import { AboutPage } from './legal/AboutPage'
+import { ProductPage } from './landing/sections/ProductPage'
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ children, allowedRoles }) => {
@@ -172,6 +173,7 @@ export const AppRouter: React.FC = () => {
       <Route path="/terminos" element={<TermsPage />} />
       <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/sobre-nosotros" element={<AboutPage />} />
+      <Route path="/plataforma" element={<ProductPage />} />
       
       {/* Legacy booking sin slug */}
       <Route path="/reserva" element={<BookingLayout />} />
