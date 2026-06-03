@@ -27,54 +27,85 @@ const badges = [
 
 export const SecuritySection: React.FC = () => {
   return (
-    <section id="seguridad" className="py-28 sm:py-36 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-[#2563FF]/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-[#0047FF]/5 rounded-full blur-[100px]" />
-      </div>
-
+    <section id="seguridad" className="py-20 sm:py-28 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-sm font-extrabold text-[#0047FF] tracking-widest uppercase mb-4"
-          >
-            Seguridad de nivel empresarial
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#0A0F2D] tracking-[-3px]"
-          >
-            Tus datos dentales, siempre protegidos.
-          </motion.h2>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-          {badges.map((badge, i) => {
-            const Icon = badge.icon
-            return (
+        {/* Large Rounded Dark Navy Container Card matching the reference image 100% */}
+        <div className="bg-[#0047FF] text-white rounded-[2rem] p-10 sm:p-16 lg:p-20 relative overflow-hidden">
+          {/* Internal background ambient glows */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#2563FF]/10 rounded-full blur-[140px]" />
+            <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-[#0047FF]/10 rounded-full blur-[120px]" />
+          </div>
+
+          <div className="relative z-10">
+            {/* Header Content */}
+            <div className="text-center mb-12">
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group relative bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-[#0047FF]/30 transition-all duration-500"
+                className="flex justify-center mb-6"
               >
-                <div className="w-12 h-12 rounded-xl bg-[#0047FF]/10 flex items-center justify-center mb-5 group-hover:bg-[#0047FF]/20 transition-colors">
-                  <Icon className="w-6 h-6 text-[#0047FF]" />
-                </div>
-                <h4 className="text-lg font-bold text-[#0A0F2D] mb-2">{badge.title}</h4>
-                <p className="text-sm text-gray-500 leading-relaxed">{badge.desc}</p>
+                <span className="inline-block bg-[#0A0F2D] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
+                  Seguridad de nivel empresarial
+                </span>
               </motion.div>
-            )
-          })}
+
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white tracking-[-3px] leading-[1.1] mb-6"
+              >
+                Tus datos dentales, siempre protegidos.
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 }}
+                className="text-sm md:text-base text-white/50 leading-relaxed max-w-2xl mx-auto"
+              >
+                Dentiqly está diseñado bajo los más estrictos estándares de seguridad internacional, garantizando la privacidad y protección de toda tu información clínica.
+              </motion.p>
+            </div>
+
+            {/* Horizontal divider line as in the reference image */}
+            <div className="w-full h-px bg-white/10 my-12" />
+
+            {/* Features/Badges Row separated by vertical lines */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 lg:divide-y-0 lg:divide-x divide-white/10 gap-y-12 lg:gap-y-0">
+              {badges.map((badge, i) => {
+                const Icon = badge.icon
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex flex-col items-center justify-center p-4 text-center group transition-colors duration-300"
+                  >
+                    {/* Centered Icon */}
+                    <div className="mb-6 flex justify-center text-white/80 group-hover:text-[#0047FF] transition-colors duration-300">
+                      <Icon className="w-8 h-8" />
+                    </div>
+
+                    {/* Centered Title */}
+                    <h4 className="text-lg font-bold text-white mb-3 text-center">{badge.title}</h4>
+
+                    {/* Centered Description */}
+                    <p className="text-sm text-white/50 leading-relaxed text-center max-w-[240px] mx-auto">{badge.desc}</p>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
         </div>
+
       </div>
     </section>
   )

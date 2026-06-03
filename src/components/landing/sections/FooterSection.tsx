@@ -20,16 +20,22 @@ export const FooterSection: React.FC = () => {
   )
 
   return (
-    <footer className="bg-[#0A0F2D] text-white pt-20 pb-10">
+    <footer
+      className="bg-[#0A0F2D] text-white pt-20 pb-10 relative"
+      style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+        backgroundSize: "28px 28px",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
 
           {/* Brand & Description */}
           <div className="lg:col-span-1">
             <img
-              src="/assets/dentiqly-logo.png"
+              src="/assets/dentiqly-logo-white.png?v=2"
               alt="Dentiqly - Software de gestión dental para clínicas odontológicas"
-              className="h-8 w-auto mb-6 brightness-0 invert"
+              className="h-8 w-auto mb-6"
             />
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               Dentiqly es el software dental todo en uno para clínicas odontológicas en Argentina.
@@ -172,8 +178,8 @@ export const FooterSection: React.FC = () => {
         </div>
 
         {/* CTA Bar */}
-        <div className="border-t border-white/10 pt-10 mb-10">
-          <div className="bg-gradient-to-r from-[#2563FF]/20 to-[#0047FF]/10 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="border-t border-white/10 pt-10 mb-10 ">
+          <div className="border border-white/10 bg-[#0047FF] p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <p className="text-white font-semibold text-lg mb-1">
                 Probá Dentiqly gratis por 14 días
@@ -184,7 +190,7 @@ export const FooterSection: React.FC = () => {
             </div>
             <Link
               to="/register"
-              className="shrink-0 bg-[#2563FF] hover:bg-[#1d4ed8] text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm"
+              className="shrink-0 bg-[#0A0F2D] hover:bg-[#0A0F2D] text-white px-8 py-3 rounded-full font-semibold transition-colors text-sm"
             >
               Comenzar prueba gratuita
             </Link>
