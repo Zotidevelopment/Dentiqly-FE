@@ -63,7 +63,7 @@ export const HeroSection: React.FC = () => {
         
         {/* Soft grid lines (extremely subtle) */}
         <div
-          className="absolute inset-0 opacity-[0.05]"
+          className="absolute inset-0 opacity-[0.18]"
           style={{
             backgroundImage: `linear-gradient(to right, #0047FF 1px, transparent 1px), linear-gradient(to bottom, #0047FF 1px, transparent 1px)`,
             backgroundSize: "64px 64px",
