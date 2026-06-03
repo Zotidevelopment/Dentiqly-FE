@@ -17,6 +17,9 @@ export function useLenis() {
     })
 
     lenisRef.current = lenis
+    if (typeof window !== "undefined") {
+      (window as any).lenis = lenis
+    }
 
     lenis.on("scroll", ScrollTrigger.update)
 
@@ -32,6 +35,9 @@ export function useLenis() {
     return () => {
       lenis.destroy()
       lenisRef.current = null
+      if (typeof window !== "undefined") {
+        delete (window as any).lenis
+      }
       document.documentElement.style.scrollBehavior = prevScrollBehavior
       gsap.ticker.remove(lenis.raf)
     }

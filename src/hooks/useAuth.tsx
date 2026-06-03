@@ -19,7 +19,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
-      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const userData = await authApi.me();
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        } catch (error) {
+          console.error('Failed to restore session:', error);
+          apiClient.clearToken();
+          localStorage.removeItem('user');
+        }
+      } else if (typeof window !== 'undefined' && (window.location.pathname.startsWith('/demo') || window.location.pathname === '/')) {
         setUser({
           id: 'demo-user-id',
           email: 'demo@dentiqly.com',
@@ -34,20 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             subscription_status: 'active'
           }
         });
-        setLoading(false);
-        return;
-      }
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const userData = await authApi.me();
-          setUser(userData);
-          localStorage.setItem('user', JSON.stringify(userData));
-        } catch (error) {
-          console.error('Failed to restore session:', error);
-          apiClient.clearToken();
-          localStorage.removeItem('user');
-        }
       }
       setLoading(false);
     };
