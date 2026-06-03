@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
         ref={navRef}
         className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
       >
-        <div className="w-full flex items-center justify-between h-[54px]">
+        <div className="w-full flex items-center justify-between h-[54px] relative">
 
           {/* ═══ Left: Logo ═══ */}
           <Link
@@ -132,7 +132,7 @@ export const Navbar: React.FC = () => {
           </Link>
 
           {/* ══ center: Nav Links pill ══ */}
-          <div className="hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors bg-transparent">
+          <div className="hidden lg:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors bg-transparent">
             {navLinks.map((item) => (
               <a
                 key={item.label}
@@ -147,27 +147,27 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-1.5 transition-colors duration-300 text-white"
+            className="lg:hidden p-1.5 transition-colors duration-300 text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
           {/* ═══ Right: Auth Buttons ═══ */}
-          <div className="hidden md:flex items-center gap-[10px]">
+          <div className="hidden lg:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className="h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
+              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
             >
               <User size={14} className="mr-2" />
               Ingresar
             </Link>
             <Link
               to="/register"
-              className="h-[42px] px-7 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
+              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
             >
               Probá GRATIS
-              <ThinArrow size={20} className="text-[#0047FF] group-hover:translate-x-1 transition-transform duration-200" />
+              <ThinArrow size={18} className="text-[#0047FF] group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
         </div>
@@ -177,7 +177,7 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="fixed inset-0 z-40 bg-[#0A0F2D]/95 backdrop-blur-xl pt-20 px-8 md:hidden"
+          className="fixed inset-0 z-40 bg-[#0A0F2D]/95 backdrop-blur-xl pt-20 px-8 lg:hidden"
         >
           <div className="flex flex-col gap-2">
             {navLinks.map((item) => (
