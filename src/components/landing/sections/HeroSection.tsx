@@ -97,7 +97,7 @@ export const HeroSection: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[4rem] font-bold tracking-[-1.5px] leading-[1.12] text-[#0A0F2D] mb-6 max-w-[850px]"
         >
-          La plataforma inteligente para la gestión de tu <span className="text-[#0047FF]">clínica dental</span>
+          Simplificá la gestión de tu <span className="text-[#0047FF]">clínica dental</span>
         </motion.h1>
 
         {/* Sub-headline — pain + benefit */}
