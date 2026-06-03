@@ -129,9 +129,9 @@ export const Navbar: React.FC = () => {
             className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
           >
             <img
-              src={isDark || isScrolled ? "/assets/dentiqly-logo-white.png?v=2" : "/assets/dentiqly-logo-blue.png"}
+              src="/assets/dentiqly-logo.png"
               alt="Dentiqly - Software de gestión dental"
-              className="h-[28px] w-auto transition-all duration-300"
+              className={`h-[28px] w-auto transition-all duration-300 ${isDark || isScrolled ? "brightness-0 invert" : ""}`}
             />
           </Link>
 
