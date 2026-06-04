@@ -33,9 +33,9 @@ export const LandingPage: React.FC = () => {
         <SocialProofBar />
         <ProductShowcase />
         <TabbedShowcase />
+        <PricingSection />
         <PerformanceSection />
         <SecuritySection />
-        <PricingSection />
         <FaqSection />
         <CtaSection />
       </main>

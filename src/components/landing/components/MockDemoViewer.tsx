@@ -62,7 +62,7 @@ export const MockDemoViewer: React.FC<MockDemoViewerProps> = ({ initialTab = "da
   ] as const
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4" style={{ overscrollBehavior: "contain" }} onWheel={(e) => e.stopPropagation()}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -149,7 +149,7 @@ export const MockDemoViewer: React.FC<MockDemoViewerProps> = ({ initialTab = "da
             </div>
 
             {/* View workspace */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-8">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-8" style={{ overscrollBehavior: "contain" }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}

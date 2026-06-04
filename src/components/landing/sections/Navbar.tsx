@@ -157,7 +157,7 @@ export const Navbar: React.FC = () => {
           <div className="hidden lg:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
+              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-transparent text-white border border-white/40 hover:border-white/70 hover:bg-white/10"
             >
               <User size={14} className="mr-2" />
               Ingresar

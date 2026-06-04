@@ -17,7 +17,7 @@ const KEYS = {
 }
 
 // Versión de base de datos para forzar refresco cuando actualizamos datos mock
-const DEMO_VERSION = "v5"
+const DEMO_VERSION = "v6"
 
 // Inicialización de datos por defecto si no existen
 const getTodayDateStr = (offsetDays = 0) => {
@@ -767,7 +767,7 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   if (path === "/api/profesionales") {
     const profs = getStorageItem(KEYS.PROFESIONALES, defaultProfesionales)
     if (method === "GET") {
-      return { data: profs }
+      return { profesionales: profs, data: profs, pagination: { total: profs.length, page: 1, limit: 100, totalPages: 1 } }
     }
     if (method === "POST") {
       const nuevo: Profesional = {
@@ -784,14 +784,28 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   }
   if (path.startsWith("/api/profesionales/")) {
     const profs = getStorageItem(KEYS.PROFESIONALES, defaultProfesionales)
-    const id = parseInt(path.split("/").pop() || "0")
+    const segments = path.replace("/api/profesionales/", "").split("/")
+    const id = parseInt(segments[0] || "0")
 
     if (path.endsWith("/horarios-disponibles")) {
-      // Mock de horarios disponibles para agendar turnos
       return {
         disponible: true,
         mensaje: "Horarios cargados",
         horarios_disponibles: ["09:00", "09:45", "10:30", "11:15", "13:00", "13:45", "14:30", "15:15", "16:00", "16:45"],
+      }
+    }
+
+    if (path.endsWith("/horarios")) {
+      return {
+        horarios: {
+          lunes: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }, { inicio: "14:00", fin: "19:00" }] },
+          martes: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }, { inicio: "14:00", fin: "19:00" }] },
+          miercoles: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }, { inicio: "14:00", fin: "19:00" }] },
+          jueves: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }, { inicio: "14:00", fin: "19:00" }] },
+          viernes: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }, { inicio: "14:00", fin: "18:00" }] },
+          sabado: { activo: true, frecuencia: "semanal", rangos: [{ inicio: "09:00", fin: "13:00" }] },
+          domingo: { activo: false, frecuencia: "semanal", rangos: [] },
+        }
       }
     }
 
@@ -807,7 +821,7 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   // 4. SERVICIOS
   if (path === "/api/servicios") {
     const servs = getStorageItem(KEYS.SERVICIOS, defaultServicios)
-    if (method === "GET") return { data: servs }
+    if (method === "GET") return { servicios: servs, data: servs, pagination: { total: servs.length, page: 1, limit: 100, totalPages: 1 } }
     if (method === "POST") {
       const nuevo: Servicio = {
         ...body,
@@ -822,12 +836,27 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   }
   if (path.startsWith("/api/servicios/")) {
     const servs = getStorageItem(KEYS.SERVICIOS, defaultServicios)
-    const id = parseInt(path.split("/").pop() || "0")
+    const profs = getStorageItem(KEYS.PROFESIONALES, defaultProfesionales)
+    const segments = path.replace("/api/servicios/", "").split("/")
+    const id = parseInt(segments[0] || "0")
     const idx = servs.findIndex((s) => s.id === id)
+
+    if (segments[1] === "profesionales") {
+      const serviceProfessionals = profs.filter((p) => p.estado === "Activo")
+      return {
+        profesionales: serviceProfessionals,
+        servicio_id: id,
+        nombre: servs[idx]?.nombre || "",
+      }
+    }
+
     if (method === "PUT") {
       servs[idx] = { ...servs[idx], ...body, updatedAt: new Date().toISOString() }
       setStorageItem(KEYS.SERVICIOS, servs)
       return servs[idx]
+    }
+    if (method === "GET") {
+      return servs[idx] || null
     }
   }
 
@@ -1154,6 +1183,25 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   // 12. SUCURSALES
   if (path === "/api/sucursales") {
     return getStorageItem(KEYS.SUCURSALES, defaultSucursales)
+  }
+
+  // 12b. FERIADOS
+  if (path === "/api/feriados") {
+    if (method === "GET") {
+      return [
+        { id: 1, fecha: "2026-01-01", descripcion: "Año Nuevo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 2, fecha: "2026-03-24", descripcion: "Día Nacional de la Memoria", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 3, fecha: "2026-04-02", descripcion: "Día del Veterano", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 4, fecha: "2026-05-01", descripcion: "Día del Trabajador", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 5, fecha: "2026-05-25", descripcion: "Revolución de Mayo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 6, fecha: "2026-06-20", descripcion: "Día de la Bandera", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 7, fecha: "2026-07-09", descripcion: "Día de la Independencia", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 8, fecha: "2026-12-25", descripcion: "Navidad", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      ]
+    }
+    if (method === "POST") {
+      return { id: 99, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+    }
   }
 
   // 13. PLANES DE TRATAMIENTO (MOCK PARA DETALLE DE PACIENTE)
