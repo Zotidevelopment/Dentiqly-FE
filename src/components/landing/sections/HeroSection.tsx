@@ -42,7 +42,11 @@ const AnimatedCounter: React.FC<{ end: number; suffix: string; label: string; de
   )
 }
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenDemo?: () => void
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
   const sectionRef = useRef<HTMLElement>(null)
 
   return (
@@ -57,7 +61,7 @@ export const HeroSection: React.FC = () => {
 
         {/* Soft grid lines (extremely subtle) */}
         <div
-          className="absolute inset-0 opacity-[0.2]"
+          className="absolute inset-0 opacity-[0.09]"
           style={{
             backgroundImage: `linear-gradient(to right, #0047FF 1px, transparent 1px), linear-gradient(to bottom, #0047FF 1px, transparent 1px)`,
             backgroundSize: "64px 64px",
@@ -123,7 +127,11 @@ export const HeroSection: React.FC = () => {
             href="#funcionalidades"
             onClick={(e) => {
               e.preventDefault()
-              document.querySelector("#funcionalidades")?.scrollIntoView({ behavior: "smooth" })
+              if (onOpenDemo) {
+                onOpenDemo()
+              } else {
+                document.querySelector("#funcionalidades")?.scrollIntoView({ behavior: "smooth" })
+              }
             }}
             className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-8 py-3.5 rounded-full text-[15px] font-semibold transition-all duration-200 flex items-center gap-2 justify-center min-w-[200px]"
           >
@@ -150,8 +158,8 @@ export const HeroSection: React.FC = () => {
           className="relative w-full max-w-[1000px] mx-auto mb-14"
         >
           <div className="relative rounded-xl overflow-hidden border border-gray-200/50 shadow-[0_12px_40px_rgba(0,0,0,0.06)] bg-white"> */}
-            {/* Browser chrome bar */}
-            {/* <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+        {/* Browser chrome bar */}
+        {/* <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
               <div className="flex gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
                 <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />

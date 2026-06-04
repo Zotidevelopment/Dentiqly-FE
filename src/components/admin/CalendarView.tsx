@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '../ui/Button'
 import { dentalColors } from '../../config/colors'
 import { useToast } from '../../hooks/use-toast'
@@ -66,7 +66,7 @@ const getStatusIcon = (estado: string, sizeClass = "w-3 h-3") => {
 }
 
 
-type ViewType = 'day' | 'week' | 'month'
+type ViewType = 'day' | 'week' | 'month' | 'agenda'
 
 // Status colors mapping
 const STATUS_COLORS = {
@@ -109,6 +109,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   const [newAppointmentData, setNewAppointmentData] = useState<{ fecha: string, hora_inicio: string, sobre_turno: boolean } | null>(null)
   const [draggingAppointment, setDraggingAppointment] = useState<Turno | null>(null)
   const [hoveredApptId, setHoveredApptId] = useState<number | null>(null)
+  const [hoveredAppt, setHoveredAppt] = useState<{
+    appointment: Turno
+    x: number
+    y: number
+    width: number
+    height: number
+    profColor: string
+  } | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const [showFilterPanel, setShowFilterPanel] = useState(false)
 
@@ -195,7 +204,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       const year = currentDate.getFullYear()
       const month = currentDate.getMonth()
 
-      if (viewType === 'day') {
+      if (viewType === 'day' || viewType === 'agenda') {
         // Fetch a week around the day
         const start = new Date(currentDate)
         start.setDate(start.getDate() - 3)
@@ -412,7 +421,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   const navigate = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
       const newDate = new Date(prev)
-      if (viewType === 'day') {
+      if (viewType === 'day' || viewType === 'agenda') {
         newDate.setDate(prev.getDate() + (direction === 'prev' ? -1 : 1))
       } else if (viewType === 'week') {
         newDate.setDate(prev.getDate() + (direction === 'prev' ? -7 : 7))
@@ -462,7 +471,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   }
 
   const getViewTitle = () => {
-    if (viewType === 'day') {
+    if (viewType === 'day' || viewType === 'agenda') {
       return currentDate.toLocaleDateString('es-ES', {
         weekday: 'long',
         year: 'numeric',
@@ -553,9 +562,26 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         e.stopPropagation()
                         setSelectedAppointment(appt)
                       }}
-                      onMouseEnter={() => setHoveredApptId(appt.id)}
-                      onMouseLeave={() => setHoveredApptId(null)}
-                      className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-2 relative group"
+                      onMouseEnter={(e) => {
+                        setHoveredApptId(appt.id)
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const containerRect = containerRef.current?.getBoundingClientRect()
+                        if (containerRect) {
+                          setHoveredAppt({
+                            appointment: appt,
+                            x: rect.left - containerRect.left,
+                            y: rect.top - containerRect.top,
+                            width: rect.width,
+                            height: rect.height,
+                            profColor: getProfColor(appt.profesional_id)
+                          })
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredApptId(null)
+                        setHoveredAppt(null)
+                      }}
+                      className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
                       style={{
                         backgroundColor: `${profColor}15`,
                         border: `1.5px solid ${profColor}`,
@@ -567,8 +593,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         </div>
                       )}
 
-                      {/* Quick Actions */}
-                      {hoveredApptId === appt.id && (
+                      {/* Quick Actions (only shown if the card is not narrow) */}
+                      {hoveredApptId === appt.id && appt.width >= 45 && (
                         <div className="absolute top-2 right-8 flex flex-row gap-1.5 z-20 transition-opacity">
                           <button
                             onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
@@ -589,7 +615,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                       <div className="relative z-10">
                         <div className="flex items-start justify-between mb-0.5">
-                          <div className="font-black truncate capitalize leading-tight text-xs text-gray-900 pr-4">
+                          <div className={`font-bold capitalize leading-tight text-xs text-gray-900 pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
                             {appt.paciente?.nombre} {appt.paciente?.apellido}
                           </div>
                         </div>
@@ -703,9 +729,26 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 e.stopPropagation()
                                 setSelectedAppointment(appt)
                               }}
-                              onMouseEnter={() => setHoveredApptId(appt.id)}
-                              onMouseLeave={() => setHoveredApptId(null)}
-                              className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
+                              onMouseEnter={(e) => {
+                                setHoveredApptId(appt.id)
+                                const rect = e.currentTarget.getBoundingClientRect()
+                                const containerRect = containerRef.current?.getBoundingClientRect()
+                                if (containerRect) {
+                                  setHoveredAppt({
+                                    appointment: appt,
+                                    x: rect.left - containerRect.left,
+                                    y: rect.top - containerRect.top,
+                                    width: rect.width,
+                                    height: rect.height,
+                                    profColor: getProfColor(appt.profesional_id)
+                                  })
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredApptId(null)
+                                setHoveredAppt(null)
+                              }}
+                              className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1 relative group"
                               style={{
                                 backgroundColor: `${profColor}15`,
                                 border: `1px solid ${profColor}`,
@@ -717,8 +760,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 </div>
                               )}
 
-                              {/* Quick Actions */}
-                              {hoveredApptId === appt.id && (
+                              {/* Quick Actions (only shown if the card is not narrow) */}
+                              {hoveredApptId === appt.id && appt.width >= 90 && (
                                 <div className="absolute top-1 right-5 flex flex-row gap-1 z-20 transition-opacity">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
@@ -739,7 +782,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                               <div className="relative z-10">
                                 <div className="flex justify-between items-start">
-                                  <div className="font-black truncate capitalize leading-tight text-[10px] text-gray-900 pr-3">
+                                  <div className={`font-bold capitalize leading-tight text-[10px] text-gray-900 pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
                                     {appt.paciente?.nombre} {appt.paciente?.apellido}
                                   </div>
                                 </div>
@@ -812,11 +855,30 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                             e.stopPropagation()
                             setSelectedAppointment(appointment)
                           }}
+                          onMouseEnter={(e) => {
+                            setHoveredApptId(appointment.id)
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            const containerRect = containerRef.current?.getBoundingClientRect()
+                            if (containerRect) {
+                              setHoveredAppt({
+                                appointment: appointment,
+                                x: rect.left - containerRect.left,
+                                y: rect.top - containerRect.top,
+                                width: rect.width,
+                                height: rect.height,
+                                profColor: getProfColor(appointment.profesional_id)
+                              })
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredApptId(null)
+                            setHoveredAppt(null)
+                          }}
                           className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
                           style={{ backgroundColor: `${profColor}15`, border: `1px solid ${profColor}40` }}
                         >
                           <span className="font-bold shrink-0 text-gray-900">{appointment.hora_inicio.substring(0, 5)}</span>
-                          <span className="truncate font-semibold text-gray-700 pr-3">{appointment.paciente?.apellido}</span>
+                          <span className="truncate font-semibold text-gray-700 pr-1">{appointment.paciente?.apellido}</span>
                           {statusIcon && (
                             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-60">
                               {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5" })}
@@ -841,8 +903,216 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     )
   }
 
+  const renderAgendaView = () => {
+    const dayAppointments = getAppointmentsForDate(currentDate)
+    
+    const handleWhatsApp = (turno: Turno) => {
+      const phone = turno.paciente?.telefono
+      if (!phone) {
+        toast({ variant: "destructive", title: "Error", description: "El paciente no tiene teléfono registrado" })
+        return
+      }
+      const cleanPhone = phone.replace(/\D/g, '')
+      const dateStr = new Date(turno.fecha + 'T12:00:00').toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+      })
+      const msg = `Hola ${turno.paciente?.nombre}, te recordamos tu turno el ${dateStr} a las ${turno.hora_inicio.substring(0, 5)} hs. con el/la profesional ${turno.profesional?.nombre} ${turno.profesional?.apellido}. ¿Confirmas tu asistencia?`
+      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank')
+    }
+
+    if (dayAppointments.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full py-16 px-4 text-center bg-gray-50/50">
+          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4 text-[#8A93A8]">
+            <CalendarIcon className="w-8 h-8" />
+          </div>
+          <h3 className="text-base font-semibold text-[#0B1023] mb-1">No hay turnos agendados</h3>
+          <p className="text-[13px] text-[#8A93A8] max-w-sm mb-6">
+            No se encontraron citas programadas para este día o con los filtros activos.
+          </p>
+          <Button onClick={() => setShowBookingModal(true)} className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white rounded-xl px-5 py-2 flex items-center gap-2 text-[13px] font-bold">
+            <Plus className="w-4 h-4" /> Agendar Turno
+          </Button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex flex-col h-full bg-white overflow-y-auto p-4 md:p-6 space-y-4">
+        {dayAppointments.map((appt) => {
+          const profColor = getProfColor(appt.profesional_id)
+          const statusColor = getStatusColor(appt.estado)
+          const patientName = `${appt.paciente?.apellido || ''}, ${appt.paciente?.nombre || ''}`
+          const isConfirmed = appt.estado.startsWith('Confirmado')
+          const isAtendido = appt.estado === 'Atendido'
+          const isCancelado = appt.estado === 'Cancelado' || appt.estado === 'Ausente'
+
+          return (
+            <div
+              key={appt.id}
+              onClick={() => setSelectedAppointment(appt)}
+              className="flex flex-col md:flex-row md:items-center justify-between p-4 md:p-5 rounded-2xl border border-gray-100 hover:border-gray-200 bg-white hover:bg-gray-50/40 shadow-[0_1px_3px_rgba(0,0,0,0.01)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition-all cursor-pointer gap-4"
+            >
+              {/* Left Side: Time and Patient Info */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+                {/* Time Slot Badge */}
+                <div className="flex sm:flex-col items-center sm:items-start shrink-0 bg-[#EEF3FF] text-[#2563FF] px-3.5 py-2.5 rounded-xl border border-[#2563FF]/10 min-w-[100px] gap-2 sm:gap-0">
+                  <div className="flex items-center gap-1.5 sm:mb-0.5">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span className="text-xs font-bold font-mono">{appt.hora_inicio.substring(0, 5)}</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-gray-500">a {appt.hora_fin.substring(0, 5)} hs</span>
+                </div>
+
+                {/* Patient Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 className="text-[15px] font-bold text-[#0B1023] capitalize truncate">
+                      {patientName}
+                    </h3>
+                    {appt.sobre_turno && (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-100 text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                        Sobreturno
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center text-xs text-gray-500 gap-x-3 gap-y-1 font-medium">
+                    {appt.paciente?.numero_documento && (
+                      <span>DNI: {appt.paciente.numero_documento}</span>
+                    )}
+                    {appt.paciente?.telefono && (
+                      <span className="flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-gray-400" />
+                        {appt.paciente.telefono}
+                      </span>
+                    )}
+                    {(appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom) && (
+                      <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-[10px] font-semibold border border-emerald-100">
+                        {appt.paciente.obraSocial?.nombre || appt.paciente.obra_social_nombre_custom}
+                        {appt.paciente.numero_afiliado ? ` (Nº ${appt.paciente.numero_afiliado})` : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Side: Doctor and Service */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 md:px-6 md:border-l md:border-r border-gray-100 min-w-[200px] lg:min-w-[250px]">
+                {/* Professional Info */}
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                    style={{ backgroundColor: profColor }}
+                  >
+                    {getInitials(appt.profesional)}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-[#0B1023]">
+                      {appt.profesional?.nombre} {appt.profesional?.apellido}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-medium">
+                      {appt.profesional?.especialidad}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Service Details */}
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-gray-600 truncate max-w-[120px]">
+                    {appt.servicio?.nombre}
+                  </span>
+                  <span className="text-xs font-semibold text-[#2563FF] mt-0.5">
+                    ${appt.servicio?.precio_base}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Side: Status and Actions */}
+              <div className="flex items-center justify-between sm:justify-end gap-3.5 shrink-0">
+                {/* Status Badge */}
+                <span
+                  className="px-3 py-1 rounded-full text-xs font-bold border shrink-0 text-center min-w-[100px]"
+                  style={{
+                    backgroundColor: `${statusColor}10`,
+                    borderColor: `${statusColor}20`,
+                    color: statusColor
+                  }}
+                >
+                  {appt.estado}
+                </span>
+
+                {/* Quick Actions */}
+                <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                  {/* Atendido Button */}
+                  {!isAtendido && !isCancelado && (
+                    <button
+                      onClick={() => handleUpdateStatus(appt.id, 'Atendido')}
+                      className="p-2 bg-green-50 text-green-600 border border-green-100 hover:bg-green-600 hover:text-white rounded-xl transition-all shadow-sm"
+                      title="Marcar como Atendido"
+                    >
+                      <Check className="w-4 h-4" strokeWidth={3} />
+                    </button>
+                  )}
+                  {/* Cancelar Button */}
+                  {!isCancelado && !isAtendido && (
+                    <button
+                      onClick={() => handleUpdateStatus(appt.id, 'Cancelado')}
+                      className="p-2 bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm"
+                      title="Marcar como Cancelado"
+                    >
+                      <X className="w-4 h-4" strokeWidth={3} />
+                    </button>
+                  )}
+                  {/* WhatsApp button */}
+                  {appt.paciente?.telefono && (
+                    <button
+                      onClick={() => handleWhatsApp(appt)}
+                      className="p-2 bg-[#E8F8F0] text-[#075E54] border border-[#25D366]/20 hover:bg-[#25D366] hover:text-white rounded-xl transition-all shadow-sm flex items-center justify-center"
+                      title="Enviar recordatorio WhatsApp"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.45L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436.002 9.858-4.42 9.86-9.864.001-2.63-1.019-5.101-2.871-6.956C16.61 1.93 14.136.91 11.513.91c-5.44 0-9.863 4.42-9.865 9.864 0 1.702.451 3.361 1.307 4.808L1.93 21.07l5.717-1.498-.999-.418z" />
+                        <path d="M17.472 14.382c-.3-.149-1.778-.878-2.046-.976-.268-.099-.463-.149-.658.149-.195.298-.753.946-.922 1.139-.168.193-.337.217-.637.068-.3-.15-1.266-.467-2.41-1.484-.892-.796-1.493-1.78-1.668-2.079-.175-.299-.019-.461.13-.61.135-.133.3-.349.45-.523.15-.174.2-.298.3-.497.099-.198.05-.372-.025-.521-.075-.149-.658-1.586-.901-2.17-.236-.57-.478-.493-.658-.502-.17-.008-.364-.01-.557-.01-.193 0-.507.072-.772.36-.265.287-1.011.987-1.011 2.408s1.026 2.793 1.17 2.991c.143.198 2.017 3.08 4.887 4.318.683.295 1.218.47 1.633.603.687.218 1.312.187 1.806.114.55-.082 1.778-.726 2.028-1.428.25-.701.25-1.302.175-1.428-.075-.126-.269-.198-.569-.347z" />
+                      </svg>
+                    </button>
+                  )}
+                  {/* Edit button */}
+                  <button
+                    onClick={() => { setSelectedAppointment(appt); setShowEditModal(true); }}
+                    className="p-2 bg-gray-50 text-gray-600 border border-gray-100 hover:bg-[#2563FF] hover:text-white rounded-xl transition-all shadow-sm"
+                    title="Editar Turno"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z" />
+                    </svg>
+                  </button>
+                  {/* Delete button */}
+                  <button
+                    onClick={() => handleDeleteAppointment(appt.id)}
+                    className="p-2 bg-red-50 text-red-500 border border-red-100 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm"
+                    title="Eliminar Turno"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <line x1="10" y1="11" x2="10" y2="17" />
+                      <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
-    <div className="h-full flex flex-col font-sans min-h-0 overflow-hidden">
+    <div ref={containerRef} className="h-full flex flex-col font-sans min-h-0 overflow-hidden relative">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 shrink-0">
         <div>
@@ -915,6 +1185,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
             <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
             <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
+            <button onClick={() => setViewType('agenda')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'agenda' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Agenda</button>
           </div>
           <button
             onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
@@ -995,6 +1266,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             {viewType === 'day' && renderDayView()}
             {viewType === 'week' && renderWeekView()}
             {viewType === 'month' && renderMonthView()}
+            {viewType === 'agenda' && renderAgendaView()}
           </div>
         </div>
       </div>
@@ -1125,7 +1397,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 )}
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-[#E8E0D6]/60">
+              <div className="flex flex-wrap justify-end gap-2.5 pt-4 border-t border-[#E8E0D6]/60">
                 <button
                   onClick={() => handleDeleteAppointment(selectedAppointment.id)}
                   className="px-4 py-2 text-[13px] font-medium text-red-600 bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all"
@@ -1133,6 +1405,30 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   Eliminar
                 </button>
                 <div className="flex-1" />
+                {selectedAppointment.estado !== 'Atendido' && selectedAppointment.estado !== 'Cancelado' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleUpdateStatus(selectedAppointment.id, 'Atendido');
+                        setSelectedAppointment(null);
+                        toast({ title: "Éxito", description: "Turno marcado como Atendido" });
+                      }}
+                      className="px-4 py-2 text-[13px] font-medium text-green-700 bg-green-50 border border-green-100 rounded-xl hover:bg-green-100 transition-all flex items-center gap-1.5"
+                    >
+                      <Check className="w-4 h-4" strokeWidth={3} /> Atendido
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleUpdateStatus(selectedAppointment.id, 'Cancelado');
+                        setSelectedAppointment(null);
+                        toast({ title: "Éxito", description: "Turno marcado como Cancelado" });
+                      }}
+                      className="px-4 py-2 text-[13px] font-medium text-red-700 bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all flex items-center gap-1.5"
+                    >
+                      <X className="w-4 h-4" strokeWidth={3} /> Cancelar
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={() => setSelectedAppointment(null)}
                   className="px-4 py-2 text-[13px] font-medium text-[#4B5568] bg-white border border-[#E8E0D6] rounded-xl hover:bg-gray-50 transition-all"
@@ -1199,6 +1495,63 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           confirmText="Confirmar"
           variant="destructive"
         />
+      )}
+
+      {hoveredAppt && (
+        <div
+          className="absolute bg-white border border-gray-100 rounded-2xl shadow-xl p-3.5 z-[100] pointer-events-none flex flex-col gap-1.5 w-64 text-left font-sans transition-all duration-150 animate-in fade-in-50 slide-in-from-bottom-2 duration-150"
+          style={{
+            left: `${hoveredAppt.x + hoveredAppt.width / 2}px`,
+            top: hoveredAppt.y < 150 
+              ? `${hoveredAppt.y + hoveredAppt.height + 8}px` 
+              : `${hoveredAppt.y - 8}px`,
+            transform: hoveredAppt.y < 150 
+              ? 'translate(-50%, 0)' 
+              : 'translate(-50%, -100%)',
+          }}
+        >
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-bold text-gray-400 font-mono">
+              {hoveredAppt.appointment.hora_inicio.substring(0, 5)} - {hoveredAppt.appointment.hora_fin.substring(0, 5)} hs
+            </span>
+            <span
+              className="px-2 py-0.5 rounded-full text-[9px] font-bold"
+              style={{
+                backgroundColor: `${getStatusColor(hoveredAppt.appointment.estado)}15`,
+                color: getStatusColor(hoveredAppt.appointment.estado),
+              }}
+            >
+              {hoveredAppt.appointment.estado}
+            </span>
+          </div>
+          <div className="font-bold text-xs text-[#0B1023] capitalize leading-snug">
+            {hoveredAppt.appointment.paciente?.nombre} {hoveredAppt.appointment.paciente?.apellido}
+          </div>
+          <div className="text-[10px] text-gray-500 font-medium leading-none">
+            DNI: {hoveredAppt.appointment.paciente?.numero_documento || '—'}
+          </div>
+          {hoveredAppt.appointment.paciente?.telefono && (
+            <div className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
+              <Phone className="w-2.5 h-2.5" /> {hoveredAppt.appointment.paciente.telefono}
+            </div>
+          )}
+          {(hoveredAppt.appointment.paciente?.obraSocial?.nombre || hoveredAppt.appointment.paciente?.obra_social_nombre_custom) && (
+            <div className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 w-fit">
+              {hoveredAppt.appointment.paciente.obraSocial?.nombre || hoveredAppt.appointment.paciente.obra_social_nombre_custom}
+              {hoveredAppt.appointment.paciente.numero_afiliado ? ` (Nº ${hoveredAppt.appointment.paciente.numero_afiliado})` : ''}
+            </div>
+          )}
+          <hr className="border-gray-100 my-0.5" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: hoveredAppt.profColor }} />
+            <span className="text-[10px] font-semibold text-[#0B1023]">
+              {hoveredAppt.appointment.profesional?.nombre} {hoveredAppt.appointment.profesional?.apellido}
+            </span>
+          </div>
+          <div className="text-[9px] font-medium text-gray-400">
+            {hoveredAppt.appointment.servicio?.nombre} (${hoveredAppt.appointment.servicio?.precio_base})
+          </div>
+        </div>
       )}
     </div>
   )

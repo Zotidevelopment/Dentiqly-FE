@@ -8,6 +8,8 @@ import {
   PanelLeftClose,
   PanelLeft,
   ArrowRight,
+  Maximize2,
+  Minimize2,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
@@ -28,10 +30,46 @@ const tabs = [
   { id: "booking", label: "Booking", icon: <Clock size={16} /> },
 ] as const
 
-export const ProductShowcase: React.FC = () => {
+interface ProductShowcaseProps {
+  isFullscreen?: boolean
+  onToggleFullscreen?: (val: boolean) => void
+}
+
+export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
+  isFullscreen: isFullscreenProp,
+  onToggleFullscreen,
+}) => {
+  const [localFullscreen, setLocalFullscreen] = useState(false)
+  const isFullscreen = isFullscreenProp !== undefined ? isFullscreenProp : localFullscreen
+  const setIsFullscreen = onToggleFullscreen || setLocalFullscreen
+
   const [activeTab, setActiveTab] = useState<TabType>("dashboard")
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Scroll lock and ESC key to exit fullscreen
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.classList.add("overflow-hidden", "demo-viewer-open")
+    } else {
+      document.body.classList.remove("overflow-hidden", "demo-viewer-open")
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden", "demo-viewer-open")
+    }
+  }, [isFullscreen])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isFullscreen, setIsFullscreen])
 
   return (
     <section
@@ -63,11 +101,15 @@ export const ProductShowcase: React.FC = () => {
         {/* Embedded Demo */}
         <motion.div
           ref={containerRef}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={isFullscreen ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          whileInView={isFullscreen ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="bg-white rounded-[2rem] shadow-2xl shadow-black/[0.08] border border-gray-200 overflow-hidden"
+          className={
+            isFullscreen
+              ? "fixed inset-0 bg-white z-[9999] overflow-hidden flex flex-col rounded-none border-none"
+              : "bg-white rounded-[2rem] shadow-2xl shadow-black/[0.08] border border-gray-200 overflow-hidden"
+          }
           style={{ overscrollBehavior: "contain" }}
           onWheel={(e) => e.stopPropagation()}
         >
@@ -87,10 +129,29 @@ export const ProductShowcase: React.FC = () => {
                 Modo Demo
               </span>
             </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+                title={isFullscreen ? "Salir de Pantalla Completa" : "Pantalla Completa"}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize2 size={15} />
+                    <span className="hidden sm:inline">Salir Pantalla Completa</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 size={15} />
+                    <span className="hidden sm:inline">Pantalla Completa</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* App Frame Content */}
-          <div className="flex h-[600px] sm:h-[650px] md:h-[700px] overflow-hidden">
+          <div className={isFullscreen ? "flex flex-1 overflow-hidden" : "flex h-[600px] sm:h-[650px] md:h-[700px] overflow-hidden"}>
             {/* Sidebar */}
             {!isSidebarCollapsed && (
               <div className="w-48 bg-[#FAFCFF] border-r border-gray-200 p-4 hidden md:flex flex-col gap-1 shrink-0">

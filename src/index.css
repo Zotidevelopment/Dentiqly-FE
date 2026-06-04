@@ -453,6 +453,11 @@ html.lenis, html.lenis body {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
+/* Restore native cursor on interactive demo */
+#funcionalidades {
+  cursor: default;
+}
+
 /* Restore native cursor and hide custom cursor when the demo viewer is open */
 body.demo-viewer-open,
 body.demo-viewer-open .min-h-screen {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { Mail, Phone, Send } from "lucide-react"
+import { Mail, Send } from "lucide-react"
 import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -19,6 +19,8 @@ export const CtaSection: React.FC = () => {
     mensaje: "",
   })
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -49,9 +51,32 @@ export const CtaSection: React.FC = () => {
     return () => ctx.revert()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSent(true)
+    setLoading(true)
+    setErrorMessage(null)
+
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+      const response = await fetch(`${apiBaseUrl}/saas/contacto`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || "Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.")
+      }
+
+      setSent(true)
+    } catch (err: any) {
+      setErrorMessage(err.message || "Error de conexión con el servidor.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -131,7 +156,7 @@ export const CtaSection: React.FC = () => {
                 </div>
                 <span className="text-base font-medium">hola@dentiqly.com</span>
               </a>
-              <a
+              {/* <a
                 href="tel:+5491100000000"
                 className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
               >
@@ -139,7 +164,7 @@ export const CtaSection: React.FC = () => {
                   <Phone className="w-5 h-5" />
                 </div>
                 <span className="text-base font-medium">+54 9 11 0000-0000</span>
-              </a>
+              </a> */}
             </div>
 
             <Link
@@ -279,11 +304,18 @@ export const CtaSection: React.FC = () => {
                       />
                     </div>
 
+                    {errorMessage && (
+                      <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl font-medium text-left">
+                        ⚠️ {errorMessage}
+                      </div>
+                    )}
+
                     <button
                       type="submit"
-                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold  hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full"
+                      disabled={loading}
+                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      Enviar
+                      {loading ? "Enviando..." : "Enviar"}
                     </button>
                   </form>
                 </>

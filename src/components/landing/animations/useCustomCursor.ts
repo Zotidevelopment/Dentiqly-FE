@@ -24,6 +24,17 @@ export function useCustomCursor() {
     const yRing = gsap.quickTo(ring, "y", { duration: 0.3, ease: "power3" })
 
     const onMouseMove = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const isInsideDemo = target && (target.closest("#funcionalidades") || document.body.classList.contains("demo-viewer-open"))
+
+      if (isInsideDemo) {
+        dot.style.display = "none"
+        ring.style.display = "none"
+      } else {
+        dot.style.display = "block"
+        ring.style.display = "block"
+      }
+
       xDot(e.clientX)
       yDot(e.clientY)
       xRing(e.clientX)
