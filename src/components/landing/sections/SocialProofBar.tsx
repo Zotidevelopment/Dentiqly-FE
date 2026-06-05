@@ -39,6 +39,8 @@ export const SocialProofBar: React.FC = () => {
               key={i}
               src={logo.src}
               alt={logo.name}
+              width={76}
+              height={32}
               className="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
             />
           ))}

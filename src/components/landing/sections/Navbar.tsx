@@ -127,6 +127,8 @@ export const Navbar: React.FC = () => {
             <img
               src="/assets/dentiqly-logo.png"
               alt="Dentiqly - Software de gestión dental"
+              width={91}
+              height={28}
               className="h-[28px] w-auto transition-all duration-300 brightness-0 invert"
             />
           </Link>
@@ -149,6 +151,7 @@ export const Navbar: React.FC = () => {
           <button
             className="lg:hidden p-1.5 transition-colors duration-300 text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

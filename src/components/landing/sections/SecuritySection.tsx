@@ -67,7 +67,7 @@ export const SecuritySection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.15 }}
-                className="text-sm md:text-base text-white/50 leading-relaxed max-w-2xl mx-auto"
+                className="text-sm md:text-base text-blue-100 leading-relaxed max-w-2xl mx-auto"
               >
                 Dentiqly está diseñado bajo los más estrictos estándares de seguridad internacional, garantizando la privacidad y protección de toda tu información clínica.
               </motion.p>
@@ -95,10 +95,10 @@ export const SecuritySection: React.FC = () => {
                     </div>
 
                     {/* Centered Title */}
-                    <h4 className="text-lg font-bold text-white mb-3 text-center">{badge.title}</h4>
+                    <h3 className="text-lg font-bold text-white mb-3 text-center">{badge.title}</h3>
 
                     {/* Centered Description */}
-                    <p className="text-sm text-white/50 leading-relaxed text-center max-w-[240px] mx-auto">{badge.desc}</p>
+                    <p className="text-sm text-blue-100 leading-relaxed text-center max-w-[240px] mx-auto">{badge.desc}</p>
                   </motion.div>
                 )
               })}

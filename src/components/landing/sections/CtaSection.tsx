@@ -198,10 +198,11 @@ export const CtaSection: React.FC = () => {
                   <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Work Email Address */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D]  tracking- mb-2">
+                      <label htmlFor="email-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking- mb-2">
                         Correo electrónico de trabajo*
                       </label>
                       <input
+                        id="email-input"
                         type="email"
                         required
                         value={formData.email}
@@ -214,10 +215,11 @@ export const CtaSection: React.FC = () => {
                     {/* First Name & Last Name */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="nombre-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Nombre*
                         </label>
                         <input
+                          id="nombre-input"
                           type="text"
                           required
                           value={formData.nombre}
@@ -227,10 +229,11 @@ export const CtaSection: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="apellido-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Apellido*
                         </label>
                         <input
+                          id="apellido-input"
                           type="text"
                           required
                           value={formData.apellido}
@@ -244,10 +247,11 @@ export const CtaSection: React.FC = () => {
                     {/* Company Name & Phone Number */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="clinica-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Nombre de la clinica*
                         </label>
                         <input
+                          id="clinica-input"
                           type="text"
                           required
                           value={formData.clinica}
@@ -257,10 +261,11 @@ export const CtaSection: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="telefono-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Número de telefono
                         </label>
                         <input
+                          id="telefono-input"
                           type="tel"
                           value={formData.telefono}
                           onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -272,10 +277,11 @@ export const CtaSection: React.FC = () => {
 
                     {/* Reason for Interest */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D]  tracking mb-2">
+                      <label htmlFor="motivo-select" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                         Motivo de interés*
                       </label>
                       <select
+                        id="motivo-select"
                         required
                         value={formData.motivo}
                         onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
@@ -292,10 +298,11 @@ export const CtaSection: React.FC = () => {
 
                     {/* How Can We Help */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                      <label htmlFor="mensaje-textarea" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                         ¿En qué podemos ayudarte?
                       </label>
                       <textarea
+                        id="mensaje-textarea"
                         value={formData.mensaje}
                         onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
                         rows={3}
