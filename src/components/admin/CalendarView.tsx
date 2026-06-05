@@ -496,7 +496,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const dateString = `${year}-${month}-${day}`
 
     return (
-      <div className="flex flex-col h-full bg-white relative">
+      <div className="flex flex-col h-auto md:h-full bg-white relative">
         <div className="grid grid-cols-[100px_1fr] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
           <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center">
             <Clock className="h-4 w-4 text-[#8A93A8]" />
@@ -511,7 +511,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto bg-white relative">
+        <div className="flex-initial md:flex-1 overflow-visible md:overflow-y-auto bg-white relative">
           <div className="relative">
             {/* Grid Lines */}
             {TIME_SLOTS.map((slot) => (
@@ -643,9 +643,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const weekDays = getWeekDays(currentDate)
 
     return (
-      <div className="flex flex-col h-full bg-white relative">
-        <div className="overflow-x-auto flex-1 flex flex-col">
-          <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex-1 flex flex-col">
+      <div className="flex flex-col h-auto md:h-full bg-white relative">
+        <div className="overflow-x-auto flex-initial md:flex-1 flex flex-col">
+          <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex-initial md:flex-1 flex flex-col">
             {/* Header */}
             <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
               <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center bg-white">
@@ -667,7 +667,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             </div>
 
             {/* Grid Body */}
-            <div className="relative bg-white flex-1 overflow-y-auto">
+            <div className="relative bg-white flex-initial md:flex-1 overflow-visible md:overflow-y-auto">
               <div className="relative">
                 {/* Grid Rows */}
                 {TIME_SLOTS.map((slot) => (
@@ -809,7 +809,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const days = getDaysInMonth(currentDate)
 
     return (
-      <div className="flex flex-col h-full bg-white relative">
+      <div className="flex flex-col h-auto md:h-full bg-white relative">
         {/* Sticky day-of-week headers */}
         <div className="grid grid-cols-7 sticky top-0 z-10 bg-white border-b border-[#E8E0D6]/40">
           {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
@@ -822,7 +822,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         </div>
 
         {/* Scrollable month grid */}
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-initial md:flex-1 overflow-visible md:overflow-y-auto min-h-0 md:min-h-0">
           <div className="grid grid-cols-7 gap-px bg-[#E8E0D6]/30 min-h-full">
             {days.map((day, index) => {
               const dayAppointments = getAppointmentsForDate(day.date)
@@ -940,7 +940,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     }
 
     return (
-      <div className="flex flex-col h-full bg-white overflow-y-auto p-4 md:p-6 space-y-4">
+      <div className="flex flex-col h-auto md:h-full bg-white overflow-visible md:overflow-y-auto p-4 md:p-6 space-y-4">
         {dayAppointments.map((appt) => {
           const profColor = getProfColor(appt.profesional_id)
           const statusColor = getStatusColor(appt.estado)
@@ -1112,7 +1112,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div ref={containerRef} className="h-full flex flex-col font-sans min-h-0 overflow-hidden relative">
+    <div ref={containerRef} className="h-auto md:h-full flex flex-col font-sans min-h-0 overflow-visible md:overflow-hidden relative">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 shrink-0">
         <div>
@@ -1240,9 +1240,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       </div>
 
       {/* Main Area: Calendar Grid */}
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-initial md:flex-1 flex flex-col min-h-0">
         {/* Calendar Grid */}
-        <div className="flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+        <div className="flex-initial md:flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-visible md:overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
           {/* Navigation Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
             <div className="flex flex-wrap items-center gap-4">
@@ -1262,7 +1262,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="flex-1 min-h-0 bg-white">
+          <div className="flex-initial md:flex-1 min-h-0 bg-white">
             {viewType === 'day' && renderDayView()}
             {viewType === 'week' && renderWeekView()}
             {viewType === 'month' && renderMonthView()}

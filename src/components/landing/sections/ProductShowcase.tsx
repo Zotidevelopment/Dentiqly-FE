@@ -111,6 +111,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               : "bg-white rounded-[2rem] shadow-2xl shadow-black/[0.08] border border-gray-200 overflow-hidden"
           }
           style={{ overscrollBehavior: "contain" }}
+          data-lenis-prevent
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Header Bar */}

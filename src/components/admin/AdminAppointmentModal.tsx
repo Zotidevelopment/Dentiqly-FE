@@ -185,31 +185,31 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
 
     return (
         <div className="fixed inset-0 bg-[#0A0F2D]/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-500">
-            <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-300">
+            <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-300">
                 
                 {/* Header Estilizado */}
-                <div className="px-8 pt-8 pb-6 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#2563FF] shadow-sm">
-                            <Plus className="w-6 h-6" />
+                <div className="px-5 py-5 sm:px-8 sm:pt-8 sm:pb-6 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#2563FF] shadow-sm">
+                            <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
+                            <h3 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight leading-none">
                                 {formData.sobre_turno ? "Nuevo Sobreturno" : "Agendar Turno"}
                             </h3>
-                            <p className="text-sm text-gray-400 font-medium mt-1">Completa los datos del agendamiento</p>
+                            <p className="text-xs sm:text-sm text-gray-400 font-medium mt-1">Completa los datos del agendamiento</p>
                         </div>
                     </div>
                     <button 
                         type="button"
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-600 shadow-sm border border-gray-100"
+                        className="p-1.5 sm:p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-600 shadow-sm border border-gray-100"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         {/* Sección: Paciente */}
                         <div className="space-y-4">
@@ -333,7 +333,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     </div>
                                 </div>
 
-                                <div className="p-6 bg-blue-50/30 rounded-[2rem] border border-blue-100/50 space-y-6">
+                                <div className="p-4 sm:p-6 bg-blue-50/30 rounded-2xl sm:rounded-[2rem] border border-blue-100/50 space-y-4 sm:space-y-6">
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Fecha</label>
@@ -439,21 +439,21 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white border-t border-gray-100 py-4">
+                                <div className="flex gap-3 sm:gap-4 pt-3 sm:pt-4 sticky bottom-0 bg-white border-t border-gray-100 py-3 sm:py-4">
                                     <Button 
                                         type="button" 
                                         variant="outline" 
                                         onClick={onClose}
-                                        className="flex-1 h-14 rounded-2xl font-black text-[12px] uppercase tracking-widest border-2"
+                                        className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl font-black text-[11px] sm:text-[12px] uppercase tracking-widest border-2"
                                     >
                                         Cancelar
                                     </Button>
                                     <Button 
                                         type="submit" 
                                         disabled={loading} 
-                                        className="flex-[2] h-14 rounded-2xl bg-[#2563FF] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:translate-y-0"
+                                        className="flex-[2] h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-[#2563FF] hover:bg-blue-700 text-white font-black text-[11px] sm:text-[12px] uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:translate-y-0"
                                     >
-                                        {loading ? 'Procesando...' : 'Confirmar Agendamiento'}
+                                        {loading ? 'Procesando...' : 'Confirmar'}
                                     </Button>
                                 </div>
                             </div>

@@ -3,7 +3,7 @@ import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { turnosApi, adminApi, recordatoriosApi } from '../../api'
 import type { Turno, Profesional } from '../../types'
-import { Mail } from 'lucide-react'
+import { Mail, X } from 'lucide-react'
 import { useToast } from "../../hooks/use-toast"
 
 interface EditAppointmentModalProps {
@@ -60,10 +60,20 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 border border-gray-100">
-                <h3 className="text-2xl font-bold mb-6 text-gray-900">Editar Turno</h3>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-[2rem] sm:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in-95 duration-300">
+                <div className="px-5 py-5 sm:px-8 sm:pt-8 sm:pb-5 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900">Editar Turno</h3>
+                    <button 
+                        type="button"
+                        onClick={onClose}
+                        className="p-1.5 sm:p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-600 shadow-sm border border-gray-100"
+                    >
+                        <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+                    <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                         <div className="space-y-2">
                             <label className="block text-sm font-bold text-gray-700">Paciente</label>
                             <Input
@@ -154,7 +164,7 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                         </div>
                     </div>
                     
-                    <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-100 sticky bottom-0 bg-white py-3">
                         <Button
                             type="button"
                             variant="outline"
@@ -171,21 +181,22 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                             }}
                             disabled={sendingReminder || !appointment.paciente?.email}
                             title={!appointment.paciente?.email ? 'El paciente no tiene email' : ''}
-                            className="rounded-xl border-blue-200 text-blue-600 hover:bg-blue-50 font-bold shadow-sm"
+                            className="rounded-xl border-blue-200 text-blue-600 hover:bg-blue-50 font-bold shadow-sm py-2.5"
                         >
                             <Mail className="h-4 w-4 mr-2" />
-                            {sendingReminder ? 'Enviando...' : 'Enviar Recordatorio'}
+                            {sendingReminder ? 'Enviando...' : 'Recordatorio'}
                         </Button>
-                        <div className="flex gap-3">
-                            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl font-bold shadow-sm">
+                        <div className="flex gap-2 sm:gap-3">
+                            <Button type="button" variant="outline" onClick={onClose} className="flex-1 sm:flex-none rounded-xl font-bold shadow-sm py-2.5">
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={loading} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm px-6">
+                            <Button type="submit" disabled={loading} className="flex-[2] sm:flex-none rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm px-6 py-2.5">
                                 {loading ? 'Guardando...' : 'Guardar'}
                             </Button>
                         </div>
                     </div>
                 </form>
+                </div>
             </div>
         </div>
     )

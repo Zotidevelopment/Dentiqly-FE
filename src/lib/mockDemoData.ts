@@ -14,10 +14,12 @@ const KEYS = {
   HISTORIALES: `${STORAGE_PREFIX}historiales`,
   ODONTOGRAMAS: `${STORAGE_PREFIX}odontogramas`,
   CONFIG: `${STORAGE_PREFIX}config`,
+  FERIADOS: `${STORAGE_PREFIX}feriados`,
+  AUSENCIAS: `${STORAGE_PREFIX}ausencias`,
 }
 
 // Versión de base de datos para forzar refresco cuando actualizamos datos mock
-const DEMO_VERSION = "v6"
+const DEMO_VERSION = "v7"
 
 // Inicialización de datos por defecto si no existen
 const getTodayDateStr = (offsetDays = 0) => {
@@ -430,6 +432,32 @@ const defaultLiquidaciones = [
   },
 ]
 
+const defaultFeriados = [
+  { id: 1, fecha: "2026-01-01", descripcion: "Año Nuevo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 2, fecha: "2026-03-24", descripcion: "Día Nacional de la Memoria", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 3, fecha: "2026-04-02", descripcion: "Día del Veterano", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 4, fecha: "2026-05-01", descripcion: "Día del Trabajador", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 5, fecha: "2026-05-25", descripcion: "Revolución de Mayo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 6, fecha: "2026-06-20", descripcion: "Día de la Bandera", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 7, fecha: "2026-07-09", descripcion: "Día de la Independencia", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 8, fecha: "2026-12-25", descripcion: "Navidad", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+]
+
+const defaultAusencias = [
+  {
+    id: 1,
+    profesional_id: 2,
+    fecha_inicio: getTodayDateStr(2),
+    fecha_fin: getTodayDateStr(2),
+    hora_inicio: "09:00",
+    hora_fin: "13:00",
+    motivo: "Congreso Odontológico",
+    profesional: { id: 2, nombre: "Sofía", apellido: "Silva" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+]
+
 const defaultHistoriales: HistorialClinico[] = [
   {
     id: 501,
@@ -707,6 +735,8 @@ export const initMockDb = () => {
   if (!localStorage.getItem(KEYS.HISTORIALES)) setStorageItem(KEYS.HISTORIALES, defaultHistoriales)
   if (!localStorage.getItem(KEYS.ODONTOGRAMAS)) setStorageItem(KEYS.ODONTOGRAMAS, defaultOdontogramas)
   if (!localStorage.getItem(KEYS.CONFIG)) setStorageItem(KEYS.CONFIG, defaultConfig)
+  if (!localStorage.getItem(KEYS.FERIADOS)) setStorageItem(KEYS.FERIADOS, defaultFeriados)
+  if (!localStorage.getItem(KEYS.AUSENCIAS)) setStorageItem(KEYS.AUSENCIAS, defaultAusencias)
 }
 
 // Inicializar de inmediato para la demo
@@ -1120,13 +1150,16 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
         const ingresos = patientMovs.filter((m) => m.tipo === "Ingreso").reduce((sum, m) => sum + parseFloat(m.monto), 0)
         const deudas = patientMovs.filter((m) => m.tipo === "Deuda").reduce((sum, m) => sum + parseFloat(m.monto), 0)
         return {
-          paciente_id: p.id,
-          nombre: p.nombre,
-          apellido: p.apellido,
-          telefono: p.telefono,
-          total_deuda: deudas - ingresos > 0 ? deudas - ingresos : 0,
+          paciente: {
+            id: p.id,
+            nombre: p.nombre,
+            apellido: p.apellido,
+            obra_social: p.obraSocial?.nombre || "Particular",
+          },
+          deudaTotal: deudas - ingresos > 0 ? deudas - ingresos : 0,
+          fechaDesde: getTodayDateStr(-30),
         }
-      }).filter((d) => d.total_deuda > 0)
+      }).filter((d) => d.deudaTotal > 0)
     }
 
     if (id === "caja") {
@@ -1171,7 +1204,56 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   if (path === "/api/liquidaciones") {
     const liqs = getStorageItem(KEYS.LIQUIDACIONES, defaultLiquidaciones)
     if (method === "GET") {
-      return { data: liqs }
+      return {
+        liquidaciones: liqs,
+        data: liqs,
+        pagination: { total: liqs.length, page: 1, limit: 100, totalPages: 1 }
+      }
+    }
+    if (method === "POST") {
+      const data = typeof body === "string" ? JSON.parse(body) : body
+      const profs = getStorageItem(KEYS.PROFESIONALES, defaultProfesionales)
+      const prof = profs.find(p => p.id === parseInt(data.profesional_id || "0")) || defaultProfesionales[0]
+      const nueva = {
+        id: liqs.length + 101,
+        profesional_id: parseInt(data.profesional_id || "0"),
+        periodo_inicio: data.fecha_desde || getTodayDateStr(-30),
+        periodo_fin: data.fecha_hasta || getTodayDateStr(),
+        monto_total_servicios: parseFloat(data.monto_total_servicios || "15000"),
+        monto_profesional: parseFloat(data.monto_profesional || "7500"),
+        cantidad_prestaciones: parseInt(data.cantidad_prestaciones || "1"),
+        estado: "Pendiente",
+        profesional: prof,
+        createdAt: new Date().toISOString(),
+      }
+      liqs.push(nueva)
+      setStorageItem(KEYS.LIQUIDACIONES, liqs)
+      return nueva
+    }
+  }
+  if (path.startsWith("/api/liquidaciones/")) {
+    const liqs = getStorageItem(KEYS.LIQUIDACIONES, defaultLiquidaciones)
+    const idPart = path.split("/")[3] || ""
+    const id = parseInt(idPart)
+    const idx = liqs.findIndex((l) => l.id === id)
+
+    if (path.endsWith("/anular")) {
+      if (idx !== -1) {
+        liqs[idx].estado = "Anulada"
+        setStorageItem(KEYS.LIQUIDACIONES, liqs)
+      }
+      return { message: "Liquidación anulada correctamente" }
+    }
+
+    if (method === "GET") {
+      const found = liqs.find((l) => l.id === id)
+      if (!found) throw { response: { status: 404, data: { error: "Liquidación no encontrada" } } }
+      return found
+    }
+    if (method === "DELETE") {
+      const filtered = liqs.filter((l) => l.id !== id)
+      setStorageItem(KEYS.LIQUIDACIONES, filtered)
+      return { message: "Liquidación eliminada" }
     }
   }
 
@@ -1187,20 +1269,90 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
 
   // 12b. FERIADOS
   if (path === "/api/feriados") {
+    const fers = getStorageItem(KEYS.FERIADOS, defaultFeriados)
     if (method === "GET") {
-      return [
-        { id: 1, fecha: "2026-01-01", descripcion: "Año Nuevo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 2, fecha: "2026-03-24", descripcion: "Día Nacional de la Memoria", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 3, fecha: "2026-04-02", descripcion: "Día del Veterano", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 4, fecha: "2026-05-01", descripcion: "Día del Trabajador", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 5, fecha: "2026-05-25", descripcion: "Revolución de Mayo", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 6, fecha: "2026-06-20", descripcion: "Día de la Bandera", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 7, fecha: "2026-07-09", descripcion: "Día de la Independencia", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-        { id: 8, fecha: "2026-12-25", descripcion: "Navidad", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      ]
+      const year = query.get("year")
+      if (year) {
+        const yNum = parseInt(year)
+        return fers.filter((f: any) => new Date(f.fecha + "T12:00:00").getFullYear() === yNum)
+      }
+      return fers
     }
     if (method === "POST") {
-      return { id: 99, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      const data = typeof body === "string" ? JSON.parse(body) : body
+      const nuevo = {
+        id: fers.length + 101,
+        fecha: data.fecha,
+        descripcion: data.descripcion || "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      fers.push(nuevo)
+      setStorageItem(KEYS.FERIADOS, fers)
+      return nuevo
+    }
+  }
+  if (path.startsWith("/api/feriados/")) {
+    const fers = getStorageItem(KEYS.FERIADOS, defaultFeriados)
+    const id = parseInt(path.split("/").pop() || "0")
+    if (method === "DELETE") {
+      const filtered = fers.filter((f: any) => f.id !== id)
+      setStorageItem(KEYS.FERIADOS, filtered)
+      return { message: "Feriado eliminado" }
+    }
+  }
+
+  // 12c. RECORDATORIOS
+  if (path.startsWith("/api/recordatorios")) {
+    if (path === "/api/recordatorios/template") {
+      if (method === "GET") {
+        return { template: "Hola {nombre} {apellido}, te recordamos tu turno el día {fecha} a las {hora_inicio} hs para {servicio} con el profesional {profesional}." }
+      }
+      if (method === "PUT") {
+        const data = typeof body === "string" ? JSON.parse(body) : body
+        return { message: "Template guardado", template: data.template }
+      }
+    }
+    if (path === "/api/recordatorios/preview") {
+      return { html: "<h3>Vista previa del recordatorio</h3><p>Hola Carlos Sánchez, te recordamos tu turno el día 2026-06-05 a las 09:00 hs para Tratamiento de Ortodoncia con Lucas Díaz.</p>" }
+    }
+    if (path === "/api/recordatorios/enviar") {
+      return { message: "Recordatorio enviado" }
+    }
+    if (path === "/api/recordatorios/enviar-masivo") {
+      return { message: "Envío masivo completado", enviados: 3, errores: 0, total: 3 }
+    }
+  }
+
+  // 12d. AUSENCIAS
+  if (path === "/api/ausencias") {
+    const auses = getStorageItem(KEYS.AUSENCIAS, defaultAusencias)
+    if (method === "GET") {
+      return auses
+    }
+    if (method === "POST") {
+      const data = typeof body === "string" ? JSON.parse(body) : body
+      const profs = getStorageItem(KEYS.PROFESIONALES, defaultProfesionales)
+      const prof = profs.find((p) => p.id === parseInt(data.profesional_id || "0"))
+      const nuevo = {
+        ...data,
+        id: auses.length + 101,
+        profesional: prof ? { id: prof.id, nombre: prof.nombre, apellido: prof.apellido } : undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      auses.push(nuevo)
+      setStorageItem(KEYS.AUSENCIAS, auses)
+      return nuevo
+    }
+  }
+  if (path.startsWith("/api/ausencias/")) {
+    const auses = getStorageItem(KEYS.AUSENCIAS, defaultAusencias)
+    const id = parseInt(path.split("/").pop() || "0")
+    if (method === "DELETE") {
+      const filtered = auses.filter((a: any) => a.id !== id)
+      setStorageItem(KEYS.AUSENCIAS, filtered)
+      return { message: "Ausencia eliminada" }
     }
   }
 

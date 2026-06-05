@@ -159,7 +159,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       </div>
 
       {/* Tabs Row */}
-      <div className="bg-white rounded-2xl border border-[#E8E0D6] px-4 mb-6 overflow-x-auto shadow-[0_1px_3px_rgba(0,0,0,0.03)] sticky top-0 z-20">
+      <div className="bg-white rounded-2xl border border-[#E8E0D6] px-4 mb-6 overflow-x-auto no-scrollbar shadow-[0_1px_3px_rgba(0,0,0,0.03)] sticky top-0 z-20">
         <div className="flex gap-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
