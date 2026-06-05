@@ -21,6 +21,7 @@ import {
   ChevronsRight,
   Clock,
   Sparkles,
+  CalendarCheck,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { canAccessView } from '../../config/permissions'
@@ -61,6 +62,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'calendar', label: 'Calendario', icon: Calendar },
         { id: 'patients', label: 'Pacientes', icon: UserCog },
+        { id: 'asistencias', label: 'Asistencias', icon: CalendarCheck },
       ]
     },
     {

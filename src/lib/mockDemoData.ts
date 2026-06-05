@@ -970,13 +970,21 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
       const dynamicTurnos = getDynamicTurnosForRange(desdeStr, hastaStr)
       const userTurnos = getStorageItem(KEYS.TURNOS, [])
 
-      // Combinar los creados por el usuario
-      const combined = [...dynamicTurnos]
-      userTurnos.forEach((ut: any) => {
-        const isOverlap = combined.some(
-          (ct) => ct.fecha === ut.fecha && ct.hora_inicio === ut.hora_inicio && ct.profesional_id === ut.profesional_id
+      // Combinar: si un turno de usuario coincide en fecha, hora_inicio y profesional_id con uno dinámico,
+      // usamos el turno de usuario (que contiene el estado actualizado, ej. "Atendido").
+      const combined = dynamicTurnos.map((dt) => {
+        const updated = userTurnos.find(
+          (ut: any) => ut.fecha === dt.fecha && ut.hora_inicio === dt.hora_inicio && ut.profesional_id === dt.profesional_id
         )
-        if (!isOverlap) {
+        return updated ? { ...dt, ...updated } : dt
+      })
+
+      // Agregar los turnos de usuario que no coinciden con ningún turno dinámico (nuevos turnos creados)
+      userTurnos.forEach((ut: any) => {
+        const isMatch = dynamicTurnos.some(
+          (dt) => dt.fecha === ut.fecha && dt.hora_inicio === ut.hora_inicio && dt.profesional_id === ut.profesional_id
+        )
+        if (!isMatch) {
           combined.push(ut)
         }
       })
@@ -1030,7 +1038,19 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
   if (path.startsWith("/api/turnos/")) {
     const turnos = getStorageItem(KEYS.TURNOS, generateDefaultTurnos())
     const id = parseInt(path.split("/").pop() || "0")
-    const idx = turnos.findIndex((t) => t.id === id)
+    let idx = turnos.findIndex((t) => t.id === id)
+
+    if (idx === -1) {
+      // Buscar en turnos dinámicos en un rango amplio para no perder persistencia
+      const startRange = getTodayDateStr(-60)
+      const endRange = getTodayDateStr(60)
+      const dynamic = getDynamicTurnosForRange(startRange, endRange)
+      const found = dynamic.find((t) => t.id === id)
+      if (found) {
+        turnos.push(found)
+        idx = turnos.length - 1
+      }
+    }
 
     if (path.endsWith("/confirmar-pago")) {
       const data = typeof body === "string" ? JSON.parse(body) : body
