@@ -28,6 +28,7 @@ import { EditAppointmentModal } from './EditAppointmentModal'
 import { AdminAppointmentModal } from './AdminAppointmentModal'
 import { AdminBookingModal } from './AdminBookingModal'
 import { profesionalesApi } from '../../api/profesionales'
+import { configuracionApi } from '../../api/configuracion'
 
 const PROF_COLORS = [
   '#F472B6', // pink-400
@@ -164,6 +165,36 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         : [...prev, serviceId]
     )
   }
+
+  // Business hours: which weekdays (0=Sun..6=Sat) are open
+  const [openWeekdays, setOpenWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6])
+
+  useEffect(() => {
+    const loadBusinessHours = async () => {
+      try {
+        const settings = await configuracionApi.listar()
+        const bhSetting = settings.find(s => s.clave === 'business_hours')
+        if (bhSetting?.valor) {
+          const parsed = typeof bhSetting.valor === 'string'
+            ? JSON.parse(bhSetting.valor)
+            : bhSetting.valor
+          // Map Spanish day names to JS getDay() indices (0=Sun)
+          const dayMap: Record<string, number> = {
+            domingo: 0, lunes: 1, martes: 2, miercoles: 3,
+            jueves: 4, viernes: 5, sabado: 6
+          }
+          const open = Object.entries(parsed)
+            .filter(([, v]: [string, any]) => v?.activo)
+            .map(([k]) => dayMap[k])
+            .filter((n): n is number => n !== undefined)
+          if (open.length > 0) setOpenWeekdays(open)
+        }
+      } catch {
+        // keep defaults (all days open) on error
+      }
+    }
+    loadBusinessHours()
+  }, [])
 
   const TIME_SLOTS: string[] = []
   for (let h = 8; h <= 20; h++) {
@@ -696,14 +727,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   }
 
   const renderWeekView = () => {
-    const weekDays = getWeekDays(currentDate)
+    const allWeekDays = getWeekDays(currentDate)
+    const weekDays = allWeekDays.filter(d => openWeekdays.includes(d.getDay()))
+    const openCount = weekDays.length
 
     return (
       <div className="flex flex-col h-auto md:h-full bg-white relative">
         <div className="overflow-x-auto flex-initial md:flex-1 flex flex-col">
           <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex-initial md:flex-1 flex flex-col">
             {/* Header */}
-            <div className="grid grid-cols-[95px_repeat(7,1fr)] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
+            <div className="grid border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white" style={{ gridTemplateColumns: `95px repeat(${openCount}, 1fr)` }}>
               <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center bg-white">
                 <Clock className="h-4 w-4 text-[#8A93A8]" />
               </div>
@@ -727,7 +760,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               <div className="relative">
                 {/* Grid Rows */}
                 {TIME_SLOTS.map((slot) => (
-                  <div key={slot} className="grid grid-cols-[95px_repeat(7,1fr)] border-b border-[#E8E0D6]/15 h-[56px]">
+                  <div key={slot} className="grid border-b border-[#E8E0D6]/15 h-[56px]" style={{ gridTemplateColumns: `95px repeat(${openCount}, 1fr)` }}>
                     <div className="p-1 text-[12px] font-bold text-gray-700 bg-gray-50/50 border-r border-[#E8E0D6]/30 text-center flex items-center justify-center">
                       {slot}
                     </div>
@@ -756,7 +789,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 ))}
 
                 {/* Absolute Appointments for each day column */}
-                <div className="absolute top-0 left-[95px] right-0 bottom-0 pointer-events-none grid grid-cols-7">
+                <div className="absolute top-0 left-[95px] right-0 bottom-0 pointer-events-none grid" style={{ gridTemplateColumns: `repeat(${openCount}, 1fr)` }}>
                   {weekDays.map((day, dayIdx) => (
                     <div key={dayIdx} className="relative h-full border-r border-transparent">
                       {getAppointmentLayout(getAppointmentsForDate(day)).map((appt) => {
@@ -864,13 +897,59 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   }
 
   const renderMonthView = () => {
-    const days = getDaysInMonth(currentDate)
+    // Day-of-week labels indexed by JS getDay() (0=Sun)
+    const ALL_DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+    const openDayLabels = ALL_DAY_LABELS.filter((_, i) => openWeekdays.includes(i))
+    const openCount = openDayLabels.length
+
+    // Build month days that belong to open weekdays only.
+    // We rebuild the grid: find the first open weekday of the month,
+    // pad with previous-month days, then include only open-weekday dates.
+    const year = currentDate.getFullYear()
+    const month = currentDate.getMonth()
+    const lastDay = new Date(year, month + 1, 0)
+    const daysInMonth = lastDay.getDate()
+
+    const openDays: { date: Date; isCurrentMonth: boolean }[] = []
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d)
+      if (openWeekdays.includes(date.getDay())) {
+        openDays.push({ date, isCurrentMonth: true })
+      }
+    }
+
+    // Pad the start so rows align to weekday columns
+    const firstOpenDayOfWeek = openDays[0]?.date.getDay() ?? 0
+    const colIndex = openWeekdays.indexOf(firstOpenDayOfWeek)
+    for (let i = 0; i < colIndex; i++) {
+      const d = new Date(openDays[0].date)
+      d.setDate(d.getDate() - (colIndex - i))
+      // Skip if this pad date itself isn't in openWeekdays (shouldn't be but guard)
+      openDays.unshift({ date: d, isCurrentMonth: false })
+    }
+
+    // Pad the end to complete the last row
+    const remainder = openDays.length % openCount
+    if (remainder !== 0) {
+      const fill = openCount - remainder
+      const lastDate = openDays[openDays.length - 1].date
+      let nextDate = new Date(lastDate)
+      for (let i = 0; i < fill; i++) {
+        do {
+          nextDate = new Date(nextDate)
+          nextDate.setDate(nextDate.getDate() + 1)
+        } while (!openWeekdays.includes(nextDate.getDay()))
+        openDays.push({ date: nextDate, isCurrentMonth: false })
+      }
+    }
+
+    const days = openDays
 
     return (
       <div className="flex flex-col h-auto md:h-full bg-white relative">
         {/* Sticky day-of-week headers */}
-        <div className="grid grid-cols-7 sticky top-0 z-10 bg-white border-b border-[#E8E0D6]/40">
-          {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
+        <div className="sticky top-0 z-10 bg-white border-b border-[#E8E0D6]/40" style={{ display: 'grid', gridTemplateColumns: `repeat(${openCount}, 1fr)` }}>
+          {openDayLabels.map((day) => (
             <div key={day} className="py-2.5 text-center">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A93A8]">
                 {day}
@@ -881,7 +960,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
         {/* Scrollable month grid */}
         <div className="flex-initial md:flex-1 overflow-visible md:overflow-y-auto min-h-0 md:min-h-0">
-          <div className="grid grid-cols-7 gap-px bg-[#E8E0D6]/30 min-h-full">
+          <div className="gap-px bg-[#E8E0D6]/30 min-h-full" style={{ display: 'grid', gridTemplateColumns: `repeat(${openCount}, 1fr)` }}>
             {days.map((day, index) => {
               const dayAppointments = getAppointmentsForDate(day.date)
               const isToday = day.date.toDateString() === new Date().toDateString()
