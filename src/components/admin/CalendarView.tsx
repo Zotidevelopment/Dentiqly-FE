@@ -121,6 +121,50 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
   const [showFilterPanel, setShowFilterPanel] = useState(false)
 
+  // Color mode preference (persisted in localStorage)
+  const [colorMode, setColorMode] = useState<'service' | 'status'>(() => {
+    const saved = localStorage.getItem('dentiqly_calendar_color_mode')
+    return (saved === 'status' || saved === 'service') ? saved : 'service'
+  })
+
+  // Selected statuses to display in calendar
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['Pendiente', 'Confirmado', 'Atendido', 'Cancelado'])
+
+  useEffect(() => {
+    localStorage.setItem('dentiqly_calendar_color_mode', colorMode)
+  }, [colorMode])
+
+  const STATUS_GROUPS: Record<string, string[]> = {
+    'Pendiente': ['Pendiente', 'Creado', 'Esperando confirmación'],
+    'Confirmado': ['Confirmado', 'Confirmado por email', 'Confirmado por SMS', 'Confirmado por Whatsapp', 'En sala de espera', 'Atendiéndose'],
+    'Atendido': ['Atendido'],
+    'Cancelado': ['Cancelado', 'Ausente']
+  }
+
+  const matchesStatusFilter = (estado: string) => {
+    const group = Object.keys(STATUS_GROUPS).find(key => STATUS_GROUPS[key].includes(estado))
+    if (!group) return true
+    return selectedStatuses.includes(group)
+  }
+
+  const toggleStatusFilter = (status: string) => {
+    setSelectedStatuses(prev =>
+      prev.includes(status)
+        ? prev.filter(s => s !== status)
+        : [...prev, status]
+    )
+  }
+
+  const [hiddenServiceIds, setHiddenServiceIds] = useState<number[]>([])
+
+  const toggleServiceFilter = (serviceId: number) => {
+    setHiddenServiceIds(prev =>
+      prev.includes(serviceId)
+        ? prev.filter(id => id !== serviceId)
+        : [...prev, serviceId]
+    )
+  }
+
   const TIME_SLOTS: string[] = []
   for (let h = 8; h <= 20; h++) {
     TIME_SLOTS.push(`${String(h).padStart(2, '0')}:00`)
@@ -408,6 +452,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       )
     }
 
+    // Filter by hidden service IDs
+    if (hiddenServiceIds.length > 0) {
+      filtered = filtered.filter(appointment =>
+        !hiddenServiceIds.includes(appointment.servicio_id)
+      )
+    }
+
+    // Filter by selected statuses
+    filtered = filtered.filter(appointment => matchesStatusFilter(appointment.estado))
+
     return filtered.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
   }
 
@@ -537,7 +591,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             {/* Absolute Appointments */}
             <div className="absolute top-0 left-[125px] right-0 bottom-0 pointer-events-none">
               {getAppointmentLayout(dayAppointments).map((appt) => {
-                const apptColor = appt.servicio?.color || getProfColor(appt.profesional_id)
+                const apptColor = colorMode === 'status'
+                  ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
+                  : (appt.servicio?.color || getProfColor(appt.profesional_id))
                 const statusIcon = getStatusIcon(appt.estado)
 
                 return (
@@ -704,7 +760,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   {weekDays.map((day, dayIdx) => (
                     <div key={dayIdx} className="relative h-full border-r border-transparent">
                       {getAppointmentLayout(getAppointmentsForDate(day)).map((appt) => {
-                        const apptColor = appt.servicio?.color || getProfColor(appt.profesional_id)
+                        const apptColor = colorMode === 'status'
+                          ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
+                          : (appt.servicio?.color || getProfColor(appt.profesional_id))
                         const statusIcon = getStatusIcon(appt.estado)
 
                         return (
@@ -846,7 +904,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                   <div className="space-y-1">
                     {dayAppointments.slice(0, 3).map((appointment) => {
-                      const apptColor = appointment.servicio?.color || getProfColor(appointment.profesional_id)
+                      const apptColor = colorMode === 'status'
+                        ? (STATUS_COLORS[appointment.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
+                        : (appointment.servicio?.color || getProfColor(appointment.profesional_id))
                       const statusIcon = getStatusIcon(appointment.estado)
                       return (
                         <div
@@ -1187,6 +1247,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
             <button onClick={() => setViewType('agenda')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'agenda' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Agenda</button>
           </div>
+          {/* Color Mode Selector */}
+          <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
+            <span className="px-3 text-[#8A93A8] border-r border-[#E8E0D6] bg-gray-50/50 h-full flex items-center text-[10px] uppercase tracking-wider font-bold shrink-0">Colores</span>
+            <button 
+              onClick={() => setColorMode('service')} 
+              className={`px-3.5 h-full transition ${colorMode === 'service' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              title="Colorear por Servicios"
+            >
+              Servicios
+            </button>
+            <button 
+              onClick={() => setColorMode('status')} 
+              className={`px-3.5 h-full border-l border-[#E8E0D6] transition ${colorMode === 'status' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              title="Colorear por Estados"
+            >
+              Estados
+            </button>
+          </div>
           <button
             onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
@@ -1254,10 +1332,84 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 rounded-lg text-amber-700 border border-amber-100"><Hourglass className="w-3 h-3" /> Pendiente</div>
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-lg text-blue-700 border border-blue-100"><div className="w-2.5 h-2.5 rounded-full bg-blue-500/20 border-[1.5px] border-blue-500"></div> Confirmado</div>
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg text-green-700 border border-green-100"><CheckCircle2 className="w-3 h-3" /> Atendido</div>
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-lg text-red-700 border border-red-100"><XCircle className="w-3 h-3" /> Cancelado</div>
+              {colorMode === 'status' ? (
+                <>
+                  <button
+                    onClick={() => toggleStatusFilter('Pendiente')}
+                    className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
+                      selectedStatuses.includes('Pendiente')
+                        ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                        : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
+                    }`}
+                    title="Filtrar Pendientes"
+                  >
+                    <Hourglass className="w-3 h-3" /> Pendiente
+                  </button>
+                  <button
+                    onClick={() => toggleStatusFilter('Confirmado')}
+                    className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
+                      selectedStatuses.includes('Confirmado')
+                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                        : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
+                    }`}
+                    title="Filtrar Confirmados"
+                  >
+                    <div className={`w-2 h-2 rounded-full ${selectedStatuses.includes('Confirmado') ? 'bg-green-500' : 'bg-gray-400'}`}></div> Confirmado
+                  </button>
+                  <button
+                    onClick={() => toggleStatusFilter('Atendido')}
+                    className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
+                      selectedStatuses.includes('Atendido')
+                        ? 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                        : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
+                    }`}
+                    title="Filtrar Atendidos"
+                  >
+                    <CheckCircle2 className="w-3 h-3" /> Atendido
+                  </button>
+                  <button
+                    onClick={() => toggleStatusFilter('Cancelado')}
+                    className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
+                      selectedStatuses.includes('Cancelado')
+                        ? 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                        : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
+                    }`}
+                    title="Filtrar Cancelados"
+                  >
+                    <XCircle className="w-3 h-3" /> Cancelado
+                  </button>
+                </>
+              ) : (
+                <>
+                  {servicios.map((s) => {
+                    const isHidden = hiddenServiceIds.includes(s.id)
+                    const sColor = s.color || '#3B82F6'
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => toggleServiceFilter(s.id)}
+                        className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
+                          !isHidden
+                            ? 'shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:opacity-90'
+                            : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-40 hover:opacity-60 font-normal line-through'
+                        }`}
+                        style={{
+                          backgroundColor: !isHidden ? `${sColor}15` : undefined,
+                          borderColor: !isHidden ? `${sColor}40` : undefined,
+                          color: !isHidden ? sColor : undefined
+                        }}
+                        title={`Filtrar ${s.nombre}`}
+                      >
+                        <div 
+                          className="w-2 h-2 rounded-full shrink-0" 
+                          style={{ backgroundColor: !isHidden ? sColor : '#9CA3AF' }}
+                        />
+                        <span className="truncate max-w-[120px]">{s.nombre}</span>
+                      </button>
+                    )
+                  })}
+                </>
+              )}
               <button onClick={() => setShowNewModal(true)} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
             </div>
           </div>
