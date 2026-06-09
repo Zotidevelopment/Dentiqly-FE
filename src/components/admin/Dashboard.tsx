@@ -129,7 +129,7 @@ const timelineColors = [
 ];
 
 export const Dashboard: React.FC<{
-  onNavigate?: (view: string) => void,
+  onNavigate?: (view: string, params?: Record<string, any>) => void,
   slug?: string
 }> = ({ onNavigate, slug }) => {
   const { user } = useAuth();
@@ -673,7 +673,10 @@ export const Dashboard: React.FC<{
                               <div className={`w-8 h-8 rounded-full ${avatarStyle.split(' ')[0].replace('/20', '/10')} ${avatarStyle.split(' ')[1]} flex items-center justify-center font-bold text-[10px] shrink-0`}>
                                 {initials}
                               </div>
-                              <span className="font-semibold text-[#0B1023] truncate max-w-[120px] text-[13px]">
+                              <span 
+                                onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
+                                className="font-semibold text-[#2563FF] hover:text-[#1D4ED8] cursor-pointer hover:underline truncate max-w-[120px] text-[13px]"
+                              >
                                 {turno.paciente?.nombre} {turno.paciente?.apellido}
                               </span>
                             </div>
@@ -778,7 +781,12 @@ export const Dashboard: React.FC<{
                             {turno.servicio?.nombre || 'Consulta'}
                           </p>
                           <p className="text-[11px] text-gray-500 mt-0.5">
-                            {turno.paciente?.nombre} {turno.paciente?.apellido}
+                            <span
+                               onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
+                               className="text-gray-500 hover:text-[#2563FF] cursor-pointer hover:underline font-medium"
+                             >
+                               {turno.paciente?.nombre} {turno.paciente?.apellido}
+                             </span>
                           </p>
                         </div>
                         <span className="text-[10px] font-bold text-dental-secondary bg-dental-secondary/5 px-1.5 py-0.5 rounded border border-dental-secondary/10">

@@ -242,6 +242,7 @@ export interface Turno {
   profesional_id: number
   servicio_id: number
   subservicio_id?: number
+  sucursal_id?: string | number
   fecha: string
   hora_inicio: string
   hora_fin: string
@@ -263,6 +264,7 @@ export interface CrearTurnoData {
   profesional_id: number
   servicio_id: number
   subservicio_id?: number
+  sucursal_id?: string | number
   fecha: string
   hora_inicio: string
   hora_fin: string
@@ -518,8 +520,10 @@ export interface HorariosResponse {
 }
 
 export interface HorariosDisponiblesResponse {
-  fecha: string
+  disponible: boolean
+  mensaje: string
   horarios_disponibles: string[]
+  fecha?: string
 }
 
 export interface MovimientoCuenta {

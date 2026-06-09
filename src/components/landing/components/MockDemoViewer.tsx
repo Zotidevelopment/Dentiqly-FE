@@ -28,7 +28,13 @@ interface MockDemoViewerProps {
 
 export const MockDemoViewer: React.FC<MockDemoViewerProps> = ({ initialTab = "dashboard", onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
+  const [navParams, setNavParams] = useState<Record<string, any>>({})
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+
+  const handleNavigate = (view: TabType, params?: Record<string, any>) => {
+    setActiveTab(view)
+    setNavParams(params || {})
+  }
 
   // Prevent background scrolling and restore cursor / scroll engines while modal is open
   useEffect(() => {
@@ -160,10 +166,12 @@ export const MockDemoViewer: React.FC<MockDemoViewerProps> = ({ initialTab = "da
                   className="h-full"
                 >
                   {activeTab === "dashboard" && (
-                    <Dashboard onNavigate={(view) => setActiveTab(view as TabType)} slug="demo" />
+                    <Dashboard onNavigate={(view, params) => handleNavigate(view as TabType, params)} slug="demo" />
                   )}
-                  {activeTab === "calendar" && <CalendarView />}
-                  {activeTab === "patients" && <PatientsView />}
+                  {activeTab === "calendar" && <CalendarView onNavigate={(view, params) => handleNavigate(view as TabType, params)} />}
+                  {activeTab === "patients" && (
+                    <PatientsView initialPatientId={navParams.patientId} initialSearchTerm={navParams.searchTerm} />
+                  )}
                   {activeTab === "reminders" && <RemindersView />}
                   {activeTab === "booking" && (
                     <div className="h-[600px] sm:h-[550px] md:h-[600px] overflow-hidden rounded-2xl border border-gray-150 bg-[#f8fafc] [&>div]:h-full [&>div]:bg-transparent">

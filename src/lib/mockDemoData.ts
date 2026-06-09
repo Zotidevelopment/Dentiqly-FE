@@ -968,7 +968,7 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
 
       // Generamos turnos dinámicos en el rango solicitado para llenar la agenda de forma determinista
       const dynamicTurnos = getDynamicTurnosForRange(desdeStr, hastaStr)
-      const userTurnos = getStorageItem(KEYS.TURNOS, [])
+      const userTurnos = getStorageItem<any[]>(KEYS.TURNOS, [])
 
       // Combinar: si un turno de usuario coincide en fecha, hora_inicio y profesional_id con uno dinámico,
       // usamos el turno de usuario (que contiene el estado actualizado, ej. "Atendido").
@@ -976,7 +976,7 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
         const updated = userTurnos.find(
           (ut: any) => ut.fecha === dt.fecha && ut.hora_inicio === dt.hora_inicio && ut.profesional_id === dt.profesional_id
         )
-        return updated ? { ...dt, ...updated } : dt
+        return updated ? { ...(dt as any), ...updated } : dt
       })
 
       // Agregar los turnos de usuario que no coinciden con ningún turno dinámico (nuevos turnos creados)

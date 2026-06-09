@@ -11,7 +11,7 @@ export function useParallax(speed = 0.5) {
     const el = ref.current
     if (!el) return
 
-    const mm = ScrollTrigger.matchMedia({
+    const mm: any = ScrollTrigger.matchMedia({
       "(min-width: 768px)": () => {
         gsap.to(el, {
           yPercent: speed * 100,

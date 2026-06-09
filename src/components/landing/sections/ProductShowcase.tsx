@@ -45,8 +45,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   const setIsFullscreen = onToggleFullscreen || setLocalFullscreen
 
   const [activeTab, setActiveTab] = useState<TabType>("dashboard")
+  const [navParams, setNavParams] = useState<Record<string, any>>({})
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleNavigate = (view: TabType, params?: Record<string, any>) => {
+    setActiveTab(view)
+    setNavParams(params || {})
+  }
 
   // Scroll lock and ESC key to exit fullscreen
   useEffect(() => {
@@ -224,10 +230,12 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       </div>
                     }>
                       {activeTab === "dashboard" && (
-                        <Dashboard onNavigate={(view) => setActiveTab(view as TabType)} slug="demo" />
+                        <Dashboard onNavigate={(view, params) => handleNavigate(view as TabType, params)} slug="demo" />
                       )}
-                      {activeTab === "calendar" && <CalendarView />}
-                      {activeTab === "patients" && <PatientsView />}
+                      {activeTab === "calendar" && <CalendarView onNavigate={(view, params) => handleNavigate(view as TabType, params)} />}
+                      {activeTab === "patients" && (
+                        <PatientsView initialPatientId={navParams.patientId} initialSearchTerm={navParams.searchTerm} />
+                      )}
                       {activeTab === "reminders" && <RemindersView />}
                       {activeTab === "booking" && (
                         <div className="h-[600px] sm:h-[550px] md:h-[600px] overflow-hidden rounded-2xl border border-gray-150 bg-[#f8fafc] [&>div]:h-full [&>div]:bg-transparent">

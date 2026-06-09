@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   FileText,
   ChevronLeft,
@@ -67,6 +67,25 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       fetchAsistencias()
     }
   }, [patient?.id, activeTab])
+
+  useEffect(() => {
+    const isDemo = typeof window !== "undefined" && (window.location.pathname === "/" || window.location.pathname.startsWith("/demo"))
+    if (isDemo) {
+      // In demo mode, avoid scrolling the main window to the top.
+      // We can try to scroll the local workspace container to the top instead.
+      const workspace = document.querySelector(".demo-viewer-open, [data-lenis-prevent]")
+      if (workspace) {
+        workspace.scrollTop = 0
+      }
+      return
+    }
+
+    const mainContainer = document.querySelector("main")
+    if (mainContainer) {
+      mainContainer.scrollTop = 0
+    }
+    window.scrollTo({ top: 0 })
+  }, [activeTab])
 
   const tabs = [
     { id: "informacion" as TabType, label: "Información" },

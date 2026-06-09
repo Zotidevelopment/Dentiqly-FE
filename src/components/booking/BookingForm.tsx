@@ -60,10 +60,10 @@ export const BookingForm: React.FC = () => {
             setPatientData({
               nombre: paciente.nombre,
               apellido: paciente.apellido,
-              tipo_documento: paciente.tipo_documento,
+              tipo_documento: paciente.tipo_documento as 'DNI' | 'Pasaporte' | 'Cédula',
               numero_documento: paciente.numero_documento,
               fecha_nacimiento: paciente.fecha_nacimiento,
-              sexo: paciente.sexo,
+              sexo: paciente.sexo as 'Masculino' | 'Femenino' | 'Otro',
               email: paciente.email,
               telefono: paciente.telefono,
               direccion: paciente.direccion || "",

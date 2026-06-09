@@ -42,7 +42,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
 
   const handleCreate = () => {
     setFormData({
-      paciente_id: pacienteId,
+      paciente_id: String(pacienteId),
       fecha_inicio: new Date().toISOString().split("T")[0],
       estado: "Planificado",
     })

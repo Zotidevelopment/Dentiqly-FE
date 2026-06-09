@@ -47,7 +47,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
 
   const handleCreate = () => {
     setFormData({
-      paciente_id: pacienteId,
+      paciente_id: String(pacienteId),
       fecha: new Date().toISOString().split("T")[0],
     })
     setModalMode("create")

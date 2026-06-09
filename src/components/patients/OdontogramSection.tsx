@@ -169,7 +169,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
     setShowModal(true)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string | number) => {
     setConfirmAction({
       isOpen: true,
       title: "Confirmar eliminación",
@@ -282,7 +282,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
   const handleSubmit = async () => {
     try {
       const dataToSend: CrearOdontogramaData = {
-        paciente_id: pacienteId,
+        paciente_id: String(pacienteId),
         profesional_id: profesionalActual,
         fecha: new Date().toISOString().split("T")[0],
         dientes_data: dientesData,

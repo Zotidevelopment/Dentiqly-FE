@@ -63,8 +63,8 @@ export class ApiClient {
       return handleMockRequest(apiEndpoint, options.method || "GET", options.body) as Promise<T>
     }
 
-    const headers: HeadersInit = {
-      ...options.headers,
+    const headers: Record<string, string> = {
+      ...options.headers as Record<string, string>,
     }
 
     // Solo añadir Content-Type si no es FormData

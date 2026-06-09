@@ -103,7 +103,7 @@ export const dienteImages: Record<string, any> = {
   '8.5': '/dientes/temporarios/8.5.png',
 };
 
-export const getDienteImage = (numero: string): string | null => {
+export const getDienteImage = (numero: string): any => {
   return dienteImages[numero] || null;
 };
 
