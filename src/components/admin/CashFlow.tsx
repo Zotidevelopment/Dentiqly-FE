@@ -29,6 +29,12 @@ const tokens = sharedTokens
 const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
+const parseLocalDate = (dateStr: string) => {
+  if (!dateStr) return new Date();
+  const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
 export default function CashFlow() {
     const { toast } = useToast();
     const [movimientos, setMovimientos] = useState<any[]>([]);
@@ -66,6 +72,54 @@ export default function CashFlow() {
         fetchData();
         setIsModalOpen(false);
     };
+
+    const financeStats = useMemo(() => {
+        const today = new Date();
+        
+        const getMonday = (d: Date) => {
+            const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(date.setDate(diff));
+        };
+        const startOfWeek = getMonday(today);
+
+        let dayIncome = 0;
+        let dayEgress = 0;
+        let weekIncome = 0;
+        let weekEgress = 0;
+        let monthIncome = 0;
+        let monthEgress = 0;
+
+        movimientos.forEach(m => {
+            const amount = parseFloat(m.monto) || 0;
+            const mDate = parseLocalDate(m.fecha);
+
+            // Check Day
+            if (mDate.toDateString() === today.toDateString()) {
+                if (m.tipo === 'Ingreso') dayIncome += amount;
+                else dayEgress += amount;
+            }
+
+            // Check Week
+            if (mDate >= startOfWeek && mDate <= today) {
+                if (m.tipo === 'Ingreso') weekIncome += amount;
+                else weekEgress += amount;
+            }
+
+            // Check Month
+            if (mDate.getFullYear() === today.getFullYear() && mDate.getMonth() === today.getMonth()) {
+                if (m.tipo === 'Ingreso') monthIncome += amount;
+                else monthEgress += amount;
+            }
+        });
+
+        return {
+            day: { income: dayIncome, egress: dayEgress, balance: dayIncome - dayEgress },
+            week: { income: weekIncome, egress: weekEgress, balance: weekIncome - weekEgress },
+            month: { income: monthIncome, egress: monthEgress, balance: monthIncome - monthEgress }
+        };
+    }, [movimientos]);
 
     const filteredMovimientos = useMemo(() => {
       if (!searchTerm) return movimientos;
@@ -159,10 +213,11 @@ export default function CashFlow() {
             </div>
 
             {/* ── Dashboard Cards ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 24 }}>
-              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
+              {/* Balance Histórico */}
+              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}`, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Balance Actual</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Balance Histórico</span>
                   <div style={{ padding: 6, borderRadius: 8, background: balance >= 0 ? tokens.greenFaint : tokens.redFaint }}>
                     {balance >= 0 ? <TrendingUp size={16} color={tokens.green} /> : <TrendingDown size={16} color={tokens.red} />}
                   </div>
@@ -172,22 +227,94 @@ export default function CashFlow() {
                 </h2>
               </div>
 
-              {/* Quick Filters */}
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <div style={{
-                  background: tokens.white, padding: "6px 14px", borderRadius: 10,
-                  border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
-                  display: "flex", alignItems: "center", gap: 6
-                }}>
-                  <Calendar size={14} /> Periodo: Todos
+              {/* Totales Diario */}
+              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Totales de Hoy</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: tokens.blue, background: tokens.blueFaint, padding: "2px 8px", borderRadius: 6 }}>Diario</span>
                 </div>
-                <div style={{
-                  background: tokens.white, padding: "6px 14px", borderRadius: 10,
-                  border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
-                  display: "flex", alignItems: "center", gap: 6
-                }}>
-                  <CreditCard size={14} /> Forma de Pago: Todas
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Ingresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.greenText }}>+ {formatCurrency(financeStats.day.income)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Egresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.redText }}>- {formatCurrency(financeStats.day.egress)}</span>
+                  </div>
+                  <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 4, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
+                    <span style={{ color: tokens.navy }}>Balance:</span>
+                    <span style={{ color: financeStats.day.balance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.day.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.day.balance)}
+                    </span>
+                  </div>
                 </div>
+              </div>
+
+              {/* Totales Semanal */}
+              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Esta Semana</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#7C3AED', background: '#F5F3FF', padding: "2px 8px", borderRadius: 6 }}>Semanal</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Ingresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.greenText }}>+ {formatCurrency(financeStats.week.income)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Egresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.redText }}>- {formatCurrency(financeStats.week.egress)}</span>
+                  </div>
+                  <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 4, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
+                    <span style={{ color: tokens.navy }}>Balance:</span>
+                    <span style={{ color: financeStats.week.balance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.week.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.week.balance)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Totales Mensual */}
+              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Este Mes</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#EA580C', background: '#FFF7ED', padding: "2px 8px", borderRadius: 6 }}>Mensual</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Ingresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.greenText }}>+ {formatCurrency(financeStats.month.income)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Egresos:</span>
+                    <span style={{ fontWeight: 655, color: tokens.redText }}>- {formatCurrency(financeStats.month.egress)}</span>
+                  </div>
+                  <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 4, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
+                    <span style={{ color: tokens.navy }}>Balance:</span>
+                    <span style={{ color: financeStats.month.balance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.month.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.month.balance)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Quick Filters row ── */}
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 20 }}>
+              <div style={{
+                background: tokens.white, padding: "6px 14px", borderRadius: 10,
+                border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
+                display: "flex", alignItems: "center", gap: 6
+              }}>
+                <Calendar size={14} /> Periodo: Todos
+              </div>
+              <div style={{
+                background: tokens.white, padding: "6px 14px", borderRadius: 10,
+                border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
+                display: "flex", alignItems: "center", gap: 6
+              }}>
+                <CreditCard size={14} /> Forma de Pago: Todas
               </div>
             </div>
 

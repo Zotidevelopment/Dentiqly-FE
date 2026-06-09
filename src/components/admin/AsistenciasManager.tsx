@@ -38,6 +38,7 @@ export const AsistenciasManager: React.FC = () => {
   const [selectedObraSocial, setSelectedObraSocial] = useState("TODAS")
   const [selectedEstado, setSelectedEstado] = useState("TODOS")
   const [periodFilter, setPeriodFilter] = useState<"diario" | "semana" | "mes">("diario")
+  const [breakdownType, setBreakdownType] = useState<"obra_social" | "servicio">("obra_social")
   const [currentMonthKey, setCurrentMonthKey] = useState("")
   const { toast } = useToast()
 
@@ -262,6 +263,22 @@ export const AsistenciasManager: React.FC = () => {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
 
+  // Service aggregation based on period filter
+  const serviceCounts: Record<string, number> = {}
+  periodAppointments.forEach((appt) => {
+    if (appt.estado === "Atendido") {
+      const name = appt.servicio?.nombre || "Sin servicio"
+      serviceCounts[name] = (serviceCounts[name] || 0) + 1
+    }
+  })
+
+  // List of unique Services for stats
+  const serviceStats = Object.entries(serviceCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+
+  const activeStats = breakdownType === "obra_social" ? obraSocialStats : serviceStats;
+
   // List of unique Obras Sociales for filter dropdown
   const allObrasSociales = Array.from(
     new Set(
@@ -273,9 +290,18 @@ export const AsistenciasManager: React.FC = () => {
 
   // Filtered appointments for table (always daily, with user-selected search & filters)
   const filteredAppointments = dailyAppointments.filter((appt) => {
+    const term = searchTerm.toLowerCase()
     const patientName = `${appt.paciente?.nombre || ""} ${appt.paciente?.apellido || ""}`.toLowerCase()
-    const matchesSearch = patientName.includes(searchTerm.toLowerCase()) || 
-      (appt.paciente?.numero_documento && appt.paciente.numero_documento.includes(searchTerm))
+    const patientDoc = appt.paciente?.numero_documento || ""
+    const patientEmail = appt.paciente?.email || ""
+    const patientPhone = appt.paciente?.telefono || ""
+    const profName = `${appt.profesional?.nombre || ""} ${appt.profesional?.apellido || ""}`.toLowerCase()
+
+    const matchesSearch = patientName.includes(term) || 
+      patientDoc.includes(term) ||
+      patientEmail.includes(term) ||
+      patientPhone.includes(term) ||
+      profName.includes(term)
 
     const patientOS = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"
     const matchesOS = selectedObraSocial === "TODAS" || patientOS === selectedObraSocial
@@ -470,50 +496,78 @@ export const AsistenciasManager: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Obra Social Breakdown Card */}
+        {/* Obra Social/Service Breakdown Card */}
         <Card className="p-5 border-[#E8E0D6] flex flex-col h-fit">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E8E0D6]/60 mb-4">
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-[#2563FF]" />
-              <h3 className="text-sm font-bold text-gray-900">Desglose por Obra Social</h3>
+          <div className="flex flex-col gap-3 pb-4 border-b border-[#E8E0D6]/60 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building className="h-4 w-4 text-[#2563FF]" />
+                <h3 className="text-sm font-bold text-gray-900">
+                  Desglose de Asistencias
+                </h3>
+              </div>
+              
+              {/* Period Filters */}
+              <div className="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50 shadow-xs">
+                <button
+                  onClick={() => setPeriodFilter("diario")}
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    periodFilter === "diario"
+                      ? "bg-white text-[#2563FF] shadow-xs"
+                      : "text-gray-500 hover:text-gray-900 bg-transparent"
+                  }`}
+                >
+                  Día
+                </button>
+                <button
+                  onClick={() => setPeriodFilter("semana")}
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    periodFilter === "semana"
+                      ? "bg-white text-[#2563FF] shadow-xs"
+                      : "text-gray-500 hover:text-gray-900 bg-transparent"
+                  }`}
+                >
+                  Sem.
+                </button>
+                <button
+                  onClick={() => setPeriodFilter("mes")}
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    periodFilter === "mes"
+                      ? "bg-white text-[#2563FF] shadow-xs"
+                      : "text-gray-500 hover:text-gray-900 bg-transparent"
+                  }`}
+                >
+                  Mes
+                </button>
+              </div>
             </div>
-            
-            {/* Period Filters */}
-            <div className="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50 self-start sm:self-auto shadow-xs">
+
+            {/* Toggle tabs for Obra Social vs Servicio */}
+            <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200/40 shadow-inner">
               <button
-                onClick={() => setPeriodFilter("diario")}
-                className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                  periodFilter === "diario"
-                    ? "bg-white text-[#2563FF] shadow-xs"
+                onClick={() => setBreakdownType("obra_social")}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-center ${
+                  breakdownType === "obra_social"
+                    ? "bg-white text-[#2563FF] shadow-sm border border-gray-200/30"
                     : "text-gray-500 hover:text-gray-900 bg-transparent"
                 }`}
               >
-                Diario
+                Por Obra Social
               </button>
               <button
-                onClick={() => setPeriodFilter("semana")}
-                className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                  periodFilter === "semana"
-                    ? "bg-white text-[#2563FF] shadow-xs"
+                onClick={() => setBreakdownType("servicio")}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-center ${
+                  breakdownType === "servicio"
+                    ? "bg-white text-[#2563FF] shadow-sm border border-gray-200/30"
                     : "text-gray-500 hover:text-gray-900 bg-transparent"
                 }`}
               >
-                Semana
-              </button>
-              <button
-                onClick={() => setPeriodFilter("mes")}
-                className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                  periodFilter === "mes"
-                    ? "bg-white text-[#2563FF] shadow-xs"
-                    : "text-gray-500 hover:text-gray-900 bg-transparent"
-                }`}
-              >
-                Mes
+                Por Servicio
               </button>
             </div>
           </div>
 
-          {obraSocialStats.length > 0 && (
+          {activeStats.length > 0 && (
             <div className="mb-3 text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
               {periodFilter === "diario" 
                 ? "Período: Diario" 
@@ -523,14 +577,14 @@ export const AsistenciasManager: React.FC = () => {
             </div>
           )}
 
-          {obraSocialStats.length === 0 ? (
+          {activeStats.length === 0 ? (
             <div className="text-center py-8 text-gray-400 text-xs">
               No hay asistencias registradas para clasificar{" "}
               {periodFilter === "diario" ? "hoy" : periodFilter === "semana" ? "esta semana" : "este mes"}.
             </div>
           ) : (
             <div className="space-y-4">
-              {obraSocialStats.map((stat, i) => {
+              {activeStats.map((stat, i) => {
                 const percentage = periodTotalAttended > 0 ? Math.round((stat.count / periodTotalAttended) * 100) : 0
                 // Use distinct curated colors
                 const colors = [
@@ -545,8 +599,8 @@ export const AsistenciasManager: React.FC = () => {
 
                 return (
                   <div key={stat.name} className="space-y-1">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-semibold text-gray-700 truncate max-w-[170px]">{stat.name}</span>
+                     <div className="flex justify-between items-center text-xs">
+                      <span className="font-semibold text-gray-700 truncate max-w-[150px]">{stat.name}</span>
                       <span className="font-bold text-gray-900">{stat.count} {stat.count === 1 ? "paciente" : "pacientes"} <span className="text-gray-400 font-normal">({percentage}%)</span></span>
                     </div>
                     <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">

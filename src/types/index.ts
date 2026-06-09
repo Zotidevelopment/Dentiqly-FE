@@ -203,6 +203,7 @@ export interface Servicio {
   updatedAt: string
   subServicios?: SubServicio[]
   profesionales?: Profesional[]
+  color?: string
 }
 
 export interface SubServicio {
@@ -224,6 +225,7 @@ export interface CrearServicioData {
   precio_base: number
   duracion_estimada: number
   estado?: string
+  color?: string
 }
 
 export interface CrearSubServicioData {

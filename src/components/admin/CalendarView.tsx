@@ -497,7 +497,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
     return (
       <div className="flex flex-col h-auto md:h-full bg-white relative">
-        <div className="grid grid-cols-[100px_1fr] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
+        <div className="grid grid-cols-[125px_1fr] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
           <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center">
             <Clock className="h-4 w-4 text-[#8A93A8]" />
           </div>
@@ -515,8 +515,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           <div className="relative">
             {/* Grid Lines */}
             {TIME_SLOTS.map((slot) => (
-              <div key={slot} className="grid grid-cols-[100px_1fr] border-b border-[#E8E0D6]/20 h-[56px]">
-                <div className="p-1 text-[10px] font-semibold text-[#8A93A8] border-r border-[#E8E0D6]/30 text-center flex items-center justify-center">
+              <div key={slot} className="grid grid-cols-[125px_1fr] border-b border-[#E8E0D6]/20 h-[56px]">
+                <div className="p-1 text-[13px] font-bold text-gray-700 bg-gray-50/50 border-r border-[#E8E0D6]/30 text-center flex items-center justify-center">
                   {slot}
                 </div>
                 <div
@@ -535,9 +535,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             ))}
 
             {/* Absolute Appointments */}
-            <div className="absolute top-0 left-[100px] right-0 bottom-0 pointer-events-none">
+            <div className="absolute top-0 left-[125px] right-0 bottom-0 pointer-events-none">
               {getAppointmentLayout(dayAppointments).map((appt) => {
-                const profColor = getProfColor(appt.profesional_id)
+                const apptColor = appt.servicio?.color || getProfColor(appt.profesional_id)
                 const statusIcon = getStatusIcon(appt.estado)
 
                 return (
@@ -573,7 +573,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                             y: rect.top - containerRect.top,
                             width: rect.width,
                             height: rect.height,
-                            profColor: getProfColor(appt.profesional_id)
+                            profColor: apptColor
                           })
                         }
                       }}
@@ -583,8 +583,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       }}
                       className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
                       style={{
-                        backgroundColor: `${profColor}15`,
-                        border: `1.5px solid ${profColor}`,
+                        backgroundColor: `${apptColor}15`,
+                        border: `1.5px solid ${apptColor}`,
                       }}
                     >
                       {statusIcon && (
@@ -647,7 +647,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         <div className="overflow-x-auto flex-initial md:flex-1 flex flex-col">
           <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex-initial md:flex-1 flex flex-col">
             {/* Header */}
-            <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
+            <div className="grid grid-cols-[95px_repeat(7,1fr)] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
               <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center bg-white">
                 <Clock className="h-4 w-4 text-[#8A93A8]" />
               </div>
@@ -671,8 +671,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               <div className="relative">
                 {/* Grid Rows */}
                 {TIME_SLOTS.map((slot) => (
-                  <div key={slot} className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-[#E8E0D6]/15 h-[56px]">
-                    <div className="p-1 text-[9px] font-semibold text-[#8A93A8] border-r border-[#E8E0D6]/30 text-center flex items-center justify-center font-mono">
+                  <div key={slot} className="grid grid-cols-[95px_repeat(7,1fr)] border-b border-[#E8E0D6]/15 h-[56px]">
+                    <div className="p-1 text-[12px] font-bold text-gray-700 bg-gray-50/50 border-r border-[#E8E0D6]/30 text-center flex items-center justify-center">
                       {slot}
                     </div>
                     {weekDays.map((day, i) => (
@@ -700,11 +700,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 ))}
 
                 {/* Absolute Appointments for each day column */}
-                <div className="absolute top-0 left-[80px] right-0 bottom-0 pointer-events-none grid grid-cols-7">
+                <div className="absolute top-0 left-[95px] right-0 bottom-0 pointer-events-none grid grid-cols-7">
                   {weekDays.map((day, dayIdx) => (
                     <div key={dayIdx} className="relative h-full border-r border-transparent">
                       {getAppointmentLayout(getAppointmentsForDate(day)).map((appt) => {
-                        const profColor = getProfColor(appt.profesional_id)
+                        const apptColor = appt.servicio?.color || getProfColor(appt.profesional_id)
                         const statusIcon = getStatusIcon(appt.estado)
 
                         return (
@@ -740,7 +740,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                     y: rect.top - containerRect.top,
                                     width: rect.width,
                                     height: rect.height,
-                                    profColor: getProfColor(appt.profesional_id)
+                                    profColor: apptColor
                                   })
                                 }
                               }}
@@ -750,8 +750,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                               }}
                               className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1 relative group"
                               style={{
-                                backgroundColor: `${profColor}15`,
-                                border: `1px solid ${profColor}`,
+                                backgroundColor: `${apptColor}15`,
+                                border: `1px solid ${apptColor}`,
                               }}
                             >
                               {statusIcon && (
@@ -846,7 +846,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                   <div className="space-y-1">
                     {dayAppointments.slice(0, 3).map((appointment) => {
-                      const profColor = getProfColor(appointment.profesional_id)
+                      const apptColor = appointment.servicio?.color || getProfColor(appointment.profesional_id)
                       const statusIcon = getStatusIcon(appointment.estado)
                       return (
                         <div
@@ -866,7 +866,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 y: rect.top - containerRect.top,
                                 width: rect.width,
                                 height: rect.height,
-                                profColor: getProfColor(appointment.profesional_id)
+                                profColor: apptColor
                               })
                             }
                           }}
@@ -875,7 +875,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                             setHoveredAppt(null)
                           }}
                           className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
-                          style={{ backgroundColor: `${profColor}15`, border: `1px solid ${profColor}40` }}
+                          style={{ backgroundColor: `${apptColor}15`, border: `1px solid ${apptColor}40` }}
                         >
                           <span className="font-bold shrink-0 text-gray-900">{appointment.hora_inicio.substring(0, 5)}</span>
                           <span className="truncate font-semibold text-gray-700 pr-1">{appointment.paciente?.apellido}</span>

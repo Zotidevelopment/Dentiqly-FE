@@ -14,6 +14,7 @@ import {
   Plus,
   Trash2,
   Wallet,
+  Calendar,
 } from "lucide-react"
 import { useToast } from "../../hooks/use-toast"
 
@@ -48,7 +49,8 @@ export const SettingsManager: React.FC = () => {
     clinic_name: "",
     clinic_address: "",
     clinic_phone: "",
-    clinic_google_maps: ""
+    clinic_google_maps: "",
+    online_booking_enabled: true
   })
 
   const DAY_LABELS: Record<string, string> = {
@@ -94,7 +96,11 @@ export const SettingsManager: React.FC = () => {
         } else if (s.clave in bankFields) {
           bankFields[s.clave] = s.valor
         }
-        if (s.clave in generalFields) generalFields[s.clave] = s.valor
+        if (s.clave === "online_booking_enabled") {
+          generalFields.online_booking_enabled = s.valor === true || s.valor === "true"
+        } else if (s.clave in generalFields) {
+          generalFields[s.clave] = s.valor
+        }
         if (s.clave === "business_hours" && s.valor) {
           try {
             const parsed = typeof s.valor === "string" ? JSON.parse(s.valor) : s.valor
@@ -128,7 +134,8 @@ export const SettingsManager: React.FC = () => {
       const updatedData = { ...generalData, clinic_google_maps: mapsUrl }
       const entries = Object.entries(updatedData)
       for (const [key, value] of entries) {
-        await configuracionApi.crear({ clave: key, valor: value, tipo: "string", categoria: "general" })
+        const tipo = key === "online_booking_enabled" ? "boolean" : "string"
+        await configuracionApi.crear({ clave: key, valor: value, tipo: tipo, categoria: "general" })
       }
       toast({ title: "Éxito", description: "Configuración general actualizada" })
       fetchSettings()
@@ -273,6 +280,40 @@ export const SettingsManager: React.FC = () => {
                 <div>
                   <label style={labelStyle}>Teléfono de Contacto</label>
                   <input type="text" value={generalData.clinic_phone} onChange={e => setGeneralData({...generalData, clinic_phone: e.target.value})} style={inputStyle} />
+                </div>
+
+                <div style={{ borderTop: `1px solid ${tokens.grayRow}`, paddingTop: 20, marginTop: 10 }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: tokens.navy, margin: "0 0 12px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                    <Calendar size={16} color={tokens.blue} /> Reserva de Turnos Online
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: generalData.online_booking_enabled ? tokens.blueFaint : tokens.grayBg, borderRadius: 12, border: `1px solid ${generalData.online_booking_enabled ? tokens.blue + "33" : tokens.grayBorder}`, transition: "all 0.15s" }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0 }}>Habilitar reserva online</p>
+                      <p style={{ fontSize: 11, color: tokens.grayMuted, margin: "2px 0 0 0" }}>
+                        {generalData.online_booking_enabled ? "Los pacientes pueden reservar turnos libremente desde la web" : "Las reservas online públicas estarán bloqueadas"}
+                      </p>
+                    </div>
+                    <label style={{ position: "relative", display: "inline-flex", alignItems: "center", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={generalData.online_booking_enabled}
+                        onChange={e => setGeneralData({...generalData, online_booking_enabled: e.target.checked})}
+                        style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+                      />
+                      <div style={{
+                        width: 44, height: 24, borderRadius: 12,
+                        background: generalData.online_booking_enabled ? tokens.blue : "#D1D5DB",
+                        transition: "background 0.2s", position: "relative"
+                      }}>
+                        <div style={{
+                          width: 20, height: 20, borderRadius: 10,
+                          background: "white", position: "absolute", top: 2,
+                          left: generalData.online_booking_enabled ? 22 : 2,
+                          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+                        }} />
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
 

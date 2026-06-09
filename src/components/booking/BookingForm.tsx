@@ -13,7 +13,7 @@ import { turnosApi, pacientesApi } from "../../api"
 import { patientPortalApi, getPatientToken } from "../../api/patient-portal"
 import { configuracionApi } from "../../api/configuracion"
 import { BranchSelection } from "./BranchSelection"
-import { Check, ArrowLeft, MapPin } from "lucide-react"
+import { Check, ArrowLeft, MapPin, Calendar } from "lucide-react"
 import { useToast } from "../../hooks/use-toast"
 
 export const BookingForm: React.FC = () => {
@@ -30,22 +30,34 @@ export const BookingForm: React.FC = () => {
   const [mesActualBloqueado, setMesActualBloqueado] = useState(false)
   const [senaEnabled, setSenaEnabled] = useState(false)
   const [senaMonto, setSenaMonto] = useState(0)
+  
+  // Settings configurations
+  const [onlineBookingEnabled, setOnlineBookingEnabled] = useState(true)
+  const [loadingSettings, setLoadingSettings] = useState(true)
   const { toast } = useToast()
 
   useEffect(() => {
-    const fetchSenaConfig = async () => {
+    const fetchConfigs = async () => {
       try {
+        setLoadingSettings(true)
         const settings = await configuracionApi.listar()
+        let bookingEnabledVal = true
         settings.forEach(s => {
           if (s.clave === "sena_enabled") setSenaEnabled(s.valor === true || s.valor === "true")
           if (s.clave === "sena_monto") setSenaMonto(Number(s.valor) || 0)
+          if (s.clave === "online_booking_enabled") {
+            bookingEnabledVal = s.valor === true || s.valor === "true"
+          }
         })
+        setOnlineBookingEnabled(bookingEnabledVal)
       } catch (e) {
         console.error("Error fetching sena config:", e)
-        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la configuración de seña" })
+        toast({ variant: "destructive", title: "Error", description: "No se pudo cargar la configuración del sistema" })
+      } finally {
+        setLoadingSettings(false)
       }
     }
-    fetchSenaConfig()
+    fetchConfigs()
   }, [])
 
   useEffect(() => {
@@ -177,6 +189,29 @@ export const BookingForm: React.FC = () => {
     setBookingSuccess(false)
     setBookingId(null)
     if (!isAuthenticated) setPatientData(null)
+  }
+
+  if (loadingSettings) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#f8fafc]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>
+      </div>
+    )
+  }
+
+  if (!onlineBookingEnabled) {
+    return (
+      <div className="min-h-[55vh] flex flex-col items-center justify-center p-8 text-center max-w-xl mx-auto bg-white rounded-3xl border border-gray-100 shadow-xl my-8 animate-in fade-in zoom-in-95 duration-300">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50/80 flex items-center justify-center mb-6 text-amber-500 border border-amber-100">
+          <Calendar className="w-8 h-8" strokeWidth={2.5} />
+        </div>
+        <h2 className="text-2xl font-extrabold text-gray-900 mb-3 tracking-tight">Agendamiento Online Desactivado</h2>
+        <p className="text-sm text-gray-500 mb-6 leading-relaxed max-w-md">
+          El agendamiento directo de turnos online por parte de los pacientes está inhabilitado. 
+          Por favor, comuníquese directamente con la recepción de la clínica (por teléfono o WhatsApp) para coordinar y reservar su turno.
+        </p>
+      </div>
+    )
   }
 
   if (bookingSuccess && selectedService && selectedProfessional && selectedDateTime) {
@@ -359,4 +394,4 @@ export const BookingForm: React.FC = () => {
       </div>
     </div>
   )
-}
+}
