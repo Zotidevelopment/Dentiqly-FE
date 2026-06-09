@@ -550,15 +550,64 @@ export const ServicesManager: React.FC = () => {
                           height: 30,
                           borderRadius: '50%',
                           backgroundColor: colorVal,
-                          border: formData.color === colorVal ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                          border: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
                           cursor: 'pointer',
                           transition: 'all 0.12s',
-                          boxShadow: formData.color === colorVal ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
+                          boxShadow: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
                         }}
-                        onMouseEnter={e => { if (formData.color !== colorVal) e.currentTarget.style.transform = 'scale(1.1)' }}
-                        onMouseLeave={e => { if (formData.color !== colorVal) e.currentTarget.style.transform = 'none' }}
+                        onMouseEnter={e => { if (formData.color?.toUpperCase() !== colorVal.toUpperCase()) e.currentTarget.style.transform = 'scale(1.1)' }}
+                        onMouseLeave={e => { if (formData.color?.toUpperCase() !== colorVal.toUpperCase()) e.currentTarget.style.transform = 'none' }}
                       />
                     ))}
+
+                    {/* Custom Color Picker Button */}
+                    {(() => {
+                      const isCustom = formData.color && !CURATED_COLORS.map(c => c.toUpperCase()).includes(formData.color.toUpperCase())
+                      return (
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: 30,
+                            height: 30,
+                            borderRadius: '50%',
+                            backgroundColor: isCustom ? formData.color : 'transparent',
+                            backgroundImage: isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
+                            border: isCustom ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            boxShadow: isCustom ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
+                            transition: 'all 0.12s',
+                          }}
+                          title="Elegir color personalizado"
+                        >
+                          <input
+                            type="color"
+                            value={formData.color || '#3B82F6'}
+                            onChange={e => handleChange('color', e.target.value)}
+                            style={{
+                              position: 'absolute',
+                              inset: -5,
+                              width: '150%',
+                              height: '150%',
+                              opacity: 0,
+                              cursor: 'pointer',
+                            }}
+                          />
+                          {isCustom && (
+                            <div style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              background: '#ffffff',
+                              boxShadow: '0 0 2px rgba(0,0,0,0.5)',
+                            }} />
+                          )}
+                        </div>
+                      )
+                    })()}
                   </div>
                 </div>
               </div>
