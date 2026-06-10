@@ -20,7 +20,9 @@ import {
   XCircle,
   Check,
   X,
-  Hourglass
+  Hourglass,
+  Maximize2,
+  Minimize2
 } from 'lucide-react'
 import { turnosApi, adminApi, exportApi } from '../../api'
 import type { Turno, Profesional } from '../../types'
@@ -119,6 +121,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     profColor: string
   } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return
+
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`)
+      })
+    } else {
+      document.exitFullscreen()
+    }
+  }
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
 
   const [showFilterPanel, setShowFilterPanel] = useState(false)
 
@@ -581,7 +606,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const dateString = `${year}-${month}-${day}`
 
     return (
-      <div className="flex flex-col h-auto md:h-full bg-white relative">
+      <div className="flex flex-col bg-white relative">
         <div className="grid grid-cols-[125px_1fr] border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white">
           <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center">
             <Clock className="h-4 w-4 text-[#8A93A8]" />
@@ -596,7 +621,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        <div className="flex-initial md:flex-1 overflow-visible md:overflow-y-auto bg-white relative">
+        <div className="flex-initial overflow-visible bg-white relative">
           <div className="relative">
             {/* Grid Lines */}
             {TIME_SLOTS.map((slot) => (
@@ -732,9 +757,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const openCount = weekDays.length
 
     return (
-      <div className="flex flex-col h-auto md:h-full bg-white relative">
-        <div className="overflow-x-auto flex-initial md:flex-1 flex flex-col">
-          <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex-initial md:flex-1 flex flex-col">
+      <div className="flex flex-col bg-white relative">
+        <div className="overflow-x-auto flex flex-col">
+          <div className="min-w-[700px] sm:min-w-[800px] md:min-w-[1000px] flex flex-col">
             {/* Header */}
             <div className="grid border-b border-[#E8E0D6]/60 sticky top-0 z-20 bg-white" style={{ gridTemplateColumns: `95px repeat(${openCount}, 1fr)` }}>
               <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center bg-white">
@@ -756,7 +781,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             </div>
 
             {/* Grid Body */}
-            <div className="relative bg-white flex-initial md:flex-1 overflow-visible md:overflow-y-auto">
+            <div className="relative bg-white flex-initial overflow-visible">
               <div className="relative">
                 {/* Grid Rows */}
                 {TIME_SLOTS.map((slot) => (
@@ -946,7 +971,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     const days = openDays
 
     return (
-      <div className="flex flex-col h-auto md:h-full bg-white relative">
+      <div className="flex flex-col bg-white relative">
         {/* Sticky day-of-week headers */}
         <div className="sticky top-0 z-10 bg-white border-b border-[#E8E0D6]/40" style={{ display: 'grid', gridTemplateColumns: `repeat(${openCount}, 1fr)` }}>
           {openDayLabels.map((day) => (
@@ -959,7 +984,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         </div>
 
         {/* Scrollable month grid */}
-        <div className="flex-initial md:flex-1 overflow-visible md:overflow-y-auto min-h-0 md:min-h-0">
+        <div className="flex-initial overflow-visible">
           <div className="gap-px bg-[#E8E0D6]/30 min-h-full" style={{ display: 'grid', gridTemplateColumns: `repeat(${openCount}, 1fr)` }}>
             {days.map((day, index) => {
               const dayAppointments = getAppointmentsForDate(day.date)
@@ -1079,7 +1104,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
     }
 
     return (
-      <div className="flex flex-col h-auto md:h-full bg-white overflow-visible md:overflow-y-auto p-4 md:p-6 space-y-4">
+      <div className="flex flex-col bg-white p-4 md:p-6 space-y-4">
         {dayAppointments.map((appt) => {
           const profColor = getProfColor(appt.profesional_id)
           const statusColor = getStatusColor(appt.estado)
@@ -1251,7 +1276,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div ref={containerRef} className="h-auto md:h-full flex flex-col font-sans min-h-0 overflow-visible md:overflow-hidden relative">
+    <div ref={containerRef} className={`h-auto flex flex-col font-sans relative ${isFullscreen ? 'bg-[#FAF9F6] p-8 overflow-y-auto w-full h-full' : ''}`}>
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 shrink-0">
         <div>
@@ -1350,6 +1375,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           >
             <Download className="w-4 h-4 text-[#8A93A8]" /> Exportar
           </button>
+          <button
+            onClick={toggleFullscreen}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-4 h-4 text-[#8A93A8]" />
+                <span>Salir Completa</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-4 h-4 text-[#8A93A8]" />
+                <span>Pantalla Completa</span>
+              </>
+            )}
+          </button>
         </div>
         {/* Patient search inside subheader */}
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -1397,9 +1438,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
       </div>
 
       {/* Main Area: Calendar Grid */}
-      <div className="flex-initial md:flex-1 flex flex-col min-h-0">
+      <div className="flex-initial flex flex-col">
         {/* Calendar Grid */}
-        <div className="flex-initial md:flex-1 bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-visible md:overflow-hidden relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+        <div className="flex-initial bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-visible relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
           {/* Navigation Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
             <div className="flex flex-wrap items-center gap-4">
@@ -1493,7 +1534,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="flex-initial md:flex-1 min-h-0 bg-white">
+          <div className="flex-initial bg-white">
             {viewType === 'day' && renderDayView()}
             {viewType === 'week' && renderWeekView()}
             {viewType === 'month' && renderMonthView()}

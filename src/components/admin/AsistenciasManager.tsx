@@ -43,6 +43,8 @@ export const AsistenciasManager: React.FC = () => {
   const [periodFilter, setPeriodFilter] = useState<"diario" | "semana" | "mes">("diario")
   const [breakdownType, setBreakdownType] = useState<"obra_social" | "servicio">("obra_social")
   const [currentMonthKey, setCurrentMonthKey] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12
 
   // Patient free-search (not restricted to scheduled patients)
   const [patientSearch, setPatientSearch] = useState("")
@@ -131,6 +133,10 @@ export const AsistenciasManager: React.FC = () => {
     }
   }, [selectedDate])
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedDate, searchTerm, selectedObraSocial, selectedEstado])
+
   const fetchMonthlyAppointments = async (targetDate: string) => {
     try {
       setLoading(true)
@@ -138,7 +144,7 @@ export const AsistenciasManager: React.FC = () => {
       const response = await turnosApi.listar({
         fecha_desde: startDate,
         fecha_hasta: endDate,
-        limit: 1000,
+        limit: 5000,
       })
       setAppointments(response.data || [])
     } catch (error) {
@@ -367,6 +373,12 @@ export const AsistenciasManager: React.FC = () => {
     const matchesEstado = selectedEstado === "TODOS" || appt.estado === selectedEstado
     return matchesSearch && matchesOS && matchesEstado
   })
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage)
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
@@ -736,7 +748,8 @@ export const AsistenciasManager: React.FC = () => {
               No se encontraron turnos con los filtros seleccionados para este día.
             </div>
           ) : (
-            <div className="overflow-x-auto border border-gray-100 rounded-xl">
+            <>
+              <div className="overflow-x-auto border border-gray-100 rounded-xl">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                   <tr>
@@ -749,7 +762,7 @@ export const AsistenciasManager: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs">
-                  {filteredAppointments.map((appt) => {
+                  {paginatedAppointments.map((appt) => {
                     const osName = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"
                     const isAttended = appt.estado === "Atendido"
                     const isAbsent = appt.estado === "Ausente"
@@ -832,6 +845,41 @@ export const AsistenciasManager: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3.5 border-t border-gray-100 bg-white">
+                <p className="text-xs text-gray-500">
+                  Mostrando <span className="font-semibold text-gray-700">{(currentPage - 1) * itemsPerPage + 1}</span> a{" "}
+                  <span className="font-semibold text-gray-700">{Math.min(currentPage * itemsPerPage, filteredAppointments.length)}</span> de{" "}
+                  <span className="font-semibold text-gray-700">{filteredAppointments.length}</span> pacientes
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="h-8 px-3 text-xs flex items-center gap-1 cursor-pointer disabled:opacity-50 bg-white text-gray-750 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    Anterior
+                  </Button>
+                  <span className="text-xs text-gray-400 font-medium px-2">
+                    Pág. {currentPage} de {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-8 px-3 text-xs flex items-center gap-1 cursor-pointer disabled:opacity-50 bg-white text-gray-750 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    Siguiente
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            )}
+            </>
           )}
         </Card>
       </div>

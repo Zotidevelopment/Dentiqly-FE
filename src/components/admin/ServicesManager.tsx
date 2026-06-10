@@ -75,7 +75,8 @@ export const ServicesManager: React.FC = () => {
     try {
       setLoading(true)
       const response = await adminApi.servicios.listar({
-        search: searchTerm
+        search: searchTerm,
+        limit: 100
       })
       setServices(response.data)
     } catch (error) {
