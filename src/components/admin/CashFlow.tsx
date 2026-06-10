@@ -15,6 +15,7 @@ import {
   FileText,
   DollarSign,
   Download,
+  Trash2,
 } from "lucide-react"
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -22,6 +23,7 @@ import { cuentaCorrienteApi } from '../../api/cuenta-corriente';
 import { exportApi } from '../../api/export';
 import { useToast } from '../../hooks/use-toast';
 import { NewMovementModal } from './cashflow/NewMovementModal';
+import { ConfirmationModal } from '../ui/ConfirmationModal';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
@@ -44,6 +46,7 @@ export default function CashFlow() {
     const [modalType, setModalType] = useState<'Ingreso' | 'Egreso'>('Ingreso');
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
+    const [confirmAction, setConfirmAction] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void } | null>(null);
     const itemsPerPage = 12;
 
     const fetchData = async () => {
@@ -71,6 +74,25 @@ export default function CashFlow() {
     const handleMovementRegistered = () => {
         fetchData();
         setIsModalOpen(false);
+    };
+
+    const handleDelete = (id: number) => {
+        setConfirmAction({
+            isOpen: true,
+            title: "Confirmar eliminación",
+            message: "¿Estás seguro de que deseas eliminar este movimiento de caja?",
+            onConfirm: async () => {
+                try {
+                    await cuentaCorrienteApi.eliminar(id);
+                    toast({ title: "Éxito", description: "El movimiento ha sido eliminado correctamente." });
+                    fetchData();
+                } catch (error) {
+                    console.error('Error deleting movement:', error);
+                    toast({ variant: "destructive", title: "Error", description: "No se pudo eliminar el movimiento." });
+                }
+                setConfirmAction(null);
+            }
+        });
     };
 
     const financeStats = useMemo(() => {
@@ -365,13 +387,14 @@ export default function CashFlow() {
                           { label: "Forma de Pago", sortable: true },
                           { label: "Tipo", sortable: true },
                           { label: "Importe", sortable: true },
+                          { label: "Acciones", sortable: false },
                         ].map((col, i) => (
                           <th key={i} style={{
-                            textAlign: "left", padding: "12px 16px",
+                            textAlign: col.label === "Acciones" ? "right" : "left", padding: "12px 16px",
                             fontSize: 11, fontWeight: 600, color: tokens.grayMuted,
                             textTransform: "uppercase", letterSpacing: "0.6px", whiteSpace: "nowrap",
                           }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: col.label === "Acciones" ? "flex-end" : "flex-start", gap: 4 }}>
                               {col.label}
                               {col.sortable && <ArrowUpDown size={11} />}
                             </div>
@@ -383,14 +406,14 @@ export default function CashFlow() {
                       {loading ? (
                         [...Array(5)].map((_, i) => (
                           <tr key={i} style={{ borderBottom: `0.5px solid ${tokens.grayRow}` }}>
-                            {[...Array(5)].map((_, j) => (
+                            {[...Array(6)].map((_, j) => (
                               <td key={j} style={{ padding: "11px 16px" }}><div style={{ width: 90, height: 11, borderRadius: 5, background: tokens.grayRow, animation: "pulse 1.5s infinite" }} /></td>
                             ))}
                           </tr>
                         ))
                       ) : paginatedMovimientos.length === 0 ? (
                         <tr>
-                          <td colSpan={5} style={{ textAlign: "center", padding: "56px 0" }}>
+                          <td colSpan={6} style={{ textAlign: "center", padding: "56px 0" }}>
                             <DollarSign size={36} color={tokens.grayBorder} style={{ margin: "0 auto 12px", display: "block" }} />
                             <p style={{ fontSize: 14, fontWeight: 500, color: tokens.grayMuted }}>No se registraron movimientos todavía</p>
                           </td>
@@ -452,6 +475,39 @@ export default function CashFlow() {
                                   {m.tipo === 'Ingreso' ? '+' : '-'} {formatCurrency(m.monto)}
                                 </div>
                               </td>
+
+                              {/* Acciones */}
+                              <td style={{ padding: "11px 16px", textAlign: "right" }}>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(m.id);
+                                  }}
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: tokens.redText,
+                                    cursor: "pointer",
+                                    padding: 6,
+                                    borderRadius: 8,
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    transition: "background 0.15s, transform 0.1s",
+                                  }}
+                                  onMouseEnter={e => {
+                                    e.currentTarget.style.background = tokens.redFaint;
+                                    e.currentTarget.style.transform = "scale(1.08)";
+                                  }}
+                                  onMouseLeave={e => {
+                                    e.currentTarget.style.background = "none";
+                                    e.currentTarget.style.transform = "none";
+                                  }}
+                                  title="Eliminar movimiento"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </td>
                             </tr>
                           )
                         })
@@ -490,6 +546,18 @@ export default function CashFlow() {
                     onClose={() => setIsModalOpen(false)}
                     onSuccess={handleMovementRegistered}
                     type={modalType}
+                />
+            )}
+
+            {confirmAction && (
+                <ConfirmationModal
+                    isOpen={confirmAction.isOpen}
+                    onClose={() => setConfirmAction(null)}
+                    onConfirm={() => { confirmAction.onConfirm(); }}
+                    title={confirmAction.title}
+                    message={confirmAction.message}
+                    confirmText="Confirmar"
+                    variant="destructive"
                 />
             )}
         </div>
