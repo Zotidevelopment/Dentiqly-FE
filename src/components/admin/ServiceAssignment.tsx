@@ -37,7 +37,7 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
       setLoading(true)
       const [servicesResponse, allServicesResponse] = await Promise.all([
         adminApi.profesionales.obtenerServicios(professional.id),
-        adminApi.servicios.listar({ estado: "Activo" }),
+        adminApi.servicios.listar({ estado: "Activo", limit: 100 }),
       ])
 
       setAssignedServices(servicesResponse.servicios)

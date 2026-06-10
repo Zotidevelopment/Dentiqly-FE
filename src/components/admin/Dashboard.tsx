@@ -191,7 +191,7 @@ export const Dashboard: React.FC<{
           fecha_hasta: hasta.toISOString().split('T')[0]
         }).catch(() => ({ data: [] })),
         profesionalesApi.listar({ estado: 'Activo', limit: 100 }).catch(() => ({ data: [] })),
-        serviciosApi.listar().catch(() => ({ data: [] })),
+        serviciosApi.listar({ limit: 100 }).catch(() => ({ data: [] })),
         pacientesApi.listar({ limit: 5000 }).catch(() => ({ data: [] }))
       ]);
 
