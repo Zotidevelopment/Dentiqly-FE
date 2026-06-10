@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { turnosApi, adminApi, recordatoriosApi } from '../../api'
-import type { Turno, Profesional } from '../../types'
+import type { Turno, Profesional, Servicio } from '../../types'
 import { Mail, X } from 'lucide-react'
 import { useToast } from "../../hooks/use-toast"
 
@@ -19,23 +19,29 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
         hora_inicio: appointment.hora_inicio,
         hora_fin: appointment.hora_fin,
         profesional_id: appointment.profesional_id,
+        servicio_id: appointment.servicio_id,
         estado: appointment.estado,
         observaciones: appointment.observaciones || ''
     })
     const [loading, setLoading] = useState(false)
     const [profesionales, setProfesionales] = useState<Profesional[]>([])
+    const [servicios, setServicios] = useState<Servicio[]>([])
     const [sendingReminder, setSendingReminder] = useState(false)
 
     useEffect(() => {
-        const fetchProfesionales = async () => {
+        const fetchData = async () => {
             try {
-                const response = await adminApi.profesionales.listar({ limit: 100 })
-                setProfesionales(response.data || [])
+                const [profResponse, servResponse] = await Promise.all([
+                    adminApi.profesionales.listar({ limit: 100 }),
+                    adminApi.servicios.listar({ estado: "Activo", limit: 100 })
+                ])
+                setProfesionales(profResponse.data || [])
+                setServicios(servResponse.data || [])
             } catch (error) {
-                console.error('Error fetching professionals:', error)
+                console.error('Error fetching data:', error)
             }
         }
-        fetchProfesionales()
+        fetchData()
     }, [])
 
 
@@ -96,6 +102,23 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                                 {profesionales.map((prof) => (
                                     <option key={prof.id} value={prof.id}>
                                         {prof.apellido}, {prof.nombre}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-sm font-bold text-gray-700">Servicio *</label>
+                            <select
+                                value={formData.servicio_id}
+                                onChange={(e) => setFormData({ ...formData, servicio_id: parseInt(e.target.value) })}
+                                className="w-full border-gray-200 rounded-xl p-3 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-medium text-gray-700"
+                                required
+                            >
+                                <option value="">Seleccionar servicio</option>
+                                {servicios.map((serv) => (
+                                    <option key={serv.id} value={serv.id}>
+                                        {serv.nombre}
                                     </option>
                                 ))}
                             </select>
