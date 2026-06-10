@@ -48,6 +48,47 @@ const getProfColor = (id?: number) => {
   return PROF_COLORS[id % PROF_COLORS.length]
 }
 
+const isColorDark = (color?: string): boolean => {
+  if (!color) return false
+  let cleanColor = color.trim().toLowerCase()
+
+  if (cleanColor.startsWith('var(')) {
+    const match = cleanColor.match(/,\s*(#[0-9a-f]{3,8}|rgb\([^)]+\))/)
+    if (match) {
+      cleanColor = match[1]
+    } else {
+      return true
+    }
+  }
+
+  if (cleanColor.startsWith('rgb')) {
+    const match = cleanColor.match(/\d+/g)
+    if (match && match.length >= 3) {
+      const r = parseInt(match[0], 10)
+      const g = parseInt(match[1], 10)
+      const b = parseInt(match[2], 10)
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000
+      return yiq < 150
+    }
+  }
+
+  if (cleanColor.startsWith('#')) {
+    let hex = cleanColor.substring(1)
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+    }
+    if (hex.length >= 6) {
+      const r = parseInt(hex.substring(0, 2), 16)
+      const g = parseInt(hex.substring(2, 4), 16)
+      const b = parseInt(hex.substring(4, 6), 16)
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000
+      return yiq < 150
+    }
+  }
+
+  return false
+}
+
 const getStatusIcon = (estado: string, sizeClass = "w-3 h-3") => {
   switch (estado) {
     case 'Atendido':
@@ -651,6 +692,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                   : (appt.servicio?.color || getProfColor(appt.profesional_id))
                 const statusIcon = getStatusIcon(appt.estado)
+                const isDark = isColorDark(apptColor)
 
                 return (
                   <div
@@ -695,7 +737,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       }}
                       className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
                       style={{
-                        backgroundColor: `${apptColor}15`,
+                        backgroundColor: apptColor,
                         border: `1.5px solid ${apptColor}`,
                       }}
                     >
@@ -727,15 +769,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                       <div className="relative z-10">
                         <div className="flex items-start justify-between mb-0.5">
-                          <div className={`font-bold capitalize leading-tight text-xs text-gray-900 pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
+                          <div className={`font-bold capitalize leading-tight text-xs pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'} ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             {appt.paciente?.nombre} {appt.paciente?.apellido}
                           </div>
                         </div>
-                        <div className="text-[10px] font-bold text-gray-600 leading-none flex gap-1">
+                        <div className={`text-[10px] font-bold leading-none flex gap-1 ${isDark ? 'text-white/90' : 'text-gray-600'}`}>
                           <span>{appt.hora_inicio.substring(0, 5)} - {appt.hora_fin.substring(0, 5)}</span>
                         </div>
                         {appt.height > 40 && (
-                          <div className="text-[9px] opacity-80 text-gray-500 truncate mt-1 font-medium">
+                          <div className={`text-[9px] truncate mt-1 font-medium ${isDark ? 'text-white/80' : 'text-gray-500 opacity-80'}`}>
                             {getInitials(appt.profesional)} • {appt.servicio?.nombre}
                           </div>
                         )}
@@ -822,6 +864,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                           ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                           : (appt.servicio?.color || getProfColor(appt.profesional_id))
                         const statusIcon = getStatusIcon(appt.estado)
+                        const isDark = isColorDark(apptColor)
 
                         return (
                           <div
@@ -866,7 +909,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                               }}
                               className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1 relative group"
                               style={{
-                                backgroundColor: `${apptColor}15`,
+                                backgroundColor: apptColor,
                                 border: `1px solid ${apptColor}`,
                               }}
                             >
@@ -898,11 +941,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
 
                               <div className="relative z-10">
                                 <div className="flex justify-between items-start">
-                                  <div className={`font-bold capitalize leading-tight text-[10px] text-gray-900 pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
+                                  <div className={`font-bold capitalize leading-tight text-[10px] pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'} ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     {appt.paciente?.nombre} {appt.paciente?.apellido}
                                   </div>
                                 </div>
-                                <div className="text-[9px] font-bold text-gray-600 leading-none mt-0.5">
+                                <div className={`text-[9px] font-bold leading-none mt-0.5 ${isDark ? 'text-white/90' : 'text-gray-600'}`}>
                                   {appt.hora_inicio.substring(0, 5)}-{appt.hora_fin.substring(0, 5)}
                                 </div>
                               </div>
@@ -1012,6 +1055,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         ? (STATUS_COLORS[appointment.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                         : (appointment.servicio?.color || getProfColor(appointment.profesional_id))
                       const statusIcon = getStatusIcon(appointment.estado)
+                      const isDark = isColorDark(apptColor)
                       return (
                         <div
                           key={appointment.id}
@@ -1039,10 +1083,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                             setHoveredAppt(null)
                           }}
                           className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
-                          style={{ backgroundColor: `${apptColor}15`, border: `1px solid ${apptColor}40` }}
+                          style={{ backgroundColor: apptColor, border: `1px solid ${apptColor}` }}
                         >
-                          <span className="font-bold shrink-0 text-gray-900">{appointment.hora_inicio.substring(0, 5)}</span>
-                          <span className="truncate font-semibold text-gray-700 pr-1">{appointment.paciente?.apellido}</span>
+                          <span className={`font-bold shrink-0 ${isDark ? 'text-white' : 'text-gray-900'}`}>{appointment.hora_inicio.substring(0, 5)}</span>
+                          <span className={`truncate font-semibold pr-1 ${isDark ? 'text-white/90' : 'text-gray-700'}`}>{appointment.paciente?.apellido}</span>
                           {statusIcon && (
                             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-60">
                               {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5" })}
