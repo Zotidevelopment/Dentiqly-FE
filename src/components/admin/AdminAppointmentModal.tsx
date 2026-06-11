@@ -124,6 +124,10 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
     }, [formData.servicio_id, formData.hora_inicio, servicios, horaFinManual])
 
     const handleNewPatientSubmit = async (data: any) => {
+        if (!formData.profesional_id || !formData.servicio_id) {
+            toast({ variant: "destructive", title: "Validación", description: "Por favor seleccione profesional y servicio antes de confirmar." })
+            return
+        }
         setLoading(true)
         try {
             const newPatient = await pacientesApi.crear(data)
@@ -150,7 +154,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (isNewPatient) return // Handled by PatientForm
+        if (isNewPatient) return
 
         setLoading(true)
         
@@ -239,6 +243,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     <PatientForm
                                         onPatientData={handleNewPatientSubmit}
                                         loading={loading}
+                                        embedded
                                     />
                                 </div>
                             ) : (
@@ -295,8 +300,10 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                         </div>
 
                         {/* Sección: Detalles Médicos */}
-                        {!isNewPatient && (
-                            <div className="space-y-6 animate-in fade-in duration-500">
+                        <div className="space-y-6 animate-in fade-in duration-500">
+                            {isNewPatient && (
+                                <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Detalles del Turno</label>
+                            )}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
                                         <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 px-1">Profesional *</label>
@@ -439,25 +446,27 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     </div>
                                 </div>
 
+                                {!isNewPatient && (
                                 <div className="flex gap-4 pt-4 sticky bottom-0 bg-white border-t border-gray-100 py-4">
-                                    <Button 
-                                        type="button" 
-                                        variant="outline" 
+                                    <Button
+                                        type="button"
+                                        variant="outline"
                                         onClick={onClose}
                                         className="flex-1 h-14 rounded-2xl font-black text-[12px] uppercase tracking-widest border-2"
                                     >
                                         Cancelar
                                     </Button>
-                                    <Button 
-                                        type="submit" 
-                                        disabled={loading} 
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
                                         className="flex-[2] h-14 rounded-2xl bg-[#2563FF] hover:bg-blue-700 text-white font-black text-[12px] uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:translate-y-0"
                                     >
                                         {loading ? 'Procesando...' : 'Confirmar Agendamiento'}
                                     </Button>
                                 </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </form>
                 </div>
             </div>
