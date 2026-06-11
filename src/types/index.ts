@@ -203,6 +203,7 @@ export interface Servicio {
   updatedAt: string
   subServicios?: SubServicio[]
   profesionales?: Profesional[]
+  color?: string
 }
 
 export interface SubServicio {
@@ -224,6 +225,7 @@ export interface CrearServicioData {
   precio_base: number
   duracion_estimada: number
   estado?: string
+  color?: string
 }
 
 export interface CrearSubServicioData {
@@ -242,6 +244,7 @@ export interface Turno {
   profesional_id: number
   servicio_id: number
   subservicio_id?: number
+  sucursal_id?: string | number
   fecha: string
   hora_inicio: string
   hora_fin: string
@@ -263,6 +266,7 @@ export interface CrearTurnoData {
   profesional_id: number
   servicio_id: number
   subservicio_id?: number
+  sucursal_id?: string | number
   fecha: string
   hora_inicio: string
   hora_fin: string
@@ -518,8 +522,10 @@ export interface HorariosResponse {
 }
 
 export interface HorariosDisponiblesResponse {
-  fecha: string
+  disponible: boolean
+  mensaje: string
   horarios_disponibles: string[]
+  fecha?: string
 }
 
 export interface MovimientoCuenta {

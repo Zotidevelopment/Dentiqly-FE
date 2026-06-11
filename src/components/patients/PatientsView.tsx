@@ -294,7 +294,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                     {[
                       { label: "Paciente", sortable: true },
                       { label: "Teléfono", sortable: true },
-                      { label: "Email", sortable: true },
+                      { label: "N° Afiliado", sortable: true },
                       { label: "Documento", sortable: true },
                       { label: "Edad / Sexo", sortable: true },
                       { label: "Estado", sortable: false },
@@ -390,7 +390,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                                   {patient.apellido}, {patient.nombre}
                                 </p>
                                 <p style={{ fontSize: 11.5, color: tokens.grayMuted, margin: "2px 0 0" }}>
-                                  {patient.obra_social?.nombre || "Sin obra social"}
+                                  {patient.obraSocial?.nombre || patient.obra_social_nombre_custom || "Sin obra social"}
                                 </p>
                               </div>
                             </div>
@@ -404,13 +404,10 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                             </div>
                           </td>
 
-                          {/* Email */}
+                          {/* Nº Afiliado */}
                           <td style={{ padding: "11px 16px" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: tokens.grayText }}>
-                              <Mail size={13} color={tokens.grayBorder} />
-                              <span style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {patient.email || <span style={{ color: tokens.grayBorder }}>—</span>}
-                              </span>
+                            <div style={{ fontSize: 13, color: tokens.grayText, fontWeight: 600, fontFamily: "Inter, monospace" }}>
+                              {patient.numero_afiliado || <span style={{ color: tokens.grayBorder, fontWeight: 400 }}>—</span>}
                             </div>
                           </td>
 
@@ -691,7 +688,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   <label style={labelStyle}>Obra Social</label>
                   <select
                     value={formData.obra_social_id || ""}
-                    onChange={e => setFormData({ ...formData, obra_social_id: e.target.value })}
+                    onChange={e => setFormData({ ...formData, obra_social_id: e.target.value ? Number(e.target.value) : undefined })}
                     style={{ ...inputStyle, borderColor: focusedField === "os" ? tokens.blue : tokens.grayBorder }}
                     onFocus={() => setFocusedField("os")}
                     onBlur={() => setFocusedField(null)}
@@ -765,7 +762,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   <label style={labelStyle}>Tipo de Facturación</label>
                   <select
                     value={formData.tipo_facturacion || "B"}
-                    onChange={e => setFormData({ ...formData, tipo_facturacion: e.target.value })}
+                    onChange={e => setFormData({ ...formData, tipo_facturacion: e.target.value as 'A' | 'B' | 'C' })}
                     style={{ ...inputStyle, borderColor: focusedField === "factu" ? tokens.blue : tokens.grayBorder }}
                     onFocus={() => setFocusedField("factu")}
                     onBlur={() => setFocusedField(null)}

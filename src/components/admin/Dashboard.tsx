@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Plus, Users, Check, X, Copy,
-  Clock, Stethoscope, Link2,
-  CalendarDays, Activity, BarChart3, ArrowRight,
-  TrendingUp, TrendingDown, ChevronLeft, ChevronRight,
-  ClipboardList, Sparkles, UserPlus,
+  Users, Check, X, Copy,
+  Link2,
+  CalendarDays, Activity, ArrowRight, ChevronLeft, ChevronRight,
+  ClipboardList, Sparkles
 } from 'lucide-react';
 import { turnosApi, profesionalesApi, serviciosApi, pacientesApi, sucursalesApi, obrasSocialesApi } from '../../api';
 import { configuracionApi } from '../../api/configuracion';
@@ -100,11 +99,10 @@ const MiniCalendar: React.FC<{ turnosDeHoy?: Turno[] }> = () => {
             <div key={`${wi}-${di}`} className="text-center py-1">
               {day !== null ? (
                 <span
-                  className={`inline-flex items-center justify-center w-7 h-7 text-xs font-medium rounded-lg transition-colors ${
-                    isToday(day)
+                  className={`inline-flex items-center justify-center w-7 h-7 text-xs font-medium rounded-lg transition-colors ${isToday(day)
                       ? 'bg-dental-secondary text-white font-bold'
                       : 'text-white/60 hover:bg-white/10 cursor-pointer'
-                  }`}
+                    }`}
                 >
                   {day}
                 </span>
@@ -119,17 +117,17 @@ const MiniCalendar: React.FC<{ turnosDeHoy?: Turno[] }> = () => {
   );
 };
 
-const timelineColors = [
-  { bg: 'bg-blue-100', border: 'border-l-blue-500', text: 'text-blue-700' },
-  { bg: 'bg-emerald-100', border: 'border-l-emerald-500', text: 'text-emerald-700' },
-  { bg: 'bg-violet-100', border: 'border-l-violet-500', text: 'text-violet-700' },
-  { bg: 'bg-amber-100', border: 'border-l-amber-500', text: 'text-amber-700' },
-  { bg: 'bg-rose-100', border: 'border-l-rose-500', text: 'text-rose-700' },
-  { bg: 'bg-cyan-100', border: 'border-l-cyan-500', text: 'text-cyan-700' },
-];
+// const timelineColors = [
+//   { bg: 'bg-blue-100', border: 'border-l-blue-500', text: 'text-blue-700' },
+//   { bg: 'bg-emerald-100', border: 'border-l-emerald-500', text: 'text-emerald-700' },
+//   { bg: 'bg-violet-100', border: 'border-l-violet-500', text: 'text-violet-700' },
+//   { bg: 'bg-amber-100', border: 'border-l-amber-500', text: 'text-amber-700' },
+//   { bg: 'bg-rose-100', border: 'border-l-rose-500', text: 'text-rose-700' },
+//   { bg: 'bg-cyan-100', border: 'border-l-cyan-500', text: 'text-cyan-700' },
+// ];
 
 export const Dashboard: React.FC<{
-  onNavigate?: (view: string) => void,
+  onNavigate?: (view: string, params?: Record<string, any>) => void,
   slug?: string
 }> = ({ onNavigate, slug }) => {
   const { user } = useAuth();
@@ -193,7 +191,7 @@ export const Dashboard: React.FC<{
           fecha_hasta: hasta.toISOString().split('T')[0]
         }).catch(() => ({ data: [] })),
         profesionalesApi.listar({ estado: 'Activo', limit: 100 }).catch(() => ({ data: [] })),
-        serviciosApi.listar().catch(() => ({ data: [] })),
+        serviciosApi.listar({ limit: 100 }).catch(() => ({ data: [] })),
         pacientesApi.listar({ limit: 5000 }).catch(() => ({ data: [] }))
       ]);
 
@@ -673,7 +671,10 @@ export const Dashboard: React.FC<{
                               <div className={`w-8 h-8 rounded-full ${avatarStyle.split(' ')[0].replace('/20', '/10')} ${avatarStyle.split(' ')[1]} flex items-center justify-center font-bold text-[10px] shrink-0`}>
                                 {initials}
                               </div>
-                              <span className="font-semibold text-[#0B1023] truncate max-w-[120px] text-[13px]">
+                              <span
+                                onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
+                                className="font-semibold text-[#2563FF] hover:text-[#1D4ED8] cursor-pointer hover:underline truncate max-w-[120px] text-[13px]"
+                              >
                                 {turno.paciente?.nombre} {turno.paciente?.apellido}
                               </span>
                             </div>
@@ -682,13 +683,12 @@ export const Dashboard: React.FC<{
                             <span className="text-[13px] text-gray-500 font-medium">{turno.servicio?.nombre || 'General'}</span>
                           </td>
                           <td className="py-3">
-                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              turno.estado === 'Atendido' ? 'bg-emerald-50 text-emerald-600' :
-                              turno.estado === 'Confirmado' || turno.estado === 'Confirmado por Whatsapp' ? 'bg-blue-50 text-blue-600' :
-                              turno.estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' :
-                              turno.estado === 'Ausente' ? 'bg-gray-100 text-gray-500' :
-                              'bg-red-50 text-red-600'
-                            }`}>
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${turno.estado === 'Atendido' ? 'bg-emerald-50 text-emerald-600' :
+                                turno.estado === 'Confirmado' || turno.estado === 'Confirmado por Whatsapp' ? 'bg-blue-50 text-blue-600' :
+                                  turno.estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' :
+                                    turno.estado === 'Ausente' ? 'bg-gray-100 text-gray-500' :
+                                      'bg-red-50 text-red-600'
+                              }`}>
                               {turno.estado}
                             </span>
                           </td>
@@ -770,7 +770,7 @@ export const Dashboard: React.FC<{
                     <div
                       key={turno.id}
                       className="bg-gray-50 rounded-xl p-3 border-l-[3px] transition-all hover:bg-gray-100 hover:scale-[1.02]"
-                      style={{ borderLeftColor: ['#60A5FA','#34D399','#A78BFA','#FBBF24','#FB7185','#22D3EE'][i % 6] }}
+                      style={{ borderLeftColor: ['#60A5FA', '#34D399', '#A78BFA', '#FBBF24', '#FB7185', '#22D3EE'][i % 6] }}
                     >
                       <div className="flex items-start justify-between">
                         <div>
@@ -778,7 +778,12 @@ export const Dashboard: React.FC<{
                             {turno.servicio?.nombre || 'Consulta'}
                           </p>
                           <p className="text-[11px] text-gray-500 mt-0.5">
-                            {turno.paciente?.nombre} {turno.paciente?.apellido}
+                            <span
+                              onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
+                              className="text-gray-500 hover:text-[#2563FF] cursor-pointer hover:underline font-medium"
+                            >
+                              {turno.paciente?.nombre} {turno.paciente?.apellido}
+                            </span>
                           </p>
                         </div>
                         <span className="text-[10px] font-bold text-dental-secondary bg-dental-secondary/5 px-1.5 py-0.5 rounded border border-dental-secondary/10">

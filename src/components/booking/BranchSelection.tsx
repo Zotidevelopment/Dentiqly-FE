@@ -25,7 +25,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({ onBranchSelect
         // En el flujo de reserva pública, el slug ya debería estar en la URL o resuelto
         // por el tenantResolver en el backend.
         const data = await sucursalesApi.listar();
-        setSucursales(data);
+        setSucursales(data as Sucursal[]);
       } catch (error) {
         console.error("Error al cargar sucursales:", error);
       } finally {

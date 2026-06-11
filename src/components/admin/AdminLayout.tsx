@@ -21,6 +21,7 @@ import {
   ChevronsRight,
   Clock,
   Sparkles,
+  CalendarCheck,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { canAccessView } from '../../config/permissions'
@@ -61,6 +62,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'calendar', label: 'Calendario', icon: Calendar },
         { id: 'patients', label: 'Pacientes', icon: UserCog },
+        { id: 'asistencias', label: 'Asistencias', icon: CalendarCheck },
       ]
     },
     {
@@ -342,7 +344,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto px-4 lg:px-8 py-6 no-scrollbar min-h-0">
-          <div className="max-w-[1600px] mx-auto animate-fade-in h-full flex flex-col">
+          <div className="max-w-[1600px] mx-auto animate-fade-in min-h-full flex flex-col">
             {children}
           </div>
         </main>

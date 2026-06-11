@@ -42,7 +42,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
 
   const handleCreate = () => {
     setFormData({
-      paciente_id: pacienteId,
+      paciente_id: String(pacienteId),
       fecha_inicio: new Date().toISOString().split("T")[0],
       estado: "Planificado",
     })
@@ -197,9 +197,9 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="sticky top-0 bg-white px-4 sm:px-6 py-3 sm:py-4 border-b flex justify-between items-center z-10 shrink-0">
               <h3 className="text-lg font-semibold text-gray-900">
                 {modalMode === "view"
                   ? "Ver Plan de Tratamiento"
@@ -207,13 +207,13 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                     ? "Nuevo Plan de Tratamiento"
                     : "Editar Plan de Tratamiento"}
               </h3>
-              <button onClick={() => setShowModal(false)}>
-                <X className="h-5 w-5" />
+              <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="h-5 w-5 text-gray-500" />
               </button>
             </div>
 
             {modalMode === "view" && selectedPlan ? (
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <p className="text-xs text-gray-500">Estado</p>
                   <span
@@ -222,7 +222,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                     {selectedPlan.estado.replace("_", " ")}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-gray-500">Fecha de Inicio</p>
                     <p className="font-medium">{new Date(selectedPlan.fecha_inicio).toLocaleDateString("es-ES")}</p>
@@ -252,8 +252,8 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                 )}
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio *</label>
                     <input
@@ -330,11 +330,11 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t">
-                  <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-4 border-t">
+                  <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                     Cancelar
                   </Button>
-                  <Button type="submit">{modalMode === "create" ? "Crear Plan" : "Guardar Cambios"}</Button>
+                  <Button type="submit" className="w-full sm:w-auto">{modalMode === "create" ? "Crear Plan" : "Guardar Cambios"}</Button>
                 </div>
               </form>
             )}

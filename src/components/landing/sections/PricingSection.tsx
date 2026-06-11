@@ -355,6 +355,7 @@ export const PricingSection: React.FC = () => {
               <button
                 onClick={() => setShowAllFeatures(false)}
                 className="w-10 h-10 rounded-full bg-[#F0F4FF] hover:bg-[#E0E8FF] flex items-center justify-center transition-colors"
+                aria-label="Cerrar modal"
               >
                 <X className="w-5 h-5 text-[#0B1023]/60" />
               </button>

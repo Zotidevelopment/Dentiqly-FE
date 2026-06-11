@@ -131,25 +131,25 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 sm:p-6" onClick={onClose}>
       <div 
-        className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-5xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="relative flex-1 overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-50 text-[#026498] flex items-center justify-center font-black text-lg">
+          <div className="px-5 py-5 sm:px-8 sm:py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-50 text-[#026498] flex items-center justify-center font-black text-base sm:text-lg">
                 {step}
               </div>
               <div>
-                <h3 className="text-xl font-black text-[#026498] tracking-tight">
+                <h3 className="text-base sm:text-xl font-black text-[#026498] tracking-tight">
                   {step === 1 && "Seleccionar Servicio"}
                   {step === 2 && "Seleccionar Profesional"}
                   {step === 3 && "Seleccionar Fecha y Hora"}
                   {step === 4 && "Datos del Paciente"}
                 </h3>
-                <p className="text-sm text-gray-400 font-medium">Paso {step} de 4</p>
+                <p className="text-xs sm:text-sm text-gray-400 font-medium">Paso {step} de 4</p>
               </div>
             </div>
           </div>
@@ -157,16 +157,16 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
           <button 
             type="button"
             onClick={onClose} 
-            className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600 z-20"
+            className="absolute top-4 right-4 sm:top-5 sm:right-6 p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600 z-20"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           <div className="max-w-4xl mx-auto">
             {/* Progress Bar */}
-            <div className="flex items-center justify-between relative mb-12 px-4">
+            <div className="flex items-center justify-between relative mb-8 sm:mb-12 px-2 sm:px-4">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-gray-100"></div>
               <div 
                 className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-[#026498] transition-all duration-500" 
@@ -180,12 +180,12 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
                 return (
                   <div key={s.id} className="relative z-10 flex flex-col items-center">
                     <div className={`
-                      w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                      w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300
                       ${isCompleted ? "bg-[#026498] text-white" : isActive ? "bg-white border-2 border-[#026498] text-[#026498] shadow-lg scale-110" : "bg-white border-2 border-gray-100 text-gray-300"}
                     `}>
-                      {isCompleted ? <Check size={18} strokeWidth={3} /> : <Icon size={18} />}
+                      {isCompleted ? <Check size={14} strokeWidth={3} /> : <Icon size={14} />}
                     </div>
-                    <span className={`absolute -bottom-7 text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${isActive ? "text-[#026498]" : "text-gray-300"}`}>
+                    <span className={`absolute -bottom-6 text-[9px] font-black uppercase tracking-widest whitespace-nowrap hidden sm:block ${isActive ? "text-[#026498]" : "text-gray-300"}`}>
                       {s.name}
                     </span>
                   </div>
@@ -197,10 +197,10 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
             {step > 1 && (
               <button 
                 onClick={() => setStep(step - 1)}
-                className="flex items-center gap-2 text-gray-400 hover:text-[#026498] font-black text-[10px] uppercase tracking-widest transition-all mb-8 group"
+                className="flex items-center gap-2 text-gray-400 hover:text-[#026498] font-black text-[10px] uppercase tracking-widest transition-all mb-4 sm:mb-8 group"
               >
-                <div className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50">
-                  <ArrowLeft size={12} strokeWidth={3} />
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50">
+                  <ArrowLeft size={10} strokeWidth={3} />
                 </div>
                 Volver
               </button>
@@ -349,22 +349,22 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
 
         {/* Footer Summary */}
         {(selectedService || selectedProfessional || selectedDateTime) && (
-          <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-6 items-center justify-center text-xs">
+          <div className="px-4 py-3 sm:px-8 sm:py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-3 sm:gap-6 items-center justify-center text-[10px] sm:text-xs shrink-0">
             {selectedService && (
-              <div className="flex items-center gap-2">
-                <Stethoscope size={14} className="text-gray-400" />
+              <div className="flex items-center gap-1.5">
+                <Stethoscope size={12} className="text-gray-400" />
                 <span className="font-bold text-gray-700">{selectedService.nombre}</span>
               </div>
             )}
             {selectedProfessional && (
-              <div className="flex items-center gap-2">
-                <User size={14} className="text-gray-400" />
+              <div className="flex items-center gap-1.5">
+                <User size={12} className="text-gray-400" />
                 <span className="font-bold text-gray-700">{selectedProfessional.nombre} {selectedProfessional.apellido}</span>
               </div>
             )}
             {selectedDateTime && (
-              <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-gray-400" />
+              <div className="flex items-center gap-1.5">
+                <Calendar size={12} className="text-gray-400" />
                 <span className="font-bold text-gray-700">
                   {new Date(selectedDateTime).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} a las {selectedDateTime.split('T')[1].substring(0, 5)}
                 </span>

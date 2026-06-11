@@ -8,15 +8,18 @@ import {
   PanelLeftClose,
   PanelLeft,
   ArrowRight,
+  Maximize2,
+  Minimize2,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
 
-import { Dashboard } from "../../admin/Dashboard"
-import { CalendarView } from "../../admin/CalendarView"
-import { PatientsView } from "../../patients/PatientsView"
-import { RemindersView } from "../../admin/RemindersView"
-import { BookingForm } from "../../booking/BookingForm"
+// Lazy load Playground components to optimize landing page bundle
+const Dashboard = React.lazy(() => import("../../admin/Dashboard").then(m => ({ default: m.Dashboard })))
+const CalendarView = React.lazy(() => import("../../admin/CalendarView").then(m => ({ default: m.CalendarView })))
+const PatientsView = React.lazy(() => import("../../patients/PatientsView").then(m => ({ default: m.PatientsView })))
+const RemindersView = React.lazy(() => import("../../admin/RemindersView").then(m => ({ default: m.RemindersView })))
+const BookingForm = React.lazy(() => import("../../booking/BookingForm").then(m => ({ default: m.BookingForm })))
 
 type TabType = "dashboard" | "calendar" | "patients" | "reminders" | "booking"
 
@@ -28,10 +31,52 @@ const tabs = [
   { id: "booking", label: "Booking", icon: <Clock size={16} /> },
 ] as const
 
-export const ProductShowcase: React.FC = () => {
+interface ProductShowcaseProps {
+  isFullscreen?: boolean
+  onToggleFullscreen?: (val: boolean) => void
+}
+
+export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
+  isFullscreen: isFullscreenProp,
+  onToggleFullscreen,
+}) => {
+  const [localFullscreen, setLocalFullscreen] = useState(false)
+  const isFullscreen = isFullscreenProp !== undefined ? isFullscreenProp : localFullscreen
+  const setIsFullscreen = onToggleFullscreen || setLocalFullscreen
+
   const [activeTab, setActiveTab] = useState<TabType>("dashboard")
+  const [navParams, setNavParams] = useState<Record<string, any>>({})
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleNavigate = (view: TabType, params?: Record<string, any>) => {
+    setActiveTab(view)
+    setNavParams(params || {})
+  }
+
+  // Scroll lock and ESC key to exit fullscreen
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.classList.add("overflow-hidden", "demo-viewer-open")
+    } else {
+      document.body.classList.remove("overflow-hidden", "demo-viewer-open")
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden", "demo-viewer-open")
+    }
+  }, [isFullscreen])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isFullscreen, setIsFullscreen])
 
   return (
     <section
@@ -63,12 +108,17 @@ export const ProductShowcase: React.FC = () => {
         {/* Embedded Demo */}
         <motion.div
           ref={containerRef}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={isFullscreen ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          whileInView={isFullscreen ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="bg-white rounded-[2rem] shadow-2xl shadow-black/[0.08] border border-gray-200 overflow-hidden"
+          className={
+            isFullscreen
+              ? "fixed inset-0 bg-white z-[9999] overflow-hidden flex flex-col rounded-none border-none"
+              : "bg-white rounded-[2rem] shadow-2xl shadow-black/[0.08] border border-gray-200 overflow-hidden"
+          }
           style={{ overscrollBehavior: "contain" }}
+          data-lenis-prevent
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Header Bar */}
@@ -78,6 +128,7 @@ export const ProductShowcase: React.FC = () => {
                 onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-1.5 rounded-lg hidden md:flex items-center justify-center"
                 title={isSidebarCollapsed ? "Mostrar Menú" : "Ocultar Menú"}
+                aria-label={isSidebarCollapsed ? "Mostrar Menú" : "Ocultar Menú"}
               >
                 {isSidebarCollapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
               </button>
@@ -87,10 +138,30 @@ export const ProductShowcase: React.FC = () => {
                 Modo Demo
               </span>
             </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+                title={isFullscreen ? "Salir de Pantalla Completa" : "Pantalla Completa"}
+                aria-label={isFullscreen ? "Salir de Pantalla Completa" : "Pantalla Completa"}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize2 size={15} />
+                    <span className="hidden sm:inline">Salir Pantalla Completa</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 size={15} />
+                    <span className="hidden sm:inline">Pantalla Completa</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* App Frame Content */}
-          <div className="flex h-[600px] sm:h-[650px] md:h-[700px] overflow-hidden">
+          <div className={isFullscreen ? "flex flex-1 overflow-hidden" : "flex h-[600px] sm:h-[650px] md:h-[700px] overflow-hidden"}>
             {/* Sidebar */}
             {!isSidebarCollapsed && (
               <div className="w-48 bg-[#FAFCFF] border-r border-gray-200 p-4 hidden md:flex flex-col gap-1 shrink-0">
@@ -153,17 +224,25 @@ export const ProductShowcase: React.FC = () => {
                     transition={{ duration: 0.2 }}
                     className="h-full"
                   >
-                    {activeTab === "dashboard" && (
-                      <Dashboard onNavigate={(view) => setActiveTab(view as TabType)} slug="demo" />
-                    )}
-                    {activeTab === "calendar" && <CalendarView />}
-                    {activeTab === "patients" && <PatientsView />}
-                    {activeTab === "reminders" && <RemindersView />}
-                    {activeTab === "booking" && (
-                      <div className="h-[600px] sm:h-[550px] md:h-[600px] overflow-hidden rounded-2xl border border-gray-150 bg-[#f8fafc] [&>div]:h-full [&>div]:bg-transparent">
-                        <BookingForm />
+                    <React.Suspense fallback={
+                      <div className="h-full flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0047FF]"></div>
                       </div>
-                    )}
+                    }>
+                      {activeTab === "dashboard" && (
+                        <Dashboard onNavigate={(view, params) => handleNavigate(view as TabType, params)} slug="demo" />
+                      )}
+                      {activeTab === "calendar" && <CalendarView onNavigate={(view, params) => handleNavigate(view as TabType, params)} />}
+                      {activeTab === "patients" && (
+                        <PatientsView initialPatientId={navParams.patientId} initialSearchTerm={navParams.searchTerm} />
+                      )}
+                      {activeTab === "reminders" && <RemindersView />}
+                      {activeTab === "booking" && (
+                        <div className="h-[600px] sm:h-[550px] md:h-[600px] overflow-hidden rounded-2xl border border-gray-150 bg-[#f8fafc] [&>div]:h-full [&>div]:bg-transparent">
+                          <BookingForm />
+                        </div>
+                      )}
+                    </React.Suspense>
                   </motion.div>
                 </AnimatePresence>
               </div>

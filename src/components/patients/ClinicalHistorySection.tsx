@@ -47,7 +47,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
 
   const handleCreate = () => {
     setFormData({
-      paciente_id: pacienteId,
+      paciente_id: String(pacienteId),
       fecha: new Date().toISOString().split("T")[0],
     })
     setModalMode("create")
@@ -181,9 +181,9 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="sticky top-0 bg-white px-4 sm:px-6 py-3 sm:py-4 border-b flex justify-between items-center z-10">
               <h3 className="text-lg font-semibold text-gray-900">
                 {modalMode === "view"
                   ? "Ver Historia Clínica"
@@ -191,13 +191,13 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                     ? "Nueva Historia Clínica"
                     : "Editar Historia Clínica"}
               </h3>
-              <button onClick={() => setShowModal(false)}>
-                <X className="h-5 w-5" />
+              <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="h-5 w-5 text-gray-500" />
               </button>
             </div>
 
             {modalMode === "view" && selectedHistorial ? (
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <p className="text-xs text-gray-500">Fecha</p>
                   <p className="font-medium">{new Date(selectedHistorial.fecha).toLocaleDateString("es-ES")}</p>
@@ -252,7 +252,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                 )}
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
                   <input
@@ -344,11 +344,11 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t">
-                  <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-2.5 sm:gap-3 pt-4 border-t">
+                  <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                     Cancelar
                   </Button>
-                  <Button type="submit">{modalMode === "create" ? "Crear Registro" : "Guardar Cambios"}</Button>
+                  <Button type="submit" className="w-full sm:w-auto">{modalMode === "create" ? "Crear Registro" : "Guardar Cambios"}</Button>
                 </div>
               </form>
             )}

@@ -29,6 +29,8 @@ export const FooterSection: React.FC = () => {
             <img
               src="/assets/dentiqly-logo.png"
               alt="Dentiqly - Software de gestión dental para clínicas odontológicas"
+              width={104}
+              height={32}
               className="h-8 w-auto mb-6 brightness-0 invert"
             />
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">

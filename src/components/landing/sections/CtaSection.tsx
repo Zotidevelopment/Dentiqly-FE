@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { Mail, Phone, Send } from "lucide-react"
+import { Mail, Send } from "lucide-react"
 import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -19,6 +19,8 @@ export const CtaSection: React.FC = () => {
     mensaje: "",
   })
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -49,9 +51,32 @@ export const CtaSection: React.FC = () => {
     return () => ctx.revert()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSent(true)
+    setLoading(true)
+    setErrorMessage(null)
+
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+      const response = await fetch(`${apiBaseUrl}/saas/contacto`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || "Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.")
+      }
+
+      setSent(true)
+    } catch (err: any) {
+      setErrorMessage(err.message || "Error de conexión con el servidor.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -131,7 +156,7 @@ export const CtaSection: React.FC = () => {
                 </div>
                 <span className="text-base font-medium">hola@dentiqly.com</span>
               </a>
-              <a
+              {/* <a
                 href="tel:+5491100000000"
                 className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
               >
@@ -139,7 +164,7 @@ export const CtaSection: React.FC = () => {
                   <Phone className="w-5 h-5" />
                 </div>
                 <span className="text-base font-medium">+54 9 11 0000-0000</span>
-              </a>
+              </a> */}
             </div>
 
             <Link
@@ -173,10 +198,11 @@ export const CtaSection: React.FC = () => {
                   <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Work Email Address */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D]  tracking- mb-2">
+                      <label htmlFor="email-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking- mb-2">
                         Correo electrónico de trabajo*
                       </label>
                       <input
+                        id="email-input"
                         type="email"
                         required
                         value={formData.email}
@@ -189,10 +215,11 @@ export const CtaSection: React.FC = () => {
                     {/* First Name & Last Name */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="nombre-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Nombre*
                         </label>
                         <input
+                          id="nombre-input"
                           type="text"
                           required
                           value={formData.nombre}
@@ -202,10 +229,11 @@ export const CtaSection: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="apellido-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Apellido*
                         </label>
                         <input
+                          id="apellido-input"
                           type="text"
                           required
                           value={formData.apellido}
@@ -219,10 +247,11 @@ export const CtaSection: React.FC = () => {
                     {/* Company Name & Phone Number */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="clinica-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Nombre de la clinica*
                         </label>
                         <input
+                          id="clinica-input"
                           type="text"
                           required
                           value={formData.clinica}
@@ -232,10 +261,11 @@ export const CtaSection: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                        <label htmlFor="telefono-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                           Número de telefono
                         </label>
                         <input
+                          id="telefono-input"
                           type="tel"
                           value={formData.telefono}
                           onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -247,10 +277,11 @@ export const CtaSection: React.FC = () => {
 
                     {/* Reason for Interest */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D]  tracking mb-2">
+                      <label htmlFor="motivo-select" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                         Motivo de interés*
                       </label>
                       <select
+                        id="motivo-select"
                         required
                         value={formData.motivo}
                         onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
@@ -267,10 +298,11 @@ export const CtaSection: React.FC = () => {
 
                     {/* How Can We Help */}
                     <div>
-                      <label className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
+                      <label htmlFor="mensaje-textarea" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
                         ¿En qué podemos ayudarte?
                       </label>
                       <textarea
+                        id="mensaje-textarea"
                         value={formData.mensaje}
                         onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
                         rows={3}
@@ -279,11 +311,18 @@ export const CtaSection: React.FC = () => {
                       />
                     </div>
 
+                    {errorMessage && (
+                      <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl font-medium text-left">
+                        ⚠️ {errorMessage}
+                      </div>
+                    )}
+
                     <button
                       type="submit"
-                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold  hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full"
+                      disabled={loading}
+                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      Enviar
+                      {loading ? "Enviando..." : "Enviar"}
                     </button>
                   </form>
                 </>

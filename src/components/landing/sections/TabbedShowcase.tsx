@@ -195,6 +195,8 @@ export const TabbedShowcase: React.FC = () => {
                       src={current.image}
                       alt={`Dentiqly - ${current.label}: ${current.title}`}
                       loading="lazy"
+                      width={1024}
+                      height={764}
                       className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     />
                   </div>
