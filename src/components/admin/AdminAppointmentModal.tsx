@@ -465,7 +465,6 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     </Button>
                                 </div>
                                 )}
-                            </div>
                         </div>
                     </form>
                 </div>
