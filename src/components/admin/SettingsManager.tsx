@@ -140,7 +140,7 @@ export const SettingsManager: React.FC = () => {
       const updatedData = { ...generalData, clinic_google_maps: mapsUrl }
       const entries = Object.entries(updatedData)
       for (const [key, value] of entries) {
-        let tipo = "string"
+        let tipo: "string" | "number" | "boolean" | "json" = "string"
         if (key === "online_booking_enabled" || key === "agenda_turnos_semanales_habilitado") {
           tipo = "boolean"
         } else if (key === "asistencias_limite_sesiones") {
@@ -358,7 +358,7 @@ export const SettingsManager: React.FC = () => {
 
                   {/* Límite de Sesiones por Ciclo */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "12px 16px", background: tokens.grayBg, borderRadius: 12, border: `1px solid ${tokens.grayBorder}`, transition: "all 0.15s", marginTop: 12 }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyBetween: "true", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <div>
                         <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0 }}>Límite de sesiones por ciclo de asistencia</p>
                         <p style={{ fontSize: 11, color: tokens.grayMuted, margin: "2px 0 0 0" }}>

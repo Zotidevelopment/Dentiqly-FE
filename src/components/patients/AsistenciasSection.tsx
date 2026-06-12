@@ -12,7 +12,8 @@ import {
   Loader2,
   Calendar,
   CheckCircle,
-  FileText
+  FileText,
+  X
 } from "lucide-react"
 import { asistenciasApi, AsistenciaCiclo } from "../../api/asistencias"
 import { useToast } from "../../hooks/use-toast"
@@ -74,9 +75,6 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
     if (!window.confirm("¿Está seguro de que desea finalizar y archivar este ciclo? Se iniciará un nuevo ciclo de asistencias desde 0.")) return
 
     try {
-      await asistenciasApi.archivarCycleManual(id) // wait, backend endpoint has archivarCicloManual
-      // wait, the client is asistenciasApi.archivarCicloManual
-      // let's call the correct one: asistenciasApi.archivarCicloManual(id)
       await asistenciasApi.archivarCicloManual(id)
       toast({
         title: "Ciclo archivado",
