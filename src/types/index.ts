@@ -204,6 +204,7 @@ export interface Servicio {
   subServicios?: SubServicio[]
   profesionales?: Profesional[]
   color?: string
+  permite_turnos_semanales?: boolean
 }
 
 export interface SubServicio {

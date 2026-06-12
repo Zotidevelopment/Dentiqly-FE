@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { Plus, UserPlus, Search, X, Check } from 'lucide-react'
@@ -6,6 +7,7 @@ import { PatientForm } from '../booking/PatientForm'
 import { turnosApi, profesionalesApi, pacientesApi, serviciosApi } from '../../api'
 import type { Profesional, Paciente, Servicio } from '../../types'
 import { useToast } from "../../hooks/use-toast"
+import { configuracionApi } from '../../api/configuracion'
 
 interface AdminAppointmentModalProps {
     onClose: () => void
@@ -44,17 +46,63 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
     const [horaFinManual, setHoraFinManual] = useState(false)
     const [conflictingTurnos, setConflictingTurnos] = useState<any[]>([])
 
+    // Recurrence states
+    const [semanalesHabilitado, setSemanalesHabilitado] = useState(false)
+    const [isRecurrent, setIsRecurrent] = useState(false)
+    const [recurrentWeeks, setRecurrentWeeks] = useState(4)
+    const [selectedWeekdays, setSelectedWeekdays] = useState<number[]>([])
+
+    const WEEKDAYS = [
+        { label: 'Lun', value: 1 },
+        { label: 'Mar', value: 2 },
+        { label: 'Mié', value: 3 },
+        { label: 'Jue', value: 4 },
+        { label: 'Vie', value: 5 },
+        { label: 'Sáb', value: 6 },
+        { label: 'Dom', value: 0 }
+    ]
+
+    const selectedService = servicios.find(s => s.id === formData.servicio_id)
+    const isRecurrentAllowed = semanalesHabilitado || selectedService?.permite_turnos_semanales
+
+    useEffect(() => {
+        if (isRecurrent && selectedWeekdays.length === 0 && formData.fecha) {
+            const dayOfWeek = new Date(formData.fecha + "T12:00:00").getDay()
+            setSelectedWeekdays([dayOfWeek])
+        }
+    }, [isRecurrent, formData.fecha])
+
+    const generateRecurrentDates = (startDateStr: string, weekdays: number[], weeks: number): string[] => {
+        const dates: string[] = []
+        if (weekdays.length === 0 || weeks <= 0) return [startDateStr]
+        const start = new Date(startDateStr + "T12:00:00")
+        for (let i = 0; i < weeks * 7; i++) {
+            const current = new Date(start)
+            current.setDate(start.getDate() + i)
+            const dayOfWeek = current.getDay()
+            if (weekdays.includes(dayOfWeek)) {
+                dates.push(current.toISOString().split('T')[0])
+            }
+        }
+        return dates
+    }
+
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                const [profesionalesRes, pacientesRes, serviciosRes] = await Promise.all([
+                const [profesionalesRes, pacientesRes, serviciosRes, settingsRes] = await Promise.all([
                     profesionalesApi.listar({ limit: 100, estado: 'Activo' }),
                     pacientesApi.listar({ limit: 50 }),
-                    serviciosApi.listar({ limit: 100 })
+                    serviciosApi.listar({ limit: 100 }),
+                    configuracionApi.listar()
                 ])
                 setProfesionales(profesionalesRes.data || [])
                 setPacientes(pacientesRes.data || [])
                 setServicios(serviciosRes.data || [])
+                const settingSemanales = settingsRes.find(s => s.clave === 'agenda_turnos_semanales_habilitado')
+                if (settingSemanales) {
+                    setSemanalesHabilitado(settingSemanales.valor === true || settingSemanales.valor === 'true')
+                }
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
@@ -127,17 +175,34 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
         setLoading(true)
         try {
             const newPatient = await pacientesApi.crear(data)
-            await turnosApi.crear({
-                paciente_id: newPatient.id,
-                profesional_id: formData.profesional_id,
-                servicio_id: formData.servicio_id,
-                fecha: formData.fecha,
-                hora_inicio: formData.hora_inicio,
-                hora_fin: formData.hora_fin,
-                estado: formData.estado,
-                observaciones: formData.observaciones,
-                sobre_turno: formData.sobre_turno
-            })
+            if (isRecurrent) {
+                const dates = generateRecurrentDates(formData.fecha, selectedWeekdays, recurrentWeeks)
+                await turnosApi.crearBulk({
+                    paciente_id: newPatient.id,
+                    profesional_id: formData.profesional_id,
+                    servicio_id: formData.servicio_id,
+                    fechas: dates,
+                    hora_inicio: formData.hora_inicio,
+                    hora_fin: formData.hora_fin,
+                    estado: formData.estado,
+                    observaciones: formData.observaciones,
+                    sobre_turno: formData.sobre_turno
+                })
+                toast({ title: "Éxito", description: `Paciente creado y ${dates.length} turnos semanales programados.` })
+            } else {
+                await turnosApi.crear({
+                    paciente_id: newPatient.id,
+                    profesional_id: formData.profesional_id,
+                    servicio_id: formData.servicio_id,
+                    fecha: formData.fecha,
+                    hora_inicio: formData.hora_inicio,
+                    hora_fin: formData.hora_fin,
+                    estado: formData.estado,
+                    observaciones: formData.observaciones,
+                    sobre_turno: formData.sobre_turno
+                })
+                toast({ title: "Éxito", description: "Paciente creado y turno programado." })
+            }
             onCreate()
             onClose()
         } catch (error: any) {
@@ -151,39 +216,58 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (isNewPatient) return // Handled by PatientForm
-
         setLoading(true)
-        
         if (!formData.paciente_id || !formData.profesional_id || !formData.servicio_id) {
             toast({ variant: "destructive", title: "Validación", description: "Por favor complete todos los campos requeridos." })
             setLoading(false)
             return
         }
-
         try {
-            await turnosApi.crear({
-                paciente_id: formData.paciente_id,
-                profesional_id: formData.profesional_id,
-                servicio_id: formData.servicio_id,
-                fecha: formData.fecha,
-                hora_inicio: formData.hora_inicio,
-                hora_fin: formData.hora_fin,
-                estado: formData.estado,
-                observaciones: formData.observaciones,
-                sobre_turno: formData.sobre_turno
-            })
+            if (isRecurrent) {
+                const dates = generateRecurrentDates(formData.fecha, selectedWeekdays, recurrentWeeks)
+                if (dates.length === 0) {
+                    toast({ variant: "destructive", title: "Validación", description: "Seleccione al menos un día para la recurrencia." })
+                    setLoading(false)
+                    return
+                }
+                await turnosApi.crearBulk({
+                    paciente_id: formData.paciente_id,
+                    profesional_id: formData.profesional_id,
+                    servicio_id: formData.servicio_id,
+                    fechas: dates,
+                    hora_inicio: formData.hora_inicio,
+                    hora_fin: formData.hora_fin,
+                    estado: formData.estado,
+                    observaciones: formData.observaciones,
+                    sobre_turno: formData.sobre_turno
+                })
+                toast({ title: "Éxito", description: `${dates.length} turnos semanales programados.` })
+            } else {
+                await turnosApi.crear({
+                    paciente_id: formData.paciente_id,
+                    profesional_id: formData.profesional_id,
+                    servicio_id: formData.servicio_id,
+                    fecha: formData.fecha,
+                    hora_inicio: formData.hora_inicio,
+                    hora_fin: formData.hora_fin,
+                    estado: formData.estado,
+                    observaciones: formData.observaciones,
+                    sobre_turno: formData.sobre_turno
+                })
+                toast({ title: "Éxito", description: "Turno programado exitosamente." })
+            }
             onCreate()
             onClose()
         } catch (error: any) {
             console.error('Error creating appointment:', error)
-            const errorMessage = error.response?.data?.error || 'Error al crear el turno. Verifique solapamientos o habilitar Sobre Turno.'
-            toast({ variant: "destructive", title: "Error", description: errorMessage || "Error inesperado" })
+            const errorMessage = error.response?.data?.error || 'Error al crear el/los turnos. Verifique solapamientos o habilitar Sobre Turno.'
+            toast({ variant: "destructive", title: "Error", description: errorMessage })
         } finally {
             setLoading(false)
         }
     }
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-[#0A0F2D]/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-500">
             <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-300">
                 
@@ -412,6 +496,71 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Opciones de agendado semanal recurrentes */}
+                                    {isRecurrentAllowed && (
+                                        <div className="space-y-4 pt-4 border-t border-blue-100/50">
+                                            <div 
+                                                className="flex items-center gap-3 p-3 bg-white/60 rounded-xl cursor-pointer hover:bg-white transition-all"
+                                                onClick={() => setIsRecurrent(!isRecurrent)}
+                                            >
+                                                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isRecurrent ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-200 bg-white'}`}>
+                                                    {isRecurrent && <Check size={12} strokeWidth={4} />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className="text-xs font-bold text-gray-800">Repetir turno semanalmente (Recurrente)</span>
+                                                </div>
+                                            </div>
+
+                                            {isRecurrent && (
+                                                <div className="p-4 bg-white rounded-xl border border-blue-100/80 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-wider text-gray-400">Días de repetición</label>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {WEEKDAYS.map((day) => {
+                                                                const isSelected = selectedWeekdays.includes(day.value)
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        key={day.value}
+                                                                        onClick={() => {
+                                                                            if (isSelected) {
+                                                                                setSelectedWeekdays(selectedWeekdays.filter(v => v !== day.value))
+                                                                            } else {
+                                                                                setSelectedWeekdays([...selectedWeekdays, day.value])
+                                                                            }
+                                                                        }}
+                                                                        className={`h-9 px-3 rounded-lg text-xs font-bold transition-all ${
+                                                                            isSelected 
+                                                                                ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/10' 
+                                                                                : 'bg-gray-50 text-gray-650 hover:bg-gray-150 hover:text-gray-900'
+                                                                        }`}
+                                                                    >
+                                                                        {day.label}
+                                                                    </button>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <div>
+                                                            <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block">Cantidad de semanas</label>
+                                                            <span className="text-xs text-gray-400">Duración del ciclo recurrente</span>
+                                                        </div>
+                                                        <Input
+                                                            type="number"
+                                                            min={1}
+                                                            max={24}
+                                                            value={recurrentWeeks}
+                                                            onChange={(e) => setRecurrentWeeks(e.target.value ? Number(e.target.value) : 4)}
+                                                            className="w-20 text-center font-bold h-10 rounded-lg bg-gray-50 border-gray-150 focus:bg-white"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -461,6 +610,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                     </form>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }

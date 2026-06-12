@@ -50,7 +50,9 @@ export const SettingsManager: React.FC = () => {
     clinic_address: "",
     clinic_phone: "",
     clinic_google_maps: "",
-    online_booking_enabled: true
+    online_booking_enabled: true,
+    agenda_turnos_semanales_habilitado: false,
+    asistencias_limite_sesiones: 10
   })
 
   const DAY_LABELS: Record<string, string> = {
@@ -98,6 +100,10 @@ export const SettingsManager: React.FC = () => {
         }
         if (s.clave === "online_booking_enabled") {
           generalFields.online_booking_enabled = s.valor === true || s.valor === "true"
+        } else if (s.clave === "agenda_turnos_semanales_habilitado") {
+          generalFields.agenda_turnos_semanales_habilitado = s.valor === true || s.valor === "true"
+        } else if (s.clave === "asistencias_limite_sesiones") {
+          generalFields.asistencias_limite_sesiones = s.valor ? Number(s.valor) : 10
         } else if (s.clave in generalFields) {
           generalFields[s.clave] = s.valor
         }
@@ -134,7 +140,12 @@ export const SettingsManager: React.FC = () => {
       const updatedData = { ...generalData, clinic_google_maps: mapsUrl }
       const entries = Object.entries(updatedData)
       for (const [key, value] of entries) {
-        const tipo = key === "online_booking_enabled" ? "boolean" : "string"
+        let tipo = "string"
+        if (key === "online_booking_enabled" || key === "agenda_turnos_semanales_habilitado") {
+          tipo = "boolean"
+        } else if (key === "asistencias_limite_sesiones") {
+          tipo = "number"
+        }
         await configuracionApi.crear({ clave: key, valor: value, tipo: tipo, categoria: "general" })
       }
       toast({ title: "Éxito", description: "Configuración general actualizada" })
@@ -313,6 +324,56 @@ export const SettingsManager: React.FC = () => {
                         }} />
                       </div>
                     </label>
+                  </div>
+
+                  {/* Agendado Semanal / Recurrente */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: generalData.agenda_turnos_semanales_habilitado ? tokens.blueFaint : tokens.grayBg, borderRadius: 12, border: `1px solid ${generalData.agenda_turnos_semanales_habilitado ? tokens.blue + "33" : tokens.grayBorder}`, transition: "all 0.15s", marginTop: 12 }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0 }}>Habilitar turnos semanales recurrentes</p>
+                      <p style={{ fontSize: 11, color: tokens.grayMuted, margin: "2px 0 0 0" }}>
+                        {generalData.agenda_turnos_semanales_habilitado ? "Permite agendar turnos repetidos el mismo horario en múltiples días de la semana" : "El agendado será individual por turno"}
+                      </p>
+                    </div>
+                    <label style={{ position: "relative", display: "inline-flex", alignItems: "center", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={generalData.agenda_turnos_semanales_habilitado}
+                        onChange={e => setGeneralData({...generalData, agenda_turnos_semanales_habilitado: e.target.checked})}
+                        style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+                      />
+                      <div style={{
+                        width: 44, height: 24, borderRadius: 12,
+                        background: generalData.agenda_turnos_semanales_habilitado ? tokens.blue : "#D1D5DB",
+                        transition: "background 0.2s", position: "relative"
+                      }}>
+                        <div style={{
+                          width: 20, height: 20, borderRadius: 10,
+                          background: "white", position: "absolute", top: 2,
+                          left: generalData.agenda_turnos_semanales_habilitado ? 22 : 2,
+                          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+                        }} />
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Límite de Sesiones por Ciclo */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "12px 16px", background: tokens.grayBg, borderRadius: 12, border: `1px solid ${tokens.grayBorder}`, transition: "all 0.15s", marginTop: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyBetween: "true", justifyContent: "space-between" }}>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0 }}>Límite de sesiones por ciclo de asistencia</p>
+                        <p style={{ fontSize: 11, color: tokens.grayMuted, margin: "2px 0 0 0" }}>
+                          Cantidad de sesiones asistidas tras las cuales se archivará el ciclo y se reiniciará el conteo
+                        </p>
+                      </div>
+                      <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={generalData.asistencias_limite_sesiones}
+                        onChange={e => setGeneralData({...generalData, asistencias_limite_sesiones: e.target.value ? Number(e.target.value) : 10})}
+                        style={{ ...inputStyle, width: 80, padding: "6px 10px", fontSize: 13, textAlign: "center" }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

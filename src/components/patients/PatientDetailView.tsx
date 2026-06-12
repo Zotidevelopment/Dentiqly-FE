@@ -19,6 +19,7 @@ import { FilesSection } from "./FilesSection"
 import { CuentaCorrienteSection } from "./CuentaCorrienteSection"
 import { RemindersSection } from "./RemindersSection"
 import { TurnosSection } from "./TurnosSection"
+import { AsistenciasSection } from "./AsistenciasSection"
 import { turnosApi } from "../../api"
 
 interface PatientDetailViewProps {
@@ -31,7 +32,7 @@ interface PatientDetailViewProps {
   getPhotoUrl: (patient: Paciente) => string | null
 }
 
-type TabType = "informacion" | "historia" | "odontograma" | "prescripciones" | "tratamientos" | "archivos" | "cuenta_corriente" | "recordatorios" | "turnos"
+type TabType = "informacion" | "historia" | "odontograma" | "prescripciones" | "tratamientos" | "archivos" | "cuenta_corriente" | "recordatorios" | "turnos" | "asistencias"
 
 export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   patient,
@@ -96,6 +97,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
     { id: "archivos" as TabType, label: "Archivos" },
     { id: "cuenta_corriente" as TabType, label: "Cuenta Corriente" },
     { id: "recordatorios" as TabType, label: "Recordatorios" },
+    { id: "asistencias" as TabType, label: "Asistencias" },
     { id: "turnos" as TabType, label: "Turnos" },
   ]
 
@@ -295,7 +297,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Obra Social</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">
-                      {patient.obra_social_nombre_custom || patient.obraSocial?.nombre || "Particular"}
+                      {patient.obra_social_nombre_custom || patient.obraSocial?.nombre || "PARTICULARES"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -332,6 +334,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           {activeTab === "archivos" && <FilesSection pacienteId={patient.id} />}
           {activeTab === "cuenta_corriente" && <CuentaCorrienteSection pacienteId={patient.id} />}
           {activeTab === "recordatorios" && <RemindersSection pacienteId={patient.id} />}
+          {activeTab === "asistencias" && <AsistenciasSection pacienteId={patient.id} />}
           {activeTab === "turnos" && <TurnosSection pacienteId={patient.id} />}
         </div>
       </div>

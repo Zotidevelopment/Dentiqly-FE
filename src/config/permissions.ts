@@ -8,7 +8,7 @@ export interface RolePermissions {
 export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
   superadmin: {
     allowedViews: [
-      'dashboard', 'calendar', 'patients', 'asistencias',
+      'dashboard', 'calendar', 'patients', 'asistencias', 'protocolos',
       'professionals', 'services', 'obras-sociales',
       'liquidaciones', 'debtors', 'cashflow',
       'usuarios', 'feriados', 'ausencias', 'sucursales', 'recordatorios', 'settings',
@@ -17,7 +17,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
   },
   admin: {
     allowedViews: [
-      'dashboard', 'calendar', 'patients', 'asistencias',
+      'dashboard', 'calendar', 'patients', 'asistencias', 'protocolos',
       'professionals', 'services', 'obras-sociales',
       'liquidaciones', 'debtors', 'cashflow',
       'usuarios', 'feriados', 'ausencias', 'sucursales', 'recordatorios', 'settings',
@@ -26,13 +26,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
   },
   odontologo: {
     allowedViews: [
-      'dashboard', 'calendar', 'patients', 'asistencias',
+      'dashboard', 'calendar', 'patients', 'asistencias', 'protocolos',
     ],
     defaultView: 'calendar',
   },
   recepcionista: {
     allowedViews: [
-      'dashboard', 'calendar', 'patients', 'asistencias',
+      'dashboard', 'calendar', 'patients', 'asistencias', 'protocolos',
       'cashflow',
       'recordatorios',
     ],

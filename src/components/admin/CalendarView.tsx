@@ -1327,7 +1327,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           <h1 className="text-[22px] font-semibold text-[#0B1023] tracking-[-0.3px]">Calendario de Turnos</h1>
           <p className="text-[13px] text-[#8A93A8] mt-1">Gestión de agenda y citas</p>
         </div>
-        <Button onClick={() => setShowBookingModal(true)} className="bg-dental-secondary hover:opacity-90 text-white rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-sm text-[13px] font-bold transition-all">
+        <Button onClick={() => {
+          setNewAppointmentData({ fecha: '', hora_inicio: '', sobre_turno: false });
+          setShowNewModal(true);
+        }} className="bg-dental-secondary hover:opacity-90 text-white rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-sm text-[13px] font-bold transition-all">
           <Plus className="w-4 h-4" /> Nuevo Turno
         </Button>
       </div>
@@ -1574,7 +1577,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   })}
                 </>
               )}
-              <button onClick={() => setShowNewModal(true)} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
+              <button onClick={() => {
+                setNewAppointmentData({ fecha: '', hora_inicio: '', sobre_turno: true });
+                setShowNewModal(true);
+              }} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
             </div>
           </div>
 

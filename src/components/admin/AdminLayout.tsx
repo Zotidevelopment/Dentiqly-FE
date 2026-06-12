@@ -63,6 +63,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         { id: 'calendar', label: 'Calendario', icon: Calendar },
         { id: 'patients', label: 'Pacientes', icon: UserCog },
         { id: 'asistencias', label: 'Asistencias', icon: CalendarCheck },
+        { id: 'protocolos', label: 'Protocolos', icon: FileText },
       ]
     },
     {

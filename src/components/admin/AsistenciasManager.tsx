@@ -335,7 +335,7 @@ export const AsistenciasManager: React.FC = () => {
   const obraSocialCounts: Record<string, number> = {}
   periodAppointments.forEach((appt) => {
     if (appt.estado === "Atendido") {
-      const name = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"
+      const name = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
       obraSocialCounts[name] = (obraSocialCounts[name] || 0) + 1
     }
   })
@@ -357,7 +357,7 @@ export const AsistenciasManager: React.FC = () => {
   const activeStats = breakdownType === "obra_social" ? obraSocialStats : serviceStats
 
   const allObrasSociales = Array.from(
-    new Set(appointments.map((appt) => appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"))
+    new Set(appointments.map((appt) => appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"))
   ).sort()
 
   const filteredAppointments = dailyAppointments.filter((appt) => {
@@ -368,7 +368,7 @@ export const AsistenciasManager: React.FC = () => {
     const patientPhone = appt.paciente?.telefono || ""
     const profName = `${appt.profesional?.nombre || ""} ${appt.profesional?.apellido || ""}`.toLowerCase()
     const matchesSearch = patientName.includes(term) || patientDoc.includes(term) || patientEmail.includes(term) || patientPhone.includes(term) || profName.includes(term)
-    const patientOS = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"
+    const patientOS = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
     const matchesOS = selectedObraSocial === "TODAS" || patientOS === selectedObraSocial
     const matchesEstado = selectedEstado === "TODOS" || appt.estado === selectedEstado
     return matchesSearch && matchesOS && matchesEstado
@@ -502,7 +502,11 @@ export const AsistenciasManager: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-gray-800">{p.nombre} {p.apellido}</div>
-                      {p.numero_documento && <div className="text-[10px] text-gray-400">DNI {p.numero_documento}</div>}
+                      <div className="text-[10px] text-gray-400">
+                        {p.numero_documento && `DNI ${p.numero_documento}`}
+                        {p.numero_documento && " • "}
+                        {p.obraSocial?.nombre || p.obra_social_nombre_custom || "PARTICULARES"}
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -597,9 +601,11 @@ export const AsistenciasManager: React.FC = () => {
             </div>
             <div>
               <span className="font-bold text-[#0B1023]">{selectedFreePatient.nombre} {selectedFreePatient.apellido}</span>
-              {selectedFreePatient.numero_documento && (
-                <span className="text-gray-400 text-xs ml-2">DNI {selectedFreePatient.numero_documento}</span>
-              )}
+              <div className="text-gray-400 text-xs mt-0.5">
+                {selectedFreePatient.numero_documento && `DNI ${selectedFreePatient.numero_documento}`}
+                {selectedFreePatient.numero_documento && " • "}
+                {selectedFreePatient.obraSocial?.nombre || selectedFreePatient.obra_social_nombre_custom || "PARTICULARES"}
+              </div>
               {freePatientTurno && (
                 <span className="ml-3 bg-[#EEF3FF] text-[#2563FF] text-[10px] font-bold px-2 py-0.5 rounded-full">
                   Turno {freePatientTurno.hora_inicio.substring(0, 5)} hs — {freePatientTurno.estado}
@@ -715,8 +721,8 @@ export const AsistenciasManager: React.FC = () => {
                   className="bg-transparent text-gray-700 font-medium focus:outline-none cursor-pointer"
                 >
                   <option value="TODAS">Todas las Obras Sociales</option>
-                  <option value="Particular">Particular</option>
-                  {allObrasSociales.filter((os) => os !== "Particular").map((os) => (
+                  <option value="PARTICULARES">PARTICULARES</option>
+                  {allObrasSociales.filter((os) => os !== "Particular" && os !== "PARTICULARES").map((os) => (
                     <option key={os} value={os}>{os}</option>
                   ))}
                 </select>
@@ -763,7 +769,7 @@ export const AsistenciasManager: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs">
                   {paginatedAppointments.map((appt) => {
-                    const osName = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "Particular"
+                    const osName = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
                     const isAttended = appt.estado === "Atendido"
                     const isAbsent = appt.estado === "Ausente"
                     return (
@@ -781,7 +787,7 @@ export const AsistenciasManager: React.FC = () => {
                           )}
                         </td>
                         <td className="px-4 py-3.5 whitespace-nowrap">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${osName === "Particular" ? "bg-gray-100 text-gray-600" : "bg-blue-50 text-blue-700"}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${osName === "PARTICULARES" ? "bg-gray-100 text-gray-600" : "bg-blue-50 text-blue-700"}`}>
                             {osName}
                           </span>
                         </td>

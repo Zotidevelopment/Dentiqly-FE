@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 import { turnosApi, adminApi, recordatoriosApi } from '../../api'
@@ -64,7 +65,7 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
         }
     }
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
             <div className="bg-white rounded-[2rem] sm:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-gray-100 animate-in fade-in zoom-in-95 duration-300">
                 <div className="px-5 py-5 sm:px-8 sm:pt-8 sm:pb-5 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
@@ -221,6 +222,7 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                 </form>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }

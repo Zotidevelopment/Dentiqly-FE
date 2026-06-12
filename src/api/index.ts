@@ -18,6 +18,8 @@ export { sucursalesApi } from "./sucursales"
 export { usuariosClinicaApi } from "./usuarios-clinica"
 export type { UsuarioClinica, CrearUsuarioClinicaData, ActualizarUsuarioClinicaData } from "./usuarios-clinica"
 export { exportApi } from "./export"
+export { protocolosApi } from "./protocolos"
+export { asistenciasApi } from "./asistencias"
 
 // Re-exportar el cliente para uso directo si es necesario
 export { apiClient } from "../lib/api-client"

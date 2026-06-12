@@ -113,20 +113,36 @@ export default function CashFlow() {
         let monthIncome = 0;
         let monthEgress = 0;
 
+        let dayCashIncome = 0;
+        let dayCashEgress = 0;
+        let weekCashIncome = 0;
+        let weekCashEgress = 0;
+
         movimientos.forEach(m => {
             const amount = parseFloat(m.monto) || 0;
             const mDate = parseLocalDate(m.fecha);
+            const isCash = (m.forma_pago || "").toLowerCase() === 'efectivo';
 
             // Check Day
             if (mDate.toDateString() === today.toDateString()) {
-                if (m.tipo === 'Ingreso') dayIncome += amount;
-                else dayEgress += amount;
+                if (m.tipo === 'Ingreso') {
+                    dayIncome += amount;
+                    if (isCash) dayCashIncome += amount;
+                } else {
+                    dayEgress += amount;
+                    if (isCash) dayCashEgress += amount;
+                }
             }
 
             // Check Week
             if (mDate >= startOfWeek && mDate <= today) {
-                if (m.tipo === 'Ingreso') weekIncome += amount;
-                else weekEgress += amount;
+                if (m.tipo === 'Ingreso') {
+                    weekIncome += amount;
+                    if (isCash) weekCashIncome += amount;
+                } else {
+                    weekEgress += amount;
+                    if (isCash) weekCashEgress += amount;
+                }
             }
 
             // Check Month
@@ -139,7 +155,15 @@ export default function CashFlow() {
         return {
             day: { income: dayIncome, egress: dayEgress, balance: dayIncome - dayEgress },
             week: { income: weekIncome, egress: weekEgress, balance: weekIncome - weekEgress },
-            month: { income: monthIncome, egress: monthEgress, balance: monthIncome - monthEgress }
+            month: { income: monthIncome, egress: monthEgress, balance: monthIncome - monthEgress },
+            cash: {
+                dayBalance: dayCashIncome - dayCashEgress,
+                weekBalance: weekCashIncome - weekCashEgress,
+                dayIncome: dayCashIncome,
+                dayEgress: dayCashEgress,
+                weekIncome: weekCashIncome,
+                weekEgress: weekCashEgress
+            }
         };
     }, [movimientos]);
 
@@ -317,6 +341,34 @@ export default function CashFlow() {
                     <span style={{ color: financeStats.month.balance >= 0 ? tokens.greenText : tokens.redText }}>
                       {financeStats.month.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.month.balance)}
                     </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Efectivo en Caja */}
+              <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `1.5px solid ${tokens.green}`, boxShadow: "0 4px 12px rgba(16, 185, 129, 0.08)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: tokens.greenText, textTransform: "uppercase" }}>Efectivo en Caja</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: tokens.greenText, background: tokens.greenFaint, padding: "2px 8px", borderRadius: 6 }}>Efectivo</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Efectivo Hoy:</span>
+                    <span style={{ fontWeight: 700, color: financeStats.cash.dayBalance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.cash.dayBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.dayBalance)}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: tokens.grayText }}>Efectivo Semana:</span>
+                    <span style={{ fontWeight: 700, color: financeStats.cash.weekBalance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.cash.weekBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.weekBalance)}
+                    </span>
+                  </div>
+                  <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 6, display: "flex", flexDirection: "column", gap: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: tokens.grayMuted }}>
+                      <span>Ingresos/Egresos Hoy:</span>
+                      <span>+{formatCurrency(financeStats.cash.dayIncome)} / -{formatCurrency(financeStats.cash.dayEgress)}</span>
+                    </div>
                   </div>
                 </div>
               </div>

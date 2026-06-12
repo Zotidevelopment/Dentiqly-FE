@@ -16,6 +16,7 @@ import { SucursalesManager } from './SucursalesManager'
 import { SettingsManager } from './SettingsManager'
 import { UsersManager } from './UsersManager'
 import { AsistenciasManager } from './AsistenciasManager'
+import { ProtocolosManager } from './ProtocolosManager'
 import { apiClient } from '../../lib/api-client'
 import { useAuth } from '../../hooks/useAuth'
 import { getPermissionsForRole, canAccessView } from '../../config/permissions'
@@ -260,6 +261,8 @@ export const AdminApp: React.FC = () => {
         return <RemindersView />
       case 'asistencias':
         return <AsistenciasManager />
+      case 'protocolos':
+        return <ProtocolosManager />
       case 'sucursales':
         return <SucursalesManager />
       case 'usuarios':
