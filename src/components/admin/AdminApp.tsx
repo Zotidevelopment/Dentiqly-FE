@@ -15,6 +15,8 @@ import { AusenciasManager } from './AusenciasManager'
 import { SucursalesManager } from './SucursalesManager'
 import { SettingsManager } from './SettingsManager'
 import { UsersManager } from './UsersManager'
+import { AsistenciasManager } from './AsistenciasManager'
+import { ProtocolosManager } from './ProtocolosManager'
 import { apiClient } from '../../lib/api-client'
 import { useAuth } from '../../hooks/useAuth'
 import { getPermissionsForRole, canAccessView } from '../../config/permissions'
@@ -156,7 +158,9 @@ export const AdminApp: React.FC = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [showTrialModal, setShowTrialModal] = useState(false)
-  const [forceActivation, setForceActivation] = useState(false)
+  const [forceActivation, setForceActivation] = useState(() => {
+    return window.location.search.includes('activate=true');
+  });
 
   const handleViewChange = (view: string) => {
     if (canAccessView(user?.role, view)) {
@@ -212,7 +216,14 @@ export const AdminApp: React.FC = () => {
   }
 
   if (subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) {
-    return <OnboardingWizard clinicaNombre={subscriptionStatus?.nombre} onComplete={() => window.location.reload()} />
+    const isActivationFlow = window.location.search.includes('activate=true') || subscriptionStatus?.subscription_status !== 'pending_payment';
+    return (
+      <OnboardingWizard
+        clinicaNombre={subscriptionStatus?.nombre}
+        onComplete={() => window.location.reload()}
+        initialStep={isActivationFlow ? 4 : 1}
+      />
+    );
   }
 
   const renderCurrentView = () => {
@@ -248,6 +259,10 @@ export const AdminApp: React.FC = () => {
         return <ObrasSocialesManager />
       case 'recordatorios':
         return <RemindersView />
+      case 'asistencias':
+        return <AsistenciasManager />
+      case 'protocolos':
+        return <ProtocolosManager />
       case 'sucursales':
         return <SucursalesManager />
       case 'usuarios':

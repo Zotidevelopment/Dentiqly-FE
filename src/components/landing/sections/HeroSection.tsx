@@ -2,196 +2,202 @@ import React, { useRef, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { ThinArrow } from "../components/ThinArrow"
+import { CheckCircle2, Star } from "lucide-react"
 
-const useSectionMouse = (sectionRef: React.RefObject<HTMLElement | null>) => {
-  const [mouse, setMouse] = useState({ x: 0, y: 0 })
+const AnimatedCounter: React.FC<{ end: number; suffix: string; label: string; delay: number }> = ({ end, suffix, label, delay }) => {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
-      setMouse({ x, y })
-    }
-
-    const onLeave = () => setMouse({ x: 0, y: 0 })
-
-    el.addEventListener("mousemove", onMove)
-    el.addEventListener("mouseleave", onLeave)
-    return () => {
-      el.removeEventListener("mousemove", onMove)
-      el.removeEventListener("mouseleave", onLeave)
-    }
-  }, [sectionRef])
-
-  return mouse
-}
-
-const FloatingCard: React.FC<{
-  src: string
-  alt: string
-  side: "left" | "right"
-  delay?: number
-  mouse: { x: number; y: number }
-}> = ({ src, alt, side, delay = 0, mouse }) => {
-  const isLeft = side === "left"
-
-  const baseRotateY = isLeft ? 16 : -16
-  const baseRotateX = 4
-  const rotateY = baseRotateY + mouse.x * (isLeft ? 14 : 10)
-  const rotateX = baseRotateX + -mouse.y * (isLeft ? 10 : 14)
-  const translateX = mouse.x * (isLeft ? 8 : -8)
-  const translateY = mouse.y * (isLeft ? -6 : 6)
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const duration = 2000
+          const startTime = Date.now()
+          const animate = () => {
+            const elapsed = Date.now() - startTime
+            const progress = Math.min(elapsed / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setCount(Math.floor(eased * end))
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          setTimeout(animate, delay)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [end, delay])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: isLeft ? -80 : 80, y: 40 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
-      transition={{ duration: 0.9, delay: delay + 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="relative group w-full"
-      style={{ perspective: "1200px" }}
-    >
-      <motion.div
-        animate={{ y: [0, -12, 0] }}
-        transition={{
-          duration: isLeft ? 5 : 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: isLeft ? 0 : 1.5,
-        }}
-      >
-        <div
-          style={{
-            transform: `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateX(${translateX}px) translateY(${translateY}px)`,
-            transformStyle: "preserve-3d",
-            transition: "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-        >
-          <div
-            className="absolute -inset-6 rounded-[28px] blur-2xl transition-opacity duration-700"
-            style={{
-              opacity: 0.2 + Math.abs(mouse.x) * 0.15 + Math.abs(mouse.y) * 0.1,
-              background: `radial-gradient(ellipse at ${50 + mouse.x * 20}% ${50 + mouse.y * 20}%, rgba(37,99,255,0.3), transparent 70%)`,
-              transform: "translateZ(-40px)",
-            }}
-          />
-
-          <img
-            src={src}
-            alt={alt}
-            loading="eager"
-            className="relative z-10 w-full h-auto rounded-2xl"
-            style={{
-              transform: "translateZ(40px)",
-              filter: `drop-shadow(${-mouse.x * 10}px ${-mouse.y * 10 + 20}px 40px rgba(0,0,0,0.15))`,
-              transition: "filter 0.25s ease-out",
-            }}
-          />
-
-          <div
-            className="absolute inset-0 rounded-2xl z-20 pointer-events-none"
-            style={{
-              background: `radial-gradient(circle at ${50 + mouse.x * 30}% ${50 + mouse.y * 30}%, rgba(255,255,255,0.08), transparent 60%)`,
-              transform: "translateZ(50px)",
-            }}
-          />
-        </div>
-      </motion.div>
-    </motion.div>
+    <div ref={ref} className="text-center px-4">
+      <div className="text-2xl sm:text-3xl font-bold text-[#0047FF] tracking-tight">
+        +{count}{suffix}
+      </div>
+      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mt-1.5">{label}</div>
+    </div>
   )
 }
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenDemo?: () => void
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
   const sectionRef = useRef<HTMLElement>(null)
-  const mouse = useSectionMouse(sectionRef)
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-16 lg:pt-24 lg:pb-12"
+      className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-[#FAFCFF]"
     >
-      {/* ── Background image ── */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/assets/hero/fondo.png"
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover"
+      {/* ── Background ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Soft, professional gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#EEF4FF] via-white to-[#FAFCFF]" />
+
+        {/* Soft grid lines (extremely subtle) */}
+        <div
+          className="absolute inset-0 opacity-[0.09]"
+          style={{
+            backgroundImage: `linear-gradient(to right, #0047FF 1px, transparent 1px), linear-gradient(to bottom, #0047FF 1px, transparent 1px)`,
+            backgroundSize: "64px 64px",
+          }}
         />
+
+        {/* Very soft glow behind content */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0047FF]/5 rounded-full blur-[100px]" />
       </div>
 
-      {/* ── Main 3-col layout ── */}
-      <div className="relative z-10 w-full max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-4 xl:gap-6">
+      {/* ── Content ── */}
+      <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
 
-        {/* Left Card */}
-        <div className="hidden lg:flex lg:w-[28%] xl:w-[30%] justify-center items-center">
-          <FloatingCard
-            src="/assets/hero/tarjeta-izquierda.png"
-            alt="Dentiqly - Agenda dental con turnos y citas de pacientes"
-            side="left"
-            delay={0}
-            mouse={mouse}
-          />
-        </div>
+        {/* Credibility badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="mb-6"
+        >
+          <span className="inline-flex items-center gap-2 bg-[#0047FF]/[0.05] border border-[#0047FF]/10 text-[#0047FF] px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+            <Star className="w-3.5 h-3.5 fill-[#0047FF] text-[#0047FF]" />
+            Software de gestión odontológica en Argentina
+          </span>
+        </motion.div>
 
-        {/* Center Text */}
-        <div className="flex-shrink-0 w-full lg:w-auto lg:max-w-[580px] xl:max-w-[650px] flex flex-col items-center text-center px-2 py-4">
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[2.6rem] sm:text-[3.2rem] md:text-[3.8rem] lg:text-[3.4rem] xl:text-[4rem] font-semibold tracking-[-3px] leading-[1.05] text-[#0A0F2D] mb-6"
+        {/* Main headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[4rem] font-bold tracking-[-1.5px] leading-[1.12] text-[#0A0F2D] mb-6 max-w-[850px]"
+        >
+          Simplificá la gestión de tu <span className="text-[#0047FF]">clínica dental</span>
+        </motion.h1>
+
+        {/* Sub-headline — pain + benefit */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-[620px] mb-8"
+        >
+          Centralizá y automatizá tu agenda de turnos, fichas de pacientes y recordatorios automáticos. Dentiqly simplifica tu administración diaria para que te enfoques en la salud de tus pacientes.
+        </motion.p>
+
+        {/* Double CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.35 }}
+          className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full mb-5"
+        >
+          <Link
+            to="/register"
+            className="group bg-[#0047FF] text-white px-8 py-3.5 rounded-full text-[15px] font-semibold shadow-lg shadow-[#0047FF]/15 hover:shadow-xl hover:shadow-[#0047FF]/25 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 justify-center min-w-[220px]"
           >
-            <span className="inline-block whitespace-nowrap">Software dental</span>
-            <br />
-            todo <span className="text-[#2563FF]">en uno</span>
-          </motion.h1>
+            <span>Probar gratis por 14 días</span>
+            <ThinArrow size={18} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+          </Link>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[15px] sm:text-[17px] md:text-[18px] text-gray-500 leading-relaxed max-w-[500px] mb-10"
+          <a
+            href="#funcionalidades"
+            onClick={(e) => {
+              e.preventDefault()
+              if (onOpenDemo) {
+                onOpenDemo()
+              } else {
+                document.querySelector("#funcionalidades")?.scrollIntoView({ behavior: "smooth" })
+              }
+            }}
+            className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-8 py-3.5 rounded-full text-[15px] font-semibold transition-all duration-200 flex items-center gap-2 justify-center min-w-[200px]"
           >
-            Gestiona historias clínicas y turnos con una fluidez que parece magia. Sin complicaciones.
-          </motion.p>
+            <span>Ver demostración en vivo</span>
+          </a>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full"
-          >
-            <a 
-              href="mailto:hola@dentiqly.com?subject=Solicitud de Demo - Dentiqly&body=Hola equipo de Dentiqly,%0D%0A%0D%0AMe gustaría agendar una demo personalizada para conocer más sobre la plataforma.%0D%0A%0D%0AMuchas gracias!" 
-              className="btn-wayflyer-secondary min-w-[165px]"
-            >
-              Ver demo
-            </a>
-            <Link to="/register" className="btn-wayflyer-primary min-w-[165px] gap-2">
-              Comenzar gratis
-              <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
-            </Link>
-          </motion.div>
-        </div>
+        {/* No credit card notice */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="flex items-center gap-1.5 text-xs text-gray-400 mb-12"
+        >
+          <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+          Sin compromisos ni tarjeta de crédito
+        </motion.div>
 
-        {/* Right Card */}
-        <div className="hidden lg:flex lg:w-[28%] xl:w-[30%] justify-center items-center">
-          <FloatingCard
-            src="/assets/hero/tarjeta-derecha.png"
-            alt="Dentiqly - Ficha de paciente con historial clínico y odontograma"
-            side="right"
-            delay={0.15}
-            mouse={mouse}
-          />
-        </div>
+        {/* Product Screenshot */}
+        {/* <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 1, 0.5, 1] }}
+          className="relative w-full max-w-[1000px] mx-auto mb-14"
+        >
+          <div className="relative rounded-xl overflow-hidden border border-gray-200/50 shadow-[0_12px_40px_rgba(0,0,0,0.06)] bg-white"> */}
+        {/* Browser chrome bar */}
+        {/* <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+              </div>
+              <div className="flex-1 flex justify-center">
+                <div className="bg-white border border-gray-150 rounded px-3 py-0.5 text-[10px] text-gray-400 font-mono">
+                  app.dentiqly.com
+                </div>
+              </div>
+            </div>
+            <img
+              src="/assets/screenshots/dashboard.png"
+              alt="Dentiqly - Dashboard de gestión odontológica"
+              loading="eager"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        </motion.div> */}
 
-
+        {/* Stats counters */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.65 }}
+          className="flex flex-wrap items-center justify-center divide-y sm:divide-y-0 sm:divide-x divide-gray-150 gap-y-4 sm:gap-y-0 w-full max-w-2xl mx-auto py-4"
+        >
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={50} suffix="" label="Clínicas activas" delay={0} />
+          </div>
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={200} suffix="" label="Profesionales" delay={150} />
+          </div>
+          <div className="w-full sm:w-1/3">
+            <AnimatedCounter end={40} suffix="%" label="Menos ausencias" delay={300} />
+          </div>
+        </motion.div>
       </div>
-
     </section>
   )
 }

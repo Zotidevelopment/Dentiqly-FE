@@ -150,12 +150,12 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-3">
-                <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={() => handleOpenModal('Deuda')}>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+                <Button className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto justify-center" onClick={() => handleOpenModal('Deuda')}>
                     <Plus className="h-4 w-4 mr-2" />
                     Registrar Deuda
                 </Button>
-                <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleOpenModal('Ingreso')}>
+                <Button className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto justify-center" onClick={() => handleOpenModal('Ingreso')}>
                     <Plus className="h-4 w-4 mr-2" />
                     Registrar Ingreso
                 </Button>
@@ -217,81 +217,83 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-                        <div className="flex justify-between items-center mb-6">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-2 sm:p-4">
+                    <div className="bg-white rounded-none sm:rounded-xl shadow-xl max-w-2xl w-full h-full sm:h-auto max-h-[95vh] sm:max-h-[90vh] flex flex-col overflow-hidden">
+                        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b flex justify-between items-center">
                             <h3 className="text-lg font-semibold text-gray-900">
                                 {modalType === 'Ingreso' ? 'Registrar Ingreso' : 'Registrar Deuda'}
                             </h3>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-500">
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-500 p-1 hover:bg-gray-100 rounded">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={formData.fecha}
-                                        onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div className="col-span-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span className="text-gray-500 sm:text-sm">$</span>
-                                        </div>
+                        <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+                            <div className="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
                                         <input
-                                            type="number"
-                                            step="0.01"
+                                            type="date"
                                             required
-                                            value={formData.monto}
-                                            onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-                                            className="w-full pl-7 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                            placeholder="0.00"
+                                            value={formData.fecha}
+                                            onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                         />
                                     </div>
+                                    <div className="col-span-1">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <span className="text-gray-500 sm:text-sm">$</span>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                required
+                                                value={formData.monto}
+                                                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
+                                                className="w-full pl-7 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {modalType === 'Ingreso' && (
+                                {modalType === 'Ingreso' && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Forma de pago</label>
+                                        <select
+                                            value={formData.forma_pago}
+                                            onChange={(e) => setFormData({ ...formData, forma_pago: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                                        >
+                                            <option value="Efectivo">Efectivo</option>
+                                            <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                                            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                                            <option value="Transferencia">Transferencia</option>
+                                            <option value="Mercado Pago">Mercado Pago</option>
+                                        </select>
+                                    </div>
+                                )}
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Forma de pago</label>
-                                    <select
-                                        value={formData.forma_pago}
-                                        onChange={(e) => setFormData({ ...formData, forma_pago: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="Efectivo">Efectivo</option>
-                                        <option value="Tarjeta de Débito">Tarjeta de Débito</option>
-                                        <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-                                        <option value="Transferencia">Transferencia</option>
-                                        <option value="Mercado Pago">Mercado Pago</option>
-                                    </select>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Información Adicional</label>
+                                    <textarea
+                                        rows={4}
+                                        value={formData.descripcion}
+                                        onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                                        placeholder="Detalles del movimiento..."
+                                    />
                                 </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Información Adicional</label>
-                                <textarea
-                                    rows={4}
-                                    value={formData.descripcion}
-                                    onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Detalles del movimiento..."
-                                />
                             </div>
 
-                            <div className="flex justify-end space-x-3 pt-4 border-t">
-                                <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t bg-gray-50 sm:bg-transparent">
+                                <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                                     Cancelar
                                 </Button>
-                                <Button type="submit" className={modalType === 'Ingreso' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}>
+                                <Button type="submit" className={`w-full sm:w-auto ${modalType === 'Ingreso' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
                                     Registrar
                                 </Button>
                             </div>

@@ -12,9 +12,10 @@ import { User, Heart, Shield, Phone, Mail, MapPin, Search, CheckCircle2, UserPlu
 interface PatientFormProps {
   onPatientData: (data: CrearPacienteData) => void
   loading?: boolean
+  embedded?: boolean
 }
 
-export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading = false }) => {
+export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading = false, embedded = false }) => {
   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([])
   const [formData, setFormData] = useState<CrearPacienteData>({
     apellido: "",
@@ -211,8 +212,20 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
     )
   }
 
+  const handleClick = () => {
+    if (validateForm()) {
+      const parts = nombreCompleto.trim().split(/\s+/)
+      const nombre = parts[0]
+      const apellido = parts.slice(1).join(' ') || nombre
+      onPatientData({ ...formData, nombre, apellido, tipo_documento: 'DNI' })
+    }
+  }
+
+  const Wrapper = embedded ? 'div' : 'form'
+  const wrapperProps = embedded ? {} : { onSubmit: handleSubmit }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <Wrapper {...wrapperProps as any} className="space-y-6">
       {/* Búsqueda por DNI para pacientes existentes */}
       {patientMode === "existing" && !existingPatientLocked && (
         <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
@@ -452,7 +465,8 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
       </div>
 
       <button
-        type="submit"
+        type={embedded ? "button" : "submit"}
+        onClick={embedded ? handleClick : undefined}
         disabled={loading}
         className="w-full h-12 sm:h-14 bg-[#2563FF] text-white font-bold rounded-xl text-sm sm:text-base hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
       >
@@ -460,6 +474,6 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
       </button>
         </>
       )}
-    </form>
+    </Wrapper>
   )
 }

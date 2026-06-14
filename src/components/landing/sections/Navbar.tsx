@@ -106,22 +106,19 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { label: "Plataforma", href: "/plataforma", isPage: true },
-    { label: "Funcionalidades", href: "#funcionalidades-tabs", isPage: false },
-    { label: "Metricas", href: "#metricas", isPage: false },
-    { label: "Precios", href: "#precios", isPage: false },
+    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Por qué Dentiqly", href: "#por-que-dentiqly" },
+    { label: "Precios", href: "#precios" },
+    { label: "Preguntas", href: "#faq" },
   ]
 
   return (
     <>
       <nav
         ref={navRef}
-        className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-          isScrolled
-            ? "top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
-            : "top-0 w-full max-w-full bg-transparent py-4 px-4 sm:px-6 lg:px-8"
-        }`}
+        className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 top-4 w-[92%] max-w-5xl bg-[#0047FF] border border-white/10 shadow-2xl rounded-full py-1.5 px-6"
       >
-        <div className="w-full flex items-center justify-between h-[54px]">
+        <div className="w-full flex items-center justify-between h-[54px] relative">
 
           {/* ═══ Left: Logo ═══ */}
           <Link
@@ -129,16 +126,16 @@ export const Navbar: React.FC = () => {
             className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
           >
             <img
-              src={isDark || isScrolled ? "/assets/dentiqly-logo-white.png?v=2" : "/assets/dentiqly-logo-blue.png"}
+              src="/assets/dentiqly-logo.png"
               alt="Dentiqly - Software de gestión dental"
-              className="h-[28px] w-auto transition-all duration-300"
+              width={91}
+              height={28}
+              className="h-[28px] w-auto transition-all duration-300 brightness-0 invert"
             />
           </Link>
 
           {/* ══ center: Nav Links pill ══ */}
-          <div className={`hidden md:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors ${
-            isScrolled ? "bg-transparent" : "bg-[#0047FF]"
-          }`}>
+          <div className="hidden lg:flex items-center gap-1 lg:gap-1.5 rounded-full px-2 py-1.5 absolute left-1/2 -translate-x-1/2 transition-colors bg-transparent">
             {navLinks.map((item) =>
               item.isPage ? (
                 <Link
@@ -163,35 +160,28 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className={`md:hidden p-1.5 transition-colors duration-300 ${isDark || isScrolled ? "text-white" : "text-[#0047FF]"}`}
+            className="lg:hidden p-1.5 transition-colors duration-300 text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
           {/* ═══ Right: Auth Buttons ═══ */}
-          <div className="hidden md:flex items-center gap-[10px]">
+          <div className="hidden lg:flex items-center gap-[10px]">
             <Link
               to="/login"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium ${
-                isDark || isScrolled
-                  ? "bg-[#0A0F2D] text-white hover:bg-[#0A0F2D]/85 border-none"
-                  : "bg-white border border-[#0047FF] text-[#0047FF] hover:bg-gray-50"
-              }`}
+              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-medium bg-transparent text-white border border-white/40 hover:border-white/70 hover:bg-white/10"
             >
               <User size={14} className="mr-2" />
               Ingresar
             </Link>
             <Link
               to="/register"
-              className={`h-[42px] px-6 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-semibold gap-2 ${
-                isDark || isScrolled
-                  ? "bg-white text-[#0047FF] hover:bg-gray-50"
-                  : "bg-[#0047FF] text-white hover:bg-[#0036CC]"
-              }`}
+              className="h-[38px] px-5 text-[13px] transition-all duration-300 flex items-center justify-center rounded-full font-extrabold gap-2 shadow-lg group bg-white text-[#0047FF] hover:bg-gray-50 shadow-white/20"
             >
-              Registrarse
-              <ThinArrow size={20} className={`${isDark || isScrolled ? "text-[#0047FF]" : "text-white"} group-hover:translate-x-1 transition-transform duration-200`} />
+              Probá GRATIS
+              <ThinArrow size={18} className="text-[#0047FF] group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
         </div>
@@ -201,7 +191,7 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="fixed inset-0 z-40 bg-[#0A0F2D]/95 backdrop-blur-xl pt-20 px-8 md:hidden"
+          className="fixed inset-0 z-40 bg-[#0A0F2D]/95 backdrop-blur-xl pt-20 px-8 lg:hidden"
         >
           <div className="flex flex-col gap-2">
             {navLinks.map((item) =>
@@ -236,9 +226,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-semibold transition-all"
+                className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-extrabold transition-all shadow-lg shadow-[#0047FF]/30"
               >
-                Registrarse
+                🚀 Probá GRATIS
               </Link>
             </div>
           </div>

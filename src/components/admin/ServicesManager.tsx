@@ -16,6 +16,19 @@ const labelStyle = sharedLabelStyle
 
 const inputStyle = sharedInputStyle
 
+const CURATED_COLORS = [
+  '#3B82F6', // Azul
+  '#10B981', // Esmeralda
+  '#6366F1', // Indigo
+  '#8B5CF6', // Púrpura
+  '#EC4899', // Rosa
+  '#F59E0B', // Ámbar
+  '#14B8A6', // Turquesa
+  '#EF4444', // Rojo
+  '#06B6D4', // Cian
+  '#F97316', // Naranja
+]
+
 export const ServicesManager: React.FC = () => {
   const { toast } = useToast()
   const [services, setServices] = useState<Servicio[]>([])
@@ -34,7 +47,8 @@ export const ServicesManager: React.FC = () => {
     descripcion: '',
     precio_base: 0,
     duracion_estimada: 30,
-    categoria: ''
+    categoria: '',
+    color: '#3B82F6'
   })
 
   const [errors, setErrors] = useState<Partial<Record<keyof CrearServicioData, string>>>({})
@@ -61,7 +75,8 @@ export const ServicesManager: React.FC = () => {
     try {
       setLoading(true)
       const response = await adminApi.servicios.listar({
-        search: searchTerm
+        search: searchTerm,
+        limit: 100
       })
       setServices(response.data)
     } catch (error) {
@@ -95,7 +110,8 @@ export const ServicesManager: React.FC = () => {
         descripcion: formData.descripcion,
         precio_base: formData.precio_base,
         duracion_estimada: formData.duracion_estimada,
-        categoria: formData.categoria
+        categoria: formData.categoria,
+        color: formData.color || '#3B82F6'
       }
 
       if (editingService) {
@@ -118,7 +134,8 @@ export const ServicesManager: React.FC = () => {
       descripcion: service.descripcion || '',
       precio_base: service.precio_base,
       duracion_estimada: service.duracion_estimada,
-      categoria: service.categoria || ''
+      categoria: service.categoria || '',
+      color: service.color || '#3B82F6'
     })
     setShowForm(true)
   }
@@ -147,7 +164,8 @@ export const ServicesManager: React.FC = () => {
       descripcion: '',
       precio_base: 0,
       duracion_estimada: 30,
-      categoria: ''
+      categoria: '',
+      color: '#3B82F6'
     })
     setErrors({})
     setDurTouched(false)
@@ -292,9 +310,15 @@ export const ServicesManager: React.FC = () => {
                       <td style={{ padding: "14px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <div style={{
-                            width: 34, height: 34, borderRadius: 9,
-                            background: tokens.blueFaint, color: tokens.blue,
-                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 34,
+                            height: 34,
+                            borderRadius: 9,
+                            background: `${service.color || '#3B82F6'}15`,
+                            color: service.color || '#3B82F6',
+                            border: `1px solid ${service.color || '#3B82F6'}40`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}>
                             <Briefcase size={16} />
                           </div>
@@ -511,6 +535,80 @@ export const ServicesManager: React.FC = () => {
                       />
                     </div>
                     {errors.duracion_estimada && <p style={{ color: tokens.red, fontSize: 11, marginTop: 4 }}>{errors.duracion_estimada}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Color del Servicio (para identificarlo en la agenda)</label>
+                  <div className="flex flex-wrap gap-2.5 mt-2">
+                    {CURATED_COLORS.map(colorVal => (
+                      <button
+                        key={colorVal}
+                        type="button"
+                        onClick={() => handleChange('color', colorVal)}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: '50%',
+                          backgroundColor: colorVal,
+                          border: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                          cursor: 'pointer',
+                          transition: 'all 0.12s',
+                          boxShadow: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
+                        }}
+                        onMouseEnter={e => { if (formData.color?.toUpperCase() !== colorVal.toUpperCase()) e.currentTarget.style.transform = 'scale(1.1)' }}
+                        onMouseLeave={e => { if (formData.color?.toUpperCase() !== colorVal.toUpperCase()) e.currentTarget.style.transform = 'none' }}
+                      />
+                    ))}
+
+                    {/* Custom Color Picker Button */}
+                    {(() => {
+                      const isCustom = formData.color && !CURATED_COLORS.map(c => c.toUpperCase()).includes(formData.color.toUpperCase())
+                      return (
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: 30,
+                            height: 30,
+                            borderRadius: '50%',
+                            backgroundColor: isCustom ? formData.color : 'transparent',
+                            backgroundImage: isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
+                            border: isCustom ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            boxShadow: isCustom ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
+                            transition: 'all 0.12s',
+                          }}
+                          title="Elegir color personalizado"
+                        >
+                          <input
+                            type="color"
+                            value={formData.color || '#3B82F6'}
+                            onChange={e => handleChange('color', e.target.value)}
+                            style={{
+                              position: 'absolute',
+                              inset: -5,
+                              width: '150%',
+                              height: '150%',
+                              opacity: 0,
+                              cursor: 'pointer',
+                            }}
+                          />
+                          {isCustom && (
+                            <div style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              background: '#ffffff',
+                              boxShadow: '0 0 2px rgba(0,0,0,0.5)',
+                            }} />
+                          )}
+                        </div>
+                      )
+                    })()}
                   </div>
                 </div>
               </div>

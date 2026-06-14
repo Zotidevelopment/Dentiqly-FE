@@ -170,7 +170,7 @@ export const RemindersSection: React.FC<RemindersSectionProps> = ({ pacienteId }
                         <Button
                           size="sm"
                           onClick={() => handleSendReminder(turno.id)}
-                          className="bg-[#026498]"
+                          className="bg-[#026498] w-full sm:w-auto justify-center"
                         >
                           <Send className="h-4 w-4 mr-1" />
                           Reintentar
@@ -181,7 +181,7 @@ export const RemindersSection: React.FC<RemindersSectionProps> = ({ pacienteId }
                         size="sm"
                         onClick={() => handleSendReminder(turno.id)}
                         disabled={isSending}
-                        className="bg-[#026498]"
+                        className="bg-[#026498] w-full sm:w-auto justify-center"
                       >
                         {isSending ? (
                           <>

@@ -168,8 +168,11 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
                         </div>
                     </div>
 
-                    <div className="flex justify-end pt-4">
-                        <Button type="submit" disabled={loading} className="bg-gray-100 hover:bg-gray-200 text-gray-900 min-w-[100px]">
+                    <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="ghost" onClick={onClose}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" disabled={loading} className="min-w-[100px]">
                             {loading ? 'Registrando...' : 'Registrar'}
                         </Button>
                     </div>

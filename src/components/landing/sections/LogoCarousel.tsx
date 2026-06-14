@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react"
 import gsap from "gsap"
 
 const logos = [
-  { name: "ODAF", src: "/assets/odaf-logo.png" },
+  { name: "Dentiqly", src: "/assets/dentiqly-logo.png" },
   { name: "Clinica Dental Sur", text: "Clinica Dental Sur" },
   { name: "OdontoPro", text: "OdontoPro" },
   { name: "SmileLab", text: "SmileLab" },

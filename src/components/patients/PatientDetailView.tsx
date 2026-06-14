@@ -1,12 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   FileText,
   ChevronLeft,
   Camera,
   Smile,
+  CalendarCheck,
 } from "lucide-react"
 import { Button } from "../ui/Button"
 import type { Paciente } from "../../types"
@@ -18,6 +19,8 @@ import { FilesSection } from "./FilesSection"
 import { CuentaCorrienteSection } from "./CuentaCorrienteSection"
 import { RemindersSection } from "./RemindersSection"
 import { TurnosSection } from "./TurnosSection"
+import { AsistenciasSection } from "./AsistenciasSection"
+import { turnosApi } from "../../api"
 
 interface PatientDetailViewProps {
   patient: Paciente
@@ -29,7 +32,7 @@ interface PatientDetailViewProps {
   getPhotoUrl: (patient: Paciente) => string | null
 }
 
-type TabType = "informacion" | "historia" | "odontograma" | "prescripciones" | "tratamientos" | "archivos" | "cuenta_corriente" | "recordatorios" | "turnos"
+type TabType = "informacion" | "historia" | "odontograma" | "prescripciones" | "tratamientos" | "archivos" | "cuenta_corriente" | "recordatorios" | "turnos" | "asistencias"
 
 export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   patient,
@@ -41,6 +44,49 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   getPhotoUrl,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("informacion")
+  const [asistenciasCount, setAsistenciasCount] = useState<number>(0)
+  const [asistenciasLoading, setAsistenciasLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    const fetchAsistencias = async () => {
+      try {
+        setAsistenciasLoading(true)
+        const response = await turnosApi.listar({
+          paciente_id: patient.id,
+          limit: 100
+        })
+        const count = (response.data || []).filter((t: any) => t.estado === "Atendido").length
+        setAsistenciasCount(count)
+      } catch (error) {
+        console.error("Error loading patient attendance:", error)
+      } finally {
+        setAsistenciasLoading(false)
+      }
+    }
+
+    if (patient?.id) {
+      fetchAsistencias()
+    }
+  }, [patient?.id, activeTab])
+
+  useEffect(() => {
+    const isDemo = typeof window !== "undefined" && (window.location.pathname === "/" || window.location.pathname.startsWith("/demo"))
+    if (isDemo) {
+      // In demo mode, avoid scrolling the main window to the top.
+      // We can try to scroll the local workspace container to the top instead.
+      const workspace = document.querySelector(".demo-viewer-open, [data-lenis-prevent]")
+      if (workspace) {
+        workspace.scrollTop = 0
+      }
+      return
+    }
+
+    const mainContainer = document.querySelector("main")
+    if (mainContainer) {
+      mainContainer.scrollTop = 0
+    }
+    window.scrollTo({ top: 0 })
+  }, [activeTab])
 
   const tabs = [
     { id: "informacion" as TabType, label: "Información" },
@@ -51,6 +97,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
     { id: "archivos" as TabType, label: "Archivos" },
     { id: "cuenta_corriente" as TabType, label: "Cuenta Corriente" },
     { id: "recordatorios" as TabType, label: "Recordatorios" },
+    { id: "asistencias" as TabType, label: "Asistencias" },
     { id: "turnos" as TabType, label: "Turnos" },
   ]
 
@@ -72,7 +119,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full min-h-[calc(100vh-3rem)] -m-3 lg:-m-6 p-6 lg:p-10">
+    <div className="flex flex-col h-full min-h-[calc(100vh-3rem)] -m-3 lg:-m-6 p-3 sm:p-6 lg:p-10">
       {/* Breadcrumbs + Back */}
       <div className="flex items-center gap-2 text-[13px] font-medium mb-6">
         <button
@@ -92,9 +139,9 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       </div>
 
       {/* Profile Header Block */}
-      <div className="bg-white rounded-2xl border border-[#E8E0D6] p-6 mb-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+      <div className="bg-white rounded-2xl border border-[#E8E0D6] p-4 sm:p-6 mb-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4 sm:gap-5">
             <div className="relative group">
               {getPhotoUrl(patient) ? (
                 <img
@@ -127,8 +174,16 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
             </div>
 
             <div>
-              <h1 className="text-xl font-semibold text-[#0B1023] tracking-[-0.3px] mb-1">
-                {patient.nombre} {patient.apellido}
+              <h1 className="text-xl font-semibold text-[#0B1023] tracking-[-0.3px] mb-1 flex items-center gap-2 flex-wrap">
+                <span>{patient.nombre} {patient.apellido}</span>
+                {asistenciasLoading ? (
+                  <div className="h-4.5 w-4.5 border-2 border-green-600 border-t-transparent rounded-full animate-spin shrink-0" />
+                ) : (
+                  <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200 shrink-0">
+                    <CalendarCheck className="h-3 w-3" />
+                    {asistenciasCount} {asistenciasCount === 1 ? "asistencia" : "asistencias"}
+                  </span>
+                )}
               </h1>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 text-[12px] text-[#8A93A8]">
@@ -147,10 +202,10 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full md:w-auto">
             <Button
               onClick={onBookTurno}
-              className="bg-dental-secondary hover:opacity-90 text-[#0B1023] font-bold rounded-xl px-5 py-2.5 h-auto text-[13px] shadow-sm transition-all"
+              className="bg-dental-secondary hover:opacity-90 text-[#0B1023] font-bold rounded-xl px-5 py-2.5 h-auto text-[13px] shadow-sm transition-all w-full md:w-auto justify-center"
             >
               Agendar Turno
             </Button>
@@ -159,15 +214,15 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       </div>
 
       {/* Tabs Row */}
-      <div className="bg-white rounded-2xl border border-[#E8E0D6] px-4 mb-6 overflow-x-auto shadow-[0_1px_3px_rgba(0,0,0,0.03)] sticky top-0 z-20">
-        <div className="flex gap-1">
+      <div className="bg-white rounded-2xl border border-[#E8E0D6] px-4 mb-6 overflow-x-auto no-scrollbar shadow-[0_1px_3px_rgba(0,0,0,0.03)] sticky top-0 z-20 h-12 flex items-center">
+        <div className="flex gap-1 h-full items-stretch">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-3 px-4 text-[13px] font-medium whitespace-nowrap border-b-2 transition-all ${
+                className={`h-full px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium whitespace-nowrap border-b-2 transition-all flex items-center justify-center ${
                   isActive
                     ? "border-[#2563FF] text-[#2563FF]"
                     : "border-transparent text-[#8A93A8] hover:text-[#4B5568] hover:border-[#E8E0D6]"
@@ -184,8 +239,8 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       <div className="flex-1">
         {activeTab === "informacion" && (
           <div className="max-w-4xl animate-in fade-in duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl border border-[#E8E0D6] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-white rounded-2xl border border-[#E8E0D6] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
                 <h3 className="text-[13px] font-semibold text-[#0B1023] mb-4 pb-3 border-b border-[#E8E0D6]/50">Información Personal</h3>
                 <div className="space-y-3.5">
                   <div className="flex justify-between items-center">
@@ -207,10 +262,24 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     <span className="text-[12px] text-[#8A93A8]">Ocupación</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">{patient.ocupacion || "-"}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Recomendado por</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.recomendado_por || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Condición IVA</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.condicion_iva || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2.5 border-t border-gray-100">
+                    <span className="text-[12px] text-[#8A93A8]">Asistencias registradas</span>
+                    <span className="text-[13px] font-bold text-green-700">
+                      {asistenciasLoading ? "Cargando..." : `${asistenciasCount} visitas`}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-[#E8E0D6] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+              <div className="bg-white rounded-2xl border border-[#E8E0D6] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
                 <h3 className="text-[13px] font-semibold text-[#0B1023] mb-4 pb-3 border-b border-[#E8E0D6]/50">Contacto y Cobertura</h3>
                 <div className="space-y-3.5">
                   <div className="flex justify-between items-center">
@@ -228,12 +297,24 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Obra Social</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">
-                      {patient.obra_social_nombre_custom || patient.obraSocial?.nombre || "Particular"}
+                      {patient.obra_social_nombre_custom || patient.obraSocial?.nombre || "PARTICULARES"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Afiliado Nº</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">{patient.numero_afiliado || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Contacto Emerg.</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.contacto_emergencia || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Tel. Emergencia</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.telefono_emergencia || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Facturación</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">Factura {patient.tipo_facturacion} {patient.numero_facturacion ? `(${patient.numero_facturacion})` : ""}</span>
                   </div>
                 </div>
               </div>
@@ -253,6 +334,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           {activeTab === "archivos" && <FilesSection pacienteId={patient.id} />}
           {activeTab === "cuenta_corriente" && <CuentaCorrienteSection pacienteId={patient.id} />}
           {activeTab === "recordatorios" && <RemindersSection pacienteId={patient.id} />}
+          {activeTab === "asistencias" && <AsistenciasSection pacienteId={patient.id} />}
           {activeTab === "turnos" && <TurnosSection pacienteId={patient.id} />}
         </div>
       </div>

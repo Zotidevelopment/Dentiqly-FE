@@ -42,6 +42,20 @@ export const turnosApi = {
     return apiClient.post<Turno>("/turnos", data)
   },
 
+  async crearBulk(data: {
+    paciente_id: string
+    profesional_id?: number
+    servicio_id?: number
+    fechas: string[]
+    hora_inicio: string
+    hora_fin: string
+    estado?: string
+    observaciones?: string
+    sobre_turno?: boolean
+  }): Promise<{ message: string; turnos: Turno[] }> {
+    return apiClient.post<{ message: string; turnos: Turno[] }>("/turnos/bulk", data)
+  },
+
   async actualizar(id: number, data: Partial<CrearTurnoData>): Promise<Turno> {
     return apiClient.put<Turno>(`/turnos/${id}`, data)
   },

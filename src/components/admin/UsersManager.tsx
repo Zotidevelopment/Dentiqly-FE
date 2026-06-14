@@ -117,7 +117,7 @@ export function UsersManager() {
 
   const handleOpenEdit = (u: UsuarioClinica) => {
     setEditingUser(u)
-    setFormData({ nombre: u.nombre, apellido: u.apellido, email: u.email, role: u.role })
+    setFormData({ nombre: u.nombre, apellido: u.apellido || "", email: u.email, role: u.role })
     setShowModal(true)
   }
 
@@ -193,7 +193,7 @@ export function UsersManager() {
     return usuarios.filter(
       (u) =>
         u.nombre.toLowerCase().includes(lower) ||
-        u.apellido.toLowerCase().includes(lower) ||
+        (u.apellido || "").toLowerCase().includes(lower) ||
         u.email.toLowerCase().includes(lower) ||
         u.role.toLowerCase().includes(lower)
     )
@@ -344,7 +344,7 @@ export function UsersManager() {
                               fontSize: 11, fontWeight: 700, flexShrink: 0,
                             }}
                           >
-                            {getInitials(u.nombre, u.apellido)}
+                            {getInitials(u.nombre, u.apellido || "")}
                           </div>
                           <div>
                             <p style={{ fontSize: 13.5, fontWeight: 600, color: tokens.navy, margin: 0 }}>

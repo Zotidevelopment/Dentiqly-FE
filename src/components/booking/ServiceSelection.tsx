@@ -24,7 +24,7 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
   const loadServices = async () => {
     try {
       setLoading(true)
-      const response = await serviciosApi.listar({ estado: "Activo", solo_con_profesionales: true })
+      const response = await serviciosApi.listar({ estado: "Activo", solo_con_profesionales: true, limit: 100 })
       if (response && response.data) {
         setServices(response.data)
       } else {

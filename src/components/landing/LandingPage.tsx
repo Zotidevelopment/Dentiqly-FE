@@ -1,14 +1,14 @@
-import React, { useRef } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { useLenis } from "./animations/useLenis"
 import { SEO, PAGE_SEO } from "../seo/SEO"
 import { CustomCursor } from "./components/CustomCursor"
 import { Navbar } from "./sections/Navbar"
 import { HeroSection } from "./sections/HeroSection"
+import { SocialProofBar } from "./sections/SocialProofBar"
 import { ProductShowcase } from "./sections/ProductShowcase"
-import { ScrollRevealSection } from "./sections/ScrollRevealSection"
 import { TabbedShowcase } from "./sections/TabbedShowcase"
-import { FeatureDeepDive } from "./sections/FeatureDeepDive"
-import { TestimonialSection } from "./sections/TestimonialSection"
+// import { FeatureDeepDive } from "./sections/FeatureDeepDive"
+// import { TestimonialSection } from "./sections/TestimonialSection"
 import { SecuritySection } from "./sections/SecuritySection"
 import { FaqSection } from "./sections/FaqSection"
 import { PricingSection } from "./sections/PricingSection"
@@ -18,7 +18,18 @@ import { PerformanceSection } from "./sections/PerformanceSection"
 
 export const LandingPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
-  useLenis()
+  const [isDemoFullscreen, setIsDemoFullscreen] = useState(false)
+  const lenisRef = useLenis()
+
+  useEffect(() => {
+    if (lenisRef.current) {
+      if (isDemoFullscreen) {
+        lenisRef.current.stop()
+      } else {
+        lenisRef.current.start()
+      }
+    }
+  }, [isDemoFullscreen, lenisRef])
 
   return (
     <div
@@ -29,13 +40,13 @@ export const LandingPage: React.FC = () => {
       <CustomCursor />
       <Navbar />
       <main>
-        <HeroSection />
-        <ProductShowcase />
-        <ScrollRevealSection />
+        <HeroSection onOpenDemo={() => setIsDemoFullscreen(true)} />
+        <SocialProofBar />
         <TabbedShowcase />
+        <ProductShowcase isFullscreen={isDemoFullscreen} onToggleFullscreen={setIsDemoFullscreen} />
         <PerformanceSection />
-        <SecuritySection />
         <PricingSection />
+        <SecuritySection />
         <FaqSection />
         <CtaSection />
       </main>

@@ -57,8 +57,14 @@ export class ApiClient {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const headers: HeadersInit = {
-      ...options.headers,
+    if (typeof window !== "undefined" && (window.location.pathname.startsWith("/demo") || window.location.pathname === "/")) {
+      const { handleMockRequest } = await import("./mockDemoData")
+      const apiEndpoint = endpoint.startsWith("/api") ? endpoint : `/api${endpoint.startsWith("/") ? "" : "/"}${endpoint}`
+      return handleMockRequest(apiEndpoint, options.method || "GET", options.body) as Promise<T>
+    }
+
+    const headers: Record<string, string> = {
+      ...options.headers as Record<string, string>,
     }
 
     // Solo añadir Content-Type si no es FormData

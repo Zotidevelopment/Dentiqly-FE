@@ -18,12 +18,31 @@ export function useCustomCursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
+    // Center the custom cursor elements and hide them initially to prevent jumps
+    gsap.set([dot, ring], { opacity: 0, xPercent: -50, yPercent: -50 })
+
     const xDot = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3" })
     const yDot = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3" })
     const xRing = gsap.quickTo(ring, "x", { duration: 0.3, ease: "power3" })
     const yRing = gsap.quickTo(ring, "y", { duration: 0.3, ease: "power3" })
 
     const onMouseMove = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const isInsideDemo = target && (target.closest("#funcionalidades") || document.body.classList.contains("demo-viewer-open"))
+
+      if (isInsideDemo) {
+        dot.style.display = "none"
+        ring.style.display = "none"
+      } else {
+        dot.style.display = "block"
+        ring.style.display = "block"
+      }
+
+      // Fade in cursor elements on first movement
+      if (gsap.getProperty(dot, "opacity") === 0) {
+        gsap.to([dot, ring], { opacity: 1, duration: 0.2 })
+      }
+
       xDot(e.clientX)
       yDot(e.clientY)
       xRing(e.clientX)

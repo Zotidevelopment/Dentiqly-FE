@@ -3,7 +3,7 @@ import type { AuthResponse, AuthUser, LoginData, RegisterData, SaasRegisterData,
 
 export const authApi = {
   async login(data: LoginData): Promise<AuthResponse> {
-    const response = await apiClient.post<ApiResponse<AuthResponse>>("/auth/login", data)
+    const response = await apiClient.post<AuthResponse>("/auth/login", data)
 
     // El backend devuelve { token, user, ... } directamente o envuelto en data?
     // Según authController.js devuelve directamente el objeto. 

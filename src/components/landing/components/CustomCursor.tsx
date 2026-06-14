@@ -22,7 +22,6 @@ export const CustomCursor: React.FC = () => {
           boxShadow: "0 2px 8px rgba(37,99,255,0.4)",
           pointerEvents: "none",
           zIndex: 9999,
-          transform: "translate(-50%, -50%)",
           transition: "width 0.3s cubic-bezier(0.22, 1, 0.36, 1), height 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       />
@@ -40,7 +39,6 @@ export const CustomCursor: React.FC = () => {
           backgroundColor: isHovering ? "rgba(37,99,255,0.05)" : "transparent",
           pointerEvents: "none",
           zIndex: 9998,
-          transform: "translate(-50%, -50%)",
           transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       />

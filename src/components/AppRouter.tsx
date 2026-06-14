@@ -14,21 +14,21 @@ import { dentalColors } from '../config/colors'
 import { useAuth } from '../hooks/useAuth'
 import { apiClient } from '../lib/api-client'
 
-// Import components
-import { BookingForm } from './booking/BookingForm'
-import { AdminApp } from './admin/AdminApp'
-import { PatientApp } from './patient-portal/PatientApp'
-import { LandingPage } from './landing/LandingPage'
-import { LoginPage } from './auth/LoginPage'
-import { RegisterPage } from './auth/RegisterPage'
-import { ForgotPasswordPage } from './auth/ForgotPasswordPage'
-import { ResetPasswordPage } from './auth/ResetPasswordPage'
-import { SuperAdminApp } from './superadmin/SuperAdminApp'
-import { PrivacyPage } from './legal/PrivacyPage'
-import { TermsPage } from './legal/TermsPage'
-import { CookiesPage } from './legal/CookiesPage'
-import { AboutPage } from './legal/AboutPage'
-import { ProductPage } from './landing/sections/ProductPage'
+// Import components dynamically
+const BookingForm = React.lazy(() => import('./booking/BookingForm').then(module => ({ default: module.BookingForm })))
+const AdminApp = React.lazy(() => import('./admin/AdminApp').then(module => ({ default: module.AdminApp })))
+const PatientApp = React.lazy(() => import('./patient-portal/PatientApp').then(module => ({ default: module.PatientApp })))
+const LandingPage = React.lazy(() => import('./landing/LandingPage').then(module => ({ default: module.LandingPage })))
+const LoginPage = React.lazy(() => import('./auth/LoginPage').then(module => ({ default: module.LoginPage })))
+const RegisterPage = React.lazy(() => import('./auth/RegisterPage').then(module => ({ default: module.RegisterPage })))
+const ForgotPasswordPage = React.lazy(() => import('./auth/ForgotPasswordPage').then(module => ({ default: module.ForgotPasswordPage })))
+const ResetPasswordPage = React.lazy(() => import('./auth/ResetPasswordPage').then(module => ({ default: module.ResetPasswordPage })))
+const SuperAdminApp = React.lazy(() => import('./superadmin/SuperAdminApp').then(module => ({ default: module.SuperAdminApp })))
+const PrivacyPage = React.lazy(() => import('./legal/PrivacyPage').then(module => ({ default: module.PrivacyPage })))
+const TermsPage = React.lazy(() => import('./legal/TermsPage').then(module => ({ default: module.TermsPage })))
+const CookiesPage = React.lazy(() => import('./legal/CookiesPage').then(module => ({ default: module.CookiesPage })))
+const AboutPage = React.lazy(() => import('./legal/AboutPage').then(module => ({ default: module.AboutPage })))
+const ProductPage = React.lazy(() => import('./landing/sections/ProductPage').then(module => ({ default: module.ProductPage })))
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ children, allowedRoles }) => {
@@ -163,48 +163,57 @@ export const AppRouter: React.FC = () => {
   return (
     <>
     <ScrollToTop />
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/privacidad" element={<PrivacyPage />} />
-      <Route path="/terminos" element={<TermsPage />} />
-      <Route path="/cookies" element={<CookiesPage />} />
-      <Route path="/sobre-nosotros" element={<AboutPage />} />
-      <Route path="/plataforma" element={<ProductPage />} />
-      
-      {/* Legacy booking sin slug */}
-      <Route path="/reserva" element={<BookingLayout />} />
+    <React.Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>
+      </div>
+    }>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/privacidad" element={<PrivacyPage />} />
+        <Route path="/terminos" element={<TermsPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
+        <Route path="/sobre-nosotros" element={<AboutPage />} />
+        <Route path="/plataforma" element={<ProductPage />} />
+        
+        {/* Legacy booking sin slug */}
+        <Route path="/reserva" element={<BookingLayout />} />
 
-      {/* Super Admin Protected Routes */}
-      <Route
-        path="/admin/*"
-        element={
-          <ProtectedRoute allowedRoles={['superadmin']}>
-            <SuperAdminApp />
-          </ProtectedRoute>
-        }
-      />
+        {/* Super Admin Protected Routes */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <SuperAdminApp />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Tenant Admin Protected Routes */}
-      <Route
-        path="/:slug/admin/*"
-        element={
-          <ProtectedRoute>
-            <AdminApp />
-          </ProtectedRoute>
-        }
-      />
+        {/* Tenant Admin Protected Routes */}
+        <Route
+          path="/:slug/admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminApp />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="/paciente/*" element={<PatientApp />} />
+        <Route path="/paciente/*" element={<PatientApp />} />
 
-      {/* Booking público por slug — debe ir después de todas las rutas estáticas */}
-      <Route path="/:slug" element={<BookingWithSlug />} />
+        {/* Demo Admin Route */}
+        <Route path="/demo/*" element={<AdminApp />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Booking público por slug — debe ir después de todas las rutas estáticas */}
+        <Route path="/:slug" element={<BookingWithSlug />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </React.Suspense>
     </>
   )
 }

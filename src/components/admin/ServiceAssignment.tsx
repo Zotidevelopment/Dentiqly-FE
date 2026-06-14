@@ -37,7 +37,7 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
       setLoading(true)
       const [servicesResponse, allServicesResponse] = await Promise.all([
         adminApi.profesionales.obtenerServicios(professional.id),
-        adminApi.servicios.listar({ estado: "Activo" }),
+        adminApi.servicios.listar({ estado: "Activo", limit: 100 }),
       ])
 
       setAssignedServices(servicesResponse.servicios)
@@ -45,8 +45,10 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
       const assignedIds = servicesResponse.servicios.map(s => s.id)
       const available = allServicesResponse.data.filter(s => !assignedIds.includes(s.id))
       setAvailableServices(available)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching services:", error)
+      const msg = error.response?.data?.error || error.message || "No se pudieron cargar los servicios"
+      toast({ variant: "destructive", title: "Error", description: msg })
     } finally {
       setLoading(false)
     }
@@ -71,9 +73,10 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
       setSelectedServiceIds([])
       setShowAddModal(false)
       toast({ title: "Éxito", description: "Servicios asignados correctamente" })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error assigning services:", error)
-      toast({ variant: "destructive", title: "Error", description: "Error al asignar servicios. Intente nuevamente." })
+      const msg = error.response?.data?.error || error.message || "Error al asignar servicios. Intente nuevamente."
+      toast({ variant: "destructive", title: "Error", description: msg })
     } finally {
       setSaving(false)
     }
@@ -99,9 +102,10 @@ export const ServiceAssignment: React.FC<ServiceAssignmentProps> = ({ profession
 
       onServicesUpdate?.(newAssigned)
       toast({ title: "Éxito", description: "Servicio removido correctamente" })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error removing service:", error)
-      toast({ variant: "destructive", title: "Error", description: "Error al remover servicio. Intente nuevamente." })
+      const msg = error.response?.data?.error || error.message || "Error al remover servicio. Intente nuevamente."
+      toast({ variant: "destructive", title: "Error", description: msg })
     } finally {
       setConfirmRemove({ isOpen: false, id: null })
     }

@@ -6,16 +6,21 @@ interface CardProps {
   className?: string
   title?: string
   subtitle?: string
+  style?: React.CSSProperties
 }
 
 export const Card: React.FC<CardProps> = ({
   children,
   className = '',
   title,
-  subtitle
+  subtitle,
+  style
 }) => {
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-[${dentalColors.gray200}] overflow-hidden ${className}`}>
+    <div 
+      className={`bg-white rounded-xl shadow-sm border border-[${dentalColors.gray200}] overflow-hidden ${className}`}
+      style={style}
+    >
       {(title || subtitle) && (
         <div className={`px-6 py-4 border-b border-[${dentalColors.gray200}]`}>
           {title && (
