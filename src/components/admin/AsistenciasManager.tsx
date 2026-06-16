@@ -455,7 +455,7 @@ export const AsistenciasManager: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           SECTION 1 — FREE PATIENT SEARCH (no appointment required)
       ════════════════════════════════════════════════════════════════════ */}
-      <Card className="p-5 border-[#E8E0D6] bg-gradient-to-br from-[#EEF3FF]/60 to-white">
+      <Card className="p-5 border-[#E8E0D6] bg-gradient-to-br from-[#EEF3FF]/60 to-white" style={{ overflow: "visible" }}>
         <div className="flex items-center gap-2 mb-4">
           <div className="w-8 h-8 rounded-xl bg-[#2563FF] flex items-center justify-center">
             <UserCheck className="h-4 w-4 text-white" />
