@@ -20,7 +20,9 @@ import { CuentaCorrienteSection } from "./CuentaCorrienteSection"
 import { RemindersSection } from "./RemindersSection"
 import { TurnosSection } from "./TurnosSection"
 import { AsistenciasSection } from "./AsistenciasSection"
-import { turnosApi } from "../../api"
+import { turnosApi, pacientesApi } from "../../api"
+import { useToast } from "../../hooks/use-toast"
+import { ConfirmationModal } from "../ui/ConfirmationModal"
 
 interface PatientDetailViewProps {
   patient: Paciente
@@ -46,6 +48,21 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>("informacion")
   const [asistenciasCount, setAsistenciasCount] = useState<number>(0)
   const [asistenciasLoading, setAsistenciasLoading] = useState<boolean>(true)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false)
+  const { toast } = useToast()
+
+  const handleDeletePatient = async () => {
+    try {
+      await pacientesApi.eliminar(patient.id)
+      toast({ title: "Éxito", description: "Paciente eliminado correctamente" })
+      setShowDeleteConfirm(false)
+      onBack()
+    } catch (error) {
+      console.error("Error deleting patient:", error)
+      toast({ variant: "destructive", title: "Error", description: "No se pudo eliminar el paciente" })
+      setShowDeleteConfirm(false)
+    }
+  }
 
   useEffect(() => {
     const fetchAsistencias = async () => {
@@ -198,6 +215,13 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                 >
                   Editar
                 </button>
+                <span className="text-[#E8E0D6] text-[12px]">|</span>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-[12px] font-semibold text-red-600 hover:text-red-800 transition-colors"
+                >
+                  Eliminar Paciente
+                </button>
               </div>
             </div>
           </div>
@@ -338,6 +362,16 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           {activeTab === "turnos" && <TurnosSection pacienteId={patient.id} />}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeletePatient}
+        title="Eliminar Paciente"
+        message="¿Estás seguro de que deseas eliminar este paciente? Esta acción no se puede deshacer y borrará todo su historial, turnos y datos relacionados."
+        confirmText="Eliminar"
+        variant="destructive"
+      />
     </div>
   )
 }

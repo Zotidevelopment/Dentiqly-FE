@@ -22,7 +22,13 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
   const [selectedPlan, setSelectedPlan] = useState<PlanTratamiento | null>(null)
   const [formData, setFormData] = useState<Partial<CrearPlanTratamientoData>>({})
   const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
+  const [filtroTipo, setFiltroTipo] = useState<"Todos" | "General" | "Ortodoncia">("Todos")
   const { toast } = useToast()
+
+  const filteredPlanes = planes.filter(plan => {
+    if (filtroTipo === "Todos") return true
+    return (plan.tipo || "General") === filtroTipo
+  })
 
   useEffect(() => {
     fetchPlanes()
@@ -45,6 +51,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
       paciente_id: String(pacienteId),
       fecha_inicio: new Date().toISOString().split("T")[0],
       estado: "Planificado",
+      tipo: "General",
     })
     setModalMode("create")
     setShowModal(true)
@@ -129,10 +136,21 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-gray-900">Planes de Tratamiento</h3>
-        <Button onClick={handleCreate} size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Plan
-        </Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={filtroTipo}
+            onChange={(e) => setFiltroTipo(e.target.value as any)}
+            className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700 cursor-pointer"
+          >
+            <option value="Todos">Todos los tipos</option>
+            <option value="General">General</option>
+            <option value="Ortodoncia">Ortodoncia</option>
+          </select>
+          <Button onClick={handleCreate} size="sm">
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Plan
+          </Button>
+        </div>
       </div>
 
       {planes.length === 0 ? (
@@ -143,9 +161,14 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
             Crear primer plan
           </Button>
         </Card>
+      ) : filteredPlanes.length === 0 ? (
+        <Card className="p-8 text-center text-gray-500">
+          <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+          <p>No hay planes de tratamiento para la categoría seleccionada</p>
+        </Card>
       ) : (
         <div className="space-y-3">
-          {planes.map((plan) => (
+          {filteredPlanes.map((plan) => (
             <Card key={plan.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex justify-between items-start">
                 <div className="flex-1" onClick={() => handleView(plan)}>
@@ -154,6 +177,15 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${getEstadoBadgeColor(plan.estado)}`}
                     >
                       {plan.estado.replace("_", " ")}
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full border ${
+                        (plan.tipo || "General") === "Ortodoncia"
+                          ? "bg-purple-50 text-purple-700 border-purple-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      }`}
+                    >
+                      {plan.tipo || "General"}
                     </span>
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
@@ -214,13 +246,27 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
 
             {modalMode === "view" && selectedPlan ? (
               <div className="p-4 sm:p-6 space-y-4">
-                <div>
-                  <p className="text-xs text-gray-500">Estado</p>
-                  <span
-                    className={`px-2 py-1 text-xs font-semibold rounded-full ${getEstadoBadgeColor(selectedPlan.estado)}`}
-                  >
-                    {selectedPlan.estado.replace("_", " ")}
-                  </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-gray-500">Tipo de Tratamiento</p>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full border ${
+                        (selectedPlan.tipo || "General") === "Ortodoncia"
+                          ? "bg-purple-50 text-purple-700 border-purple-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      }`}
+                    >
+                      {selectedPlan.tipo || "General"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Estado</p>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getEstadoBadgeColor(selectedPlan.estado)}`}
+                    >
+                      {selectedPlan.estado.replace("_", " ")}
+                    </span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -276,24 +322,44 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
-                  <select
-                    required
-                    value={formData.estado || ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        estado: e.target.value as "Planificado" | "En_Progreso" | "Completado" | "Cancelado",
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Planificado">Planificado</option>
-                    <option value="En_Progreso">En Progreso</option>
-                    <option value="Completado">Completado</option>
-                    <option value="Cancelado">Cancelado</option>
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Tratamiento *</label>
+                    <select
+                      required
+                      value={formData.tipo || "General"}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          tipo: e.target.value as "General" | "Ortodoncia",
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="General">General</option>
+                      <option value="Ortodoncia">Ortodoncia</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
+                    <select
+                      required
+                      value={formData.estado || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          estado: e.target.value as "Planificado" | "En_Progreso" | "Completado" | "Cancelado",
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="Planificado">Planificado</option>
+                      <option value="En_Progreso">En Progreso</option>
+                      <option value="Completado">Completado</option>
+                      <option value="Cancelado">Cancelado</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>

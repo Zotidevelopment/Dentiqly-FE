@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react"
 import { Card } from "../ui/Card"
 import { turnosApi } from "../../api"
 import type { Turno } from "../../types"
-import { Calendar, Clock, User, Stethoscope, AlertCircle } from "lucide-react"
+import { Calendar, Clock, User, Stethoscope, AlertCircle, Edit } from "lucide-react"
+import { EditAppointmentModal } from "../admin/EditAppointmentModal"
 
 const getStatusBorderColor = (estado: string): string => {
   const colors: Record<string, string> = {
@@ -28,6 +29,7 @@ interface PatientAppointmentsSectionProps {
 export const TurnosSection: React.FC<PatientAppointmentsSectionProps> = ({ pacienteId }) => {
   const [appointments, setAppointments] = useState<Turno[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedTurno, setSelectedTurno] = useState<Turno | null>(null)
 
   useEffect(() => {
     fetchAppointments()
@@ -119,18 +121,37 @@ export const TurnosSection: React.FC<PatientAppointmentsSectionProps> = ({ pacie
                   </div>
                 </div>
 
-                {turno.observaciones && (
-                  <div className="md:max-w-xs w-full bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
-                    <div className="flex items-start gap-2">
-                       <AlertCircle className="h-3.5 w-3.5 text-blue-500 mt-0.5" />
-                       <p className="text-xs text-blue-800 leading-relaxed italic">"{turno.observaciones}"</p>
+                <div className="flex items-center gap-3 shrink-0 self-start md:self-center">
+                  {turno.observaciones && (
+                    <div className="md:max-w-xs w-full bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                      <div className="flex items-start gap-2">
+                         <AlertCircle className="h-3.5 w-3.5 text-blue-500 mt-0.5" />
+                         <p className="text-xs text-blue-800 leading-relaxed italic">"{turno.observaciones}"</p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTurno(turno)}
+                    className="p-2 h-9 w-9 flex items-center justify-center text-[#8A93A8] hover:text-[#2563FF] hover:bg-[#F5F8FF] rounded-xl transition-all border border-[#E8E0D6] bg-white shrink-0 shadow-sm"
+                    title="Editar Turno"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </Card>
           ))}
         </div>
+      )}
+
+      {selectedTurno && (
+        <EditAppointmentModal
+          appointment={selectedTurno}
+          onClose={() => setSelectedTurno(null)}
+          onUpdate={fetchAppointments}
+        />
       )}
     </div>
   )

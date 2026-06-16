@@ -396,6 +396,7 @@ export interface PlanTratamiento {
   estado: "Planificado" | "En_Progreso" | "Completado" | "Cancelado"
   costo_estimado?: number
   observaciones?: string
+  tipo?: 'General' | 'Ortodoncia'
   createdAt?: string
   updatedAt?: string
 }
@@ -408,6 +409,7 @@ export interface CrearPlanTratamientoData {
   estado: "Planificado" | "En_Progreso" | "Completado" | "Cancelado"
   costo_estimado?: number
   observaciones?: string
+  tipo?: 'General' | 'Ortodoncia'
 }
 
 export interface Archivo {
