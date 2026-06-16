@@ -40,6 +40,7 @@ const calculateAge = (birthDate: string) => {
   return age
 }
 
+
 /* ─── Label styles ────────────────────────────────────────────────────── */
 const labelStyle = sharedLabelStyle
 
@@ -293,6 +294,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   <tr style={{ borderBottom: `0.5px solid ${tokens.grayBorder}` }}>
                     {[
                       { label: "Paciente", sortable: true },
+                      { label: "Tratamiento", sortable: false },
                       { label: "Teléfono", sortable: true },
                       { label: "N° Afiliado", sortable: true },
                       { label: "Documento", sortable: true },
@@ -328,7 +330,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                             </div>
                           </div>
                         </td>
-                        {[...Array(5)].map((_, j) => (
+                        {[...Array(6)].map((_, j) => (
                           <td key={j} style={{ padding: "11px 16px" }}>
                             <div style={{ width: 90, height: 11, borderRadius: 5, background: tokens.grayRow }} />
                           </td>
@@ -338,7 +340,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                     ))
                   ) : patients.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: "56px 0" }}>
+                      <td colSpan={8} style={{ textAlign: "center", padding: "56px 0" }}>
                         <Users size={36} color={tokens.grayBorder} style={{ margin: "0 auto 12px", display: "block" }} />
                         <p style={{ fontSize: 14, fontWeight: 500, color: tokens.grayMuted }}>No hay pacientes registrados</p>
                         <p style={{ fontSize: 13, color: tokens.grayMuted, marginTop: 4, opacity: 0.7 }}>
@@ -394,6 +396,57 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                                 </p>
                               </div>
                             </div>
+                          </td>
+
+                          {/* Tratamiento */}
+                          <td style={{ padding: "11px 16px" }}>
+                            {(() => {
+                              const treatment = patient.tratamiento;
+                              if (!treatment) {
+                                return <span style={{ color: tokens.grayBorder }}>—</span>;
+                              }
+                              const isFkt = treatment.toLowerCase().includes("fkt");
+                              const isRpg = treatment.toLowerCase().includes("rpg");
+                              
+                              let badgeStyles = {
+                                background: "#EFF6FF", // blue faint
+                                color: "#1D4ED8",
+                                borderColor: "#BFDBFE"
+                              };
+                              
+                              if (isRpg) {
+                                badgeStyles = {
+                                  background: "#F5F3FF", // purple faint
+                                  color: "#6D28D9",
+                                  borderColor: "#DDD6FE"
+                                };
+                              } else if (!isFkt) {
+                                badgeStyles = {
+                                  background: "#F0FDF4", // green faint
+                                  color: "#166534",
+                                  borderColor: "#BBF7D0"
+                                };
+                              }
+                              
+                              return (
+                                <span
+                                  title={treatment}
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    padding: "3px 10px",
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    whiteSpace: "nowrap",
+                                    border: "0.5px solid",
+                                    ...badgeStyles
+                                  }}
+                                >
+                                  {treatment}
+                                </span>
+                              );
+                            })()}
                           </td>
 
                           {/* Phone */}
@@ -739,6 +792,20 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                     placeholder="Ej: Ingeniero, Estudiante"
                     style={{ ...inputStyle, borderColor: focusedField === "ocup" ? tokens.blue : tokens.grayBorder }}
                     onFocus={() => setFocusedField("ocup")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </div>
+
+                {/* Tratamiento */}
+                <div>
+                  <label style={labelStyle}>Tratamiento</label>
+                  <input
+                    type="text"
+                    value={formData.tratamiento || ""}
+                    onChange={e => setFormData({ ...formData, tratamiento: e.target.value })}
+                    placeholder="Ej: FKT, RPG, etc."
+                    style={{ ...inputStyle, borderColor: focusedField === "tratamiento" ? tokens.blue : tokens.grayBorder }}
+                    onFocus={() => setFocusedField("tratamiento")}
                     onBlur={() => setFocusedField(null)}
                   />
                 </div>

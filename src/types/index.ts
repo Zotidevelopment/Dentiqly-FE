@@ -89,6 +89,7 @@ export interface Paciente {
   obra_social_nombre_custom?: string
   contacto_emergencia?: string
   telefono_emergencia?: string
+  tratamiento?: string
   createdAt: string
   updatedAt: string
 
@@ -97,6 +98,7 @@ export interface Paciente {
     id: number
     nombre: string
   }
+  planesTratamiento?: PlanTratamiento[]
 }
 
 export interface CrearPacienteData {
@@ -122,6 +124,7 @@ export interface CrearPacienteData {
   telefono_emergencia?: string
   observaciones?: string
   obra_social_nombre_custom?: string
+  tratamiento?: string
 }
 
 // Profesional types

@@ -294,6 +294,10 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     <span className="text-[12px] text-[#8A93A8]">Condición IVA</span>
                     <span className="text-[13px] font-medium text-[#0B1023]">{patient.condicion_iva || "-"}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Tratamiento</span>
+                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.tratamiento || "-"}</span>
+                  </div>
                   <div className="flex justify-between items-center pt-2.5 border-t border-gray-100">
                     <span className="text-[12px] text-[#8A93A8]">Asistencias registradas</span>
                     <span className="text-[13px] font-bold text-green-700">
