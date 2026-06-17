@@ -43,4 +43,15 @@ export const asistenciasApi = {
   archivarCicloManual: async (id: number): Promise<AsistenciaCiclo> => {
     return apiClient.put<AsistenciaCiclo>(`/asistencias-ciclos/${id}/archivar`, {})
   },
+
+  registrarSesionManual: async (
+    id: number,
+    data: {
+      fecha: string
+      profesional_id: number
+      servicio_id: number
+    }
+  ): Promise<AsistenciaCiclo> => {
+    return apiClient.post<AsistenciaCiclo>(`/asistencias-ciclos/${id}/registrar-sesion`, data)
+  },
 }

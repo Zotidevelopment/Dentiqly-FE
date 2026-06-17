@@ -16,6 +16,8 @@ import {
   X
 } from "lucide-react"
 import { asistenciasApi, AsistenciaCiclo } from "../../api/asistencias"
+import { profesionalesApi } from "../../api/profesionales"
+import { serviciosApi } from "../../api/servicios"
 import { useToast } from "../../hooks/use-toast"
 
 interface AsistenciasSectionProps {
@@ -38,7 +40,72 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
   const [manualLimit, setManualLimit] = useState(10)
   const [manualObs, setManualObs] = useState("")
 
+  // Registrar Sesión Manual
+  const [showRegistrarModal, setShowRegistrarModal] = useState(false)
+  const [fechaSesion, setFechaSesion] = useState("")
+  const [profesionales, setProfesionales] = useState<any[]>([])
+  const [servicios, setServicios] = useState<any[]>([])
+  const [selectedProfesionalId, setSelectedProfesionalId] = useState<number | null>(null)
+  const [selectedServicioId, setSelectedServicioId] = useState<number | null>(null)
+  const [submittingSesion, setSubmittingSesion] = useState(false)
+
   const { toast } = useToast()
+
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [profRes, servRes] = await Promise.all([
+          profesionalesApi.listar({ estado: "Activo", limit: 100 }),
+          serviciosApi.listar({ estado: "Activo", limit: 100 })
+        ]);
+        setProfesionales(profRes.data || []);
+        setServicios(servRes.data || []);
+      } catch (err) {
+        console.error("Error al cargar datos para el registro de asistencia:", err);
+      }
+    };
+    fetchDropdownData();
+  }, []);
+
+  const handleOpenRegistrarSesion = (cycle: AsistenciaCiclo) => {
+    const d = new Date()
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    setFechaSesion(`${year}-${month}-${day}`)
+    setSelectedProfesionalId(null)
+    setSelectedServicioId(null)
+    setShowRegistrarModal(true)
+  }
+
+  const handleRegistrarSesion = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activeCycle || !fechaSesion || !selectedProfesionalId || !selectedServicioId) return
+
+    setSubmittingSesion(true)
+    try {
+      await asistenciasApi.registrarSesionManual(activeCycle.id, {
+        fecha: fechaSesion,
+        profesional_id: selectedProfesionalId,
+        servicio_id: selectedServicioId
+      })
+      toast({
+        title: "Asistencia registrada",
+        description: "La sesión ha sido agregada correctamente al ciclo del paciente."
+      })
+      setShowRegistrarModal(false)
+      loadCycles()
+    } catch (err: any) {
+      console.error(err)
+      toast({
+        title: "Error al registrar sesión",
+        description: err.message || "No se pudo registrar la asistencia.",
+        variant: "destructive"
+      })
+    } finally {
+      setSubmittingSesion(false)
+    }
+  }
 
   const loadCycles = async () => {
     setLoading(true)
@@ -181,6 +248,13 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
 
           {activeCycle && (
             <div className="flex items-center gap-2">
+              <Button
+                onClick={() => handleOpenRegistrarSesion(activeCycle)}
+                className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white py-1.5 px-3.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Registrar Sesión
+              </Button>
               <Button
                 onClick={() => handleOpenConfig(activeCycle)}
                 variant="outline"
@@ -476,6 +550,91 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-5 py-2 text-xs"
                 >
                   Iniciar
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MODAL REGISTRAR SESION MANUAL ═══ */}
+      {showRegistrarModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+              <h3 className="font-extrabold text-gray-900 text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <Calendar className="h-4.5 w-4.5 text-[#2563FF]" />
+                Registrar Sesión
+              </h3>
+              <button
+                onClick={() => setShowRegistrarModal(false)}
+                className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleRegistrarSesion} className="p-5 space-y-4">
+              <div>
+                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">Fecha de la Sesión</label>
+                 <input
+                   type="date"
+                   required
+                   value={fechaSesion}
+                   onChange={(e) => setFechaSesion(e.target.value)}
+                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                 />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">Tratamiento / Servicio</label>
+                <select
+                  required
+                  value={selectedServicioId || ""}
+                  onChange={(e) => setSelectedServicioId(parseInt(e.target.value) || null)}
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                >
+                  <option value="" disabled>Seleccione un tratamiento...</option>
+                  {servicios.map(s => (
+                    <option key={s.id} value={s.id}>{s.nombre}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">Profesional</label>
+                <select
+                  required
+                  value={selectedProfesionalId || ""}
+                  onChange={(e) => setSelectedProfesionalId(parseInt(e.target.value) || null)}
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                >
+                  <option value="" disabled>Seleccione un profesional...</option>
+                  {profesionales.map(p => (
+                    <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center justify-end gap-3.5 pt-2 border-t border-gray-100">
+                <Button
+                  type="button"
+                  onClick={() => setShowRegistrarModal(false)}
+                  variant="outline"
+                  className="rounded-xl px-4 text-xs"
+                  disabled={submittingSesion}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-5 py-2 text-xs flex items-center gap-1.5"
+                  disabled={submittingSesion}
+                >
+                  {submittingSesion ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Registrando...
+                    </>
+                  ) : (
+                    "Confirmar Sesión"
+                  )}
                 </Button>
               </div>
             </form>
