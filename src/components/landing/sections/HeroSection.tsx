@@ -1,47 +1,11 @@
-import React, { useRef, useEffect, useState } from "react"
+import React, { useRef } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { ThinArrow } from "../components/ThinArrow"
-import { CheckCircle2, Star } from "lucide-react"
+import { HeroCalendarPreview } from "../components/HeroCalendarPreview"
+import { CheckCircle2, Clock, MessageSquare, Users, Zap } from "lucide-react"
 
-const AnimatedCounter: React.FC<{ end: number; suffix: string; label: string; delay: number }> = ({ end, suffix, label, delay }) => {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
-  const hasAnimated = useRef(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true
-          const duration = 2000
-          const startTime = Date.now()
-          const animate = () => {
-            const elapsed = Date.now() - startTime
-            const progress = Math.min(elapsed / duration, 1)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            setCount(Math.floor(eased * end))
-            if (progress < 1) requestAnimationFrame(animate)
-          }
-          setTimeout(animate, delay)
-        }
-      },
-      { threshold: 0.5 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [end, delay])
-
-  return (
-    <div ref={ref} className="text-center px-4">
-      <div className="text-2xl sm:text-3xl font-bold text-[#0047FF] tracking-tight">
-        +{count}{suffix}
-      </div>
-      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mt-1.5">{label}</div>
-    </div>
-  )
-}
-
+// ─── Hero ─────────────────────────────────────────────────────────────────────
 interface HeroSectionProps {
   onOpenDemo?: () => void
 }
@@ -52,152 +16,180 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-[#FAFCFF]"
+      className="relative overflow-hidden flex items-center pt-28 pb-16 lg:pt-32 lg:pb-24 lg:min-h-[740px] bg-white"
     >
-      {/* ── Background ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Soft, professional gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#EEF4FF] via-white to-[#FAFCFF]" />
+      {/* ── Copy (left side, constrained) ── */}
+      <div className="relative z-10 w-full px-6 sm:px-10 lg:pl-16 lg:pr-8">
+        <div className="flex flex-col items-start text-left lg:max-w-[560px] xl:max-w-[600px]">
 
-        {/* Soft grid lines (extremely subtle) */}
-        <div
-          className="absolute inset-0 opacity-[0.09]"
-          style={{
-            backgroundImage: `linear-gradient(to right, #0047FF 1px, transparent 1px), linear-gradient(to bottom, #0047FF 1px, transparent 1px)`,
-            backgroundSize: "64px 64px",
-          }}
-        />
-
-        {/* Very soft glow behind content */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0047FF]/5 rounded-full blur-[100px]" />
-      </div>
-
-      {/* ── Content ── */}
-      <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-
-        {/* Credibility badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05 }}
-          className="mb-6"
-        >
-          <span className="inline-flex items-center gap-2 bg-[#0047FF]/[0.05] border border-[#0047FF]/10 text-[#0047FF] px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
-            <Star className="w-3.5 h-3.5 fill-[#0047FF] text-[#0047FF]" />
-            Software de gestión odontológica en Argentina
-          </span>
-        </motion.div>
-
-        {/* Main headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[4rem] font-bold tracking-[-1.5px] leading-[1.12] text-[#0A0F2D] mb-6 max-w-[850px]"
-        >
-          Simplificá la gestión de tu <span className="text-[#0047FF]">clínica dental</span>
-        </motion.h1>
-
-        {/* Sub-headline — pain + benefit */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="text-base sm:text-lg text-gray-500 leading-relaxed max-w-[620px] mb-8"
-        >
-          Centralizá y automatizá tu agenda de turnos, fichas de pacientes y recordatorios automáticos. Dentiqly simplifica tu administración diaria para que te enfoques en la salud de tus pacientes.
-        </motion.p>
-
-        {/* Double CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full mb-5"
-        >
-          <Link
-            to="/register"
-            className="group bg-[#0047FF] text-white px-8 py-3.5 rounded-full text-[15px] font-semibold shadow-lg shadow-[#0047FF]/15 hover:shadow-xl hover:shadow-[#0047FF]/25 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 justify-center min-w-[220px]"
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.15 }}
+            className="text-[2.4rem] sm:text-[2.9rem] lg:text-[2.7rem] xl:text-[3.1rem] 2xl:text-[3.5rem] font-bold tracking-[-1.5px] leading-[1.08] text-[#0A0F2D] mb-4"
           >
-            <span>Probar gratis por 14 días</span>
-            <ThinArrow size={18} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-          </Link>
+            Tu agenda, sin papel ni WhatsApp.
+            <br />
+            <span className="text-[#0047FF]">Sola. Automática. Lista.</span>
+          </motion.h1>
 
-          <a
-            href="#funcionalidades"
-            onClick={(e) => {
-              e.preventDefault()
-              if (onOpenDemo) {
-                onOpenDemo()
-              } else {
-                document.querySelector("#funcionalidades")?.scrollIntoView({ behavior: "smooth" })
-              }
-            }}
-            className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-8 py-3.5 rounded-full text-[15px] font-semibold transition-all duration-200 flex items-center gap-2 justify-center min-w-[200px]"
+          {/* Subheadline */}
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.25 }}
+            className="text-[0.97rem] text-gray-500 leading-relaxed mb-6"
           >
-            <span>Ver demostración en vivo</span>
-          </a>
-        </motion.div>
+            Recordatorios automáticos por WhatsApp, agenda online 24 hs y fichas digitales en un solo lugar. Menos llamadas, menos ausencias, más tiempo para atender.
+          </motion.p>
 
-        {/* No credit card notice */}
+          {/* Benefits */}
+          <motion.ul
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.33 }}
+            className="space-y-2 mb-7"
+          >
+            {[
+              { icon: <MessageSquare className="w-4 h-4 text-[#0047FF]" />, text: "Recordatorios por WhatsApp — reduce ausencias hasta un 40%" },
+              { icon: <Clock className="w-4 h-4 text-[#0047FF]" />, text: "Turnos online disponibles 24 hs, sin llamadas ni secretaria" },
+              { icon: <Users className="w-4 h-4 text-[#0047FF]" />, text: "Fichas, odontograma e imágenes en un solo lugar" },
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-[13.5px] text-gray-600 font-medium">
+                <div className="mt-0.5 w-5 h-5 rounded-md bg-[#0047FF]/8 flex items-center justify-center shrink-0">
+                  {item.icon}
+                </div>
+                {item.text}
+              </li>
+            ))}
+          </motion.ul>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mb-4"
+          >
+            <Link
+              to="/register"
+              className="group bg-[#0047FF] text-white px-6 py-3 rounded-full text-[14.5px] font-semibold shadow-lg shadow-[#0047FF]/20 hover:shadow-xl hover:shadow-[#0047FF]/30 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
+            >
+              <Zap className="w-4 h-4 shrink-0" />
+              <span>Empezar gratis — 14 días</span>
+              <ThinArrow size={15} className="group-hover:translate-x-0.5 transition-transform duration-200 shrink-0" />
+            </Link>
+
+            <button
+              onClick={() => {
+                if (onOpenDemo) onOpenDemo()
+                else document.querySelector("#funcionalidades")?.scrollIntoView({ behavior: "smooth" })
+              }}
+              className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full text-[14.5px] font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
+            >
+              Ver demo en vivo
+            </button>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex items-center gap-1.5 text-[11.5px] text-gray-400"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
+            Sin tarjeta de crédito · Configuración en menos de 5 minutos
+          </motion.p>
+        </div>
+
+        {/* ── Mobile calendar (in flow, below copy) ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.45 }}
-          className="flex items-center gap-1.5 text-xs text-gray-400 mb-12"
-        >
-          <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-          Sin compromisos ni tarjeta de crédito
-        </motion.div>
-
-        {/* Product Screenshot */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 1, 0.5, 1] }}
-          className="relative w-full max-w-[1000px] mx-auto mb-14"
+          transition={{ duration: 0.7, delay: 0.55, ease: [0.25, 1, 0.5, 1] }}
+          className="lg:hidden mt-10"
         >
-          <div className="relative rounded-xl overflow-hidden border border-gray-200/50 shadow-[0_12px_40px_rgba(0,0,0,0.06)] bg-white"> */}
-        {/* Browser chrome bar */}
-        {/* <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+          <div className="rounded-2xl overflow-hidden shadow-[0_16px_48px_rgba(0,71,255,0.1)] ring-1 ring-gray-200/60 bg-white">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
               <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
               </div>
               <div className="flex-1 flex justify-center">
-                <div className="bg-white border border-gray-150 rounded px-3 py-0.5 text-[10px] text-gray-400 font-mono">
-                  app.dentiqly.com
+                <div className="bg-white border border-gray-200 rounded-md px-3 py-0.5 text-[10px] text-gray-400 font-mono">
+                  dentiqly.com/agenda
                 </div>
               </div>
             </div>
-            <img
-              src="/assets/screenshots/dashboard.png"
-              alt="Dentiqly - Dashboard de gestión odontológica"
-              loading="eager"
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        </motion.div> */}
-
-        {/* Stats counters */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.65 }}
-          className="flex flex-wrap items-center justify-center divide-y sm:divide-y-0 sm:divide-x divide-gray-150 gap-y-4 sm:gap-y-0 w-full max-w-2xl mx-auto py-4"
-        >
-          <div className="w-full sm:w-1/3">
-            <AnimatedCounter end={50} suffix="" label="Clínicas activas" delay={0} />
-          </div>
-          <div className="w-full sm:w-1/3">
-            <AnimatedCounter end={200} suffix="" label="Profesionales" delay={150} />
-          </div>
-          <div className="w-full sm:w-1/3">
-            <AnimatedCounter end={40} suffix="%" label="Menos ausencias" delay={300} />
+            <div className="h-[260px] overflow-hidden relative">
+              <div
+                className="absolute top-0 left-0 origin-top-left"
+                style={{ transform: "scale(0.5)", width: "200%", height: "200%" }}
+              >
+                <HeroCalendarPreview />
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
+
+      {/* ── Desktop calendar (absolute, desde el centro hasta el borde derecho) ── */}
+      {/* La section tiene overflow-hidden, así que el card se corta en el borde del viewport */}
+      <motion.div
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 1, 0.5, 1] }}
+        className="absolute inset-y-0 hidden lg:flex items-center z-10"
+        style={{ left: "50%", right: 0 }}
+      >
+        {/* Perspective wrapper — fija la altura del card */}
+        <div
+          className="relative w-full"
+          style={{ height: "560px", perspective: "1800px", perspectiveOrigin: "15% 50%" }}
+        >
+          {/* Card con efecto 3D */}
+          <div
+            className="rounded-l-2xl overflow-hidden bg-white w-full h-full flex flex-col"
+            style={{
+              transform: "rotateX(3deg) rotateY(-8deg) rotateZ(0.5deg)",
+              boxShadow:
+                "0 56px 140px rgba(0,71,255,0.16), 0 24px 64px rgba(0,0,0,0.10), 0 0 0 1px rgba(148,163,184,0.22)",
+              transformOrigin: "left center",
+            }}
+          >
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100 shrink-0">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+              </div>
+              <div className="flex-1 flex justify-center">
+                <div className="bg-white border border-gray-200 rounded-md px-3 py-0.5 text-[10px] text-gray-400 font-mono">
+                  app.dentiqly.com/agenda
+                </div>
+              </div>
+              <div className="flex items-center gap-1 text-[10px] font-bold text-[#0047FF] bg-[#0047FF]/8 px-2 py-0.5 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#0047FF] animate-pulse inline-block" />
+                En vivo
+              </div>
+            </div>
+
+            {/* Calendar — ocupa el resto del card */}
+            <div className="flex-1 relative overflow-hidden">
+              <div
+                className="absolute top-0 left-0 origin-top-left"
+                style={{ transform: "scale(0.62)", width: "161.3%", height: "161.3%" }}
+              >
+                <HeroCalendarPreview />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </motion.div>
     </section>
   )
 }

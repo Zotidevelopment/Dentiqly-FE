@@ -130,9 +130,10 @@ const STATUS_COLORS = {
 
 interface CalendarViewProps {
   onNavigate?: (view: string, params?: Record<string, any>) => void
+  landingMode?: boolean
 }
 
-export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
+export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingMode }) => {
   const { toast } = useToast()
   const [confirmAction, setConfirmAction] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -146,7 +147,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showNewModal, setShowNewModal] = useState(false)
   const [showBookingModal, setShowBookingModal] = useState(false)
-  const [viewType, setViewType] = useState<ViewType>('month')
+  const [viewType, setViewType] = useState<ViewType>(landingMode ? 'week' : 'month')
   const [patientSearch, setPatientSearch] = useState('')
   const [searchResults, setSearchResults] = useState<Turno[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
@@ -1322,6 +1323,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
   return (
     <div ref={containerRef} className={`h-auto flex flex-col font-sans relative ${isFullscreen ? 'bg-[#FAF9F6] p-8 overflow-y-auto w-full h-full' : ''}`}>
       {/* Top Header */}
+      {!landingMode && (
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 shrink-0">
         <div>
           <h1 className="text-[22px] font-semibold text-[#0B1023] tracking-[-0.3px]">Calendario de Turnos</h1>
@@ -1334,9 +1336,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           <Plus className="w-4 h-4" /> Nuevo Turno
         </Button>
       </div>
+      )}
 
       {/* Sub Header */}
-      <div className="flex flex-wrap justify-between items-center mb-3 gap-3 shrink-0">
+      {!landingMode && <div className="flex flex-wrap justify-between items-center mb-3 gap-3 shrink-0">
         <div className="flex flex-wrap items-center gap-2 relative">
           {/* Filters */}
           <div className="relative">
@@ -1482,14 +1485,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             )}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Main Area: Calendar Grid */}
       <div className="flex-initial flex flex-col">
         {/* Calendar Grid */}
         <div className="flex-initial bg-white rounded-2xl border border-[#E8E0D6] flex flex-col min-w-0 overflow-visible relative shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
           {/* Navigation Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
+          {!landingMode && <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
             <div className="flex flex-wrap items-center gap-4">
               <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
               <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
@@ -1582,7 +1585,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 setShowNewModal(true);
               }} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
             </div>
-          </div>
+          </div>}
 
           <div className="flex-initial bg-white">
             {viewType === 'day' && renderDayView()}
@@ -1593,7 +1596,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {selectedAppointment && (
+      {!landingMode && selectedAppointment && (
         <div className="fixed inset-0 bg-[#0B1023]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] max-w-md w-full overflow-hidden">
             <div className="px-6 py-4 border-b border-[#E8E0D6] flex items-center justify-between">
@@ -1768,7 +1771,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           </div>
         </div>
       )}
-      {showEditModal && selectedAppointment && (
+      {!landingMode && showEditModal && selectedAppointment && (
         <EditAppointmentModal
           appointment={selectedAppointment}
           onClose={() => setShowEditModal(false)}
@@ -1780,7 +1783,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         />
       )}
 
-      {showNewModal && (
+      {!landingMode && showNewModal && (
         <AdminAppointmentModal
           initialData={newAppointmentData || undefined}
           onClose={() => {
@@ -1796,7 +1799,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         />
       )}
 
-      {showBookingModal && (
+      {!landingMode && showBookingModal && (
         <AdminBookingModal
           onClose={() => setShowBookingModal(false)}
           onSuccess={() => {
@@ -1807,7 +1810,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         />
       )}
 
-      {confirmAction && (
+      {!landingMode && confirmAction && (
         <ConfirmationModal
           isOpen={confirmAction.isOpen}
           onClose={() => setConfirmAction(null)}
@@ -1819,7 +1822,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         />
       )}
 
-      {hoveredAppt && (
+      {!landingMode && hoveredAppt && (
         <div
           className="absolute bg-white border border-gray-100 rounded-2xl shadow-xl p-3.5 z-[100] pointer-events-none flex flex-col gap-1.5 w-64 text-left font-sans transition-all duration-150 animate-in fade-in-50 slide-in-from-bottom-2 duration-150"
           style={{
