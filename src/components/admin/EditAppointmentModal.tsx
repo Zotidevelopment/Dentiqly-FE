@@ -226,3 +226,4 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
         document.body
     )
 }
+

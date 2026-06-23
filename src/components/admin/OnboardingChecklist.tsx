@@ -308,13 +308,13 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
             ))}
           </div>
         )}
-        <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl px-6 py-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-            <PartyPopper className="w-5 h-5 text-emerald-500" />
+        <div className="bg-gradient-to-r from-[#2563FF]/10 to-[#0B1023]/5 border border-[#2563FF]/20 rounded-2xl px-6 py-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[#2563FF]/15 flex items-center justify-center shrink-0">
+            <PartyPopper className="w-5 h-5 text-[#2563FF]" />
           </div>
           <div>
-            <h3 className="font-bold text-emerald-700 text-sm">¡Tu clínica está lista!</h3>
-            <p className="text-xs text-emerald-600/70 mt-0.5">Completaste todos los pasos de configuración.</p>
+            <h3 className="font-bold text-[#0B1023] text-sm">¡Tu clínica está lista!</h3>
+            <p className="text-xs text-[#0B1023]/60 mt-0.5">Completaste todos los pasos de configuración.</p>
           </div>
         </div>
       </div>
@@ -415,14 +415,14 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
 
               {/* Icon + Title */}
               <span className="text-[#2563FF]/70 shrink-0">{step.icon}</span>
-              <span className="text-[13px] font-medium text-white/75 truncate flex-1">
+              <span className="text-[13px] font-bold text-white/80 truncate flex-1">
                 {step.title}
               </span>
 
               {/* Action */}
               <button
                 onClick={() => handleStepAction(step)}
-                className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[#2563FF] bg-[#2563FF]/10 hover:bg-[#2563FF]/20 transition-colors opacity-0 group-hover:opacity-100"
+                className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold text-[#02E3FF] bg-[#2563FF]/20 hover:bg-[#2563FF]/30 transition-colors opacity-0 group-hover:opacity-100"
               >
                 {step.cta}
                 <ChevronRight className="w-3 h-3" />
@@ -454,3 +454,4 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
     </div>
   )
 }
+

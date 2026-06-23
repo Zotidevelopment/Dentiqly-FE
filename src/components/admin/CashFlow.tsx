@@ -211,16 +211,16 @@ export default function CashFlow() {
                       onClick={() => exportApi.flujoCaja().catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar el flujo de caja" }))}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
-                        background: tokens.white, color: tokens.grayText,
-                        border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
+                        background: tokens.blue, color: tokens.white,
+                        border: "none", borderRadius: 999, padding: "9px 18px",
                         fontSize: 13, fontWeight: 500, cursor: "pointer",
                         fontFamily: "Inter, -apple-system, sans-serif",
                         transition: "all 0.15s",
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
-                      onMouseLeave={e => (e.currentTarget.style.background = tokens.white)}
+                      onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
+                      onMouseLeave={e => (e.currentTarget.style.background = tokens.blue)}
                     >
-                      <Download size={15} />
+                      <Download size={15} color={tokens.white} />
                       Exportar
                     </button>
                     <button
@@ -228,7 +228,7 @@ export default function CashFlow() {
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
                         background: "#2563FF", color: "#FFFFFF",
-                        border: "none", borderRadius: 10, padding: "9px 18px",
+                        border: "none", borderRadius: 999, padding: "9px 18px",
                         fontSize: 13, fontWeight: 700, cursor: "pointer",
                         fontFamily: "Inter, -apple-system, sans-serif",
                         transition: "background 0.15s",
@@ -244,7 +244,7 @@ export default function CashFlow() {
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
                         background: "#2563FF", color: "#FFFFFF",
-                        border: "none", borderRadius: 10, padding: "9px 18px",
+                        border: "none", borderRadius: 999, padding: "9px 18px",
                         fontSize: 13, fontWeight: 700, cursor: "pointer",
                         fontFamily: "Inter, -apple-system, sans-serif",
                         transition: "background 0.15s",
@@ -396,10 +396,10 @@ export default function CashFlow() {
             <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
                 <div style={{
                   flex: 1, display: "flex", alignItems: "center", gap: 10,
-                  background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
-                  borderRadius: 10, padding: "0 14px", height: 40,
+                  background: tokens.white, border: "1px solid rgba(37, 99, 255, 0.25)",
+                  borderRadius: 999, padding: "0 14px", height: 40,
                 }}>
-                  <Search size={15} color={tokens.grayMuted} />
+                  <Search size={15} color={tokens.blue} style={{ opacity: 0.5 }} />
                   <input
                     type="text"
                     placeholder="Buscar por descripción, paciente o forma de pago…"
@@ -407,7 +407,7 @@ export default function CashFlow() {
                     onChange={e => setSearchTerm(e.target.value)}
                     style={{
                       border: "none", outline: "none", background: "transparent",
-                      fontSize: 13, color: tokens.navy, flex: 1,
+                      fontSize: 13, color: tokens.blue, flex: 1,
                       fontFamily: "Inter, -apple-system, sans-serif",
                     }}
                   />
@@ -615,4 +615,5 @@ export default function CashFlow() {
         </div>
     );
 }
+
 

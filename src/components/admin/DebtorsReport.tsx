@@ -129,7 +129,7 @@ const DebtorsReport = () => {
             <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
                 <div style={{
                   flex: 1, display: "flex", alignItems: "center", gap: 10,
-                  background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
+                  background: tokens.white, border: "1px solid rgba(37, 99, 255, 0.2)",
                   borderRadius: 10, padding: "0 14px", height: 40,
                 }}>
                   <Search size={15} color={tokens.grayMuted} />
@@ -308,4 +308,5 @@ const DebtorsReport = () => {
 };
 
 export default DebtorsReport;
+
 

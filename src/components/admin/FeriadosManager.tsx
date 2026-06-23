@@ -121,7 +121,7 @@ export const FeriadosManager: React.FC = () => {
             style={{
               display: "flex", alignItems: "center", gap: 7,
               background: tokens.blue, color: tokens.white,
-              border: "none", borderRadius: 10, padding: "9px 18px",
+              border: "none", borderRadius: 999, padding: "9px 18px",
               fontSize: 13, fontWeight: 700, cursor: "pointer",
               fontFamily: "Inter, -apple-system, sans-serif",
               transition: "background 0.15s",
@@ -370,4 +370,5 @@ export const FeriadosManager: React.FC = () => {
     </div>
   )
 }
+
 

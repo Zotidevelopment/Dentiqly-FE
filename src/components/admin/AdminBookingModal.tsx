@@ -269,7 +269,7 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
                               setSearchPaciente(e.target.value)
                               setSelectedPacienteId(null)
                             }}
-                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#026498] text-gray-700 font-bold text-lg"
+                            className="w-full px-6 py-4 bg-white border border-[#2563FF]/20 rounded-2xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 text-gray-700 font-bold text-lg transition-all"
                           />
                           
                           {searchPaciente.length > 2 && !selectedPacienteId && (
@@ -377,3 +377,4 @@ export const AdminBookingModal: React.FC<AdminBookingModalProps> = ({
       </div>
   )
 }
+

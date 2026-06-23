@@ -218,16 +218,16 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 onClick={() => exportApi.pacientes().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar" }))}
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
-                  background: tokens.white, color: tokens.grayText,
-                  border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
+                  background: tokens.blue, color: tokens.white,
+                  border: "none", borderRadius: 999, padding: "9px 18px",
                   fontSize: 13, fontWeight: 500, cursor: "pointer",
                   fontFamily: "Inter, -apple-system, sans-serif",
                   transition: "all 0.15s",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
-                onMouseLeave={e => (e.currentTarget.style.background = tokens.white)}
+                onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = tokens.blue)}
               >
-                <Download size={15} />
+                <Download size={15} color={tokens.white} />
                 Exportar CSV
               </button>
               <button
@@ -235,7 +235,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
                   background: tokens.blue, color: tokens.white,
-                  border: "none", borderRadius: 10, padding: "9px 18px",
+                  border: "none", borderRadius: 999, padding: "9px 18px",
                   fontSize: 13, fontWeight: 700, cursor: "pointer",
                   fontFamily: "Inter, -apple-system, sans-serif",
                   transition: "background 0.15s",
@@ -244,7 +244,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 onMouseLeave={e => (e.currentTarget.style.background = tokens.blue)}
               >
                 <Plus size={15} />
-                Nuevo Paciente
+                + Nuevo paciente
               </button>
             </div>
           </div>
@@ -254,10 +254,10 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
             {/* Search */}
             <div style={{
               flex: 1, display: "flex", alignItems: "center", gap: 10,
-              background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
-              borderRadius: 10, padding: "0 14px", height: 40,
+              background: tokens.white, border: "1px solid rgba(37, 99, 255, 0.25)",
+              borderRadius: 999, padding: "0 14px", height: 40,
             }}>
-              <Search size={15} color={tokens.grayMuted} />
+              <Search size={15} color={tokens.blue} style={{ opacity: 0.5 }} />
               <input
                 type="text"
                 placeholder="Buscar por nombre, DNI, teléfono o email…"
@@ -265,7 +265,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1) }}
                 style={{
                   border: "none", outline: "none", background: "transparent",
-                  fontSize: 13, color: tokens.navy, flex: 1,
+                  fontSize: 13, color: tokens.blue, flex: 1,
                   fontFamily: "Inter, -apple-system, sans-serif",
                 }}
               />
@@ -303,7 +303,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                       <th key={i} style={{
                         textAlign: "left", padding: "12px 16px",
                         fontSize: 11, fontWeight: 600, color: tokens.grayMuted,
-                        textTransform: "uppercase", letterSpacing: "0.6px", whiteSpace: "nowrap",
+                        whiteSpace: "nowrap",
                       }}>
                         {col.label && (
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -795,7 +795,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   onClick={() => setShowModal(false)}
                   style={{
                     padding: "9px 18px", fontSize: 13, fontWeight: 500,
-                    border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 9,
+                    border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 999,
                     background: tokens.white, color: tokens.grayText, cursor: "pointer",
                     fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
                   }}
@@ -809,13 +809,13 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   style={{
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
                     background: tokens.blue, color: tokens.white,
-                    border: "none", borderRadius: 9, cursor: "pointer",
+                    border: "none", borderRadius: 999, cursor: "pointer",
                     fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.blueHover }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.blue }}
                 >
-                  {modalMode === "create" ? "Crear" : "Actualizar"} Paciente
+                  {modalMode === "create" ? "Crear" : "Actualizar"} paciente
                 </button>
               </div>
             </form>

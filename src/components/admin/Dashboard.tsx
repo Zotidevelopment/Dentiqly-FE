@@ -470,11 +470,11 @@ export const Dashboard: React.FC<{
               <div className="flex gap-5 mb-4">
                 <div>
                   <p className="text-2xl font-extrabold text-blue-900">{stats.totalPacientes}</p>
-                  <p className="text-[10px] font-semibold text-blue-600/70 uppercase tracking-wider">Total</p>
+                  <p className="text-[10px] font-semibold text-blue-600/70 tracking-wider">Total</p>
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-blue-900">{stats.turnosHoy}</p>
-                  <p className="text-[10px] font-semibold text-blue-600/70 uppercase tracking-wider">Hoy</p>
+                  <p className="text-[10px] font-semibold text-blue-600/70 tracking-wider">Hoy</p>
                 </div>
               </div>
               {/* Mini bar chart */}
@@ -489,24 +489,24 @@ export const Dashboard: React.FC<{
               </div>
             </div>
 
-            {/* Card 2 — Resumen de visitas (soft green) */}
-            <div className="bg-[#D1FAE5] rounded-2xl p-5 relative overflow-hidden group card-hover">
-              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-emerald-400/20 flex items-center justify-center">
-                <CalendarDays className="w-4 h-4 text-emerald-600" />
+            {/* Card 2 — Resumen de visitas (soft sky-blue) */}
+            <div className="bg-[#E0F2FE] rounded-2xl p-5 relative overflow-hidden group card-hover">
+              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-sky-400/20 flex items-center justify-center">
+                <CalendarDays className="w-4 h-4 text-sky-600" />
               </div>
-              <p className="text-sm font-bold text-emerald-900 mb-3">Resumen de turnos:</p>
+              <p className="text-sm font-bold text-sky-900 mb-3">Resumen de turnos:</p>
               <div className="flex gap-4 mb-4">
                 <div>
-                  <p className="text-2xl font-extrabold text-emerald-900">{stats.totalTurnos}</p>
-                  <p className="text-[10px] font-semibold text-emerald-600/70 uppercase tracking-wider">Total</p>
+                  <p className="text-2xl font-extrabold text-sky-900">{stats.totalTurnos}</p>
+                  <p className="text-[10px] font-semibold text-sky-600/70 tracking-wider">Total</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-emerald-900">{atendidos}</p>
-                  <p className="text-[10px] font-semibold text-emerald-600/70 uppercase tracking-wider">Atendidos</p>
+                  <p className="text-2xl font-extrabold text-sky-900">{atendidos}</p>
+                  <p className="text-[10px] font-semibold text-sky-600/70 tracking-wider">Atendidos</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-emerald-900">{pendientes}</p>
-                  <p className="text-[10px] font-semibold text-emerald-600/70 uppercase tracking-wider">Pendientes</p>
+                  <p className="text-2xl font-extrabold text-sky-900">{pendientes}</p>
+                  <p className="text-[10px] font-semibold text-sky-600/70 tracking-wider">Pendientes</p>
                 </div>
               </div>
               {/* Mini line chart */}
@@ -514,7 +514,7 @@ export const Dashboard: React.FC<{
                 <path
                   d={`M0,${30 - (stats.appointmentTrend[0]?.count / maxTrendValue) * 28} ${stats.appointmentTrend.map((d, i) => `L${(i / 6) * 100},${30 - (d.count / maxTrendValue) * 28}`).join(' ')}`}
                   fill="none"
-                  stroke="#059669"
+                  stroke="#0284C7"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -523,23 +523,23 @@ export const Dashboard: React.FC<{
               </svg>
             </div>
 
-            {/* Card 3 — Por estado (soft rose) */}
-            <div className="bg-[#FFE4E6] rounded-2xl p-5 relative overflow-hidden group card-hover">
-              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-rose-400/20 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-rose-600" />
+            {/* Card 3 — Por estado (dark navy blue) */}
+            <div className="bg-[#0B1023] rounded-2xl p-5 relative overflow-hidden group card-hover text-white">
+              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-sky-400" />
               </div>
-              <p className="text-sm font-bold text-rose-900 mb-3">Por estado:</p>
+              <p className="text-sm font-bold text-white mb-3">Por estado:</p>
               <div className="flex gap-5 mb-4">
                 {[
-                  { n: atendidos, label: 'Atendido', dot: 'bg-emerald-500' },
-                  { n: confirmados, label: 'Confirm.', dot: 'bg-blue-500' },
-                  { n: ausentes, label: 'Ausente', dot: 'bg-rose-500' },
+                  { n: atendidos, label: 'Atendido', dot: 'bg-sky-400', textColor: 'text-white' },
+                  { n: confirmados, label: 'Confirm.', dot: 'bg-blue-500', textColor: 'text-white' },
+                  { n: ausentes, label: 'Ausente', dot: 'bg-white/40', textColor: 'text-white/75' },
                 ].map((s) => (
                   <div key={s.label} className="flex items-center gap-1.5">
                     <span className={`w-2 h-2 rounded-full ${s.dot}`} />
                     <div>
-                      <p className="text-lg font-extrabold text-rose-900 leading-none">{s.n}</p>
-                      <p className="text-[9px] font-semibold text-rose-600/70 uppercase">{s.label}</p>
+                      <p className={`text-lg font-extrabold ${s.textColor} leading-none`}>{s.n}</p>
+                      <p className="text-[9px] font-semibold text-white/50">{s.label}</p>
                     </div>
                   </div>
                 ))}
@@ -547,37 +547,37 @@ export const Dashboard: React.FC<{
               {/* Horizontal bars */}
               <div className="space-y-1.5">
                 {[
-                  { w: stats.totalTurnos > 0 ? (atendidos / stats.totalTurnos) * 100 : 0, color: 'bg-emerald-500' },
+                  { w: stats.totalTurnos > 0 ? (atendidos / stats.totalTurnos) * 100 : 0, color: 'bg-sky-400' },
                   { w: stats.totalTurnos > 0 ? (confirmados / stats.totalTurnos) * 100 : 0, color: 'bg-blue-500' },
-                  { w: stats.totalTurnos > 0 ? (ausentes / stats.totalTurnos) * 100 : 0, color: 'bg-rose-500' },
+                  { w: stats.totalTurnos > 0 ? (ausentes / stats.totalTurnos) * 100 : 0, color: 'bg-white/25' },
                 ].map((bar, i) => (
-                  <div key={i} className="h-1.5 bg-rose-200/50 rounded-full overflow-hidden">
+                  <div key={i} className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <div className={`h-full ${bar.color} rounded-full transition-all duration-1000`} style={{ width: `${Math.max(bar.w, 2)}%` }} />
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Card 4 — Servicios (soft violet) */}
-            <div className="bg-[#EDE9FE] rounded-2xl p-5 relative overflow-hidden group card-hover">
-              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-violet-400/20 flex items-center justify-center">
-                <ClipboardList className="w-4 h-4 text-violet-600" />
+            {/* Card 4 — Servicios (white/slate) */}
+            <div className="bg-white border border-gray-150 rounded-2xl p-5 relative overflow-hidden group card-hover">
+              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#2563FF]/10 flex items-center justify-center">
+                <ClipboardList className="w-4 h-4 text-[#2563FF]" />
               </div>
-              <p className="text-sm font-bold text-violet-900 mb-3">Servicios:</p>
+              <p className="text-sm font-bold text-[#0B1023] mb-3">Servicios:</p>
               <div className="flex gap-5 mb-4">
                 <div>
-                  <p className="text-2xl font-extrabold text-violet-900">{stats.totalServicios}</p>
-                  <p className="text-[10px] font-semibold text-violet-600/70 uppercase tracking-wider">Activos</p>
+                  <p className="text-2xl font-extrabold text-[#0B1023]">{stats.totalServicios}</p>
+                  <p className="text-[10px] font-semibold text-gray-400 tracking-wider">Activos</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-violet-900">{stats.totalProfesionales}</p>
-                  <p className="text-[10px] font-semibold text-violet-600/70 uppercase tracking-wider">Profesionales</p>
+                  <p className="text-2xl font-extrabold text-[#0B1023]">{stats.totalProfesionales}</p>
+                  <p className="text-[10px] font-semibold text-gray-400 tracking-wider">Profesionales</p>
                 </div>
               </div>
               {/* Decorative dots grid */}
               <div className="flex gap-1.5 flex-wrap">
                 {Array.from({ length: Math.min(stats.totalServicios, 20) }).map((_, i) => (
-                  <div key={i} className="w-3 h-3 rounded-full bg-violet-400/30 group-hover:bg-violet-400/50 transition-colors" />
+                  <div key={i} className="w-3 h-3 rounded-full bg-sky-200/40 group-hover:bg-sky-200/60 transition-colors" />
                 ))}
               </div>
             </div>
@@ -604,14 +604,14 @@ export const Dashboard: React.FC<{
               <div className="relative z-10 flex items-center gap-2">
                 <button
                   onClick={handleCopyLink}
-                  className="flex items-center gap-2 text-sm font-semibold bg-gray-50 hover:bg-gray-100 text-[#0B1023] px-4 py-2 rounded-xl transition-all active:scale-[0.98] border border-gray-100"
+                  className="flex items-center gap-2 text-sm font-semibold bg-gray-50 hover:bg-gray-100 text-[#0B1023] px-4 py-2 rounded-full transition-all active:scale-[0.98] border border-gray-100"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
                   {copied ? '¡Copiado!' : 'Copiar enlace'}
                 </button>
                 <button
                   onClick={() => setHideBanner(true)}
-                  className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-50 rounded-full transition-colors"
                 >
                   <X className="w-4 h-4 text-gray-300" />
                 </button>
@@ -638,12 +638,12 @@ export const Dashboard: React.FC<{
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Paciente</th>
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Servicio</th>
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Estado</th>
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Hora</th>
-                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-right">Acciones</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider">Paciente</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider">Servicio</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider">Estado</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider">Fecha</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider">Hora</th>
+                    <th className="pb-2.5 text-[10px] font-semibold text-gray-400 tracking-wider text-right">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -661,7 +661,7 @@ export const Dashboard: React.FC<{
                   ) : (
                     stats.turnosRecientes.map((turno) => {
                       const initials = `${turno.paciente?.nombre?.charAt(0) || ''}${turno.paciente?.apellido?.charAt(0) || ''}`;
-                      const avatarBgs = ['bg-blue-500/20 text-blue-400', 'bg-emerald-500/20 text-emerald-400', 'bg-violet-500/20 text-violet-400', 'bg-amber-500/20 text-amber-400', 'bg-rose-500/20 text-rose-400', 'bg-cyan-500/20 text-cyan-400'];
+                      const avatarBgs = ['bg-blue-500/20 text-blue-500', 'bg-[#0B1023]/10 text-[#0B1023]', 'bg-[#2563FF]/15 text-[#2563FF]', 'bg-sky-400/20 text-sky-500', 'bg-blue-300/20 text-blue-400', 'bg-[#02E3FF]/15 text-[#02E3FF]'];
                       const avatarStyle = avatarBgs[turno.id % avatarBgs.length];
 
                       return (
@@ -683,11 +683,11 @@ export const Dashboard: React.FC<{
                             <span className="text-[13px] text-gray-500 font-medium">{turno.servicio?.nombre || 'General'}</span>
                           </td>
                           <td className="py-3">
-                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${turno.estado === 'Atendido' ? 'bg-emerald-50 text-emerald-600' :
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${turno.estado === 'Atendido' ? 'bg-sky-50 text-sky-600' :
                                 turno.estado === 'Confirmado' || turno.estado === 'Confirmado por Whatsapp' ? 'bg-blue-50 text-blue-600' :
-                                  turno.estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' :
-                                    turno.estado === 'Ausente' ? 'bg-gray-100 text-gray-500' :
-                                      'bg-red-50 text-red-600'
+                                  turno.estado === 'Pendiente' ? 'bg-gray-100 text-gray-500' :
+                                    turno.estado === 'Ausente' ? 'bg-gray-50 text-gray-400' :
+                                      'bg-slate-100 text-slate-400'
                               }`}>
                               {turno.estado}
                             </span>
@@ -705,14 +705,14 @@ export const Dashboard: React.FC<{
                               <div className="flex justify-end gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
                                 <button
                                   onClick={() => handleUpdateStatus(turno.id, 'Confirmado')}
-                                  className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/30 transition-all active:scale-95"
+                                  className="w-7 h-7 rounded-full bg-[#2563FF]/15 text-[#2563FF] flex items-center justify-center hover:bg-[#2563FF]/25 transition-all active:scale-95"
                                   title="Confirmar"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleUpdateStatus(turno.id, 'Cancelado')}
-                                  className="w-7 h-7 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center hover:bg-red-500/30 transition-all active:scale-95"
+                                  className="w-7 h-7 rounded-full bg-[#0B1023]/10 text-[#0B1023] flex items-center justify-center hover:bg-[#0B1023]/20 transition-all active:scale-95"
                                   title="Cancelar"
                                 >
                                   <X className="w-3.5 h-3.5" />
@@ -741,7 +741,7 @@ export const Dashboard: React.FC<{
             <MiniCalendar />
             <button
               onClick={() => onNavigate?.('calendar')}
-              className="w-full mt-4 py-2.5 bg-dental-secondary text-white text-sm font-bold rounded-xl hover:opacity-90 transition-all active:scale-[0.98]"
+              className="w-full mt-4 py-2.5 bg-dental-secondary text-white text-sm font-bold rounded-full hover:opacity-90 transition-all active:scale-[0.98]"
             >
               Agregar turno
             </button>
@@ -770,7 +770,7 @@ export const Dashboard: React.FC<{
                     <div
                       key={turno.id}
                       className="bg-gray-50 rounded-xl p-3 border-l-[3px] transition-all hover:bg-gray-100 hover:scale-[1.02]"
-                      style={{ borderLeftColor: ['#60A5FA', '#34D399', '#A78BFA', '#FBBF24', '#FB7185', '#22D3EE'][i % 6] }}
+                      style={{ borderLeftColor: ['#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6', '#EC4899'][i % 6] }}
                     >
                       <div className="flex items-start justify-between">
                         <div>
@@ -799,7 +799,7 @@ export const Dashboard: React.FC<{
             {stats.turnosDeHoy.length > 0 && (
               <button
                 onClick={() => onNavigate?.('calendar')}
-                className="w-full mt-4 py-2 text-xs font-semibold text-dental-secondary bg-dental-secondary/5 rounded-xl hover:bg-dental-secondary/10 transition-colors border border-dental-secondary/10"
+                className="w-full mt-4 py-2 text-xs font-semibold text-dental-secondary bg-dental-secondary/5 rounded-full hover:bg-dental-secondary/10 transition-colors border border-dental-secondary/10"
               >
                 Ver todos los detalles
               </button>
@@ -810,3 +810,4 @@ export const Dashboard: React.FC<{
     </div>
   );
 };
+

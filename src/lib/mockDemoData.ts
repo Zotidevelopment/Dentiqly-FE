@@ -19,7 +19,7 @@ const KEYS = {
 }
 
 // Versión de base de datos para forzar refresco cuando actualizamos datos mock
-const DEMO_VERSION = "v7"
+const DEMO_VERSION = "v9"
 
 // Inicialización de datos por defecto si no existen
 const getTodayDateStr = (offsetDays = 0) => {
@@ -93,6 +93,7 @@ const defaultServicios: Servicio[] = [
     precio_base: 4500,
     duracion_estimada: 30,
     estado: "Activo",
+    color: "#3B82F6",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -103,6 +104,7 @@ const defaultServicios: Servicio[] = [
     precio_base: 7000,
     duracion_estimada: 30,
     estado: "Activo",
+    color: "#10B981",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -113,6 +115,7 @@ const defaultServicios: Servicio[] = [
     precio_base: 14000,
     duracion_estimada: 45,
     estado: "Activo",
+    color: "#F59E0B",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -123,6 +126,7 @@ const defaultServicios: Servicio[] = [
     precio_base: 55000,
     duracion_estimada: 60,
     estado: "Activo",
+    color: "#EF4444",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

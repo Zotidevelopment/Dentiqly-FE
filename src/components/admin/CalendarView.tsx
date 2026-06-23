@@ -6,6 +6,8 @@ import { ConfirmationModal } from '../ui/ConfirmationModal'
 import {
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
+  ArrowRight,
   Calendar as CalendarIcon,
   Clock,
   User,
@@ -22,7 +24,8 @@ import {
   X,
   Hourglass,
   Maximize2,
-  Minimize2
+  Minimize2,
+  ChevronDown
 } from 'lucide-react'
 import { turnosApi, adminApi, exportApi } from '../../api'
 import type { Turno, Profesional } from '../../types'
@@ -33,14 +36,14 @@ import { profesionalesApi } from '../../api/profesionales'
 import { configuracionApi } from '../../api/configuracion'
 
 const PROF_COLORS = [
-  '#F472B6', // pink-400
-  '#60A5FA', // blue-400
-  '#34D399', // emerald-400
-  '#A78BFA', // violet-400
-  '#FBBF24', // amber-400
-  '#F87171', // red-400
-  '#2DD4BF', // teal-400
-  '#818CF8', // indigo-400
+  '#2563FF', // Brand blue
+  '#0B1023', // Navy
+  '#02E3FF', // Celeste
+  '#1D4ED8', // Darker Blue
+  '#60A5FA', // Light Blue
+  '#1E3A8A', // Indigo/Navy
+  '#93C5FD', // Light sky blue
+  '#3B82F6', // Medium Blue
 ]
 
 const getProfColor = (id?: number) => {
@@ -89,16 +92,31 @@ const isColorDark = (color?: string): boolean => {
   return false
 }
 
-const getStatusIcon = (estado: string, sizeClass = "w-3 h-3") => {
+const addOpacityToHex = (colorStr: string, opacityHex = 'D0'): string => {
+  if (!colorStr) return ''
+  const cleanColor = colorStr.trim()
+  if (cleanColor.startsWith('#')) {
+    let hex = cleanColor.substring(1)
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+    }
+    if (hex.length === 6) {
+      return `#${hex}${opacityHex}`
+    }
+  }
+  return cleanColor
+}
+
+const getStatusIcon = (estado: string, sizeClass = "w-3 h-3", colorClass?: string) => {
   switch (estado) {
     case 'Atendido':
-      return <CheckCircle2 className={`${sizeClass} text-[#22C55E]`} strokeWidth={3} fill="currentColor" fillOpacity={0.15} />
+      return <CheckCircle2 className={`${sizeClass} ${colorClass || 'text-[#3B82F6]'}`} strokeWidth={3} fill="currentColor" fillOpacity={0.15} />
     case 'Cancelado':
     case 'Ausente':
-      return <XCircle className={`${sizeClass} text-[#EF4444]`} strokeWidth={3} fill="currentColor" fillOpacity={0.15} />
+      return <XCircle className={`${sizeClass} ${colorClass || 'text-[#EF4444]'}`} strokeWidth={3} fill="currentColor" fillOpacity={0.15} />
     case 'Pendiente':
     case 'Esperando confirmación':
-      return <Hourglass className={`${sizeClass} text-[#F59E0B]`} strokeWidth={3} />
+      return <Hourglass className={`${sizeClass} ${colorClass || 'text-[#EAB308]'}`} strokeWidth={3} />
     case 'Confirmado':
     case 'Confirmado por email':
     case 'Confirmado por SMS':
@@ -114,18 +132,18 @@ type ViewType = 'day' | 'week' | 'month' | 'agenda'
 
 // Status colors mapping
 const STATUS_COLORS = {
-  'Pendiente': '#F59E0B', // Amber
-  'Creado': '#3B82F6', // Blue
-  'Esperando confirmación': '#EAB308', // Yellow
-  'Confirmado por email': '#22C55E', // Green
-  'Confirmado por SMS': '#22C55E', // Green
-  'Confirmado por Whatsapp': '#22C55E', // Green
-  'Confirmado': '#22C55E', // Green
-  'En sala de espera': '#A855F7', // Purple
-  'Atendiéndose': '#EC4899', // Pink
-  'Atendido': '#06B6D4', // Cyan
-  'Cancelado': '#EF4444', // Red
-  'Ausente': '#000000', // Black
+  'Pendiente': '#EAB308',
+  'Creado': '#EAB308',
+  'Esperando confirmación': '#FCD34D',
+  'Confirmado por email': '#10B981',
+  'Confirmado por SMS': '#10B981',
+  'Confirmado por Whatsapp': '#10B981',
+  'Confirmado': '#10B981',
+  'En sala de espera': '#059669',
+  'Atendiéndose': '#34D399',
+  'Atendido': '#3B82F6',
+  'Cancelado': '#EF4444',
+  'Ausente': '#94A3B8',
 } as const
 
 interface CalendarViewProps {
@@ -691,7 +709,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 const apptColor = colorMode === 'status'
                   ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                   : (appt.servicio?.color || getProfColor(appt.profesional_id))
-                const statusIcon = getStatusIcon(appt.estado)
+                const statusIcon = getStatusIcon(appt.estado, "w-4 h-4", "text-white")
                 const isDark = isColorDark(apptColor)
 
                 return (
@@ -737,13 +755,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       }}
                       className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1.5 relative group"
                       style={{
-                        backgroundColor: apptColor,
+                        backgroundColor: addOpacityToHex(apptColor, 'B3'),
                         border: `1.5px solid ${apptColor}`,
                       }}
                     >
                       {statusIcon && (
-                        <div className="absolute top-1.5 right-1.5 opacity-60 pointer-events-none">
-                          {React.cloneElement(statusIcon as React.ReactElement, { className: "w-4 h-4" })}
+                        <div className="absolute top-1.5 right-1.5 opacity-70 pointer-events-none text-white">
+                          {React.cloneElement(statusIcon as React.ReactElement, { className: "w-4 h-4 text-white" })}
                         </div>
                       )}
 
@@ -752,14 +770,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         <div className="absolute top-2 right-8 flex flex-row gap-1.5 z-20 transition-opacity">
                           <button
                             onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
-                            className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-md transition-all scale-90 hover:scale-110"
+                            className="w-6 h-6 bg-[#2563FF] text-white rounded-full flex items-center justify-center hover:bg-[#1D4ED8] shadow-md transition-all scale-90 hover:scale-110"
                             title="Marcar como Atendido"
                           >
                             <Check className="w-4 h-4" strokeWidth={4} />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
-                            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md transition-all scale-90 hover:scale-110"
+                            className="w-6 h-6 bg-[#0B1023] text-white rounded-full flex items-center justify-center hover:bg-black shadow-md transition-all scale-90 hover:scale-110"
                             title="Marcar como Cancelado"
                           >
                             <X className="w-4 h-4" strokeWidth={4} />
@@ -767,17 +785,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         </div>
                       )}
 
-                      <div className="relative z-10">
+                      <div className="relative z-10 text-white">
                         <div className="flex items-start justify-between mb-0.5">
-                          <div className={`font-bold capitalize leading-tight text-xs pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'} ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`font-bold capitalize leading-tight text-xs pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
                             {appt.paciente?.nombre} {appt.paciente?.apellido}
                           </div>
                         </div>
-                        <div className={`text-[10px] font-bold leading-none flex gap-1 ${isDark ? 'text-white/90' : 'text-gray-600'}`}>
+                        <div className="text-[10px] font-bold leading-none flex gap-1 text-white/90">
                           <span>{appt.hora_inicio.substring(0, 5)} - {appt.hora_fin.substring(0, 5)}</span>
                         </div>
                         {appt.height > 40 && (
-                          <div className={`text-[9px] truncate mt-1 font-medium ${isDark ? 'text-white/80' : 'text-gray-500 opacity-80'}`}>
+                          <div className="text-[9px] truncate mt-1 font-medium text-white/75">
                             {getInitials(appt.profesional)} • {appt.servicio?.nombre}
                           </div>
                         )}
@@ -863,7 +881,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         const apptColor = colorMode === 'status'
                           ? (STATUS_COLORS[appt.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                           : (appt.servicio?.color || getProfColor(appt.profesional_id))
-                        const statusIcon = getStatusIcon(appt.estado)
+                        const statusIcon = getStatusIcon(appt.estado, "w-3 h-3", "text-white")
                         const isDark = isColorDark(apptColor)
 
                         return (
@@ -909,13 +927,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                               }}
                               className="h-full w-full rounded-xl shadow-sm cursor-move hover:brightness-95 transition-all overflow-hidden flex flex-col p-1 relative group"
                               style={{
-                                backgroundColor: apptColor,
+                                backgroundColor: addOpacityToHex(apptColor, 'B3'),
                                 border: `1px solid ${apptColor}`,
                               }}
                             >
                               {statusIcon && (
-                                <div className="absolute top-1 right-1 opacity-60 pointer-events-none">
-                                  {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3 h-3" })}
+                                <div className="absolute top-1 right-1 opacity-70 pointer-events-none text-white">
+                                  {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3 h-3 text-white" })}
                                 </div>
                               )}
 
@@ -924,14 +942,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 <div className="absolute top-1 right-5 flex flex-row gap-1 z-20 transition-opacity">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Atendido'); }}
-                                    className="w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 shadow-sm transition-all scale-75 hover:scale-100"
+                                    className="w-5 h-5 bg-[#2563FF] text-white rounded-full flex items-center justify-center hover:bg-[#1D4ED8] shadow-sm transition-all scale-75 hover:scale-100"
                                     title="Atendido"
                                   >
                                     <Check className="w-3 h-3" strokeWidth={4} />
                                   </button>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); handleUpdateStatus(appt.id, 'Cancelado'); }}
-                                    className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-sm transition-all scale-75 hover:scale-100"
+                                    className="w-5 h-5 bg-[#0B1023] text-white rounded-full flex items-center justify-center hover:bg-black shadow-sm transition-all scale-75 hover:scale-100"
                                     title="Cancelado"
                                   >
                                     <X className="w-3 h-3" strokeWidth={4} />
@@ -939,13 +957,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                                 </div>
                               )}
 
-                              <div className="relative z-10">
+                              <div className="relative z-10 text-white">
                                 <div className="flex justify-between items-start">
-                                  <div className={`font-bold capitalize leading-tight text-[10px] pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'} ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                  <div className={`font-bold capitalize leading-tight text-[10px] pr-1 ${appt.height > 40 ? 'line-clamp-2 whitespace-normal break-words' : 'truncate'}`}>
                                     {appt.paciente?.nombre} {appt.paciente?.apellido}
                                   </div>
                                 </div>
-                                <div className={`text-[9px] font-bold leading-none mt-0.5 ${isDark ? 'text-white/90' : 'text-gray-600'}`}>
+                                <div className="text-[9px] font-bold leading-none mt-0.5 text-white/90">
                                   {appt.hora_inicio.substring(0, 5)}-{appt.hora_fin.substring(0, 5)}
                                 </div>
                               </div>
@@ -1054,7 +1072,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                       const apptColor = colorMode === 'status'
                         ? (STATUS_COLORS[appointment.estado as keyof typeof STATUS_COLORS] || '#3B82F6')
                         : (appointment.servicio?.color || getProfColor(appointment.profesional_id))
-                      const statusIcon = getStatusIcon(appointment.estado)
+                      const statusIcon = getStatusIcon(appointment.estado, "w-3.5 h-3.5", "text-white")
                       const isDark = isColorDark(apptColor)
                       return (
                         <div
@@ -1083,13 +1101,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                             setHoveredAppt(null)
                           }}
                           className="p-1 rounded-md text-[9px] cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 overflow-hidden relative"
-                          style={{ backgroundColor: apptColor, border: `1px solid ${apptColor}` }}
+                          style={{
+                            backgroundColor: addOpacityToHex(apptColor, 'B3'),
+                            border: `1px solid ${apptColor}`,
+                          }}
                         >
-                          <span className={`font-bold shrink-0 ${isDark ? 'text-white' : 'text-gray-900'}`}>{appointment.hora_inicio.substring(0, 5)}</span>
-                          <span className={`truncate font-semibold pr-1 ${isDark ? 'text-white/90' : 'text-gray-700'}`}>{appointment.paciente?.apellido}</span>
+                          <span className="font-bold shrink-0 text-white">{appointment.hora_inicio.substring(0, 5)}</span>
+                          <span className="truncate font-semibold pr-1 text-white/95">{appointment.paciente?.apellido}</span>
                           {statusIcon && (
-                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-60">
-                              {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5" })}
+                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-70 text-white">
+                              {React.cloneElement(statusIcon as React.ReactElement, { className: "w-3.5 h-3.5 text-white" })}
                             </div>
                           )}
                         </div>
@@ -1257,7 +1278,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   {!isAtendido && !isCancelado && (
                     <button
                       onClick={() => handleUpdateStatus(appt.id, 'Atendido')}
-                      className="p-2 bg-green-50 text-green-600 border border-green-100 hover:bg-green-600 hover:text-white rounded-xl transition-all shadow-sm"
+                      className="p-2 bg-[#EEF3FF] text-[#2563FF] border border-[#2563FF]/30 hover:bg-[#2563FF] hover:text-white rounded-xl transition-all shadow-sm"
                       title="Marcar como Atendido"
                     >
                       <Check className="w-4 h-4" strokeWidth={3} />
@@ -1267,7 +1288,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   {!isCancelado && !isAtendido && (
                     <button
                       onClick={() => handleUpdateStatus(appt.id, 'Cancelado')}
-                      className="p-2 bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm"
+                      className="p-2 bg-[#F1F5F9] text-[#0B1023] border border-[#E2E0DB] hover:bg-[#0B1023] hover:text-white rounded-xl transition-all shadow-sm"
                       title="Marcar como Cancelado"
                     >
                       <X className="w-4 h-4" strokeWidth={3} />
@@ -1277,7 +1298,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   {appt.paciente?.telefono && (
                     <button
                       onClick={() => handleWhatsApp(appt)}
-                      className="p-2 bg-[#E8F8F0] text-[#075E54] border border-[#25D366]/20 hover:bg-[#25D366] hover:text-white rounded-xl transition-all shadow-sm flex items-center justify-center"
+                      className="p-2 bg-[#EEF3FF] text-[#2563FF] border border-[#2563FF]/20 hover:bg-[#2563FF] hover:text-white rounded-xl transition-all shadow-sm flex items-center justify-center"
                       title="Enviar recordatorio WhatsApp"
                     >
                       <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -1300,7 +1321,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                   {/* Delete button */}
                   <button
                     onClick={() => handleDeleteAppointment(appt.id)}
-                    className="p-2 bg-red-50 text-red-500 border border-red-100 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm"
+                    className="p-2 bg-[#F1F5F9] text-[#0B1023] border border-[#E2E0DB] hover:bg-[#0B1023] hover:text-white rounded-xl transition-all shadow-sm"
                     title="Eliminar Turno"
                   >
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1330,7 +1351,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
         <Button onClick={() => {
           setNewAppointmentData({ fecha: '', hora_inicio: '', sobre_turno: false });
           setShowNewModal(true);
-        }} className="bg-dental-secondary hover:opacity-90 text-white rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-sm text-[13px] font-bold transition-all">
+        }} className="bg-dental-secondary hover:opacity-90 text-white rounded-full px-5 py-2.5 flex items-center gap-2 shadow-sm text-[13px] font-bold transition-all">
           <Plus className="w-4 h-4" /> Nuevo Turno
         </Button>
       </div>
@@ -1342,49 +1363,59 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           <div className="relative">
             <button
               onClick={() => setShowFilterPanel(!showFilterPanel)}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
+              className="flex items-center gap-2 px-4 py-2 bg-[#2563FF] border border-[#2563FF] text-white rounded-full font-semibold hover:bg-[#1D4ED8] text-[13px] transition-all shadow-sm"
             >
-              <Filter className="w-4 h-4 text-[#8A93A8]" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-[#2563FF]"></span>}
+              <Filter className="w-4 h-4 text-white" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-white/70"></span>}
             </button>
 
             {showFilterPanel && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowFilterPanel(false)} />
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl p-4 z-50">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md border border-[#2563FF]/15 rounded-2xl shadow-[0_20px_50px_rgba(11,16,35,0.15)] p-4.5 z-50">
                   <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Profesional</label>
-                      <select
-                        value={selectedProfessionalId || ''}
-                        onChange={(e) => setSelectedProfessionalId(e.target.value ? parseInt(e.target.value) : null)}
-                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
-                      >
-                        <option value="">Todos los profesionales</option>
-                        {professionals.map(p => (
-                          <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
-                        ))}
-                      </select>
+                      <label className="text-[10px] font-bold text-[#8A93A8] mb-1.5 block uppercase tracking-wider">Profesional</label>
+                      <div className="relative">
+                        <select
+                          value={selectedProfessionalId || ''}
+                          onChange={(e) => setSelectedProfessionalId(e.target.value ? parseInt(e.target.value) : null)}
+                          className="w-full appearance-none bg-[#F8FAFC] border border-[#2563FF]/10 rounded-xl pl-3 pr-10 py-2.5 text-[13px] font-semibold text-[#0B1023] focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 outline-none cursor-pointer transition-all"
+                        >
+                          <option value="">Todos los profesionales</option>
+                          {professionals.map(p => (
+                            <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-[#2563FF]">
+                          <ChevronDown className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-[#8A93A8] mb-2 block uppercase tracking-wider">Servicio</label>
-                      <select
-                        value={selectedServiceId || ''}
-                        onChange={(e) => setSelectedServiceId(e.target.value ? parseInt(e.target.value) : null)}
-                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
-                      >
-                        <option value="">Todos los servicios</option>
-                        {servicios.map(s => (
-                          <option key={s.id} value={s.id}>{s.nombre}</option>
-                        ))}
-                      </select>
+                      <label className="text-[10px] font-bold text-[#8A93A8] mb-1.5 block uppercase tracking-wider">Servicio</label>
+                      <div className="relative">
+                        <select
+                          value={selectedServiceId || ''}
+                          onChange={(e) => setSelectedServiceId(e.target.value ? parseInt(e.target.value) : null)}
+                          className="w-full appearance-none bg-[#F8FAFC] border border-[#2563FF]/10 rounded-xl pl-3 pr-10 py-2.5 text-[13px] font-semibold text-[#0B1023] focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 outline-none cursor-pointer transition-all"
+                        >
+                          <option value="">Todos los servicios</option>
+                          {servicios.map(s => (
+                            <option key={s.id} value={s.id}>{s.nombre}</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-[#2563FF]">
+                          <ChevronDown className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
                     {(selectedProfessionalId || selectedServiceId) && (
                       <Button
                         variant="ghost"
-                        className="w-full text-xs font-bold text-red-500 hover:bg-red-50"
+                        className="w-full text-xs font-bold text-[#2563FF] hover:bg-[#EEF3FF] rounded-xl py-2"
                         onClick={() => { setSelectedProfessionalId(null); setSelectedServiceId(null); }}
                       >
-                        Limpiar Filtros
+                        Limpiar filtros
                       </Button>
                     )}
                   </div>
@@ -1392,25 +1423,26 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               </>
             )}
           </div>
-          <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
-            <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
-            <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
-            <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
-            <button onClick={() => setViewType('agenda')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'agenda' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Agenda</button>
+          {/* View type selector — pill style matching navbar */}
+          <div className="flex items-center gap-0.5 bg-[#F0F4FF] rounded-full px-1.5 py-1.5 h-[38px]">
+            <button onClick={() => setViewType('day')} className={`px-3.5 h-full transition-all text-[12px] font-semibold rounded-full whitespace-nowrap ${ viewType === 'day' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}>Diario</button>
+            <button onClick={() => setViewType('week')} className={`px-3.5 h-full transition-all text-[12px] font-semibold rounded-full whitespace-nowrap ${ viewType === 'week' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}>Semanal</button>
+            <button onClick={() => setViewType('month')} className={`px-3.5 h-full transition-all text-[12px] font-semibold rounded-full whitespace-nowrap ${ viewType === 'month' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}>Mensual</button>
+            <button onClick={() => setViewType('agenda')} className={`px-3.5 h-full transition-all text-[12px] font-semibold rounded-full whitespace-nowrap ${ viewType === 'agenda' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}>Agenda</button>
           </div>
-          {/* Color Mode Selector */}
-          <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
-            <span className="px-3 text-[#8A93A8] border-r border-[#E8E0D6] bg-gray-50/50 h-full flex items-center text-[10px] uppercase tracking-wider font-bold shrink-0">Colores</span>
+          {/* Color Mode Selector — pill style */}
+          <div className="flex items-center gap-0.5 bg-[#F0F4FF] rounded-full px-1.5 py-1.5 h-[38px]">
+            <span className="px-2 text-[#8A93A8] bg-transparent h-full flex items-center text-[10px] font-bold shrink-0">Colores</span>
             <button 
               onClick={() => setColorMode('service')} 
-              className={`px-3.5 h-full transition ${colorMode === 'service' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              className={`px-3 h-full transition-all text-[12px] font-semibold rounded-full ${ colorMode === 'service' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}
               title="Colorear por Servicios"
             >
               Servicios
             </button>
             <button 
               onClick={() => setColorMode('status')} 
-              className={`px-3.5 h-full border-l border-[#E8E0D6] transition ${colorMode === 'status' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              className={`px-3 h-full transition-all text-[12px] font-semibold rounded-full ${ colorMode === 'status' ? 'bg-[#2563FF] text-white shadow-sm' : 'text-[#8A93A8] hover:text-[#4B5568] hover:bg-white/60'}`}
               title="Colorear por Estados"
             >
               Estados
@@ -1418,36 +1450,36 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
           </div>
           <button
             onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
+            className="flex items-center gap-2 px-4 py-2 bg-[#2563FF] border border-[#2563FF] text-white rounded-full font-semibold hover:bg-[#1D4ED8] text-[13px] transition-all shadow-sm"
           >
-            <Download className="w-4 h-4 text-[#8A93A8]" /> Exportar
+            <Download className="w-4 h-4 text-white" /> Exportar
           </button>
           <button
             onClick={toggleFullscreen}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
+            className="flex items-center gap-2 px-4 py-2 bg-[#2563FF] border border-[#2563FF] text-white rounded-full font-semibold hover:bg-[#1D4ED8] text-[13px] transition-all shadow-sm"
           >
             {isFullscreen ? (
               <>
-                <Minimize2 className="w-4 h-4 text-[#8A93A8]" />
-                <span>Salir Completa</span>
+                <Minimize2 className="w-4 h-4 text-white" />
+                <span>Salir completa</span>
               </>
             ) : (
               <>
-                <Maximize2 className="w-4 h-4 text-[#8A93A8]" />
-                <span>Pantalla Completa</span>
+                <Maximize2 className="w-4 h-4 text-white" />
+                <span>Pantalla completa</span>
               </>
             )}
           </button>
         </div>
         {/* Patient search inside subheader */}
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative w-full sm:w-auto">
-            <Search className="w-4 h-4 text-[#8A93A8] absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-auto group">
+            <Search className="w-4 h-4 text-[#2563FF]/30 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-[#2563FF] transition-colors" />
             <input type="text" placeholder="Buscar paciente..."
               value={patientSearch}
               onChange={(e) => setPatientSearch(e.target.value)}
               onFocus={() => patientSearch.trim().length >= 2 && setShowSearchResults(true)}
-              className="pl-9 pr-4 py-2 bg-white border border-[#E8E0D6] rounded-xl text-[13px] text-[#0B1023] outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 w-full sm:w-64 placeholder:text-[#B5AFA8] transition-all" />
+              className="pl-9 pr-4 py-[7px] bg-white border border-[#2563FF]/25 rounded-full text-[13px] text-[#2563FF]/40 placeholder:text-[#2563FF]/40 focus:text-[#2563FF] focus:placeholder:text-[#2563FF]/50 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 w-full sm:w-64 transition-all" />
             {showSearchResults && searchResults.length > 0 && (
               <div className="absolute top-full right-0 mt-2 w-full sm:w-80 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] max-h-60 overflow-y-auto no-scrollbar">
                 <div className="p-2">
@@ -1494,56 +1526,56 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
               <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
                 <button onClick={goToToday} className="px-3 py-1 text-[11px] font-semibold text-[#4B5568] hover:bg-white rounded-lg transition-colors">Hoy</button>
-                <button onClick={() => navigate('prev')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronLeft className="w-4 h-4 text-[#8A93A8]" /></button>
-                <button onClick={() => navigate('next')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronRight className="w-4 h-4 text-[#8A93A8]" /></button>
+                <button onClick={() => navigate('prev')} className="p-1 hover:bg-white rounded-lg transition-colors"><ArrowLeft className="w-4 h-4 text-[#8A93A8]" strokeWidth={1.5} /></button>
+                <button onClick={() => navigate('next')} className="p-1 hover:bg-white rounded-lg transition-colors"><ArrowRight className="w-4 h-4 text-[#8A93A8]" strokeWidth={1.5} /></button>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8] uppercase tracking-wider">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] font-semibold text-[#8A93A8]">
               {colorMode === 'status' ? (
                 <>
                   <button
                     onClick={() => toggleStatusFilter('Pendiente')}
                     className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
-                      selectedStatuses.includes('Pendiente')
-                        ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                       selectedStatuses.includes('Pendiente')
+                        ? 'bg-yellow-50 text-[#CA8A04] border-yellow-300 hover:bg-yellow-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
                         : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
-                    }`}
+                     }`}
                     title="Filtrar Pendientes"
                   >
-                    <Hourglass className="w-3 h-3" /> Pendiente
+                    <Hourglass className="w-3 h-3 text-[#CA8A04]" /> Pendiente
                   </button>
                   <button
                     onClick={() => toggleStatusFilter('Confirmado')}
                     className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
-                      selectedStatuses.includes('Confirmado')
-                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                       selectedStatuses.includes('Confirmado')
+                        ? 'bg-green-50 text-[#059669] border-green-300 hover:bg-green-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
                         : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
-                    }`}
+                     }`}
                     title="Filtrar Confirmados"
                   >
-                    <div className={`w-2 h-2 rounded-full ${selectedStatuses.includes('Confirmado') ? 'bg-green-500' : 'bg-gray-400'}`}></div> Confirmado
+                    <div className={`w-2 h-2 rounded-full ${selectedStatuses.includes('Confirmado') ? 'bg-[#10B981]' : 'bg-gray-400'}`}></div> Confirmado
                   </button>
                   <button
                     onClick={() => toggleStatusFilter('Atendido')}
                     className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
-                      selectedStatuses.includes('Atendido')
-                        ? 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                       selectedStatuses.includes('Atendido')
+                        ? 'bg-blue-50 text-[#2563FF] border-blue-300 hover:bg-blue-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
                         : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
-                    }`}
+                     }`}
                     title="Filtrar Atendidos"
                   >
-                    <CheckCircle2 className="w-3 h-3" /> Atendido
+                    <CheckCircle2 className="w-3 h-3 text-[#2563FF]" /> Atendido
                   </button>
                   <button
                     onClick={() => toggleStatusFilter('Cancelado')}
                     className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all ${
-                      selectedStatuses.includes('Cancelado')
-                        ? 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                       selectedStatuses.includes('Cancelado')
+                        ? 'bg-red-50 text-[#DC2626] border-red-300 hover:bg-red-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
                         : 'bg-gray-50/50 text-gray-400 border-gray-200/50 opacity-50 hover:opacity-75 font-normal'
-                    }`}
+                     }`}
                     title="Filtrar Cancelados"
                   >
-                    <XCircle className="w-3 h-3" /> Cancelado
+                    <XCircle className="w-3 h-3 text-[#DC2626]" /> Cancelado
                   </button>
                 </>
               ) : (
@@ -1689,8 +1721,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                 </div>
 
                 {selectedAppointment.sobre_turno && (
-                  <div className="bg-amber-50 rounded-xl p-2.5 flex items-center gap-2">
-                    <span className="text-[11px] font-semibold text-amber-700 uppercase tracking-wider">Sobreturno</span>
+                  <div className="bg-[#EEF3FF] border border-[#2563FF]/20 rounded-xl p-2.5 flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-[#2563FF] uppercase tracking-wider">Sobreturno</span>
                   </div>
                 )}
 
@@ -1722,7 +1754,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
               <div className="flex flex-wrap justify-end gap-2.5 pt-4 border-t border-[#E8E0D6]/60">
                 <button
                   onClick={() => handleDeleteAppointment(selectedAppointment.id)}
-                  className="px-4 py-2 text-[13px] font-medium text-red-600 bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all"
+                  className="px-4 py-2 text-[13px] font-medium text-[#0B1023] bg-gray-50 border border-[#E2E0DB] rounded-xl hover:bg-[#0B1023] hover:text-white transition-all"
                 >
                   Eliminar
                 </button>
@@ -1735,7 +1767,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         setSelectedAppointment(null);
                         toast({ title: "Éxito", description: "Turno marcado como Atendido" });
                       }}
-                      className="px-4 py-2 text-[13px] font-medium text-green-700 bg-green-50 border border-green-100 rounded-xl hover:bg-green-100 transition-all flex items-center gap-1.5"
+                      className="px-4 py-2 text-[13px] font-medium text-[#2563FF] bg-[#EEF3FF] border border-[#2563FF]/30 rounded-xl hover:bg-[#2563FF] hover:text-white transition-all flex items-center gap-1.5"
                     >
                       <Check className="w-4 h-4" strokeWidth={3} /> Atendido
                     </button>
@@ -1745,7 +1777,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
                         setSelectedAppointment(null);
                         toast({ title: "Éxito", description: "Turno marcado como Cancelado" });
                       }}
-                      className="px-4 py-2 text-[13px] font-medium text-red-700 bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-all flex items-center gap-1.5"
+                      className="px-4 py-2 text-[13px] font-medium text-[#0B1023] bg-[#F1F5F9] border border-[#E2E0DB] rounded-xl hover:bg-[#0B1023] hover:text-white transition-all flex items-center gap-1.5"
                     >
                       <X className="w-4 h-4" strokeWidth={3} /> Cancelar
                     </button>
@@ -1858,7 +1890,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate }) => {
             </div>
           )}
           {(hoveredAppt.appointment.paciente?.obraSocial?.nombre || hoveredAppt.appointment.paciente?.obra_social_nombre_custom) && (
-            <div className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 w-fit">
+            <div className="text-[9px] font-bold text-[#1D4ED8] bg-[#EEF3FF] px-1.5 py-0.5 rounded border border-[#2563FF]/20 w-fit">
               {hoveredAppt.appointment.paciente.obraSocial?.nombre || hoveredAppt.appointment.paciente.obra_social_nombre_custom}
               {hoveredAppt.appointment.paciente.numero_afiliado ? ` (Nº ${hoveredAppt.appointment.paciente.numero_afiliado})` : ''}
             </div>

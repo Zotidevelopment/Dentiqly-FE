@@ -48,7 +48,7 @@ export function LiquidacionDetailModal({
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
                 {!liquidacion ? null : (<>
                 <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
-                    <DialogTitle className="text-xl font-normal">Liquidación</DialogTitle>
+                    <DialogTitle className="text-xl font-bold text-[#0B1023]">Liquidación</DialogTitle>
                     {/* Close button is handled by DialogContent usually, but if we need custom one */}
                 </DialogHeader>
 
@@ -79,15 +79,15 @@ export function LiquidacionDetailModal({
 
                     {/* Observaciones */}
                     {liquidacion.observaciones && (
-                        <div className="bg-gray-50 p-3 rounded-md text-sm border">
-                            <span className="font-medium block mb-1">Observaciones / Descripción:</span>
+                        <div className="bg-[#2563FF]/5 p-3 rounded-md text-sm border border-[#2563FF]/15">
+                            <span className="font-bold text-[#0B1023] block mb-1">Observaciones / Descripción:</span>
                             {liquidacion.observaciones}
                         </div>
                     )}
 
                     {/* Table */}
                     <div>
-                        <h3 className="text-lg font-medium mb-4">Detalle de la liquidación</h3>
+                        <h3 className="text-lg font-bold text-[#0B1023] mb-4">Detalle de la liquidación</h3>
                         <div className="border rounded-md">
                             <Table>
                                 <TableHeader>
@@ -140,8 +140,8 @@ export function LiquidacionDetailModal({
                     <div>
                         {onDelete && (
                             <Button
-                                variant="destructive"
-                                className="text-white hover:bg-red-700"
+                                variant="outline"
+                                className="border-[#0B1023] text-[#0B1023] hover:bg-[#0B1023] hover:text-white font-bold"
                                 onClick={() => onDelete(liquidacion.id)}
                             >
                                 <Trash2 className="w-4 h-4 mr-2" />

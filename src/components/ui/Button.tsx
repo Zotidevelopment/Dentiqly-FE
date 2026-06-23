@@ -15,7 +15,8 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const hasRoundedClass = className.split(' ').some(c => c.startsWith('rounded-') || c === 'rounded')
+  const baseClasses = `inline-flex items-center justify-center font-medium ${hasRoundedClass ? '' : 'rounded-lg'} transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2`
 
   const variantClasses = {
     primary: 'bg-[#2563FF] text-white hover:bg-[#1D4ED8] focus:ring-[#2563FF]',

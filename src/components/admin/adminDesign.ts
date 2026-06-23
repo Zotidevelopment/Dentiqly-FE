@@ -2,7 +2,7 @@ import type React from "react"
 
 export const tokens = {
   blue: "var(--brand-primary, #2563FF)",
-  blueHover: "var(--brand-primary-hover, #1E40AF)",
+  blueHover: "var(--brand-primary-hover, #1D4ED8)",
   blueFaint: "#EEF3FF",
   navy: "#0B1023",
 
@@ -14,20 +14,20 @@ export const tokens = {
   rowHover: "#F0F2F5",
   white: "#FFFFFF",
 
-  green: "#22C55E",
-  greenFaint: "#EDFAF4",
-  greenText: "#15803D",
+  green: "#2563FF", // Compliant success color: brand blue
+  greenFaint: "#EEF3FF", // Faint blue
+  greenText: "#1D4ED8", // Darker blue
 
-  red: "#EF4444",
-  redFaint: "#FEF2F2",
-  redText: "#B91C1C",
+  red: "#0B1023", // Compliant danger/delete color: navy
+  redFaint: "#F1F5F9", // Faint gray/white
+  redText: "#0B1023", // Navy
 
-  orange: "#F59E0B",
-  orangeFaint: "#FFF7ED",
-  orangeText: "#92400E",
+  orange: "#02E3FF", // Compliant warning/pending color: celeste
+  orangeFaint: "#EEF3FF", // Faint blue
+  orangeText: "#0047FF", // Deep brand blue
 
-  violet: "#7C3AED",
-  violetFaint: "#F3EEFF",
+  violet: "#0B1023", // Compliant accent color: navy
+  violetFaint: "#EEF3FF", // Faint blue
 
   grayDot: "#CBD5E1",
   grayPill: "#F1F5F9",
@@ -39,25 +39,24 @@ export const tokens = {
   sidebarBg: "#0B1023",
 
   celeste: "var(--brand-secondary, #2563FF)",
-  celesteHover: "#00C4DD",
+  celesteHover: "#1D4ED8",
 
   avatarColors: [
     { bg: "#DBEAFE", color: "#2563FF" },
-    { bg: "#D1FAE5", color: "#16A34A" },
-    { bg: "#EDE9FE", color: "#7C3AED" },
-    { bg: "#FEF3C7", color: "#B45309" },
-    { bg: "#FFE4E6", color: "#DC2626" },
-    { bg: "#CFFAFE", color: "#0D9488" },
+    { bg: "#EEF3FF", color: "#1D4ED8" },
+    { bg: "#E0F2FE", color: "#0047FF" },
+    { bg: "#F1F5F9", color: "#0B1023" },
+    { bg: "#0B1023", color: "#FFFFFF" },
+    { bg: "#2563FF", color: "#FFFFFF" },
   ],
 }
 
 export const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: 12,
-  fontWeight: 600,
+  fontWeight: 652,
+  fontVariationSettings: "'wght' 652",
   color: tokens.grayMuted,
-  textTransform: "uppercase",
-  letterSpacing: "0.5px",
   marginBottom: 6,
 }
 
@@ -70,12 +69,14 @@ export const inputStyle: React.CSSProperties = {
   outline: "none",
   color: tokens.navy,
   background: tokens.white,
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "'Instrument Sans', sans-serif",
+  letterSpacing: "-0.6px",
   transition: "all 0.15s",
 }
 
 export const pageWrapper: React.CSSProperties = {
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "'Instrument Sans', sans-serif",
+  letterSpacing: "-0.6px",
 }
 
 export const cardStyle: React.CSSProperties = {
@@ -88,7 +89,8 @@ export const cardStyle: React.CSSProperties = {
 
 export const tableHeaderStyle: React.CSSProperties = {
   fontSize: 10,
-  fontWeight: 600,
+  fontWeight: 652,
+  fontVariationSettings: "'wght' 652",
   color: tokens.grayMuted,
   textTransform: "uppercase",
   letterSpacing: "0.08em",
@@ -109,12 +111,14 @@ export const btnPrimary: React.CSSProperties = {
   background: "var(--admin-button-bg, #2563FF)",
   color: "var(--admin-button-text, #FFFFFF)",
   border: "none",
-  borderRadius: 12,
+  borderRadius: 999,
   fontSize: 13,
-  fontWeight: 700,
+  fontWeight: 652,
+  fontVariationSettings: "'wght' 652",
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "'Instrument Sans', sans-serif",
+  letterSpacing: "-0.6px",
 }
 
 export const btnSecondary: React.CSSProperties = {
@@ -125,12 +129,14 @@ export const btnSecondary: React.CSSProperties = {
   background: tokens.white,
   color: tokens.grayText,
   border: `1px solid ${tokens.cardBorder}`,
-  borderRadius: 12,
+  borderRadius: 999,
   fontSize: 13,
-  fontWeight: 600,
+  fontWeight: 652,
+  fontVariationSettings: "'wght' 652",
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "'Instrument Sans', sans-serif",
+  letterSpacing: "-0.6px",
 }
 
 export const btnDanger: React.CSSProperties = {
@@ -140,13 +146,15 @@ export const btnDanger: React.CSSProperties = {
   padding: "8px 14px",
   background: tokens.redFaint,
   color: tokens.redText,
-  border: `1px solid #FECACA`,
-  borderRadius: 10,
+  border: `1px solid ${tokens.grayBorder}`,
+  borderRadius: 999,
   fontSize: 12,
-  fontWeight: 600,
+  fontWeight: 652,
+  fontVariationSettings: "'wght' 652",
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "'Instrument Sans', sans-serif",
+  letterSpacing: "-0.6px",
 }
 
 export const modalOverlay: React.CSSProperties = {
@@ -197,10 +205,8 @@ export const statusBadge = (estado: string): React.CSSProperties => {
     gap: 6,
     padding: "3px 10px",
     borderRadius: 999,
-    fontSize: 10,
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
+    fontSize: 11,
+    fontWeight: 600,
     background: s.bg,
     color: s.color,
   }

@@ -209,7 +209,7 @@ export function NuevaLiquidacionModal({
                         <div className="grid grid-cols-2 gap-12">
                             {/* Periodo Column */}
                             <div className="space-y-4">
-                                <Label className="text-base font-medium">Período</Label>
+                                <Label className="text-base font-bold">Período</Label>
                                 <RadioGroup value={periodo} onValueChange={setPeriodo} className="space-y-3">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="hoy" id="hoy" />
@@ -255,7 +255,7 @@ export function NuevaLiquidacionModal({
 
                             {/* Tipo Column */}
                             <div className="space-y-4">
-                                <Label className="text-base font-medium">Tipo</Label>
+                                <Label className="text-base font-bold">Tipo</Label>
                                 <RadioGroup value={tipo} onValueChange={setTipo} className="space-y-3">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="pago_recibido" id="pago_recibido" />
@@ -292,11 +292,11 @@ export function NuevaLiquidacionModal({
                         </div>
 
                         {/* Info Box */}
-                        <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-md">
-                            <h4 className="font-medium text-orange-800 mb-1">
+                        <div className="bg-[#0B1023]/6 border-l-4 border-[#2563FF] p-4 rounded-r-md">
+                            <h4 className="font-bold text-[#0B1023] mb-1">
                                 {tipo === "obra_social" ? "Obra social" : tipo === "pago_recibido" ? "Pago recibido" : "Tratamiento en progreso"}
                             </h4>
-                            <p className="text-sm text-orange-700">
+                            <p className="text-sm text-[#0B1023]/70">
                                 {tipo === "obra_social"
                                     ? "Vas a liquidar tratamientos autorizados en progreso o completados de pacientes que tengan obra social."
                                     : tipo === "pago_recibido"
@@ -313,13 +313,13 @@ export function NuevaLiquidacionModal({
                             <p><strong>Cantidad de prestaciones:</strong> {simulationResult.cantidad_prestaciones}</p>
 
                             <div className="pt-2 border-t mt-2">
-                                <Label className="text-sm font-medium text-gray-700">Total a liquidar</Label>
+                                <Label className="text-sm font-bold text-[#0B1023]">Total a liquidar</Label>
                                 <div className="flex items-center mt-1">
-                                    <span className="text-lg font-bold text-green-600 mr-2">$</span>
+                                    <span className="text-lg font-bold text-[#2563FF] mr-2">$</span>
                                     <input
                                         type="number"
                                         step="0.01"
-                                        className="text-lg font-bold text-green-600 bg-transparent border-b border-green-300 focus:outline-none focus:border-green-600 w-32"
+                                        className="text-lg font-bold text-[#2563FF] bg-transparent border-b border-[#2563FF]/30 focus:outline-none focus:border-[#2563FF] w-32"
                                         value={simulationResult.monto_profesional}
                                         onChange={(e) => setSimulationResult({ ...simulationResult, monto_profesional: e.target.value })}
                                     />
@@ -356,7 +356,7 @@ export function NuevaLiquidacionModal({
                         <Button
                             onClick={step === "form" ? handleSimular : handleConfirmar}
                             disabled={simulating || loading}
-                            className="bg-indigo-600 hover:bg-indigo-700"
+                            className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-bold"
                         >
                             {simulating ? <Spinner className="w-4 h-4 mr-2" /> : null}
                             {step === "form" ? "SIMULAR" : "CONFIRMAR"}

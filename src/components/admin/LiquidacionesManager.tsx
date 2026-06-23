@@ -142,7 +142,7 @@ export function LiquidacionesManager() {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: tokens.navy, letterSpacing: "-0.5px", margin: 0 }}>
             Liquidaciones
           </h1>
           <p style={{ fontSize: 13, color: tokens.grayMuted, marginTop: 3, fontWeight: 400 }}>
@@ -154,16 +154,16 @@ export function LiquidacionesManager() {
             onClick={() => exportApi.liquidaciones().catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar" }))}
             style={{
               display: "flex", alignItems: "center", gap: 7,
-              background: tokens.white, color: tokens.grayText,
-              border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
-              fontSize: 13, fontWeight: 500, cursor: "pointer",
-              fontFamily: "Inter, -apple-system, sans-serif",
+              background: tokens.blue, color: tokens.white,
+              border: "none", borderRadius: 999, padding: "9px 18px",
+              fontSize: 13, fontWeight: 600, cursor: "pointer",
+              fontFamily: "'Instrument Sans', sans-serif",
               transition: "all 0.15s",
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
-            onMouseLeave={e => (e.currentTarget.style.background = tokens.white)}
+            onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
+            onMouseLeave={e => (e.currentTarget.style.background = tokens.blue)}
           >
-            <Download size={15} />
+            <Download size={15} color={tokens.white} />
             Exportar CSV
           </button>
           <button
@@ -171,9 +171,9 @@ export function LiquidacionesManager() {
             style={{
               display: "flex", alignItems: "center", gap: 7,
               background: tokens.blue, color: tokens.white,
-              border: "none", borderRadius: 10, padding: "9px 18px",
+              border: "none", borderRadius: 999, padding: "9px 18px",
               fontSize: 13, fontWeight: 700, cursor: "pointer",
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "'Instrument Sans', sans-serif",
               transition: "background 0.15s",
             }}
             onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
@@ -189,10 +189,10 @@ export function LiquidacionesManager() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 10,
-          background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
-          borderRadius: 10, padding: "0 14px", height: 40,
+          background: tokens.white, border: "1px solid rgba(37, 99, 255, 0.25)",
+          borderRadius: 999, padding: "0 14px", height: 40,
         }}>
-          <Search size={15} color={tokens.grayMuted} />
+          <Search size={15} color={tokens.blue} style={{ opacity: 0.5 }} />
           <input
             type="text"
             placeholder="Buscar por profesional…"
@@ -200,8 +200,8 @@ export function LiquidacionesManager() {
             onChange={e => setSearchTerm(e.target.value)}
             style={{
               border: "none", outline: "none", background: "transparent",
-              fontSize: 13, color: tokens.navy, flex: 1,
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontSize: 13, color: tokens.blue, flex: 1,
+              fontFamily: "'Instrument Sans', sans-serif",
             }}
           />
         </div>
@@ -410,4 +410,5 @@ export function LiquidacionesManager() {
     </div>
   )
 }
+
 

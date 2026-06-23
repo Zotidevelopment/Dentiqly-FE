@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Helvetica Neue is a system font — no import needed */
 
 @tailwind base;
 @tailwind components;
@@ -6,12 +6,81 @@
 
 @layer base {
   body {
-    font-family: 'Instrument Sans', system-ui, sans-serif;
-    letter-spacing: -0.01em;
+    font-family: 'DM Sans', sans-serif;
+    font-variation-settings: "wght" 400;
+    letter-spacing: -0.6px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  h1, h2, h3, h4, h5, h6, th, strong,
+  .font-medium, .font-semibold, .font-bold, .font-extrabold, .font-black,
+  button, label, .label, th, thead th {
+    font-weight: 652 !important;
+    font-variation-settings: "wght" 652 !important;
+    letter-spacing: -0.6px !important;
+  }
 }
+
+/* ─── Dashboard Active (Instrument Sans) Overrides ─── */
+body.dashboard-active,
+body.dashboard-active button,
+body.dashboard-active input,
+body.dashboard-active select,
+body.dashboard-active textarea,
+body.dashboard-active [data-radix-portal] *,
+body.dashboard-active .font-sans,
+body.dashboard-active .font-medium,
+body.dashboard-active .font-semibold,
+body.dashboard-active .font-bold,
+body.dashboard-active .font-extrabold {
+  font-family: 'Instrument Sans', sans-serif !important;
+}
+
+body.dashboard-active {
+  font-variation-settings: "wght" 500 !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.2px !important;
+}
+
+body.dashboard-active h1,
+body.dashboard-active h2,
+body.dashboard-active h3,
+body.dashboard-active h4,
+body.dashboard-active h5,
+body.dashboard-active h6,
+body.dashboard-active th,
+body.dashboard-active strong,
+body.dashboard-active .font-bold,
+body.dashboard-active .font-extrabold,
+body.dashboard-active .font-black {
+  font-weight: 700 !important;
+  font-variation-settings: "wght" 700 !important;
+  letter-spacing: -0.2px !important;
+}
+
+body.dashboard-active .font-semibold {
+  font-weight: 600 !important;
+  font-variation-settings: "wght" 600 !important;
+  letter-spacing: -0.2px !important;
+}
+
+body.dashboard-active .font-medium,
+body.dashboard-active button,
+body.dashboard-active label,
+body.dashboard-active .label,
+body.dashboard-active th,
+body.dashboard-active thead th {
+  font-weight: 500 !important;
+  font-variation-settings: "wght" 500 !important;
+  letter-spacing: -0.2px !important;
+}
+
+/* Thinner and more elegant icons for buttons in dashboard */
+body.dashboard-active button svg,
+body.dashboard-active .pagination svg {
+  stroke-width: 1.5 !important;
+}
+
 
 @layer utilities {
   .text-balance {
@@ -396,10 +465,11 @@ html.lenis, html.lenis body {
 
 /* ─── Premium Buttons (Wayflyer Style) ────────────────────────────── */
 .btn-wayflyer-primary {
-  font-family: 'Instrument Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   background-color: #0047FF;
   color: #FFFFFF;
-  font-weight: 600;
+  font-weight: 652;
+  font-variation-settings: "wght" 652;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -412,9 +482,9 @@ html.lenis, html.lenis body {
   background-color: #0036CC;
   transform: translateY(-1px);
 }
-
+ 
 .btn-wayflyer-secondary {
-  font-family: 'Instrument Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   background-color: transparent;
   border: 1px solid #0047FF;
   color: #0047FF;

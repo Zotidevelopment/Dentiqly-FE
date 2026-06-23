@@ -468,8 +468,8 @@ export const AsistenciasManager: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row gap-3 items-start">
           {/* Patient autocomplete */}
-          <div className="relative flex-1" ref={patientSearchRef}>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <div className="relative flex-1 group" ref={patientSearchRef}>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2563FF]/30 group-focus-within:text-[#2563FF] transition-colors pointer-events-none" />
             <input
               type="text"
               value={patientSearch}
@@ -478,7 +478,7 @@ export const AsistenciasManager: React.FC = () => {
                 if (selectedFreePatient) setSelectedFreePatient(null)
               }}
               placeholder="Nombre o apellido del paciente..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all shadow-sm"
+              className="w-full pl-9 pr-4 py-[9px] bg-white border border-[#2563FF]/25 rounded-full text-sm text-[#2563FF]/40 placeholder:text-[#2563FF]/40 focus:text-[#2563FF] focus:placeholder:text-[#2563FF]/50 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all shadow-sm"
             />
             {patientSearchLoading && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2563FF] animate-spin" />
@@ -540,7 +540,7 @@ export const AsistenciasManager: React.FC = () => {
                       size="sm"
                       onClick={() => handleStatusUpdate(freePatientTurno.id, "Atendido")}
                       disabled={updatingId === freePatientTurno.id}
-                      className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white text-xs font-bold flex items-center gap-1.5"
+                      className="h-9 px-4 bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5"
                     >
                       {updatingId === freePatientTurno.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><UserCheck className="h-3.5 w-3.5" />Presente</>}
                     </Button>
@@ -549,7 +549,7 @@ export const AsistenciasManager: React.FC = () => {
                       variant="outline"
                       onClick={() => handleStatusUpdate(freePatientTurno.id, "Ausente")}
                       disabled={updatingId === freePatientTurno.id}
-                      className="h-9 px-4 text-red-600 border-red-100 hover:bg-red-50 text-xs flex items-center gap-1.5"
+                      className="h-9 px-4 text-[#0B1023] border-[#E2E0DB] hover:bg-[#F1F5F9] text-xs flex items-center gap-1.5"
                     >
                       {updatingId === freePatientTurno.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><UserX className="h-3.5 w-3.5" />Ausente</>}
                     </Button>
@@ -562,7 +562,7 @@ export const AsistenciasManager: React.FC = () => {
                     size="sm"
                     onClick={() => handleWalkIn(selectedFreePatient, "Atendido")}
                     disabled={creatingWalkIn}
-                    className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white text-xs font-bold flex items-center gap-1.5"
+                    className="h-9 px-4 bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5"
                     title="Registrar asistencia sin turno"
                   >
                     {creatingWalkIn ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><UserCheck className="h-3.5 w-3.5" />Presente</>}
@@ -572,12 +572,12 @@ export const AsistenciasManager: React.FC = () => {
                     variant="outline"
                     onClick={() => handleWalkIn(selectedFreePatient, "Ausente")}
                     disabled={creatingWalkIn}
-                    className="h-9 px-4 text-red-600 border-red-100 hover:bg-red-50 text-xs flex items-center gap-1.5"
+                    className="h-9 px-4 text-[#0B1023] border-[#E2E0DB] hover:bg-[#F1F5F9] text-xs flex items-center gap-1.5"
                     title="Registrar ausencia sin turno"
                   >
                     {creatingWalkIn ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><UserX className="h-3.5 w-3.5" />Ausente</>}
                   </Button>
-                  <span className="text-[10px] text-amber-600 font-medium bg-amber-50 border border-amber-100 px-2 py-1 rounded-lg shrink-0">Sin turno</span>
+                  <span className="text-[10px] text-[#2563FF] font-medium bg-[#EEF3FF] border border-[#2563FF]/20 px-2 py-1 rounded-lg shrink-0">Sin turno</span>
                 </>
               )}
 
@@ -675,7 +675,7 @@ export const AsistenciasManager: React.FC = () => {
             <div className="space-y-4">
               {activeStats.map((stat, i) => {
                 const percentage = periodTotalAttended > 0 ? Math.round((stat.count / periodTotalAttended) * 100) : 0
-                const colors = ["bg-blue-500", "bg-emerald-500", "bg-indigo-500", "bg-purple-500", "bg-amber-500", "bg-teal-500"]
+                const colors = ["bg-[#2563FF]", "bg-[#0B1023]", "bg-[#02E3FF]", "bg-[#1D4ED8]", "bg-[#60A5FA]", "bg-[#93C5FD]"]
                 const barColor = colors[i % colors.length]
                 return (
                   <div key={stat.name} className="space-y-1">
@@ -702,14 +702,14 @@ export const AsistenciasManager: React.FC = () => {
 
           {/* Table Filters */}
           <div className="flex flex-col md:flex-row gap-3 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="relative flex-1 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2563FF]/30 group-focus-within:text-[#2563FF] transition-colors" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar paciente por nombre o DNI..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all"
+                className="w-full pl-9 pr-4 py-[7px] bg-white border border-[#2563FF]/25 rounded-full text-xs text-[#2563FF]/40 placeholder:text-[#2563FF]/40 focus:text-[#2563FF] focus:placeholder:text-[#2563FF]/50 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all"
               />
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -797,10 +797,10 @@ export const AsistenciasManager: React.FC = () => {
                         </td>
                         <td className="px-4 py-3.5 whitespace-nowrap">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                            isAttended ? "bg-green-100 text-green-800 border-green-200" :
-                            isAbsent ? "bg-red-100 text-red-800 border-red-200" :
+                            isAttended ? "bg-[#EEF3FF] text-[#2563FF] border-[#2563FF]/30" :
+                            isAbsent ? "bg-[#F1F5F9] text-[#0B1023] border-[#E2E0DB]" :
                             appt.estado === "Cancelado" ? "bg-gray-100 text-gray-800 border-gray-200" :
-                            "bg-yellow-100 text-yellow-800 border-yellow-200"
+                            "bg-[#EEF3FF] text-[#1D4ED8] border-[#2563FF]/20"
                           }`}>
                             {appt.estado}
                           </span>
@@ -824,7 +824,7 @@ export const AsistenciasManager: React.FC = () => {
                                   size="sm"
                                   onClick={() => handleStatusUpdate(appt.id, "Atendido")}
                                   disabled={updatingId === appt.id}
-                                  className="h-7 px-2.5 bg-green-600 hover:bg-green-700 text-white border-transparent text-[10px] flex items-center gap-1 font-bold"
+                                  className="h-7 px-2.5 bg-[#2563FF] hover:bg-[#1D4ED8] text-white border-transparent text-[10px] flex items-center gap-1 font-bold"
                                   title="Marcar Asistencia"
                                 >
                                   {updatingId === appt.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><UserCheck className="h-3 w-3" />Presente</>}
@@ -835,7 +835,7 @@ export const AsistenciasManager: React.FC = () => {
                                     variant="outline"
                                     onClick={() => handleStatusUpdate(appt.id, "Ausente")}
                                     disabled={updatingId === appt.id}
-                                    className="h-7 px-2 bg-transparent text-red-600 hover:text-red-700 border-red-100 hover:bg-red-50 text-[10px] flex items-center gap-1"
+                                    className="h-7 px-2 bg-transparent text-[#0B1023] hover:text-black border-[#E2E0DB] hover:bg-[#F1F5F9] text-[10px] flex items-center gap-1"
                                     title="Marcar Ausencia"
                                   >
                                     {updatingId === appt.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><UserX className="h-3 w-3" />Ausente</>}
@@ -928,57 +928,57 @@ export const AsistenciasManager: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 2 — Pacientes Atendidos (soft green) */}
-          <div className="bg-[#D1FAE5] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
-            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-emerald-400/20 flex items-center justify-center">
-              <UserCheck className="w-4 h-4 text-emerald-600" />
+          {/* Card 2 — Pacientes Atendidos (soft blue/celeste) */}
+          <div className="bg-[#EEF3FF] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-blue-400/20 flex items-center justify-center">
+              <UserCheck className="w-4 h-4 text-[#2563FF]" />
             </div>
-            <p className="text-sm font-bold text-[#047857] mb-3">Resumen de Turnos:</p>
+            <p className="text-sm font-bold text-[#2563FF] mb-3">Resumen de Turnos:</p>
             <div className="flex gap-5 mb-4">
               <div>
-                <p className="text-2xl font-extrabold text-emerald-900">{totalAttended}</p>
-                <p className="text-[10px] font-semibold text-emerald-600/70 uppercase tracking-wider">Atendidos</p>
+                <p className="text-2xl font-extrabold text-blue-900">{totalAttended}</p>
+                <p className="text-[10px] font-semibold text-blue-600/70 uppercase tracking-wider">Atendidos</p>
               </div>
               <div>
-                <p className="text-2xl font-extrabold text-emerald-900">{attendanceRate}%</p>
-                <p className="text-[10px] font-semibold text-emerald-600/70 uppercase tracking-wider">Tasa Asistencia</p>
+                <p className="text-2xl font-extrabold text-blue-900">{attendanceRate}%</p>
+                <p className="text-[10px] font-semibold text-blue-600/70 uppercase tracking-wider">Tasa Asistencia</p>
               </div>
             </div>
             <div className="h-10 flex items-end">
               <svg className="w-full h-8" viewBox="0 0 100 30" preserveAspectRatio="none">
-                <path d={linePath} fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                <path d={linePath} fill="none" stroke="#2563FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:opacity-100 transition-opacity" />
               </svg>
             </div>
           </div>
 
-          {/* Card 3 — Por Estado (soft pink/rose) */}
-          <div className="bg-[#FFE4E6] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
-            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-rose-400/20 flex items-center justify-center">
-              <Users className="w-4 h-4 text-rose-600" />
+          {/* Card 3 — Por Estado (soft blue/gray) */}
+          <div className="bg-[#F1F5F9] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#0B1023]/10 flex items-center justify-center">
+              <Users className="w-4 h-4 text-[#0B1023]" />
             </div>
-            <p className="text-sm font-bold text-rose-900 mb-3">Por Estado:</p>
+            <p className="text-sm font-bold text-[#0B1023] mb-3">Por Estado:</p>
             <div className="flex gap-4 mb-4">
               {[
-                { n: totalAttended, label: "Atendido", dot: "bg-emerald-500" },
+                { n: totalAttended, label: "Atendido", dot: "bg-[#2563FF]" },
                 { n: totalConfirmed, label: "Confirm.", dot: "bg-blue-500" },
-                { n: totalAbsent, label: "Ausente", dot: "bg-rose-500" },
+                { n: totalAbsent, label: "Ausente", dot: "bg-[#0B1023]" },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-1.5">
                   <span className={`w-2 h-2 rounded-full ${s.dot}`} />
                   <div>
-                    <p className="text-lg font-extrabold text-rose-900 leading-none">{s.n}</p>
-                    <p className="text-[9px] font-semibold text-rose-600/70 uppercase leading-none mt-0.5">{s.label}</p>
+                    <p className="text-lg font-extrabold text-[#0B1023] leading-none">{s.n}</p>
+                    <p className="text-[9px] font-semibold text-[#0B1023]/70 uppercase leading-none mt-0.5">{s.label}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="space-y-1.5">
               {[
-                { w: totalScheduled > 0 ? (totalAttended / totalScheduled) * 100 : 0, color: "bg-emerald-500" },
+                { w: totalScheduled > 0 ? (totalAttended / totalScheduled) * 100 : 0, color: "bg-[#2563FF]" },
                 { w: totalScheduled > 0 ? (totalConfirmed / totalScheduled) * 100 : 0, color: "bg-blue-500" },
-                { w: totalScheduled > 0 ? (totalAbsent / totalScheduled) * 100 : 0, color: "bg-rose-500" },
+                { w: totalScheduled > 0 ? (totalAbsent / totalScheduled) * 100 : 0, color: "bg-[#0B1023]" },
               ].map((bar, i) => (
-                <div key={i} className="h-1.5 bg-rose-200/50 rounded-full overflow-hidden">
+                <div key={i} className="h-1.5 bg-[#0B1023]/10 rounded-full overflow-hidden">
                   <div className={`h-full ${bar.color} rounded-full transition-all duration-1000`} style={{ width: `${Math.max(bar.w, 2)}%` }} />
                 </div>
               ))}
@@ -991,3 +991,4 @@ export const AsistenciasManager: React.FC = () => {
     </div>
   )
 }
+

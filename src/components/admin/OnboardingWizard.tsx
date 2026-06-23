@@ -156,7 +156,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           {/* Step 1: Welcome */}
           {step === 1 && (
             <div className="p-8 sm:p-12 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2563FF] to-[#7C3AED] flex items-center justify-center mb-6 shadow-lg shadow-[#2563FF]/20">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2563FF] to-[#0B1023] flex items-center justify-center mb-6 shadow-lg shadow-[#2563FF]/20">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <h1 className="text-3xl font-extrabold text-[#0B1023] mb-2">
@@ -169,8 +169,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
               <div className="w-full max-w-sm space-y-3 mb-8 text-left">
                 {[
                   { icon: Building2, text: 'Completá los datos de tu clínica', color: '#2563FF' },
-                  { icon: CreditCard, text: 'Configurá tus datos bancarios', color: '#7C3AED' },
-                  { icon: Rocket, text: 'Activá tu suscripción y empezá', color: '#22C55E' },
+                  { icon: CreditCard, text: 'Configurá tus datos bancarios', color: '#0B1023' },
+                  { icon: Rocket, text: 'Activá tu suscripción y empezá', color: '#2563FF' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-[#F7F8FA] rounded-xl">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${item.color}15` }}>
@@ -282,8 +282,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           {step === 3 && (
             <div className="p-8 sm:p-10">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#7C3AED]/10 flex items-center justify-center">
-                  <Banknote className="h-5 w-5 text-[#7C3AED]" />
+                <div className="w-10 h-10 rounded-xl bg-[#2563FF]/10 flex items-center justify-center">
+                  <Banknote className="h-5 w-5 text-[#2563FF]" />
                 </div>
                 <div>
                   <h2 className="text-xl font-extrabold text-[#0B1023]">Datos bancarios</h2>
@@ -392,8 +392,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           {step === 4 && (
             <div className="p-8 sm:p-10">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">
-                  <Rocket className="h-5 w-5 text-[#22C55E]" />
+                <div className="w-10 h-10 rounded-xl bg-[#2563FF]/10 flex items-center justify-center">
+                  <Rocket className="h-5 w-5 text-[#2563FF]" />
                 </div>
                 <div>
                   <h2 className="text-xl font-extrabold text-[#0B1023]">Activá tu clínica</h2>
@@ -423,7 +423,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                 >
                   Anual
                   <span className={`text-xs px-1.5 py-0.5 rounded-md ${
-                    billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
+                    billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-[#02E3FF]/10 text-[#0B1023] font-bold'
                   }`}>
                     -10%
                   </span>
@@ -433,8 +433,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                     onClick={() => setBillingPlan('test')}
                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                       billingPlan === 'test'
-                        ? 'bg-emerald-500 text-white shadow-md'
-                        : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
+                        ? 'bg-[#0B1023] text-white shadow-md'
+                        : 'bg-[#0B1023]/5 text-[#0B1023] hover:bg-[#0B1023]/10 border border-[#0B1023]/20'
                     }`}
                   >
                     Prueba ($1)
@@ -467,10 +467,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                       <p className="text-xs text-white/40">
                         ARS / mes
                         {billingPlan === 'annual' && (
-                          <span className="block text-[#22C55E]">$864.000 /año</span>
+                          <span className="block text-[#02E3FF]">$864.000 /año</span>
                         )}
                         {billingPlan === 'test' && (
-                          <span className="block text-[#22C55E]">Cobro único de prueba</span>
+                          <span className="block text-[#02E3FF]">Cobro único de prueba</span>
                         )}
                       </p>
                     </div>
@@ -490,7 +490,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                       'Soporte prioritario',
                     ].map((feat, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <Check className="h-3 w-3 text-[#22C55E] shrink-0" />
+                        <Check className="h-3 w-3 text-[#02E3FF] shrink-0" />
                         <span className="text-[11px] text-white/70">{feat}</span>
                       </div>
                     ))}
@@ -542,3 +542,4 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     </div>
   )
 }
+

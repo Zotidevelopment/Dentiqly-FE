@@ -15,7 +15,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+        sans: ["'DM Sans'", 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',

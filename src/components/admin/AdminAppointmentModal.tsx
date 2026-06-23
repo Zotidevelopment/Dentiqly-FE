@@ -341,7 +341,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                                 setSearchPaciente(e.target.value);
                                                 setFormData({ ...formData, paciente_id: '' });
                                             }}
-                                            className="h-14 px-6 bg-gray-50/50 border-gray-100 rounded-2xl font-bold text-lg focus:bg-white transition-all shadow-none group-hover:border-blue-200"
+                                            className="h-14 px-6 bg-gray-50/50 border border-[#2563FF]/20 rounded-2xl font-bold text-lg focus:bg-white focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all shadow-none group-hover:border-blue-200"
                                             required={!isNewPatient}
                                         />
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -621,3 +621,4 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
         document.body
     )
 }
+

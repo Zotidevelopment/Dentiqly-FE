@@ -167,7 +167,7 @@ const ClinicDetailView: React.FC<{ clinicId: string; onBack: () => void }> = ({ 
           <button
             onClick={handleGenerateTestPayment}
             disabled={generatingPayment}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 transition-all shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full text-sm font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 transition-all shrink-0"
           >
             {generatingPayment ? (
               <Activity className="h-4 w-4 animate-spin" />
@@ -381,7 +381,7 @@ export const SuperAdminApp: React.FC = () => {
         <ShieldAlert className="w-16 h-16 text-red-500" />
         <h1 className="text-2xl font-bold text-gray-900">Acceso Denegado</h1>
         <p className="text-gray-500">Esta área es exclusiva para los administradores de la plataforma.</p>
-        <button onClick={logout} className="px-4 py-2 bg-[#2563FF] text-white rounded-lg font-medium">Volver</button>
+        <button onClick={logout} className="px-4 py-2 bg-[#2563FF] text-white rounded-full font-medium">Volver</button>
       </div>
     );
   }
@@ -402,7 +402,7 @@ export const SuperAdminApp: React.FC = () => {
           <ShieldAlert className="w-8 h-8 text-[#02E3FF]" />
           <div>
             <h1 className="font-bold text-xl">Dentiqly</h1>
-            <p className="text-xs text-blue-200 uppercase tracking-widest">SuperAdmin</p>
+            <p className="text-xs text-blue-200 tracking-widest">Superadmin</p>
           </div>
         </div>
 
@@ -448,7 +448,7 @@ export const SuperAdminApp: React.FC = () => {
           </div>
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-white hover:bg-red-500 border border-red-400/30 px-4 py-2 rounded-lg transition-colors"
+            className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-white hover:bg-red-500 border border-red-400/30 px-4 py-2 rounded-full transition-colors"
           >
             <LogOut className="w-4 h-4" /> Salir
           </button>
@@ -533,14 +533,14 @@ export const SuperAdminApp: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider">Clínica</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider">Admin</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider">Estado</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider text-center">Pacientes</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider text-center">Profesionales</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider text-center">Turnos</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider">Registro</th>
-                      <th className="p-4 font-semibold text-gray-600 text-xs uppercase tracking-wider text-right">Acciones</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider">Clínica</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider">Admin</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider">Estado</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider text-center">Pacientes</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider text-center">Profesionales</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider text-center">Turnos</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider">Registro</th>
+                      <th className="p-4 font-semibold text-gray-600 text-xs tracking-wider text-right">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -590,7 +590,7 @@ export const SuperAdminApp: React.FC = () => {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleViewDetail(clinic.id)}
-                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-[#2563FF]"
+                                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-[#2563FF]"
                                   title="Ver detalle"
                                 >
                                   <Eye className="w-4 h-4" />
@@ -598,7 +598,7 @@ export const SuperAdminApp: React.FC = () => {
                                 <button
                                   onClick={() => handleGenerateTestPayment(clinic.id)}
                                   disabled={generatingPaymentId === clinic.id}
-                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-emerald-600 hover:text-emerald-800 disabled:opacity-50"
+                                  className="p-2 rounded-full hover:bg-gray-100 transition-colors text-emerald-600 hover:text-emerald-800 disabled:opacity-50"
                                   title="Generar Pago de Prueba ($1)"
                                 >
                                   {generatingPaymentId === clinic.id ? (
@@ -608,7 +608,7 @@ export const SuperAdminApp: React.FC = () => {
                                   )}
                                 </button>
                                 <select
-                                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#2563FF] bg-white"
+                                  className="text-xs border border-gray-200 rounded-full px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#2563FF] bg-white"
                                   value=""
                                   onChange={(e) => handleUpdateStatus(clinic.id, e.target.value)}
                                   disabled={updating === clinic.id}
@@ -685,7 +685,7 @@ const ConfigSection: React.FC = () => {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Access Token</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">Access Token</label>
               <input
                 type="password"
                 value={config.mp_access_token}
@@ -696,7 +696,7 @@ const ConfigSection: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Public Key</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">Public Key</label>
               <input
                 type="text"
                 value={config.mp_public_key}
@@ -707,7 +707,7 @@ const ConfigSection: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Webhook URL</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">Webhook URL</label>
               <input
                 type="url"
                 value={config.mp_webhook_url}
@@ -727,7 +727,7 @@ const ConfigSection: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Precio Mensual (ARS)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">Precio mensual (ARS)</label>
               <input
                 type="number"
                 value={config.monthly_price}
@@ -736,7 +736,7 @@ const ConfigSection: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Precio Anual (ARS)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">Precio anual (ARS)</label>
               <input
                 type="number"
                 value={config.annual_price}
@@ -752,7 +752,7 @@ const ConfigSection: React.FC = () => {
 
         <button
           onClick={handleSave}
-          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
+          className={`px-6 py-3 rounded-full font-bold text-sm transition-all ${
             saved
               ? 'bg-green-500 text-white'
               : 'bg-[#2563FF] text-white hover:bg-[#1D4ED8] shadow-[0_8px_20px_rgba(37,99,255,0.25)]'
