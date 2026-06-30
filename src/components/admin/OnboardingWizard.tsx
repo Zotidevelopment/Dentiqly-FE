@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { apiClient } from '../../lib/api-client'
 import { configuracionApi } from '../../api/configuracion'
+import { useBillingPlans } from '../../hooks/useBillingPlans'
 import { useToast } from '../../hooks/use-toast'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -86,11 +87,19 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
   const [region, setRegion] = useState<'argentina' | 'internacional'>('argentina')
   const showTestPlan = user?.role === 'superadmin' || user?.email === 'riostiziano6@gmail.com' || window.location.search.includes('test=true')
 
-  const PRICES = {
-    argentina: { monthly: 80000, annual: 864000, monthlyLabel: '$80.000 ARS', annualLabel: '$864.000 ARS', perMonth: '$72.000 ARS/mes', discount: '10%' },
-    internacional: { monthly: 52, annual: 499, monthlyLabel: 'USD 52', annualLabel: 'USD 499', perMonth: 'USD 41.6/mes', discount: '20%' },
-  }
-  const prices = PRICES[region]
+  const plans = useBillingPlans()
+  const planKey = region === 'argentina' ? 'ars' : 'usd'
+  const currencySymbol = region === 'argentina' ? '$' : 'USD '
+  const currencyCode = region === 'argentina' ? 'ARS' : 'USD'
+  const monthlyPrice = plans[planKey].monthly.price
+  const annualPrice = plans[planKey].annual.price
+  const annualPerMonth = plans[planKey].annual.pricePerMonth ?? Math.round(annualPrice / 12)
+  const annualDiscount = plans[planKey].annual.discount ?? 10
+
+  const formatPrice = (n: number) =>
+    region === 'argentina'
+      ? `$${n.toLocaleString('es-AR')} ARS`
+      : `USD ${n}`
 
   const handlePayment = async () => {
     setPaying(true)
@@ -463,7 +472,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                   <span className={`text-xs px-1.5 py-0.5 rounded-md ${
                     billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
                   }`}>
-                    -{prices.discount}
+                    -{annualDiscount}%
                   </span>
                 </button>
                 {showTestPlan && (
@@ -501,19 +510,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                     <div className="text-right">
                       <p className="text-3xl font-extrabold">
                         {billingPlan === 'test'
-                          ? (region === 'internacional' ? 'USD 1' : '$1')
+                          ? `${currencySymbol}1`
                           : billingPlan === 'monthly'
-                            ? prices.monthlyLabel
-                            : prices.annualLabel}
+                            ? formatPrice(monthlyPrice)
+                            : formatPrice(annualPrice)}
                       </p>
                       <p className="text-xs text-white/40">
                         {billingPlan === 'test'
                           ? 'cobro único de prueba'
                           : billingPlan === 'monthly'
-                            ? (region === 'internacional' ? 'USD / mes' : 'ARS / mes')
-                            : (region === 'internacional' ? 'USD / año' : 'ARS / año')}
+                            ? `${currencyCode} / mes`
+                            : `${currencyCode} / año`}
                         {billingPlan === 'annual' && (
-                          <span className="block text-[#22C55E]">{prices.perMonth} · {prices.discount} off</span>
+                          <span className="block text-[#22C55E]">
+                            {formatPrice(annualPerMonth)}/mes · {annualDiscount}% off
+                          </span>
                         )}
                       </p>
                     </div>

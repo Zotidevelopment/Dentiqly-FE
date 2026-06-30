@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
+import { useBillingPlans } from "../../../hooks/useBillingPlans"
 import {
   ArrowRight,
   X,
@@ -124,9 +125,15 @@ export const PricingSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
+  const [currency, setCurrency] = useState<'ars' | 'usd'>('ars')
 
-  const monthlyPrice = 29
-  const annualPrice = 24
+  const plans = useBillingPlans()
+  const monthlyPrice = plans[currency].monthly.price
+  const annualPrice = plans[currency].annual.pricePerMonth ?? Math.round(plans[currency].annual.price / 12)
+  const annualTotal = plans[currency].annual.price
+  const discount = plans[currency].annual.discount ?? 10
+  const currencySymbol = currency === 'usd' ? 'USD ' : '$'
+  const currencyLabel = currency === 'usd' ? 'USD / mes / clínica' : 'ARS / mes / clínica'
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -186,28 +193,54 @@ export const PricingSection: React.FC = () => {
               Precios y planes
             </h2>
 
-            {/* Toggle */}
-            <div className="inline-flex items-center bg-[#F0F4FF] rounded-full p-1">
-              <button
-                onClick={() => setIsAnnual(false)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  !isAnnual
-                    ? "bg-[#0B1023] text-white shadow-sm"
-                    : "text-[#0B1023]/60 hover:text-[#0B1023]"
-                }`}
-              >
-                Mensual
-              </button>
-              <button
-                onClick={() => setIsAnnual(true)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  isAnnual
-                    ? "bg-[#0B1023] text-white shadow-sm"
-                    : "text-[#0B1023]/60 hover:text-[#0B1023]"
-                }`}
-              >
-                Anual
-              </button>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Toggle mensual/anual */}
+              <div className="inline-flex items-center bg-[#F0F4FF] rounded-full p-1">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    !isAnnual
+                      ? "bg-[#0B1023] text-white shadow-sm"
+                      : "text-[#0B1023]/60 hover:text-[#0B1023]"
+                  }`}
+                >
+                  Mensual
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isAnnual
+                      ? "bg-[#0B1023] text-white shadow-sm"
+                      : "text-[#0B1023]/60 hover:text-[#0B1023]"
+                  }`}
+                >
+                  Anual
+                </button>
+              </div>
+
+              {/* Toggle moneda */}
+              <div className="inline-flex items-center bg-[#F0F4FF] rounded-full p-1">
+                <button
+                  onClick={() => setCurrency('ars')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    currency === 'ars'
+                      ? "bg-[#0B1023] text-white shadow-sm"
+                      : "text-[#0B1023]/60 hover:text-[#0B1023]"
+                  }`}
+                >
+                  🇦🇷 ARS
+                </button>
+                <button
+                  onClick={() => setCurrency('usd')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    currency === 'usd'
+                      ? "bg-[#0B1023] text-white shadow-sm"
+                      : "text-[#0B1023]/60 hover:text-[#0B1023]"
+                  }`}
+                >
+                  🌐 USD
+                </button>
+              </div>
             </div>
           </div>
 
@@ -221,7 +254,7 @@ export const PricingSection: React.FC = () => {
                 </span>
                 {isAnnual && (
                   <span className="inline-flex items-center bg-[#E8F5E9] text-[#2E7D32] text-xs font-bold px-3 py-1.5 rounded-full">
-                    17% off
+                    {discount}% off
                   </span>
                 )}
               </div>
@@ -230,20 +263,25 @@ export const PricingSection: React.FC = () => {
                 {isAnnual ? (
                   <div className="flex items-baseline gap-3">
                     <span className="text-5xl font-semibold text-[#0B1023] tracking-tight">
-                      USD {annualPrice}
+                      {currencySymbol}{annualPrice.toLocaleString("es-AR")}
                     </span>
                     <span className="text-2xl text-[#0B1023]/30 line-through">
-                      USD {monthlyPrice}
+                      {currencySymbol}{monthlyPrice.toLocaleString("es-AR")}
                     </span>
                   </div>
                 ) : (
                   <span className="text-5xl font-semibold text-[#0B1023] tracking-tight">
-                    USD {monthlyPrice}
+                    {currencySymbol}{monthlyPrice.toLocaleString("es-AR")}
                   </span>
                 )}
               </div>
 
-              <p className="text-sm text-[#0B1023]/40 mb-8">por mes / por clínica</p>
+              <p className="text-sm text-[#0B1023]/40 mb-8">{currencyLabel}</p>
+              {currency === 'ars' && plans.exchange_rate && (
+                <p className="text-xs text-[#0B1023]/30 -mt-6 mb-8">
+                  Equivalente a USD {plans.usd.monthly.price} al dólar {plans.exchange_rate.source} (${plans.exchange_rate.usd_ars?.toLocaleString('es-AR')} ARS/USD)
+                </p>
+              )}
 
               {/* 6 Main Features */}
               <div className="space-y-3 mb-6">
