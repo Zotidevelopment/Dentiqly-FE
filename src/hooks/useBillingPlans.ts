@@ -25,21 +25,8 @@ export interface BillingPlans {
   trial: { days: number }
 }
 
-// Valores de fallback para evitar layout shifts mientras carga
-const FALLBACK: BillingPlans = {
-  ars: {
-    monthly: { id: 'monthly', name: 'Plan Pro Mensual', price: 80000, currency: 'ARS', interval: 'mes' },
-    annual:  { id: 'annual',  name: 'Plan Pro Anual',   price: 864000, pricePerMonth: 72000, currency: 'ARS', interval: 'año', discount: 10 },
-  },
-  usd: {
-    monthly: { id: 'monthly', name: 'Plan Pro Mensual', price: 52,  currency: 'USD', interval: 'mes' },
-    annual:  { id: 'annual',  name: 'Plan Pro Anual',   price: 499, pricePerMonth: 42, currency: 'USD', interval: 'año', discount: 17 },
-  },
-  trial: { days: 14 },
-}
-
-export const useBillingPlans = (): BillingPlans => {
-  const [plans, setPlans] = useState<BillingPlans>(FALLBACK)
+export const useBillingPlans = (): BillingPlans | null => {
+  const [plans, setPlans] = useState<BillingPlans | null>(null)
 
   useEffect(() => {
     fetch(`${API_BASE}/billing/plans`)

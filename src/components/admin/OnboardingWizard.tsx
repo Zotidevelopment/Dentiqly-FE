@@ -89,12 +89,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
 
   const plans = useBillingPlans()
   const planKey = region === 'argentina' ? 'ars' : 'usd'
-  const currencySymbol = region === 'argentina' ? '$' : 'USD '
   const currencyCode = region === 'argentina' ? 'ARS' : 'USD'
-  const monthlyPrice = plans[planKey].monthly.price
-  const annualPrice = plans[planKey].annual.price
-  const annualPerMonth = plans[planKey].annual.pricePerMonth ?? Math.round(annualPrice / 12)
-  const annualDiscount = plans[planKey].annual.discount ?? 10
+  const monthlyPrice = plans?.[planKey].monthly.price
+  const annualPrice = plans?.[planKey].annual.price
+  const annualPerMonth = plans ? (plans[planKey].annual.pricePerMonth ?? Math.round(plans[planKey].annual.price / 12)) : undefined
+  const annualDiscount = plans?.[planKey].annual.discount
 
   const formatPrice = (n: number) =>
     region === 'argentina'
@@ -469,11 +468,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                   }`}
                 >
                   Anual
-                  <span className={`text-xs px-1.5 py-0.5 rounded-md ${
-                    billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
-                  }`}>
-                    -{annualDiscount}%
-                  </span>
+                  {annualDiscount !== undefined && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-md ${
+                      billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
+                    }`}>
+                      -{annualDiscount}%
+                    </span>
+                  )}
                 </button>
                 {showTestPlan && (
                   <button
@@ -508,20 +509,24 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                       <h3 className="text-2xl font-extrabold">Dentiqly</h3>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-extrabold">
-                        {billingPlan === 'test'
-                          ? `${currencySymbol}1`
-                          : billingPlan === 'monthly'
-                            ? formatPrice(monthlyPrice)
-                            : formatPrice(annualPrice)}
-                      </p>
+                      {monthlyPrice === undefined ? (
+                        <div className="h-9 w-28 bg-white/10 rounded-lg animate-pulse" />
+                      ) : (
+                        <p className="text-3xl font-extrabold">
+                          {billingPlan === 'test'
+                            ? `${currencyCode} 1`
+                            : billingPlan === 'monthly'
+                              ? formatPrice(monthlyPrice)
+                              : annualPrice !== undefined ? formatPrice(annualPrice) : '...'}
+                        </p>
+                      )}
                       <p className="text-xs text-white/40">
                         {billingPlan === 'test'
                           ? 'cobro único de prueba'
                           : billingPlan === 'monthly'
                             ? `${currencyCode} / mes`
                             : `${currencyCode} / año`}
-                        {billingPlan === 'annual' && (
+                        {billingPlan === 'annual' && annualPerMonth !== undefined && annualDiscount !== undefined && (
                           <span className="block text-[#22C55E]">
                             {formatPrice(annualPerMonth)}/mes · {annualDiscount}% off
                           </span>
