@@ -125,8 +125,8 @@ export const PricingSection: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
 
-  const monthlyPrice = 80000
-  const annualPrice = 72000
+  const monthlyPrice = 29
+  const annualPrice = 24
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -221,7 +221,7 @@ export const PricingSection: React.FC = () => {
                 </span>
                 {isAnnual && (
                   <span className="inline-flex items-center bg-[#E8F5E9] text-[#2E7D32] text-xs font-bold px-3 py-1.5 rounded-full">
-                    10% off
+                    17% off
                   </span>
                 )}
               </div>
@@ -230,15 +230,15 @@ export const PricingSection: React.FC = () => {
                 {isAnnual ? (
                   <div className="flex items-baseline gap-3">
                     <span className="text-5xl font-semibold text-[#0B1023] tracking-tight">
-                      ${annualPrice.toLocaleString("es-AR")}
+                      USD {annualPrice}
                     </span>
                     <span className="text-2xl text-[#0B1023]/30 line-through">
-                      ${monthlyPrice.toLocaleString("es-AR")}
+                      USD {monthlyPrice}
                     </span>
                   </div>
                 ) : (
                   <span className="text-5xl font-semibold text-[#0B1023] tracking-tight">
-                    ${monthlyPrice.toLocaleString("es-AR")}
+                    USD {monthlyPrice}
                   </span>
                 )}
               </div>

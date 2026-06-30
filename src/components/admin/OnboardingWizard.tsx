@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Banknote,
   Rocket,
+  Globe,
 } from 'lucide-react'
 
 interface OnboardingWizardProps {
@@ -82,17 +83,29 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
   }
 
   const [billingPlan, setBillingPlan] = useState<'monthly' | 'annual' | 'test'>('monthly')
+  const [region, setRegion] = useState<'argentina' | 'internacional'>('argentina')
   const showTestPlan = user?.role === 'superadmin' || user?.email === 'riostiziano6@gmail.com' || window.location.search.includes('test=true')
+
+  const PRICES = {
+    argentina: { monthly: 80000, annual: 864000, monthlyLabel: '$80.000 ARS', annualLabel: '$864.000 ARS', perMonth: '$72.000 ARS/mes', discount: '10%' },
+    internacional: { monthly: 52, annual: 499, monthlyLabel: 'USD 52', annualLabel: 'USD 499', perMonth: 'USD 41.6/mes', discount: '20%' },
+  }
+  const prices = PRICES[region]
 
   const handlePayment = async () => {
     setPaying(true)
     try {
-      const response = await apiClient.post<{ init_point: string }>('/billing/create-preference', { billing_plan: billingPlan })
-      if (response.init_point) {
-        window.location.href = response.init_point
+      const paymentMethod = region === 'internacional' ? 'lemonsqueezy' : 'mercadopago'
+      const response = await apiClient.post<{ checkout_url?: string; init_point?: string }>('/billing/create-preference', {
+        billing_plan: billingPlan,
+        payment_method: paymentMethod,
+      })
+      const redirectUrl = response.checkout_url || response.init_point
+      if (redirectUrl) {
+        window.location.href = redirectUrl
       }
     } catch {
-      toast({ variant: "destructive", title: "Error", description: "Hubo un error al conectar con MercadoPago. Intenta de nuevo o contacta a soporte." })
+      toast({ variant: "destructive", title: "Error", description: "Hubo un error al conectar con el procesador de pagos. Intenta de nuevo o contacta a soporte." })
     } finally {
       setPaying(false)
     }
@@ -401,6 +414,31 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                 </div>
               </div>
 
+              {/* Selector de región */}
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <button
+                  onClick={() => setRegion('argentina')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                    region === 'argentina'
+                      ? 'bg-[#0B1023] text-white shadow-md'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  🇦🇷 Argentina
+                </button>
+                <button
+                  onClick={() => setRegion('internacional')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                    region === 'internacional'
+                      ? 'bg-[#0B1023] text-white shadow-md'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  <Globe className="h-3.5 w-3.5" />
+                  Internacional
+                </button>
+              </div>
+
               {/* Billing cycle toggle */}
               <div className="flex items-center justify-center gap-2 mb-4">
                 <button
@@ -425,7 +463,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                   <span className={`text-xs px-1.5 py-0.5 rounded-md ${
                     billingPlan === 'annual' ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
                   }`}>
-                    -10%
+                    -{prices.discount}
                   </span>
                 </button>
                 {showTestPlan && (
@@ -462,15 +500,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-extrabold">
-                        {billingPlan === 'test' ? '$1' : billingPlan === 'monthly' ? '$80.000' : '$72.000'}
+                        {billingPlan === 'test'
+                          ? (region === 'internacional' ? 'USD 1' : '$1')
+                          : billingPlan === 'monthly'
+                            ? prices.monthlyLabel
+                            : prices.annualLabel}
                       </p>
                       <p className="text-xs text-white/40">
-                        ARS / mes
+                        {billingPlan === 'test'
+                          ? 'cobro único de prueba'
+                          : billingPlan === 'monthly'
+                            ? (region === 'internacional' ? 'USD / mes' : 'ARS / mes')
+                            : (region === 'internacional' ? 'USD / año' : 'ARS / año')}
                         {billingPlan === 'annual' && (
-                          <span className="block text-[#22C55E]">$864.000 /año</span>
-                        )}
-                        {billingPlan === 'test' && (
-                          <span className="block text-[#22C55E]">Cobro único de prueba</span>
+                          <span className="block text-[#22C55E]">{prices.perMonth} · {prices.discount} off</span>
                         )}
                       </p>
                     </div>
@@ -510,10 +553,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Conectando...
                     </>
-                  ) : (
+                  ) : region === 'argentina' ? (
                     <>
                       <CreditCard className="h-5 w-5" />
                       Pagar con MercadoPago
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5" />
+                      Pagar con tarjeta · USD
                     </>
                   )}
                 </button>
