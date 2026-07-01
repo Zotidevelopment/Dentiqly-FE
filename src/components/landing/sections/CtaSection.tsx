@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { Mail, Send } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -9,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 export const CtaSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null)
+  const { t } = useTranslation('landing')
   const [formData, setFormData] = useState({
     email: "",
     nombre: "",
@@ -130,19 +132,18 @@ export const CtaSection: React.FC = () => {
           <div className="cta-left flex-1 lg:max-w-[540px]">
             <div className="mb-5">
               <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
-                Contacto
+                {t('cta.badge')}
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl xl:text-[3.6rem] font-semibold text-white tracking-[-3px] leading-[1.08] mb-8">
-              Digitalizá tu clínica dental
+              {t('cta.title')}
               <br />
-              hoy mismo.
+              {t('cta.titleLine2')}
             </h2>
 
             <p className="text-white/70 text-lg leading-relaxed mb-12 max-w-[440px]">
-              Unite a las clínicas que ya ahorran tiempo y brindan una
-              experiencia excepcional a sus pacientes. Empezá gratis.
+              {t('cta.subtitle')}
             </p>
 
             {/* Contact details */}
@@ -171,7 +172,7 @@ export const CtaSection: React.FC = () => {
               to="/register"
               className="inline-flex items-center gap-3 bg-white text-[#0047FF] px-8 py-4 font-bold text-base hover:bg-blue-50 transition-colors group rounded-full"
             >
-              Crear mi cuenta gratis
+              {t('cta.ctaButton')}
               <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
@@ -184,22 +185,21 @@ export const CtaSection: React.FC = () => {
                   <div className="w-16 h-16 flex items-center justify-center bg-[#0047FF]/10 border border-[#0047FF]/20 rounded-full mb-6">
                     <Send className="w-7 h-7 text-[#0047FF]" />
                   </div>
-                  <h3 className="text-2xl font-bold text-[#0A0F2D] mb-2">¡Mensaje enviado!</h3>
+                  <h3 className="text-2xl font-bold text-[#0A0F2D] mb-2">{t('cta.successTitle')}</h3>
                   <p className="text-[#0A0F2D]/70 text-sm">
-                    Nos pondremos en contacto contigo a la brevedad.
+                    {t('cta.successText')}
                   </p>
                 </div>
               ) : (
                 <>
                   <h3 className="text-xl font-bold text-[#0A0F2D] mb-8 text-[13px] tracking  text-left opacity-85">
-                    ¿Querés hablar con nosotros?
+                    {t('cta.formTitle')}
                   </h3>
 
                   <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Work Email Address */}
                     <div>
                       <label htmlFor="email-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking- mb-2">
-                        Correo electrónico de trabajo*
+                        {t('cta.emailLabel')}
                       </label>
                       <input
                         id="email-input"
@@ -208,15 +208,14 @@ export const CtaSection: React.FC = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                        placeholder="tu@clinica.com"
+                        placeholder={t('cta.emailPlaceholder')}
                       />
                     </div>
 
-                    {/* First Name & Last Name */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="nombre-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          Nombre*
+                          {t('cta.nameLabel')}
                         </label>
                         <input
                           id="nombre-input"
@@ -225,12 +224,12 @@ export const CtaSection: React.FC = () => {
                           value={formData.nombre}
                           onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                           className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder="Tu nombre"
+                          placeholder={t('cta.namePlaceholder')}
                         />
                       </div>
                       <div>
                         <label htmlFor="apellido-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          Apellido*
+                          {t('cta.lastNameLabel')}
                         </label>
                         <input
                           id="apellido-input"
@@ -239,16 +238,15 @@ export const CtaSection: React.FC = () => {
                           value={formData.apellido}
                           onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
                           className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder="Tu apellido"
+                          placeholder={t('cta.lastNamePlaceholder')}
                         />
                       </div>
                     </div>
 
-                    {/* Company Name & Phone Number */}
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="clinica-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          Nombre de la clinica*
+                          {t('cta.clinicLabel')}
                         </label>
                         <input
                           id="clinica-input"
@@ -257,12 +255,12 @@ export const CtaSection: React.FC = () => {
                           value={formData.clinica}
                           onChange={(e) => setFormData({ ...formData, clinica: e.target.value })}
                           className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder="Nombre de clínica"
+                          placeholder={t('cta.clinicPlaceholder')}
                         />
                       </div>
                       <div>
                         <label htmlFor="telefono-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          Número de telefono
+                          {t('cta.phoneLabel')}
                         </label>
                         <input
                           id="telefono-input"
@@ -270,15 +268,14 @@ export const CtaSection: React.FC = () => {
                           value={formData.telefono}
                           onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                           className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder="+54 9 11 0000-0000"
+                          placeholder={t('cta.phonePlaceholder')}
                         />
                       </div>
                     </div>
 
-                    {/* Reason for Interest */}
                     <div>
                       <label htmlFor="motivo-select" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                        Motivo de interés*
+                        {t('cta.reasonLabel')}
                       </label>
                       <select
                         id="motivo-select"
@@ -287,19 +284,18 @@ export const CtaSection: React.FC = () => {
                         onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
                         className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors cursor-pointer appearance-none"
                       >
-                        <option value="" disabled className="text-gray-400">Seleccioná una opción</option>
-                        <option value="contratar" className="text-[#0A0F2D]">Quiero contratar Dentiqly</option>
-                        <option value="demostracion" className="text-[#0A0F2D]">Solicitar una demostración</option>
-                        <option value="precios" className="text-[#0A0F2D]">Consultar sobre planes y precios</option>
-                        <option value="soporte" className="text-[#0A0F2D]">Soporte o dudas técnicas</option>
-                        <option value="otro" className="text-[#0A0F2D]">Otro motivo</option>
+                        <option value="" disabled className="text-gray-400">{t('cta.reasonPlaceholder')}</option>
+                        <option value="contratar" className="text-[#0A0F2D]">{t('cta.reasonOptions.contratar')}</option>
+                        <option value="demostracion" className="text-[#0A0F2D]">{t('cta.reasonOptions.demostracion')}</option>
+                        <option value="precios" className="text-[#0A0F2D]">{t('cta.reasonOptions.precios')}</option>
+                        <option value="soporte" className="text-[#0A0F2D]">{t('cta.reasonOptions.soporte')}</option>
+                        <option value="otro" className="text-[#0A0F2D]">{t('cta.reasonOptions.otro')}</option>
                       </select>
                     </div>
 
-                    {/* How Can We Help */}
                     <div>
                       <label htmlFor="mensaje-textarea" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                        ¿En qué podemos ayudarte?
+                        {t('cta.messageLabel')}
                       </label>
                       <textarea
                         id="mensaje-textarea"
@@ -307,7 +303,7 @@ export const CtaSection: React.FC = () => {
                         onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
                         rows={3}
                         className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors resize-none"
-                        placeholder="Escribí tu mensaje acá..."
+                        placeholder={t('cta.messagePlaceholder')}
                       />
                     </div>
 
@@ -322,7 +318,7 @@ export const CtaSection: React.FC = () => {
                       disabled={loading}
                       className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      {loading ? "Enviando..." : "Enviar"}
+                      {loading ? t('cta.submitting') : t('cta.submit')}
                     </button>
                   </form>
                 </>

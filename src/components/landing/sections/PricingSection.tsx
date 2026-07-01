@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { useBillingPlans } from "../../../hooks/useBillingPlans"
 import { useCountry } from "../../../hooks/useCountry"
 import {
@@ -38,98 +39,30 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const mainFeatures = [
-  { icon: Calendar, text: "Agenda y turnos online" },
-  { icon: UserCog, text: "Gestión completa de pacientes" },
-  { icon: Stethoscope, text: "Odontograma interactivo" },
-  { icon: DollarSign, text: "Liquidación de profesionales" },
-  { icon: Wallet, text: "Flujo de caja y finanzas" },
-  { icon: Building2, text: "Multi-sucursal" },
-]
+const mainFeatureIcons = [Calendar, UserCog, Stethoscope, DollarSign, Wallet, Building2]
 
-const allFeatures = [
-  {
-    category: "Agenda y Turnos",
-    items: [
-      { icon: Calendar, text: "Calendario visual con vista diaria, semanal y mensual" },
-      { icon: Clock, text: "Turnos con duración personalizable por servicio" },
-      { icon: Globe, text: "Reservas online desde el portal de pacientes" },
-      { icon: CalendarOff, text: "Gestión de ausencias y feriados" },
-      { icon: Bell, text: "Recordatorios automáticos por email" },
-      { icon: RefreshCw, text: "Reprogramación y cancelación con un click" },
-    ],
-  },
-  {
-    category: "Pacientes",
-    items: [
-      { icon: UserCog, text: "Ficha completa con datos personales y contacto" },
-      { icon: FileText, text: "Historia clínica digital ilimitada" },
-      { icon: Stethoscope, text: "Odontograma interactivo con registro por pieza" },
-      { icon: ClipboardList, text: "Planes de tratamiento con seguimiento" },
-      { icon: Pill, text: "Recetas y prescripciones digitales" },
-      { icon: FolderOpen, text: "Archivos adjuntos (radiografías, fotos, documentos)" },
-      { icon: CreditCard, text: "Cuenta corriente por paciente" },
-    ],
-  },
-  {
-    category: "Finanzas",
-    items: [
-      { icon: DollarSign, text: "Liquidación automática de profesionales" },
-      { icon: Wallet, text: "Flujo de caja con ingresos y egresos" },
-      { icon: TrendingUp, text: "Reporte de deudores en tiempo real" },
-      { icon: Shield, text: "Gestión de obras sociales y prepagas" },
-      { icon: Briefcase, text: "Comisiones configurables por profesional" },
-    ],
-  },
-  {
-    category: "Administración",
-    items: [
-      { icon: Building2, text: "Gestión multi-sucursal centralizada" },
-      { icon: Users, text: "Roles y permisos (admin, profesional, recepción)" },
-      { icon: Briefcase, text: "Catálogo de servicios con precios y duración" },
-      { icon: Settings, text: "Configuración completa de la clínica" },
-      { icon: BarChart3, text: "Dashboard con métricas y KPIs en tiempo real" },
-    ],
-  },
-  {
-    category: "Portal de Pacientes",
-    items: [
-      { icon: Globe, text: "Portal web de autogestión para pacientes" },
-      { icon: Smartphone, text: "Reserva de turnos online 24/7" },
-      { icon: FileText, text: "Acceso a historial de turnos y tratamientos" },
-      { icon: FolderOpen, text: "Descarga de archivos y documentos" },
-      { icon: UserCog, text: "Actualización de datos personales" },
-    ],
-  },
-  {
-    category: "Seguridad y Soporte",
-    items: [
-      { icon: Lock, text: "Encriptación AES-256 de datos sensibles" },
-      { icon: RefreshCw, text: "Backups automáticos diarios" },
-      { icon: Headphones, text: "Soporte prioritario 24/7" },
-      { icon: Star, text: "Actualizaciones continuas sin costo extra" },
-      { icon: Zap, text: "Onboarding asistido y migración de datos gratuita" },
-    ],
-  },
-]
-
-const comparisonFeatures = [
-  { name: "Usuarios y profesionales", pro: "Ilimitados", enterprise: "Ilimitados" },
-  { name: "Sucursales", pro: "Hasta 3", enterprise: "Ilimitadas" },
-  { name: "Historias clínicas", pro: "Ilimitadas", enterprise: "Ilimitadas" },
-  { name: "Soporte", pro: "Email y chat", enterprise: "Prioritario 24/7" },
-  { name: "Migración de datos", pro: "Asistida", enterprise: "Dedicada con consultor" },
-  { name: "Integraciones personalizadas", pro: "+$10.000 /mes", enterprise: "Incluidas" },
+const allFeatureIcons = [
+  [Calendar, Clock, Globe, CalendarOff, Bell, RefreshCw],
+  [UserCog, FileText, Stethoscope, ClipboardList, Pill, FolderOpen, CreditCard],
+  [DollarSign, Wallet, TrendingUp, Shield, Briefcase],
+  [Building2, Users, Briefcase, Settings, BarChart3],
+  [Globe, Smartphone, FileText, FolderOpen, UserCog],
+  [Lock, RefreshCw, Headphones, Star, Zap],
 ]
 
 export const PricingSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const [isAnnual, setIsAnnual] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
+  const { t } = useTranslation('landing')
 
   const plans = useBillingPlans()
   const country = useCountry()
   const isArgentina = country === 'AR'
+
+  const mainFeatures = (t('pricing.mainFeatures', { returnObjects: true }) as string[])
+  const featureCategories = (t('pricing.featureCategories', { returnObjects: true }) as { category: string; items: string[] }[])
+  const comparisonFeatures = (t('pricing.comparison', { returnObjects: true }) as { name: string; pro: string; enterprise: string }[])
 
   const usdMonthly = plans?.usd.monthly.price
   const usdAnnualPerMonth = plans ? (plans.usd.annual.pricePerMonth ?? Math.round(plans.usd.annual.price / 12)) : undefined
@@ -195,7 +128,7 @@ export const PricingSection: React.FC = () => {
           {/* Header */}
           <div className="pricing-header mb-16">
             <h2 className="text-4xl md:text-5xl font-semibold text-[#0B1023] tracking-tight mb-10">
-              Precios y planes
+              {t('pricing.title')}
             </h2>
 
             {/* Toggle mensual/anual */}
@@ -208,7 +141,7 @@ export const PricingSection: React.FC = () => {
                     : "text-[#0B1023]/60 hover:text-[#0B1023]"
                 }`}
               >
-                Mensual
+                {t('pricing.monthly')}
               </button>
               <button
                 onClick={() => setIsAnnual(true)}
@@ -218,7 +151,7 @@ export const PricingSection: React.FC = () => {
                     : "text-[#0B1023]/60 hover:text-[#0B1023]"
                 }`}
               >
-                Anual
+                {t('pricing.annual')}
               </button>
             </div>
           </div>
@@ -229,7 +162,7 @@ export const PricingSection: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-6">
                 <span className="inline-flex items-center gap-1.5 bg-[#0B1023] text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                  Profesional
+                  {t('pricing.professional')}
                 </span>
                 {isAnnual && discount !== undefined && (
                   <span className="inline-flex items-center bg-[#E8F5E9] text-[#2E7D32] text-xs font-bold px-3 py-1.5 rounded-full">
@@ -259,22 +192,22 @@ export const PricingSection: React.FC = () => {
 
               {isArgentina && displayArs !== undefined && displayArs > 0 && (
                 <p className="text-sm text-[#0B1023]/40 mb-1">
-                  (aprox. ${displayArs.toLocaleString("es-AR")} ARS)
+                  ({t('pricing.arsEquiv', { amount: displayArs.toLocaleString("es-AR") })})
                 </p>
               )}
 
-              <p className="text-sm text-[#0B1023]/40 mb-8">USD / mes / clínica</p>
+              <p className="text-sm text-[#0B1023]/40 mb-8">{t('pricing.usdMonth')}</p>
 
               {/* 6 Main Features */}
               <div className="space-y-3 mb-6">
-                {mainFeatures.map((feat, i) => {
-                  const Icon = feat.icon
+                {mainFeatures.map((text, i) => {
+                  const Icon = mainFeatureIcons[i]
                   return (
                     <div key={i} className="flex items-center gap-3">
                       <div className="w-7 h-7 rounded-lg bg-[#2563FF]/10 flex items-center justify-center shrink-0">
                         <Icon className="w-3.5 h-3.5 text-[#2563FF]" />
                       </div>
-                      <span className="text-sm text-[#0B1023]/70">{feat.text}</span>
+                      <span className="text-sm text-[#0B1023]/70">{text}</span>
                     </div>
                   )
                 })}
@@ -285,7 +218,7 @@ export const PricingSection: React.FC = () => {
                 onClick={() => setShowAllFeatures(true)}
                 className="text-[#2563FF] text-sm font-semibold hover:text-[#1D4ED8] transition-colors mb-8 flex items-center gap-1"
               >
-                Ver todas las funcionalidades
+                {t('pricing.allFeatures')}
                 <ArrowRight size={14} />
               </button>
 
@@ -293,12 +226,12 @@ export const PricingSection: React.FC = () => {
                 to="/register"
                 className="inline-flex items-center justify-center gap-2 bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-full transition-colors duration-200 text-sm"
               >
-                Comenzar ahora
+                {t('pricing.cta')}
                 <ArrowRight size={16} />
               </Link>
 
               <p className="text-xs text-[#0B1023]/40 mt-4">
-                14 días de prueba gratis. Sin tarjeta de crédito.
+                {t('pricing.trial')}
               </p>
             </div>
 
@@ -306,20 +239,19 @@ export const PricingSection: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-6">
                 <span className="inline-flex items-center bg-[#F0F4FF] text-[#0B1023]/70 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                  Enterprise
+                  {t('pricing.enterprise')}
                 </span>
               </div>
 
               <p className="text-lg text-[#0B1023]/60 leading-relaxed mb-8 max-w-sm">
-                Obtené una cotización personalizada de nuestro equipo para las necesidades
-                únicas de tu clínica.
+                {t('pricing.enterpriseDesc')}
               </p>
 
               <a
                 href="mailto:ventas@dentiqly.com"
                 className="inline-flex items-center justify-center gap-2 border-2 border-[#0B1023]/15 hover:border-[#2563FF] text-[#0B1023] font-semibold px-8 py-3.5 rounded-full transition-colors duration-200 text-sm"
               >
-                Contactar ventas
+                {t('pricing.contactSales')}
                 <ArrowRight size={16} />
               </a>
             </div>
@@ -366,10 +298,10 @@ export const PricingSection: React.FC = () => {
             <div className="flex items-center justify-between px-8 py-6 border-b border-[#0B1023]/[0.06]" style={{ flexShrink: 0 }}>
               <div>
                 <h3 className="text-2xl font-semibold text-[#0B1023] tracking-tight">
-                  Todas las funcionalidades
+                  {t('pricing.modalTitle')}
                 </h3>
                 <p className="text-sm text-[#0B1023]/40 mt-1">
-                  Todo incluido en el Plan Profesional
+                  {t('pricing.modalSubtitle')}
                 </p>
               </div>
               <button
@@ -384,21 +316,23 @@ export const PricingSection: React.FC = () => {
             {/* Modal Body */}
             <div style={{ overflowY: "auto", flex: "1 1 0%", minHeight: 0, overscrollBehavior: "contain" }} className="px-8 py-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {allFeatures.map((group, gi) => (
+                {featureCategories.map((group, gi) => (
                   <div key={gi}>
                     <h4 className="text-xs font-bold text-[#2563FF] uppercase tracking-widest mb-4">
                       {group.category}
                     </h4>
                     <div className="space-y-3">
-                      {group.items.map((feat, fi) => {
-                        const Icon = feat.icon
+                      {group.items.map((text, fi) => {
+                        const Icon = allFeatureIcons[gi]?.[fi]
                         return (
                           <div key={fi} className="flex items-start gap-3">
-                            <div className="w-7 h-7 rounded-lg bg-[#2563FF]/10 flex items-center justify-center shrink-0 mt-0.5">
-                              <Icon className="w-3.5 h-3.5 text-[#2563FF]" />
-                            </div>
+                            {Icon && (
+                              <div className="w-7 h-7 rounded-lg bg-[#2563FF]/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <Icon className="w-3.5 h-3.5 text-[#2563FF]" />
+                              </div>
+                            )}
                             <span className="text-sm text-[#0B1023]/70 leading-snug">
-                              {feat.text}
+                              {text}
                             </span>
                           </div>
                         )
@@ -413,14 +347,14 @@ export const PricingSection: React.FC = () => {
             <div className="px-8 py-6 border-t border-[#0B1023]/[0.06] bg-[#F8FAFF] rounded-b-3xl" style={{ flexShrink: 0 }}>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-[#0B1023]/50">
-                  +33 funcionalidades incluidas sin costo extra
+                  {t('pricing.featureCount')}
                 </p>
                 <Link
                   to="/register"
                   onClick={() => setShowAllFeatures(false)}
                   className="inline-flex items-center justify-center gap-2 bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-full transition-colors duration-200 text-sm"
                 >
-                  Comenzar prueba gratis
+                  {t('pricing.startTrial')}
                   <ArrowRight size={16} />
                 </Link>
               </div>

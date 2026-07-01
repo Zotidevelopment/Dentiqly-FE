@@ -1,0 +1,183 @@
+{
+  "nav": {
+    "features": "Funcionalidades",
+    "whyDentiqly": "Por qué Dentiqly",
+    "pricing": "Precios",
+    "faq": "Preguntas",
+    "login": "Iniciar sesión",
+    "signup": "Creá tu cuenta gratis"
+  },
+  "hero": {
+    "headline": "Tu agenda, sin papel ni WhatsApp.",
+    "headlineHighlight": "Sola. Automática. Lista.",
+    "subheadline": "Recordatorios automáticos por WhatsApp, agenda online 24 hs y fichas digitales en un solo lugar. Menos llamadas, menos ausencias, más tiempo para atender.",
+    "benefit1": "Recordatorios por WhatsApp — reduce ausencias hasta un 40%",
+    "benefit2": "Turnos online disponibles 24 hs, sin llamadas ni secretaria",
+    "benefit3": "Fichas, odontograma e imágenes en un solo lugar",
+    "ctaPrimary": "Empezar gratis — 14 días",
+    "ctaDemo": "Ver demo en vivo",
+    "noCard": "Sin tarjeta de crédito · Configuración en menos de 5 minutos"
+  },
+  "pricing": {
+    "title": "Precios y planes",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "professional": "Profesional",
+    "enterprise": "Enterprise",
+    "usdMonth": "USD / mes / clínica",
+    "trial": "14 días de prueba gratis. Sin tarjeta de crédito.",
+    "cta": "Comenzar ahora",
+    "allFeatures": "Ver todas las funcionalidades",
+    "enterpriseDesc": "Obtené una cotización personalizada de nuestro equipo para las necesidades únicas de tu clínica.",
+    "contactSales": "Contactar ventas",
+    "featureCount": "+33 funcionalidades incluidas sin costo extra",
+    "startTrial": "Comenzar prueba gratis",
+    "modalTitle": "Todas las funcionalidades",
+    "modalSubtitle": "Todo incluido en el Plan Profesional",
+    "arsEquiv": "aprox. ${{amount}} ARS",
+    "mainFeatures": [
+      "Agenda y turnos online",
+      "Gestión completa de pacientes",
+      "Odontograma interactivo",
+      "Liquidación de profesionales",
+      "Flujo de caja y finanzas",
+      "Multi-sucursal"
+    ],
+    "featureCategories": [
+      {
+        "category": "Agenda y Turnos",
+        "items": [
+          "Calendario visual con vista diaria, semanal y mensual",
+          "Turnos con duración personalizable por servicio",
+          "Reservas online desde el portal de pacientes",
+          "Gestión de ausencias y feriados",
+          "Recordatorios automáticos por email",
+          "Reprogramación y cancelación con un click"
+        ]
+      },
+      {
+        "category": "Pacientes",
+        "items": [
+          "Ficha completa con datos personales y contacto",
+          "Historia clínica digital ilimitada",
+          "Odontograma interactivo con registro por pieza",
+          "Planes de tratamiento con seguimiento",
+          "Recetas y prescripciones digitales",
+          "Archivos adjuntos (radiografías, fotos, documentos)",
+          "Cuenta corriente por paciente"
+        ]
+      },
+      {
+        "category": "Finanzas",
+        "items": [
+          "Liquidación automática de profesionales",
+          "Flujo de caja con ingresos y egresos",
+          "Reporte de deudores en tiempo real",
+          "Gestión de obras sociales y prepagas",
+          "Comisiones configurables por profesional"
+        ]
+      },
+      {
+        "category": "Administración",
+        "items": [
+          "Gestión multi-sucursal centralizada",
+          "Roles y permisos (admin, profesional, recepción)",
+          "Catálogo de servicios con precios y duración",
+          "Configuración completa de la clínica",
+          "Dashboard con métricas y KPIs en tiempo real"
+        ]
+      },
+      {
+        "category": "Portal de Pacientes",
+        "items": [
+          "Portal web de autogestión para pacientes",
+          "Reserva de turnos online 24/7",
+          "Acceso a historial de turnos y tratamientos",
+          "Descarga de archivos y documentos",
+          "Actualización de datos personales"
+        ]
+      },
+      {
+        "category": "Seguridad y Soporte",
+        "items": [
+          "Encriptación AES-256 de datos sensibles",
+          "Backups automáticos diarios",
+          "Soporte prioritario 24/7",
+          "Actualizaciones continuas sin costo extra",
+          "Onboarding asistido y migración de datos gratuita"
+        ]
+      }
+    ],
+    "comparison": [
+      { "name": "Usuarios y profesionales", "pro": "Ilimitados", "enterprise": "Ilimitados" },
+      { "name": "Sucursales", "pro": "Hasta 3", "enterprise": "Ilimitadas" },
+      { "name": "Historias clínicas", "pro": "Ilimitadas", "enterprise": "Ilimitadas" },
+      { "name": "Soporte", "pro": "Email y chat", "enterprise": "Prioritario 24/7" },
+      { "name": "Migración de datos", "pro": "Asistida", "enterprise": "Dedicada con consultor" },
+      { "name": "Integraciones personalizadas", "pro": "+$10.000 /mes", "enterprise": "Incluidas" }
+    ]
+  },
+  "faq": {
+    "badge": "Preguntas frecuentes",
+    "title": "Todo lo que necesitas saber sobre Dentiqly",
+    "items": [
+      {
+        "question": "¿Cuánto tiempo lleva configurar Dentiqly?",
+        "answer": "Menos de 10 minutos. Te registrás, creás tu clínica y ya podés empezar a cargar pacientes, configurar servicios y agendar turnos. No necesitás instalar nada ni contratar soporte técnico."
+      },
+      {
+        "question": "¿Puedo gestionar varias sucursales desde una sola cuenta?",
+        "answer": "Sí. Dentiqly está diseñado como multi-sucursal nativo. Desde un único panel podés ver métricas, agendar turnos y gestionar profesionales de todas tus clínicas en tiempo real."
+      },
+      {
+        "question": "¿Mis datos están seguros?",
+        "answer": "Absolutamente. Usamos encriptación AES-256, conexiones SSL/TLS y backups automáticos cada hora. Cada clínica tiene sus datos completamente aislados en un modelo multi-tenant seguro."
+      },
+      {
+        "question": "¿Cómo funcionan los recordatorios automáticos?",
+        "answer": "Dentiqly envía recordatorios automáticos por email a tus pacientes antes de cada turno. Podés personalizar el mensaje y los tiempos de envío. Esto reduce las inasistencias hasta un 40%."
+      },
+      {
+        "question": "¿Puedo migrar datos desde otro sistema?",
+        "answer": "Sí. Ofrecemos asistencia para migrar pacientes, historiales y turnos desde planillas de Excel u otros sistemas. Nuestro equipo te guía durante todo el proceso sin costo adicional."
+      },
+      {
+        "question": "¿Hay período de prueba gratuito?",
+        "answer": "Sí. Tenés 14 días de prueba gratuita con acceso completo a todas las funcionalidades. No se requiere tarjeta de crédito para comenzar."
+      }
+    ]
+  },
+  "cta": {
+    "badge": "Contacto",
+    "title": "Digitalizá tu clínica dental",
+    "titleLine2": "hoy mismo.",
+    "subtitle": "Unite a las clínicas que ya ahorran tiempo y brindan una experiencia excepcional a sus pacientes. Empezá gratis.",
+    "ctaButton": "Crear mi cuenta gratis",
+    "formTitle": "¿Querés hablar con nosotros?",
+    "emailLabel": "Correo electrónico de trabajo*",
+    "emailPlaceholder": "tu@clinica.com",
+    "nameLabel": "Nombre*",
+    "namePlaceholder": "Tu nombre",
+    "lastNameLabel": "Apellido*",
+    "lastNamePlaceholder": "Tu apellido",
+    "clinicLabel": "Nombre de la clínica*",
+    "clinicPlaceholder": "Nombre de clínica",
+    "phoneLabel": "Número de teléfono",
+    "phonePlaceholder": "+54 9 11 0000-0000",
+    "reasonLabel": "Motivo de interés*",
+    "reasonPlaceholder": "Seleccioná una opción",
+    "reasonOptions": {
+      "contratar": "Quiero contratar Dentiqly",
+      "demostracion": "Solicitar una demostración",
+      "precios": "Consultar sobre planes y precios",
+      "soporte": "Soporte o dudas técnicas",
+      "otro": "Otro motivo"
+    },
+    "messageLabel": "¿En qué podemos ayudarte?",
+    "messagePlaceholder": "Escribí tu mensaje acá...",
+    "submit": "Enviar",
+    "submitting": "Enviando...",
+    "successTitle": "¡Mensaje enviado!",
+    "successText": "Nos pondremos en contacto contigo a la brevedad."
+  }
+}

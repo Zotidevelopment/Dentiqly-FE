@@ -1,6 +1,7 @@
 import React, { useRef } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 import { ThinArrow } from "../components/ThinArrow"
 import { HeroCalendarPreview } from "../components/HeroCalendarPreview"
 import { CheckCircle2, Clock, MessageSquare, Users, Zap } from "lucide-react"
@@ -12,6 +13,7 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
   const sectionRef = useRef<HTMLElement>(null)
+  const { t } = useTranslation('landing')
 
   return (
     <section
@@ -29,9 +31,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
             transition={{ duration: 0.65, delay: 0.15 }}
             className="text-[2.4rem] sm:text-[2.9rem] lg:text-[2.7rem] xl:text-[3.1rem] 2xl:text-[3.5rem] font-bold tracking-[-1.5px] leading-[1.08] text-[#0A0F2D] mb-4"
           >
-            Tu agenda, sin papel ni WhatsApp.
+            {t('hero.headline')}
             <br />
-            <span className="text-[#0047FF]">Sola. Automática. Lista.</span>
+            <span className="text-[#0047FF]">{t('hero.headlineHighlight')}</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -41,7 +43,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
             transition={{ duration: 0.65, delay: 0.25 }}
             className="text-[0.97rem] text-gray-500 leading-relaxed mb-6"
           >
-            Recordatorios automáticos por WhatsApp, agenda online 24 hs y fichas digitales en un solo lugar. Menos llamadas, menos ausencias, más tiempo para atender.
+            {t('hero.subheadline')}
           </motion.p>
 
           {/* Benefits */}
@@ -52,9 +54,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
             className="space-y-2 mb-7"
           >
             {[
-              { icon: <MessageSquare className="w-4 h-4 text-[#0047FF]" />, text: "Recordatorios por WhatsApp — reduce ausencias hasta un 40%" },
-              { icon: <Clock className="w-4 h-4 text-[#0047FF]" />, text: "Turnos online disponibles 24 hs, sin llamadas ni secretaria" },
-              { icon: <Users className="w-4 h-4 text-[#0047FF]" />, text: "Fichas, odontograma e imágenes en un solo lugar" },
+              { icon: <MessageSquare className="w-4 h-4 text-[#0047FF]" />, text: t('hero.benefit1') },
+              { icon: <Clock className="w-4 h-4 text-[#0047FF]" />, text: t('hero.benefit2') },
+              { icon: <Users className="w-4 h-4 text-[#0047FF]" />, text: t('hero.benefit3') },
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[13.5px] text-gray-600 font-medium">
                 <div className="mt-0.5 w-5 h-5 rounded-md bg-[#0047FF]/8 flex items-center justify-center shrink-0">
@@ -77,7 +79,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
               className="group bg-[#0047FF] text-white px-6 py-3 rounded-full text-[14.5px] font-semibold shadow-lg shadow-[#0047FF]/20 hover:shadow-xl hover:shadow-[#0047FF]/30 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
             >
               <Zap className="w-4 h-4 shrink-0" />
-              <span>Empezar gratis — 14 días</span>
+              <span>{t('hero.ctaPrimary')}</span>
               <ThinArrow size={15} className="group-hover:translate-x-0.5 transition-transform duration-200 shrink-0" />
             </Link>
 
@@ -88,7 +90,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
               }}
               className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full text-[14.5px] font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
             >
-              Ver demo en vivo
+              {t('hero.ctaDemo')}
             </button>
           </motion.div>
 
@@ -99,7 +101,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
             className="flex items-center gap-1.5 text-[11.5px] text-gray-400"
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            Sin tarjeta de crédito · Configuración en menos de 5 minutos
+            {t('hero.noCard')}
           </motion.p>
         </div>
 

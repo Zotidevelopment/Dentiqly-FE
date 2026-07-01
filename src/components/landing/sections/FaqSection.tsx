@@ -1,42 +1,10 @@
 import React, { useEffect, useRef, useState } from "react"
 import { ChevronDown } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
-
-const faqs = [
-  {
-    question: "Cuanto tiempo lleva configurar Dentiqly?",
-    answer:
-      "Menos de 10 minutos. Te registras, creas tu clinica y ya podes empezar a cargar pacientes, configurar servicios y agendar turnos. No necesitas instalar nada ni contratar soporte tecnico.",
-  },
-  {
-    question: "Puedo gestionar varias sucursales desde una sola cuenta?",
-    answer:
-      "Si. Dentiqly esta disenado como multi-sucursal nativo. Desde un unico panel podes ver metricas, agendar turnos y gestionar profesionales de todas tus clinicas en tiempo real.",
-  },
-  {
-    question: "Mis datos estan seguros?",
-    answer:
-      "Absolutamente. Usamos encriptacion AES-256, conexiones SSL/TLS y backups automaticos cada hora. Cada clinica tiene sus datos completamente aislados en un modelo multi-tenant seguro.",
-  },
-  {
-    question: "Como funcionan los recordatorios por email?",
-    answer:
-      "Dentiqly envia recordatorios automaticos por email a tus pacientes antes de cada turno. Podes personalizar el mensaje y los tiempos de envio. Esto reduce las inasistencias hasta un 40%.",
-  },
-  {
-    question: "Puedo migrar datos desde otro sistema?",
-    answer:
-      "Si. Ofrecemos asistencia para migrar pacientes, historiales y turnos desde planillas de Excel u otros sistemas. Nuestro equipo te guia durante todo el proceso sin costo adicional.",
-  },
-  {
-    question: "Hay periodo de prueba gratuito?",
-    answer:
-      "Si. Tenes 14 dias de prueba gratuita con acceso completo a todas las funcionalidades. No se requiere tarjeta de credito para comenzar.",
-  },
-]
 
 const FaqItem: React.FC<{ question: string; answer: string; index: number }> = ({
   question,
@@ -102,6 +70,8 @@ const FaqItem: React.FC<{ question: string; answer: string; index: number }> = (
 
 export const FaqSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null)
+  const { t } = useTranslation('landing')
+  const faqs = t('faq.items', { returnObjects: true }) as { question: string; answer: string }[]
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -139,11 +109,11 @@ export const FaqSection: React.FC = () => {
         <div className="faq-heading text-center mb-16">
           <div className="flex justify-center mb-4">
             <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
-              Preguntas frecuentes
+              {t('faq.badge')}
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1023] tracking-tight">
-            Todo lo que necesitas saber sobre Dentiqly
+            {t('faq.title')}
           </h2>
         </div>
 
