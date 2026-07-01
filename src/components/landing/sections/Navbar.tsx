@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Menu, X, User } from "lucide-react"
-import { useTranslation } from "react-i18next"
 import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
 
@@ -12,9 +11,6 @@ export const Navbar: React.FC = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation('landing')
-
-  const toggleLang = () => i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es')
 
   const isLanding = location.pathname === "/"
 
@@ -71,10 +67,10 @@ export const Navbar: React.FC = () => {
   }, [mobileMenuOpen])
 
   const navLinks = [
-    { label: t('nav.features'), href: "#funcionalidades" },
-    { label: t('nav.whyDentiqly'), href: "#por-que-dentiqly" },
-    { label: t('nav.pricing'), href: "#precios" },
-    { label: t('nav.faq'), href: "#faq" },
+    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Por qué Dentiqly", href: "#por-que-dentiqly" },
+    { label: "Precios", href: "#precios" },
+    { label: "Preguntas", href: "#faq" },
   ]
 
   return (
@@ -144,25 +140,19 @@ export const Navbar: React.FC = () => {
 
           {/* Right side */}
           <div className="hidden lg:flex items-center gap-3">
-            <button
-              onClick={toggleLang}
-              className="h-9 px-3 text-[12px] font-bold rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 tracking-wide"
-            >
-              {i18n.language === 'es' ? 'EN' : 'ES'}
-            </button>
             <Link
               to="/login"
               className="h-9 px-4 text-[13px] flex items-center gap-1.5 rounded-full font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-150"
             >
               <User size={13} />
-              {t('nav.login')}
+              Iniciar sesión
             </Link>
 
             <Link
               to="/register"
               className="group h-9 px-5 text-[13px] flex items-center gap-1.5 rounded-full font-semibold bg-[#0047FF] text-white hover:bg-[#003BCC] transition-all duration-200 shadow-sm shadow-[#0047FF]/20"
             >
-              {t('nav.signup')}
+              Creá tu cuenta gratis
               <ThinArrow size={14} className="group-hover:translate-x-0.5 transition-transform duration-200" />
             </Link>
           </div>
@@ -198,25 +188,19 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-3 mt-8">
-            <button
-              onClick={toggleLang}
-              className="h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 text-sm font-bold tracking-wide transition-all hover:bg-gray-50"
-            >
-              {i18n.language === 'es' ? '🇺🇸 English' : '🇦🇷 Español'}
-            </button>
             <Link
               to="/login"
               onClick={() => setMobileMenuOpen(false)}
               className="h-12 flex items-center justify-center rounded-full border border-gray-200 text-gray-700 font-medium transition-all hover:bg-gray-50"
             >
-              {t('nav.login')}
+              Iniciar sesión
             </Link>
             <Link
               to="/register"
               onClick={() => setMobileMenuOpen(false)}
               className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-bold transition-all hover:bg-[#003BCC] shadow-lg shadow-[#0047FF]/25"
             >
-              {t('nav.signup')}
+              Creá tu cuenta gratis
             </Link>
           </div>
         </div>
