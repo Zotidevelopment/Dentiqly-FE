@@ -1,7 +1,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../api/auth';
 import { apiClient } from '../lib/api-client';
+import {
+  identifyUser,
+  resetUser,
+  trackLogin,
+  trackSignupCompleted,
+} from '../lib/analytics';
 import type { AuthUser, LoginData, SaasRegisterData } from '../types';
+
+/**
+ * Marca que la cuenta se creó en este navegador y todavía no volvió a entrar.
+ * Sirve para distinguir el primer login real (el usuario regresó) del
+ * auto-login que ocurre al terminar el registro.
+ */
+const FIRST_LOGIN_PENDING_KEY = 'dentiqly_first_login_pending';
+
+/** Envía user_id y datos de la clínica al dataLayer. */
+const identifyFromUser = (u: AuthUser) => {
+  identifyUser({
+    userId: u.id,
+    clinicaId: u.clinicaId,
+    clinicaSlug: u.clinica?.slug,
+    role: u.role,
+    plan: u.clinica?.subscription_status,
+  });
+};
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -25,12 +49,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const userData = await authApi.me();
           setUser(userData);
           localStorage.setItem('user', JSON.stringify(userData));
+          identifyFromUser(userData);
         } catch (error) {
           console.error('Failed to restore session:', error);
           apiClient.clearToken();
           localStorage.removeItem('user');
         }
       } else if (typeof window !== 'undefined' && (window.location.pathname.startsWith('/demo') || window.location.pathname === '/')) {
+        // Usuario demo sintético: NO se identifica en analytics, si no cada
+        // visitante anónimo de la landing entraría como el mismo user_id.
         setUser({
           id: 'demo-user-id',
           email: 'demo@dentiqly.com',
@@ -57,6 +84,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userWithClinic: AuthUser = { ...response.user, clinica: response.clinica };
     setUser(userWithClinic);
     localStorage.setItem('user', JSON.stringify(userWithClinic));
+
+    const isFirstLogin = localStorage.getItem(FIRST_LOGIN_PENDING_KEY) === '1';
+    if (isFirstLogin) localStorage.removeItem(FIRST_LOGIN_PENDING_KEY);
+    identifyFromUser(userWithClinic);
+    trackLogin('email', isFirstLogin);
+
     return response;
   };
 
@@ -65,6 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userWithClinic: AuthUser = { ...response.user, clinica: response.clinica };
     setUser(userWithClinic);
     localStorage.setItem('user', JSON.stringify(userWithClinic));
+
+    localStorage.setItem(FIRST_LOGIN_PENDING_KEY, '1');
+    identifyFromUser(userWithClinic);
+    trackSignupCompleted('email');
+
     return response;
   };
 
@@ -72,6 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     authApi.logout();
     setUser(null);
     localStorage.removeItem('user');
+    resetUser();
   };
 
   return (

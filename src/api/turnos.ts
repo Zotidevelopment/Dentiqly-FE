@@ -1,4 +1,5 @@
 import { apiClient } from "../lib/api-client"
+import { isFirstTime, trackAppointmentCreated } from "../lib/analytics"
 import type { Turno, CrearTurnoData, CrearTurnoBookingData, PaginatedResponse } from "../types"
 
 export const turnosApi = {
@@ -34,7 +35,13 @@ export const turnosApi = {
   },
 
   async crear(data: CrearTurnoData): Promise<Turno> {
-    return apiClient.post<Turno>("/turnos", data)
+    const turno = await apiClient.post<Turno>("/turnos", data)
+    // Una reserva hecha por un paciente desde el booking público no es la
+    // clínica usando la agenda: ese es otro embudo.
+    if (!apiClient.isPublicContext()) {
+      trackAppointmentCreated(isFirstTime("appointment_created"))
+    }
+    return turno
   },
 
   async crearDesdeBooking(data: CrearTurnoBookingData): Promise<Turno> {
@@ -53,7 +60,11 @@ export const turnosApi = {
     observaciones?: string
     sobre_turno?: boolean
   }): Promise<{ message: string; turnos: Turno[] }> {
-    return apiClient.post<{ message: string; turnos: Turno[] }>("/turnos/bulk", data)
+    const result = await apiClient.post<{ message: string; turnos: Turno[] }>("/turnos/bulk", data)
+    if (!apiClient.isPublicContext()) {
+      trackAppointmentCreated(isFirstTime("appointment_created"))
+    }
+    return result
   },
 
   async actualizar(id: number, data: Partial<CrearTurnoData>): Promise<Turno> {

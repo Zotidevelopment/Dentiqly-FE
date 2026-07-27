@@ -1,5 +1,6 @@
 import React, { useCallback } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 
 export const FooterSection: React.FC = () => {
   const location = useLocation()
@@ -135,9 +136,9 @@ export const FooterSection: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="hover:text-white transition-colors">
+                <TrialLink ctaLocation="footer" ctaLabel="Registrarse gratis" className="hover:text-white transition-colors">
                   Registrarse gratis
-                </Link>
+                </TrialLink>
               </li>
               <li>
                 <Link to="/login" className="hover:text-white transition-colors">
@@ -184,12 +185,13 @@ export const FooterSection: React.FC = () => {
                 Sin tarjeta de crédito. Gestión de turnos, historias clínicas y odontogramas desde el primer día.
               </p>
             </div>
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="footer"
+              ctaLabel="Comenzar prueba gratuita"
               className="shrink-0 bg-[#2563FF] hover:bg-[#1d4ed8] text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm"
             >
               Comenzar prueba gratuita
-            </Link>
+            </TrialLink>
           </div>
         </div>
 

@@ -10,9 +10,33 @@ const ScrollToTop: React.FC = () => {
   }, [pathname, hash])
   return null
 }
+
+/**
+ * Empuja un page_view al dataLayer en cada cambio de ruta.
+ *
+ * El snippet de GTM solo dispara en la carga inicial del documento, así que
+ * sin esto GA4 registraría una única vista por sesión y todo el embudo
+ * (/ → /register → /:slug/admin) quedaría invisible.
+ */
+const RouteTracker: React.FC = () => {
+  const { pathname, search } = useLocation()
+
+  useEffect(() => {
+    trackPageView(`${pathname}${search}`)
+
+    // /demo monta el mismo AdminApp que el panel real, así que el playground
+    // se detecta por la ruta y no dentro del componente.
+    if (pathname.startsWith('/demo')) {
+      trackPlaygroundUsed(isFirstTime('playground_used'))
+    }
+  }, [pathname, search])
+
+  return null
+}
 import { dentalColors } from '../config/colors'
 import { useAuth } from '../hooks/useAuth'
 import { apiClient } from '../lib/api-client'
+import { isFirstTime, trackPageView, trackPlaygroundUsed } from '../lib/analytics'
 
 // Import components dynamically
 const BookingForm = React.lazy(() => import('./booking/BookingForm').then(module => ({ default: module.BookingForm })))
@@ -163,6 +187,7 @@ export const AppRouter: React.FC = () => {
   return (
     <>
     <ScrollToTop />
+    <RouteTracker />
     <React.Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>

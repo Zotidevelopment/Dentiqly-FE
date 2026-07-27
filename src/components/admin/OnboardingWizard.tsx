@@ -1,5 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { apiClient } from '../../lib/api-client'
+import {
+  getGaClientId,
+  trackCheckoutStarted,
+  trackOnboardingCompleted,
+  trackOnboardingStarted,
+} from '../../lib/analytics'
 import { configuracionApi } from '../../api/configuracion'
 import { useBillingPlans } from '../../hooks/useBillingPlans'
 import { useToast } from '../../hooks/use-toast'
@@ -51,6 +57,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
 
   const totalSteps = 4
 
+  useEffect(() => {
+    trackOnboardingStarted()
+  }, [])
+
   const handleSaveClinicData = async () => {
     setSaving(true)
     try {
@@ -75,6 +85,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           await configuracionApi.crear({ clave: key, valor: value, tipo: 'string', categoria: 'banking' })
         }
       }
+      // Paso 4 es "Activar": llegar acá significa que la clínica terminó de
+      // configurarse. Lo que sigue es la decisión de pago, no configuración.
+      trackOnboardingCompleted()
       setStep(4)
     } catch {
       toast({ variant: "destructive", title: "Error", description: "Error al guardar los datos bancarios. Intenta nuevamente." })
@@ -104,9 +117,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     setPaying(true)
     try {
       const paymentMethod = region === 'internacional' ? 'lemonsqueezy' : 'mercadopago'
+
+      trackCheckoutStarted({
+        plan: billingPlan,
+        value: (billingPlan === 'annual' ? annualPrice : monthlyPrice) ?? 0,
+        currency: currencyCode,
+        billingCycle: billingPlan === 'annual' ? 'annual' : 'monthly',
+      })
+
       const response = await apiClient.post<{ checkout_url?: string; init_point?: string }>('/billing/create-preference', {
         billing_plan: billingPlan,
         payment_method: paymentMethod,
+        // El `purchase` se emite después desde el webhook, sin navegador.
+        // Mandar el client_id acá es lo que permite atribuirlo a la campaña.
+        ga_client_id: getGaClientId(),
       })
       const redirectUrl = response.checkout_url || response.init_point
       if (redirectUrl) {

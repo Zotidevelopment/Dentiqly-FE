@@ -34,6 +34,17 @@ export class ApiClient {
   }
 
   /**
+   * True cuando la llamada sale del booking público (un paciente reservando),
+   * en vez del panel de la clínica. Misma condición que usa resolveUrl().
+   *
+   * Analytics lo necesita para no contar las reservas de pacientes como uso
+   * del producto por parte de la clínica: son dos embudos distintos.
+   */
+  isPublicContext(): boolean {
+    return Boolean(this.tenantSlug) && !this.token
+  }
+
+  /**
    * Resuelve la URL final.
    */
   private resolveUrl(endpoint: string): string {

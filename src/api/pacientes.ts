@@ -1,4 +1,5 @@
 import { apiClient } from "../lib/api-client"
+import { isFirstTime, trackPatientCreated } from "../lib/analytics"
 import type { Paciente, CrearPacienteData, PaginationResponse } from "../types"
 
 export const pacientesApi = {
@@ -31,7 +32,13 @@ export const pacientesApi = {
   },
 
   crear: async (data: CrearPacienteData): Promise<Paciente> => {
-    return apiClient.post<Paciente>("/pacientes", data)
+    const paciente = await apiClient.post<Paciente>("/pacientes", data)
+    // Los pacientes que se crean solos durante una reserva pública no cuentan
+    // como uso del producto por parte de la clínica.
+    if (!apiClient.isPublicContext()) {
+      trackPatientCreated(isFirstTime("patient_created"))
+    }
+    return paciente
   },
 
   buscarPorDocumento: async (numeroDocumento: string): Promise<Paciente | null> => {

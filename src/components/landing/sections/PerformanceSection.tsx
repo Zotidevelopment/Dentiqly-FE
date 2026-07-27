@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 import { motion } from "framer-motion"
 import { 
   CheckCircle2, 
@@ -150,13 +150,14 @@ export const PerformanceSection: React.FC = () => {
             </div>
 
             <div className="relative z-10 shrink-0">
-              <Link
-                to="/register"
+              <TrialLink
+                ctaLocation="performance"
+                ctaLabel="Empezá GRATIS ahora"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#0047FF] font-extrabold text-sm rounded-full hover:bg-gray-50 transition-all shadow-lg hover:scale-[1.02]"
               >
                 Empezá GRATIS ahora
                 <ArrowRight size={16} />
-              </Link>
+              </TrialLink>
             </div>
           </div>
         </motion.div>

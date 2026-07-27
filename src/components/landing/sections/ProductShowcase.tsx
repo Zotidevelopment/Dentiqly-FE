@@ -12,7 +12,7 @@ import {
   Minimize2,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 
 // Lazy load Playground components to optimize landing page bundle
 const Dashboard = React.lazy(() => import("../../admin/Dashboard").then(m => ({ default: m.Dashboard })))
@@ -258,13 +258,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           transition={{ duration: 0.6 }}
           className="text-center mt-12"
         >
-          <Link
-            to="/register"
+          <TrialLink
+            ctaLocation="product_showcase"
+            ctaLabel="Empezá gratis con todas las funcionalidades"
             className="inline-flex items-center gap-2 bg-[#0047FF] text-white px-8 py-4 rounded-full font-bold text-base shadow-lg shadow-[#0047FF]/25 hover:bg-[#0036CC] hover:shadow-xl transition-all duration-300 group"
           >
             Empezá gratis con todas las funcionalidades
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </TrialLink>
           <p className="text-xs text-gray-400 mt-3">Sin tarjeta de crédito · 14 días gratis</p>
         </motion.div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { TrialLink } from '../ui/TrialLink';
 import { useAuth } from '../../hooks/useAuth';
 import { Shield, ArrowRight, User, Lock, Loader2, CheckCircle2 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
@@ -190,9 +191,9 @@ export const LoginPage: React.FC = () => {
             <div className="px-6 py-4 bg-[#F7F8FA] border-t border-gray-100 text-center">
               <p className="text-xs text-[#8A93A8]">
                 No tienes una cuenta?{' '}
-                <Link to="/register" className="text-[#2563FF] font-bold hover:text-[#1D4ED8] transition-colors">
+                <TrialLink ctaLocation="login_page" ctaLabel="Registrate gratis" className="text-[#2563FF] font-bold hover:text-[#1D4ED8] transition-colors">
                   Registrate gratis
-                </Link>
+                </TrialLink>
               </p>
             </div>
           </div>

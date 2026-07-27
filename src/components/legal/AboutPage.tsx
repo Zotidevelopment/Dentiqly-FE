@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { TrialLink } from '../ui/TrialLink'
 import { CheckCircle2, MessageSquare, Clock, Users, Zap, Shield, Building2, MessageCircle } from 'lucide-react'
 import { SEO, PAGE_SEO } from '../seo/SEO'
 import gsap from 'gsap'
@@ -79,13 +80,14 @@ export const AboutPage: React.FC = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 items-start">
-              <Link
-                to="/register"
+              <TrialLink
+                ctaLocation="about"
+                ctaLabel="Empezar gratis — 14 días"
                 className="group bg-[#0047FF] text-white px-6 py-3 rounded-full text-[14.5px] font-semibold shadow-lg shadow-[#0047FF]/20 hover:shadow-xl hover:shadow-[#0047FF]/30 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
               >
                 Empezar gratis — 14 días
                 <ThinArrow size={15} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-              </Link>
+              </TrialLink>
               <a
                 href="mailto:hola@dentiqly.com"
                 className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full text-[14.5px] font-semibold transition-all duration-200"
@@ -314,13 +316,14 @@ export const AboutPage: React.FC = () => {
             14 días gratis, sin tarjeta de crédito. Configuración en menos de 5 minutos.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="about"
+              ctaLabel="Crear mi cuenta gratis"
               className="group inline-flex items-center gap-2 bg-white text-[#0047FF] px-8 py-4 rounded-full font-bold text-[15px] hover:bg-blue-50 transition-colors"
             >
               Crear mi cuenta gratis
               <ThinArrow size={16} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-            </Link>
+            </TrialLink>
             <Link
               to="/login"
               className="inline-flex items-center justify-center bg-white/10 text-white border border-white/20 px-8 py-4 rounded-full font-semibold text-[15px] hover:bg-white/20 transition-all"

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 import { Mail, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { ThinArrow } from "../components/ThinArrow"
@@ -168,13 +168,14 @@ export const CtaSection: React.FC = () => {
               </a> */}
             </div>
 
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="cta_section"
+              ctaLabel={t('cta.ctaButton')}
               className="inline-flex items-center gap-3 bg-white text-[#0047FF] px-8 py-4 font-bold text-base hover:bg-blue-50 transition-colors group rounded-full"
             >
               {t('cta.ctaButton')}
               <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
-            </Link>
+            </TrialLink>
           </div>
 
           {/* ── Right: contact form ── */}

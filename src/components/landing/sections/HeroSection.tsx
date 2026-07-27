@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import { Link } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import { ThinArrow } from "../components/ThinArrow"
@@ -74,14 +74,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mb-4"
           >
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="hero"
+              ctaLabel={t('hero.ctaPrimary')}
               className="group bg-[#0047FF] text-white px-6 py-3 rounded-full text-[14.5px] font-semibold shadow-lg shadow-[#0047FF]/20 hover:shadow-xl hover:shadow-[#0047FF]/30 hover:bg-[#003BCC] transition-all duration-200 flex items-center gap-2 whitespace-nowrap"
             >
               <Zap className="w-4 h-4 shrink-0" />
               <span>{t('hero.ctaPrimary')}</span>
               <ThinArrow size={15} className="group-hover:translate-x-0.5 transition-transform duration-200 shrink-0" />
-            </Link>
+            </TrialLink>
 
             <button
               onClick={() => {

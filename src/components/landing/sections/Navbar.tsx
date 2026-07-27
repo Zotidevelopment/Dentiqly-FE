@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 import { Menu, X, User } from "lucide-react"
 import { ThinArrow } from "../components/ThinArrow"
 import gsap from "gsap"
@@ -148,13 +149,14 @@ export const Navbar: React.FC = () => {
               Iniciar sesión
             </Link>
 
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="navbar"
+              ctaLabel="Creá tu cuenta gratis"
               className="group h-9 px-5 text-[13px] flex items-center gap-1.5 rounded-full font-semibold bg-[#0047FF] text-white hover:bg-[#003BCC] transition-all duration-200 shadow-sm shadow-[#0047FF]/20"
             >
               Creá tu cuenta gratis
               <ThinArrow size={14} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-            </Link>
+            </TrialLink>
           </div>
 
           {/* Mobile hamburger */}
@@ -195,13 +197,14 @@ export const Navbar: React.FC = () => {
             >
               Iniciar sesión
             </Link>
-            <Link
-              to="/register"
+            <TrialLink
+              ctaLocation="navbar"
+              ctaLabel="Creá tu cuenta gratis (mobile)"
               onClick={() => setMobileMenuOpen(false)}
               className="h-12 flex items-center justify-center rounded-full bg-[#0047FF] text-white font-bold transition-all hover:bg-[#003BCC] shadow-lg shadow-[#0047FF]/25"
             >
               Creá tu cuenta gratis
-            </Link>
+            </TrialLink>
           </div>
         </div>
       )}

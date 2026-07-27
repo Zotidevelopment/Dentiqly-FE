@@ -5,6 +5,7 @@ import { apiClient } from '../../lib/api-client';
 import { Shield, CheckCircle2, ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Globe, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { SEO, PAGE_SEO } from '../seo/SEO';
+import { trackSignupStarted } from '../../lib/analytics';
 
 type Step = 'form' | 'plan';
 
@@ -15,6 +16,10 @@ export const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<Step>('form');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  // signup_started se emite en la primera tecla, no al cargar la página:
+  // llegar a /register ya lo cubre page_view. Lo que importa acá es la
+  // intención real de completar el formulario.
+  const signupStartedRef = React.useRef(false);
 
   const [formData, setFormData] = useState({
     nombre_clinica: '',
@@ -85,6 +90,10 @@ export const RegisterPage: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!signupStartedRef.current) {
+      signupStartedRef.current = true;
+      trackSignupStarted();
+    }
     let value = e.target.value;
     if (e.target.name === 'web_url') {
       if (value.includes('/')) {

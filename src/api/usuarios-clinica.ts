@@ -1,4 +1,5 @@
 import { apiClient } from "../lib/api-client"
+import { trackProfessionalInvited } from "../lib/analytics"
 
 export interface UsuarioClinica {
   id: number
@@ -31,7 +32,10 @@ export const usuariosClinicaApi = {
   },
 
   crear: async (data: CrearUsuarioClinicaData & { password: string }): Promise<UsuarioClinica> => {
-    return apiClient.post<UsuarioClinica>('/usuarios-clinica', data)
+    const usuario = await apiClient.post<UsuarioClinica>('/usuarios-clinica', data)
+    // Sumar gente al equipo es adopción más allá del dueño de la clínica.
+    trackProfessionalInvited()
+    return usuario
   },
 
   actualizar: async (id: number, data: ActualizarUsuarioClinicaData): Promise<UsuarioClinica> => {

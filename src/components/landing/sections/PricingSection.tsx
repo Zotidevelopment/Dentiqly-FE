@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { TrialLink } from "../../ui/TrialLink"
 import { useTranslation } from "react-i18next"
 import { useBillingPlans } from "../../../hooks/useBillingPlans"
 import { useCountry } from "../../../hooks/useCountry"
@@ -222,13 +222,14 @@ export const PricingSection: React.FC = () => {
                 <ArrowRight size={14} />
               </button>
 
-              <Link
-                to="/register"
+              <TrialLink
+                ctaLocation="pricing"
+                ctaLabel={t('pricing.cta')}
                 className="inline-flex items-center justify-center gap-2 bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-full transition-colors duration-200 text-sm"
               >
                 {t('pricing.cta')}
                 <ArrowRight size={16} />
-              </Link>
+              </TrialLink>
 
               <p className="text-xs text-[#0B1023]/40 mt-4">
                 {t('pricing.trial')}
@@ -349,14 +350,15 @@ export const PricingSection: React.FC = () => {
                 <p className="text-sm text-[#0B1023]/50">
                   {t('pricing.featureCount')}
                 </p>
-                <Link
-                  to="/register"
+                <TrialLink
+                  ctaLocation="pricing"
+                  ctaLabel={t('pricing.startTrial')}
                   onClick={() => setShowAllFeatures(false)}
                   className="inline-flex items-center justify-center gap-2 bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-full transition-colors duration-200 text-sm"
                 >
                   {t('pricing.startTrial')}
                   <ArrowRight size={16} />
-                </Link>
+                </TrialLink>
               </div>
             </div>
           </div>
