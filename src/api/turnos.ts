@@ -2,6 +2,29 @@ import { apiClient } from "../lib/api-client"
 import { isFirstTime, trackAppointmentCreated } from "../lib/analytics"
 import type { Turno, CrearTurnoData, CrearTurnoBookingData, PaginatedResponse } from "../types"
 
+export interface PacienteAusente {
+  paciente_id: string
+  nombre: string
+  apellido: string
+  telefono?: string
+  email?: string
+  obra_social: string
+  ausencias: number
+  ultima_ausencia: string
+}
+
+export interface EstadisticasAsistencia {
+  rango: { desde: string; hasta: string }
+  totales: { agendados: number; atendidos: number; ausentes: number; cancelados: number; sinMarcar: number }
+  tasa_ausentismo: number
+  tasa_asistencia: number
+  por_dia: { fecha: string; agendados: number; atendidos: number; ausentes: number; sinMarcar: number }[]
+  por_obra_social: { nombre: string; agendados: number; atendidos: number; ausentes: number }[]
+  por_profesional: { nombre: string; agendados: number; atendidos: number; ausentes: number }[]
+  por_servicio: { nombre: string; agendados: number; atendidos: number; ausentes: number }[]
+  pacientes_ausentes: PacienteAusente[]
+}
+
 export const turnosApi = {
   async listar(params?: {
     page?: number
@@ -111,6 +134,18 @@ export const turnosApi = {
         horarios_disponibles: response.horarios_disponibles,
       }
     }
+  },
+
+  /**
+   * Estadísticas de asistencia/ausentismo agregadas por el backend para un rango
+   * de fechas. Sirve para mirar más lejos que el mes que tiene cargado la pantalla.
+   */
+  async estadisticasAsistencia(params: { fecha_desde: string; fecha_hasta: string }): Promise<EstadisticasAsistencia> {
+    const queryParams = new URLSearchParams({
+      fecha_desde: params.fecha_desde,
+      fecha_hasta: params.fecha_hasta,
+    })
+    return apiClient.get<EstadisticasAsistencia>(`/turnos/estadisticas/asistencia?${queryParams.toString()}`)
   },
 
   async confirmarTodosPendientes(): Promise<{ message: string; count: number }> {

@@ -21,18 +21,14 @@ import {
   X
 } from "lucide-react"
 import { turnosApi } from "../../api"
+import type { PacienteAusente } from "../../api/turnos"
 import { pacientesApi } from "../../api/pacientes"
 import type { Turno } from "../../types"
+import { toISODate, todayISO, addDaysISO, formatLocalDate } from "../../utils/date"
 import { useToast } from "../../hooks/use-toast"
 
 export const AsistenciasManager: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const d = new Date()
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  })
+  const [selectedDate, setSelectedDate] = useState<string>(() => todayISO())
   const [appointments, setAppointments] = useState<Turno[]>([])
   const [loading, setLoading] = useState(true)
   const [updatingId, setUpdatingId] = useState<number | null>(null)
@@ -42,6 +38,13 @@ export const AsistenciasManager: React.FC = () => {
   const [selectedEstado, setSelectedEstado] = useState("TODOS")
   const [periodFilter, setPeriodFilter] = useState<"diario" | "semana" | "mes">("diario")
   const [breakdownType, setBreakdownType] = useState<"obra_social" | "servicio">("obra_social")
+  const [breakdownMetric, setBreakdownMetric] = useState<"atendidos" | "ausentes">("atendidos")
+  // Panel de ausentes: "periodo" usa los turnos ya cargados; "historico" consulta
+  // al backend un rango más largo para detectar reincidentes.
+  const [absentScope, setAbsentScope] = useState<"periodo" | "historico">("periodo")
+  const [absentHistory, setAbsentHistory] = useState<PacienteAusente[] | null>(null)
+  const [absentHistoryLoading, setAbsentHistoryLoading] = useState(false)
+  const DIAS_HISTORIAL_AUSENCIAS = 90
   const [currentMonthKey, setCurrentMonthKey] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
@@ -56,31 +59,9 @@ export const AsistenciasManager: React.FC = () => {
 
   const { toast } = useToast()
 
-  const getTodayDate = () => {
-    const d = new Date()
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
-
-  const getTomorrowDate = () => {
-    const d = new Date()
-    d.setDate(d.getDate() + 1)
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
-
-  const getYesterdayDate = () => {
-    const d = new Date()
-    d.setDate(d.getDate() - 1)
-    const year = d.getFullYear()
-    const month = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
+  const getTodayDate = () => todayISO()
+  const getTomorrowDate = () => addDaysISO(todayISO(), 1)
+  const getYesterdayDate = () => addDaysISO(todayISO(), -1)
 
   const setToday = () => setSelectedDate(getTodayDate())
   const setTomorrow = () => setSelectedDate(getTomorrowDate())
@@ -159,6 +140,32 @@ export const AsistenciasManager: React.FC = () => {
     }
   }
 
+  // Reincidentes de los últimos meses. Se pide una sola vez, al abrir la pestaña.
+  useEffect(() => {
+    if (absentScope !== "historico" || absentHistory || absentHistoryLoading) return
+    const cargar = async () => {
+      try {
+        setAbsentHistoryLoading(true)
+        const stats = await turnosApi.estadisticasAsistencia({
+          fecha_desde: addDaysISO(selectedDate, -DIAS_HISTORIAL_AUSENCIAS),
+          fecha_hasta: selectedDate,
+        })
+        setAbsentHistory(stats.pacientes_ausentes || [])
+      } catch (error) {
+        console.error("Error fetching absence stats:", error)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo cargar el historial de ausencias.",
+        })
+        setAbsentScope("periodo")
+      } finally {
+        setAbsentHistoryLoading(false)
+      }
+    }
+    cargar()
+  }, [absentScope])
+
   const handleStatusUpdate = async (id: number, newStatus: string) => {
     try {
       setUpdatingId(id)
@@ -187,7 +194,7 @@ export const AsistenciasManager: React.FC = () => {
   const changeDate = (days: number) => {
     const date = new Date(selectedDate + "T12:00:00")
     date.setDate(date.getDate() + days)
-    setSelectedDate(date.toISOString().split("T")[0])
+    setSelectedDate(toISODate(date))
   }
 
   const formatDisplayDate = (dateStr: string) => {
@@ -291,13 +298,21 @@ export const AsistenciasManager: React.FC = () => {
   const totalConfirmed = dailyAppointments.filter((appt) => appt.estado === "Confirmado").length
   const totalPending = dailyAppointments.filter((appt) => appt.estado === "Pendiente").length
   const totalAbsent = dailyAppointments.filter((appt) => appt.estado === "Ausente").length
+  const totalCancelled = dailyAppointments.filter((appt) => appt.estado === "Cancelado").length
+
+  // Turnos que efectivamente iban a atenderse (los cancelados avisaron, no cuentan
+  // como ausencia) y que ya fueron resueltos como "vino" o "no vino".
+  const dailyExpected = totalScheduled - totalCancelled
+  const dailyResolved = totalAttended + totalAbsent
+  const absenceRate = dailyResolved > 0 ? Math.round((totalAbsent / dailyResolved) * 100) : 0
+  const totalUnmarked = dailyExpected - dailyResolved
 
   const getScheduledTrend = () => {
     const trend = []
     for (let i = 6; i >= 0; i--) {
       const date = new Date(selectedDate + "T12:00:00")
       date.setDate(date.getDate() - i)
-      const dateStr = date.toISOString().split("T")[0]
+      const dateStr = toISODate(date)
       const count = appointments.filter((t) => t.fecha === dateStr).length
       trend.push(count)
     }
@@ -309,7 +324,7 @@ export const AsistenciasManager: React.FC = () => {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(selectedDate + "T12:00:00")
       date.setDate(date.getDate() - i)
-      const dateStr = date.toISOString().split("T")[0]
+      const dateStr = toISODate(date)
       const count = appointments.filter((t) => t.fecha === dateStr && t.estado === "Atendido").length
       trend.push(count)
     }
@@ -330,11 +345,20 @@ export const AsistenciasManager: React.FC = () => {
   }
 
   const periodAppointments = getPeriodFilteredAppointments()
+  const periodEstado = breakdownMetric === "atendidos" ? "Atendido" : "Ausente"
   const periodTotalAttended = periodAppointments.filter((appt) => appt.estado === "Atendido").length
+  const periodTotalAbsent = periodAppointments.filter((appt) => appt.estado === "Ausente").length
+  const periodTotalCancelled = periodAppointments.filter((appt) => appt.estado === "Cancelado").length
+  const periodExpected = periodAppointments.length - periodTotalCancelled
+  const periodResolved = periodTotalAttended + periodTotalAbsent
+  const periodAbsenceRate = periodResolved > 0 ? Math.round((periodTotalAbsent / periodResolved) * 100) : 0
+  const periodUnmarked = periodExpected - periodResolved
+  // Base de porcentajes del desglose: el total de la métrica que se está mostrando.
+  const breakdownTotal = breakdownMetric === "atendidos" ? periodTotalAttended : periodTotalAbsent
 
   const obraSocialCounts: Record<string, number> = {}
   periodAppointments.forEach((appt) => {
-    if (appt.estado === "Atendido") {
+    if (appt.estado === periodEstado) {
       const name = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
       obraSocialCounts[name] = (obraSocialCounts[name] || 0) + 1
     }
@@ -345,7 +369,7 @@ export const AsistenciasManager: React.FC = () => {
 
   const serviceCounts: Record<string, number> = {}
   periodAppointments.forEach((appt) => {
-    if (appt.estado === "Atendido") {
+    if (appt.estado === periodEstado) {
       const name = appt.servicio?.nombre || "Sin servicio"
       serviceCounts[name] = (serviceCounts[name] || 0) + 1
     }
@@ -355,6 +379,50 @@ export const AsistenciasManager: React.FC = () => {
     .sort((a, b) => b.count - a.count)
 
   const activeStats = breakdownType === "obra_social" ? obraSocialStats : serviceStats
+
+  // Pacientes que faltaron en el período, ordenados por reincidencia.
+  const ausentesDelPeriodo = (() => {
+    const porPaciente: Record<string, {
+      id: string
+      nombre: string
+      telefono?: string
+      obraSocial: string
+      ausencias: number
+      ultimaFecha: string
+    }> = {}
+    periodAppointments.forEach((appt) => {
+      if (appt.estado !== "Ausente" || !appt.paciente) return
+      const id = String(appt.paciente_id)
+      if (!porPaciente[id]) {
+        porPaciente[id] = {
+          id,
+          nombre: `${appt.paciente.nombre} ${appt.paciente.apellido}`,
+          telefono: appt.paciente.telefono,
+          obraSocial: appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES",
+          ausencias: 0,
+          ultimaFecha: appt.fecha,
+        }
+      }
+      porPaciente[id].ausencias += 1
+      if (appt.fecha > porPaciente[id].ultimaFecha) porPaciente[id].ultimaFecha = appt.fecha
+    })
+    return Object.values(porPaciente).sort(
+      (a, b) => b.ausencias - a.ausencias || b.ultimaFecha.localeCompare(a.ultimaFecha),
+    )
+  })()
+
+  // Misma forma para las dos fuentes (turnos ya cargados vs. estadísticas del backend).
+  const listaAusentes =
+    absentScope === "historico"
+      ? (absentHistory || []).map((p) => ({
+          id: p.paciente_id,
+          nombre: `${p.nombre} ${p.apellido}`,
+          telefono: p.telefono,
+          obraSocial: p.obra_social,
+          ausencias: p.ausencias,
+          ultimaFecha: p.ultima_ausencia,
+        }))
+      : ausentesDelPeriodo
 
   const allObrasSociales = Array.from(
     new Set(appointments.map((appt) => appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"))
@@ -626,7 +694,9 @@ export const AsistenciasManager: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Building className="h-4 w-4 text-[#2563FF]" />
-                <h3 className="text-sm font-bold text-gray-900">Desglose de Asistencias</h3>
+                <h3 className="text-sm font-bold text-gray-900">
+                  Desglose de {breakdownMetric === "atendidos" ? "Asistencias" : "Ausencias"}
+                </h3>
               </div>
               <div className="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200/50 shadow-xs">
                 {(["diario", "semana", "mes"] as const).map((f) => (
@@ -658,6 +728,46 @@ export const AsistenciasManager: React.FC = () => {
                 </button>
               ))}
             </div>
+
+            {/* Métrica: asistencias vs. ausencias */}
+            <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200/40 shadow-inner">
+              {([
+                { key: "atendidos", label: `Atendidos (${periodTotalAttended})`, active: "text-emerald-600" },
+                { key: "ausentes", label: `No vinieron (${periodTotalAbsent})`, active: "text-rose-600" },
+              ] as const).map((m) => (
+                <button
+                  key={m.key}
+                  onClick={() => setBreakdownMetric(m.key)}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-center ${
+                    breakdownMetric === m.key
+                      ? `bg-white ${m.active} shadow-sm border border-gray-200/30`
+                      : "text-gray-500 hover:text-gray-900 bg-transparent"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Resumen de ausentismo del período */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="rounded-xl bg-rose-50 border border-rose-100 px-3 py-2">
+              <p className="text-lg font-extrabold text-rose-700 leading-none">{periodTotalAbsent}</p>
+              <p className="text-[9px] font-bold text-rose-500 uppercase tracking-wider mt-1">No vinieron</p>
+            </div>
+            <div className="rounded-xl bg-rose-50 border border-rose-100 px-3 py-2">
+              <p className="text-lg font-extrabold text-rose-700 leading-none">{periodAbsenceRate}%</p>
+              <p className="text-[9px] font-bold text-rose-500 uppercase tracking-wider mt-1">Ausentismo</p>
+            </div>
+            <div className={`rounded-xl px-3 py-2 border ${periodUnmarked > 0 ? "bg-amber-50 border-amber-100" : "bg-gray-50 border-gray-100"}`}>
+              <p className={`text-lg font-extrabold leading-none ${periodUnmarked > 0 ? "text-amber-700" : "text-gray-400"}`}>
+                {periodUnmarked}
+              </p>
+              <p className={`text-[9px] font-bold uppercase tracking-wider mt-1 ${periodUnmarked > 0 ? "text-amber-500" : "text-gray-400"}`}>
+                Sin marcar
+              </p>
+            </div>
           </div>
 
           {activeStats.length > 0 && (
@@ -668,14 +778,16 @@ export const AsistenciasManager: React.FC = () => {
 
           {activeStats.length === 0 ? (
             <div className="text-center py-8 text-gray-400 text-xs">
-              No hay asistencias registradas para clasificar{" "}
-              {periodFilter === "diario" ? "hoy" : periodFilter === "semana" ? "esta semana" : "este mes"}.
+              No hay {breakdownMetric === "atendidos" ? "asistencias" : "ausencias"} registradas para clasificar{" "}
+              {periodFilter === "diario" ? "en este día" : periodFilter === "semana" ? "esta semana" : "este mes"}.
             </div>
           ) : (
             <div className="space-y-4">
               {activeStats.map((stat, i) => {
-                const percentage = periodTotalAttended > 0 ? Math.round((stat.count / periodTotalAttended) * 100) : 0
-                const colors = ["bg-blue-500", "bg-emerald-500", "bg-indigo-500", "bg-purple-500", "bg-amber-500", "bg-teal-500"]
+                const percentage = breakdownTotal > 0 ? Math.round((stat.count / breakdownTotal) * 100) : 0
+                const colors = breakdownMetric === "ausentes"
+                  ? ["bg-rose-500", "bg-red-400", "bg-orange-500", "bg-pink-500", "bg-amber-500", "bg-fuchsia-500"]
+                  : ["bg-blue-500", "bg-emerald-500", "bg-indigo-500", "bg-purple-500", "bg-amber-500", "bg-teal-500"]
                 const barColor = colors[i % colors.length]
                 return (
                   <div key={stat.name} className="space-y-1">
@@ -691,6 +803,72 @@ export const AsistenciasManager: React.FC = () => {
               })}
             </div>
           )}
+
+          {/* Pacientes que no vinieron */}
+          <div className="mt-5 pt-4 border-t border-[#E8E0D6]/60">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <UserX className="h-4 w-4 text-rose-500" />
+                <h4 className="text-xs font-bold text-gray-900">Pacientes que no vinieron</h4>
+              </div>
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">
+                {listaAusentes.length} {listaAusentes.length === 1 ? "paciente" : "pacientes"}
+              </span>
+            </div>
+
+            <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200/40 shadow-inner mb-3">
+              {([
+                { key: "periodo", label: periodFilter === "diario" ? "Del día" : periodFilter === "semana" ? "De la semana" : "Del mes" },
+                { key: "historico", label: `Reincidentes (${DIAS_HISTORIAL_AUSENCIAS}d)` },
+              ] as const).map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setAbsentScope(s.key)}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer text-center ${
+                    absentScope === s.key
+                      ? "bg-white text-rose-600 shadow-sm border border-gray-200/30"
+                      : "text-gray-500 hover:text-gray-900 bg-transparent"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            {absentHistoryLoading && absentScope === "historico" ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-rose-400" />
+              </div>
+            ) : listaAusentes.length === 0 ? (
+              <p className="text-[11px] text-gray-400 text-center py-4">
+                {absentScope === "historico"
+                  ? `Sin ausencias en los últimos ${DIAS_HISTORIAL_AUSENCIAS} días. 🎉`
+                  : `Sin ausencias registradas ${periodFilter === "diario" ? "en este día" : periodFilter === "semana" ? "esta semana" : "este mes"}. 🎉`}
+              </p>
+            ) : (
+              <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                {listaAusentes.map((p) => (
+                  <div key={p.id} className="flex items-center justify-between gap-2 bg-rose-50/50 border border-rose-100/70 rounded-lg px-2.5 py-2">
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-bold text-gray-800 truncate">{p.nombre}</div>
+                      <div className="text-[9px] text-gray-400 truncate">
+                        {p.obraSocial}
+                        {p.telefono ? ` • ${p.telefono}` : ""}
+                        {absentScope === "historico" || periodFilter !== "diario"
+                          ? ` • última: ${formatLocalDate(p.ultimaFecha, { day: "2-digit", month: "2-digit" })}`
+                          : ""}
+                      </div>
+                    </div>
+                    {p.ausencias > 1 && (
+                      <span className="shrink-0 text-[9px] font-extrabold text-white bg-rose-500 px-1.5 py-0.5 rounded-full">
+                        {p.ausencias}x
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </Card>
 
         {/* Appointments Table */}
@@ -804,6 +982,14 @@ export const AsistenciasManager: React.FC = () => {
                           }`}>
                             {appt.estado}
                           </span>
+                          {isAbsent && appt.ausencia_automatica && (
+                            <span
+                              className="ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200"
+                              title="Marcado automáticamente al cierre del día porque quedó sin marcar"
+                            >
+                              AUTO
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3.5 text-right whitespace-nowrap">
                           <div className="flex justify-end gap-1.5">
@@ -898,7 +1084,7 @@ export const AsistenciasManager: React.FC = () => {
           <TrendingUp className="h-4 w-4 text-gray-400" />
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Estadísticas del día</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
           {/* Card 1 — Turnos Agendados (soft blue) */}
           <div className="bg-[#DBEAFE] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
@@ -951,7 +1137,46 @@ export const AsistenciasManager: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 3 — Por Estado (soft pink/rose) */}
+          {/* Card 3 — Ausencias del día (soft rose) */}
+          <div className="bg-[#FFE4E6] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-rose-400/20 flex items-center justify-center">
+              <UserX className="w-4 h-4 text-rose-600" />
+            </div>
+            <p className="text-sm font-bold text-rose-900 mb-3">No vinieron:</p>
+            <div className="flex gap-5 mb-4">
+              <div>
+                <p className="text-2xl font-extrabold text-rose-900">{totalAbsent}</p>
+                <p className="text-[10px] font-semibold text-rose-600/70 uppercase tracking-wider">Ausentes</p>
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-rose-900">{absenceRate}%</p>
+                <p className="text-[10px] font-semibold text-rose-600/70 uppercase tracking-wider">Ausentismo</p>
+              </div>
+            </div>
+            <div className="space-y-1 text-[10px] font-semibold text-rose-700/80">
+              <div className="flex justify-between">
+                <span>Turnos esperados:</span>
+                <span className="font-extrabold text-rose-900">{dailyExpected}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Sin marcar:</span>
+                <span className={`font-extrabold ${totalUnmarked > 0 ? "text-amber-700" : "text-rose-900"}`}>{totalUnmarked}</span>
+              </div>
+              {totalCancelled > 0 && (
+                <div className="flex justify-between">
+                  <span>Cancelados (avisaron):</span>
+                  <span className="font-extrabold text-rose-900">{totalCancelled}</span>
+                </div>
+              )}
+            </div>
+            {totalUnmarked > 0 && (
+              <p className="mt-2 text-[9px] text-rose-500/80 leading-tight">
+                Los turnos sin marcar pasan a Ausente automáticamente al cierre del día.
+              </p>
+            )}
+          </div>
+
+          {/* Card 4 — Por Estado (soft pink/rose) */}
           <div className="bg-[#FFE4E6] rounded-2xl p-5 relative overflow-hidden group hover:shadow-md transition-all duration-300">
             <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-rose-400/20 flex items-center justify-center">
               <Users className="w-4 h-4 text-rose-600" />

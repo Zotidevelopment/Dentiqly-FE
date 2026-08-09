@@ -6,12 +6,13 @@ import { Label } from "../../ui/label";
 import { Select } from "../../ui/Select";
 import { cuentaCorrienteApi } from '../../../api/cuenta-corriente';
 import { useToast } from '../../../hooks/use-toast';
+import { todayISO } from '../../../utils/date';
 import { Bold, Italic, Strikethrough, Link, List, ListOrdered, AlignLeft, AlignCenter, Undo, Redo } from 'lucide-react';
 
 interface NewMovementModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess: (fecha?: string) => void;
     type: 'Ingreso' | 'Egreso';
 }
 
@@ -19,7 +20,7 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: todayISO(),
         monto: '',
         forma_pago: 'Efectivo',
         descripcion: ''
@@ -28,7 +29,7 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
     useEffect(() => {
         if (isOpen) {
             setFormData({
-                fecha: new Date().toISOString().split('T')[0],
+                fecha: todayISO(),
                 monto: '',
                 forma_pago: 'Efectivo',
                 descripcion: ''
@@ -62,8 +63,7 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, type }: NewMoveme
                 title: "Éxito",
                 description: "Movimiento registrado correctamente"
             });
-            onSuccess();
-            onClose();
+            onSuccess(formData.fecha);
         } catch (error: any) {
             console.error("Error registering movement:", error);
             toast({

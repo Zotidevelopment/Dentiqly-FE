@@ -8,6 +8,7 @@ import { turnosApi, profesionalesApi, pacientesApi, serviciosApi } from '../../a
 import type { Profesional, Paciente, Servicio } from '../../types'
 import { useToast } from "../../hooks/use-toast"
 import { configuracionApi } from '../../api/configuracion'
+import { todayISO, toISODate } from '../../utils/date'
 
 interface AdminAppointmentModalProps {
     onClose: () => void
@@ -29,7 +30,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
         paciente_id: initialData?.paciente_id || '',
         profesional_id: initialData?.profesional_id || 0,
         servicio_id: 0,
-        fecha: initialData?.fecha || new Date().toISOString().split('T')[0],
+        fecha: initialData?.fecha || todayISO(),
         hora_inicio: initialData?.hora_inicio || '10:00',
         hora_fin: initialData?.hora_fin || '10:30',
         estado: 'Confirmado',
@@ -81,7 +82,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
             current.setDate(start.getDate() + i)
             const dayOfWeek = current.getDay()
             if (weekdays.includes(dayOfWeek)) {
-                dates.push(current.toISOString().split('T')[0])
+                dates.push(toISODate(current))
             }
         }
         return dates

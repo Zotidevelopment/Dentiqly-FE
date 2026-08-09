@@ -8,6 +8,7 @@ import { Plus, Edit, Trash2, Calendar, X, Pill } from "lucide-react"
 import { prescripcionesApi, profesionalesApi } from "../../api"
 import type { Prescripcion, CrearPrescripcionData } from "../../types"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { todayISO, formatLocalDate } from "../../utils/date"
 
 interface PrescriptionsSectionProps {
   pacienteId: string | number
@@ -48,7 +49,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
   const handleCreate = () => {
     setFormData({
       paciente_id: String(pacienteId),
-      fecha: new Date().toISOString().split("T")[0],
+      fecha: todayISO(),
     })
     setModalMode("create")
     setShowModal(true)
@@ -150,7 +151,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-sm font-medium text-gray-900">
-                      {new Date(prescripcion.fecha).toLocaleDateString("es-ES")}
+                      {formatLocalDate(prescripcion.fecha, { day: "2-digit", month: "2-digit", year: "numeric" }, "es-ES")}
                     </span>
                   </div>
                   {((prescripcion as any).medicamentos || []).map((med: any, idx: number) => (
@@ -210,7 +211,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
               <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <p className="text-xs text-gray-500">Fecha</p>
-                  <p className="font-medium">{new Date(selectedPrescripcion.fecha).toLocaleDateString("es-ES")}</p>
+                  <p className="font-medium">{formatLocalDate(selectedPrescripcion.fecha, { day: "2-digit", month: "2-digit", year: "numeric" }, "es-ES")}</p>
                 </div>
                 {((selectedPrescripcion as any).medicamentos || []).map((med: any, idx: number) => (
                   <div key={idx} className="border-b pb-3">

@@ -19,6 +19,8 @@ type DataLayerEvent = Record<string, unknown> & { event: string }
 declare global {
   interface Window {
     dataLayer?: DataLayerEvent[]
+    /** Definida en index.html junto con los valores por defecto de Consent Mode. */
+    gtag?: (...args: unknown[]) => void
   }
 }
 
@@ -135,6 +137,54 @@ export function trackOnboardingCompleted(): void {
 // volumen total si solo se envía la primera. Medir el uso repetido es lo que
 // distingue una clínica que adoptó el producto de una que lo probó y se fue.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Consentimiento (Consent Mode v2)
+//
+// Los valores por defecto se fijan en index.html, antes de que cargue GTM:
+// denegado en el EEE/UK/Suiza, concedido en el resto. Acá sólo se registra el
+// cambio cuando la persona decide desde el banner.
+// ---------------------------------------------------------------------------
+
+const CONSENT_KEY = 'dentiqly_cookie_consent'
+
+export type ConsentValue = 'granted' | 'denied'
+
+/** Decisión guardada, o null si todavía no eligió. */
+export function getStoredConsent(): ConsentValue | null {
+  if (!isBrowser) return null
+  try {
+    const v = localStorage.getItem(CONSENT_KEY)
+    return v === 'granted' || v === 'denied' ? v : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Aplica y guarda la decisión. Se empuja como `consent`/`update` al dataLayer,
+ * que es la señal que Google Consent Mode espera; no es un evento común.
+ */
+export function setConsent(value: ConsentValue): void {
+  if (!isBrowser) return
+
+  try {
+    localStorage.setItem(CONSENT_KEY, value)
+  } catch {
+    // Modo privado o almacenamiento bloqueado: se aplica igual para esta sesión.
+  }
+
+  // Se usa el gtag() que define index.html: Consent Mode espera el formato
+  // posicional que esa función genera, no un objeto de evento común.
+  window.gtag?.('consent', 'update', {
+    ad_storage: value,
+    ad_user_data: value,
+    ad_personalization: value,
+    analytics_storage: value,
+  })
+
+  push({ event: 'cookie_consent_decision', consent_state: value })
+}
 
 /**
  * Lee el client_id de GA4 desde la cookie `_ga`.

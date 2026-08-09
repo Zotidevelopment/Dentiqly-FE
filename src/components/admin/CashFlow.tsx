@@ -17,30 +17,28 @@ import {
   Download,
   Trash2,
 } from "lucide-react"
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { cuentaCorrienteApi } from '../../api/cuenta-corriente';
 import { exportApi } from '../../api/export';
 import { useToast } from '../../hooks/use-toast';
 import { NewMovementModal } from './cashflow/NewMovementModal';
 import { ConfirmationModal } from '../ui/ConfirmationModal';
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
+import { parseLocalDate, formatLocalDate, currentMonthKey, formatMonthKey, monthRange, shiftMonthKey, addDaysISO, todayISO } from '../../utils/date'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
 const tokens = sharedTokens
 const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
 
-const parseLocalDate = (dateStr: string) => {
-  if (!dateStr) return new Date();
-  const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
-  return new Date(year, month - 1, day);
-};
+/** "todos" = histórico completo; cualquier otro valor es una clave de mes "YYYY-MM". */
+type Periodo = string
 
 export default function CashFlow() {
     const { toast } = useToast();
     const [movimientos, setMovimientos] = useState<any[]>([]);
-    const [balance, setBalance] = useState(0);
+    const [balanceHistorico, setBalanceHistorico] = useState(0);
+    const [mesesDisponibles, setMesesDisponibles] = useState<string[]>([]);
+    const [periodo, setPeriodo] = useState<Periodo>(() => currentMonthKey());
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<'Ingreso' | 'Egreso'>('Ingreso');
@@ -49,14 +47,27 @@ export default function CashFlow() {
     const [confirmAction, setConfirmAction] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void } | null>(null);
     const itemsPerPage = 12;
 
+    const esHistorico = periodo === 'todos';
+    const esMesActual = !esHistorico && periodo === currentMonthKey();
+    const rangoPeriodo = useMemo(() => (esHistorico ? undefined : monthRange(periodo)), [periodo, esHistorico]);
+    // Se piden 7 días extra hacia atrás para que la tarjeta "Esta Semana" no quede
+    // cortada cuando la semana en curso arranca en el mes anterior. Esos movimientos
+    // extra no entran ni en la tabla ni en los totales del mes.
+    const rangoConsulta = useMemo(
+        () => (rangoPeriodo ? { desde: addDaysISO(rangoPeriodo.desde, -7), hasta: rangoPeriodo.hasta } : undefined),
+        [rangoPeriodo],
+    );
+
     const fetchData = async () => {
         try {
             setLoading(true);
-            const data = await cuentaCorrienteApi.getFlujoCaja();
+            const data = await cuentaCorrienteApi.getFlujoCaja(rangoConsulta);
             setMovimientos(data.movimientos || []);
-            setBalance(data.balance || 0);
+            setBalanceHistorico(data.balanceHistorico ?? data.balance ?? 0);
+            if (data.meses?.length) setMesesDisponibles(data.meses);
         } catch (error) {
             console.error("Error fetching cash flow:", error);
+            toast({ variant: "destructive", title: "Error", description: "No se pudo cargar el flujo de caja." });
         } finally {
             setLoading(false);
         }
@@ -64,16 +75,37 @@ export default function CashFlow() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+        setCurrentPage(1);
+    }, [periodo]);
+
+    // Lista de meses del selector: los que ya tienen movimientos + el mes actual y
+    // el elegido, para poder cargar en un mes todavía vacío.
+    const opcionesMeses = useMemo(() => {
+        const set = new Set(mesesDisponibles);
+        set.add(currentMonthKey());
+        if (!esHistorico) set.add(periodo);
+        return Array.from(set).sort().reverse();
+    }, [mesesDisponibles, periodo, esHistorico]);
+
+    const irAMes = (delta: number) => {
+        setPeriodo(prev => (prev === 'todos' ? currentMonthKey() : shiftMonthKey(prev, delta)));
+    };
 
     const handleOpenModal = (type: 'Ingreso' | 'Egreso') => {
         setModalType(type);
         setIsModalOpen(true);
     };
 
-    const handleMovementRegistered = () => {
-        fetchData();
+    const handleMovementRegistered = (fecha?: string) => {
         setIsModalOpen(false);
+        // Si el movimiento quedó fuera del período que se está viendo, saltamos a su mes
+        // para que el usuario lo vea (el cambio de período dispara el refetch).
+        const mesDelMovimiento = fecha?.slice(0, 7);
+        if (mesDelMovimiento && !esHistorico && mesDelMovimiento !== periodo) {
+            setPeriodo(mesDelMovimiento);
+            return;
+        }
+        fetchData();
     };
 
     const handleDelete = (id: number) => {
@@ -95,23 +127,28 @@ export default function CashFlow() {
         });
     };
 
+    // Movimientos que pertenecen realmente al período elegido (sin el colchón semanal).
+    const movimientosPeriodo = useMemo(() => {
+        if (esHistorico) return movimientos;
+        return movimientos.filter(m => (m.fecha || "").slice(0, 7) === periodo);
+    }, [movimientos, periodo, esHistorico]);
+
     const financeStats = useMemo(() => {
-        const today = new Date();
-        
+        const hoy = todayISO();
+
         const getMonday = (d: Date) => {
             const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
             const day = date.getDay();
             const diff = date.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(date.setDate(diff));
         };
-        const startOfWeek = getMonday(today);
+        const startOfWeek = getMonday(new Date());
+        const today = parseLocalDate(hoy);
 
         let dayIncome = 0;
         let dayEgress = 0;
         let weekIncome = 0;
         let weekEgress = 0;
-        let monthIncome = 0;
-        let monthEgress = 0;
 
         let dayCashIncome = 0;
         let dayCashEgress = 0;
@@ -122,9 +159,10 @@ export default function CashFlow() {
             const amount = parseFloat(m.monto) || 0;
             const mDate = parseLocalDate(m.fecha);
             const isCash = (m.forma_pago || "").toLowerCase() === 'efectivo';
+            // Las Deudas son cuentas por cobrar, no movimientos de caja.
+            if (m.tipo === 'Deuda') return;
 
-            // Check Day
-            if (mDate.toDateString() === today.toDateString()) {
+            if ((m.fecha || "").slice(0, 10) === hoy) {
                 if (m.tipo === 'Ingreso') {
                     dayIncome += amount;
                     if (isCash) dayCashIncome += amount;
@@ -134,7 +172,6 @@ export default function CashFlow() {
                 }
             }
 
-            // Check Week
             if (mDate >= startOfWeek && mDate <= today) {
                 if (m.tipo === 'Ingreso') {
                     weekIncome += amount;
@@ -144,38 +181,50 @@ export default function CashFlow() {
                     if (isCash) weekCashEgress += amount;
                 }
             }
+        });
 
-            // Check Month
-            if (mDate.getFullYear() === today.getFullYear() && mDate.getMonth() === today.getMonth()) {
-                if (m.tipo === 'Ingreso') monthIncome += amount;
-                else monthEgress += amount;
+        // Totales del período seleccionado (mes elegido o todo el histórico).
+        let periodIncome = 0;
+        let periodEgress = 0;
+        let periodCashIncome = 0;
+        let periodCashEgress = 0;
+        movimientosPeriodo.forEach(m => {
+            const amount = parseFloat(m.monto) || 0;
+            const isCash = (m.forma_pago || "").toLowerCase() === 'efectivo';
+            if (m.tipo === 'Ingreso') {
+                periodIncome += amount;
+                if (isCash) periodCashIncome += amount;
+            } else if (m.tipo === 'Egreso') {
+                periodEgress += amount;
+                if (isCash) periodCashEgress += amount;
             }
         });
 
         return {
             day: { income: dayIncome, egress: dayEgress, balance: dayIncome - dayEgress },
             week: { income: weekIncome, egress: weekEgress, balance: weekIncome - weekEgress },
-            month: { income: monthIncome, egress: monthEgress, balance: monthIncome - monthEgress },
+            period: { income: periodIncome, egress: periodEgress, balance: periodIncome - periodEgress },
             cash: {
                 dayBalance: dayCashIncome - dayCashEgress,
                 weekBalance: weekCashIncome - weekCashEgress,
+                periodBalance: periodCashIncome - periodCashEgress,
                 dayIncome: dayCashIncome,
                 dayEgress: dayCashEgress,
-                weekIncome: weekCashIncome,
-                weekEgress: weekCashEgress
+                periodIncome: periodCashIncome,
+                periodEgress: periodCashEgress
             }
         };
-    }, [movimientos]);
+    }, [movimientos, movimientosPeriodo]);
 
     const filteredMovimientos = useMemo(() => {
-      if (!searchTerm) return movimientos;
+      if (!searchTerm) return movimientosPeriodo;
       const lower = searchTerm.toLowerCase();
-      return movimientos.filter(m => 
-        (m.pacienteNombre || "").toLowerCase().includes(lower) || 
+      return movimientosPeriodo.filter(m =>
+        (m.pacienteNombre || "").toLowerCase().includes(lower) ||
         (m.descripcion || "").toLowerCase().includes(lower) ||
         (m.forma_pago || "").toLowerCase().includes(lower)
       );
-    }, [movimientos, searchTerm]);
+    }, [movimientosPeriodo, searchTerm]);
 
     const { paginatedMovimientos, totalPages } = useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -203,12 +252,14 @@ export default function CashFlow() {
                         Flujo de Caja
                     </h1>
                     <p style={{ fontSize: 13, color: tokens.grayMuted, marginTop: 3, fontWeight: 400 }}>
-                        Movimientos históricos de ingresos y egresos de la clínica
+                        {esHistorico
+                          ? "Todos los movimientos de ingresos y egresos de la clínica"
+                          : `Movimientos de ${formatMonthKey(periodo)}`}
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                     <button
-                      onClick={() => exportApi.flujoCaja().catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar el flujo de caja" }))}
+                      onClick={() => exportApi.flujoCaja(rangoPeriodo).catch(() => toast({ variant: "destructive", title: "Error", description: "No se pudo exportar el flujo de caja" }))}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
                         background: tokens.white, color: tokens.grayText,
@@ -258,22 +309,87 @@ export default function CashFlow() {
                 </div>
             </div>
 
+            {/* ── Selector de período ── */}
+            <div style={{
+              display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 20,
+              background: tokens.white, border: `0.5px solid ${tokens.grayBorder}`,
+              borderRadius: 12, padding: "10px 14px",
+            }}>
+              <Calendar size={15} color={tokens.blue} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                Período
+              </span>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <button
+                  onClick={() => irAMes(-1)}
+                  title="Mes anterior"
+                  style={{ padding: 6, borderRadius: 8, border: `0.5px solid ${tokens.grayBorder}`, background: tokens.white, cursor: "pointer", display: "flex" }}
+                >
+                  <ChevronLeft size={15} />
+                </button>
+
+                <select
+                  value={esHistorico ? 'todos' : periodo}
+                  onChange={e => setPeriodo(e.target.value)}
+                  style={{
+                    ...inputStyle,
+                    height: 34, minWidth: 190, padding: "0 10px", borderRadius: 8,
+                    fontSize: 13, fontWeight: 600, color: tokens.navy, cursor: "pointer",
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {opcionesMeses.map(m => (
+                    <option key={m} value={m}>{formatMonthKey(m)}</option>
+                  ))}
+                  <option value="todos">Todo el histórico</option>
+                </select>
+
+                <button
+                  onClick={() => irAMes(1)}
+                  title="Mes siguiente"
+                  style={{ padding: 6, borderRadius: 8, border: `0.5px solid ${tokens.grayBorder}`, background: tokens.white, cursor: "pointer", display: "flex" }}
+                >
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+
+              {!esMesActual && (
+                <button
+                  onClick={() => setPeriodo(currentMonthKey())}
+                  style={{
+                    padding: "6px 12px", borderRadius: 8, border: `0.5px solid ${tokens.grayBorder}`,
+                    background: tokens.white, cursor: "pointer", fontSize: 12, fontWeight: 600, color: tokens.blue,
+                    fontFamily: "Inter, -apple-system, sans-serif",
+                  }}
+                >
+                  Ir al mes actual
+                </button>
+              )}
+
+              <span style={{ marginLeft: "auto", fontSize: 12, color: tokens.grayMuted }}>
+                {movimientosPeriodo.length} movimiento{movimientosPeriodo.length === 1 ? '' : 's'} en el período
+              </span>
+            </div>
+
             {/* ── Dashboard Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               {/* Balance Histórico */}
               <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}`, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Balance Histórico</span>
-                  <div style={{ padding: 6, borderRadius: 8, background: balance >= 0 ? tokens.greenFaint : tokens.redFaint }}>
-                    {balance >= 0 ? <TrendingUp size={16} color={tokens.green} /> : <TrendingDown size={16} color={tokens.red} />}
+                  <div style={{ padding: 6, borderRadius: 8, background: balanceHistorico >= 0 ? tokens.greenFaint : tokens.redFaint }}>
+                    {balanceHistorico >= 0 ? <TrendingUp size={16} color={tokens.green} /> : <TrendingDown size={16} color={tokens.red} />}
                   </div>
                 </div>
-                <h2 style={{ fontSize: 24, fontWeight: 700, color: balance >= 0 ? tokens.greenText : tokens.redText, margin: 0 }}>
-                  {formatCurrency(balance)}
+                <h2 style={{ fontSize: 24, fontWeight: 700, color: balanceHistorico >= 0 ? tokens.greenText : tokens.redText, margin: 0 }}>
+                  {formatCurrency(balanceHistorico)}
                 </h2>
+                <p style={{ fontSize: 11, color: tokens.grayMuted, marginTop: 6 }}>Acumulado de todos los períodos</p>
               </div>
 
               {/* Totales Diario */}
+              {esMesActual && (
               <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Totales de Hoy</span>
@@ -296,8 +412,10 @@ export default function CashFlow() {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Totales Semanal */}
+              {esMesActual && (
               <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Esta Semana</span>
@@ -320,26 +438,31 @@ export default function CashFlow() {
                   </div>
                 </div>
               </div>
+              )}
 
-              {/* Totales Mensual */}
+              {/* Totales del período seleccionado */}
               <div style={{ background: tokens.white, padding: 20, borderRadius: 16, border: `0.5px solid ${tokens.grayBorder}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>Este Mes</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#EA580C', background: '#FFF7ED', padding: "2px 8px", borderRadius: 6 }}>Mensual</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: tokens.grayMuted, textTransform: "uppercase" }}>
+                    {esHistorico ? "Histórico" : esMesActual ? "Este Mes" : formatMonthKey(periodo)}
+                  </span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#EA580C', background: '#FFF7ED', padding: "2px 8px", borderRadius: 6 }}>
+                    {esHistorico ? "Total" : "Mensual"}
+                  </span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                     <span style={{ color: tokens.grayText }}>Ingresos:</span>
-                    <span style={{ fontWeight: 655, color: tokens.greenText }}>+ {formatCurrency(financeStats.month.income)}</span>
+                    <span style={{ fontWeight: 655, color: tokens.greenText }}>+ {formatCurrency(financeStats.period.income)}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                     <span style={{ color: tokens.grayText }}>Egresos:</span>
-                    <span style={{ fontWeight: 655, color: tokens.redText }}>- {formatCurrency(financeStats.month.egress)}</span>
+                    <span style={{ fontWeight: 655, color: tokens.redText }}>- {formatCurrency(financeStats.period.egress)}</span>
                   </div>
                   <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 4, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
                     <span style={{ color: tokens.navy }}>Balance:</span>
-                    <span style={{ color: financeStats.month.balance >= 0 ? tokens.greenText : tokens.redText }}>
-                      {financeStats.month.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.month.balance)}
+                    <span style={{ color: financeStats.period.balance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.period.balance >= 0 ? '+' : ''} {formatCurrency(financeStats.period.balance)}
                     </span>
                   </div>
                 </div>
@@ -352,43 +475,40 @@ export default function CashFlow() {
                   <span style={{ fontSize: 10, fontWeight: 700, color: tokens.greenText, background: tokens.greenFaint, padding: "2px 8px", borderRadius: 6 }}>Efectivo</span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {esMesActual && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                        <span style={{ color: tokens.grayText }}>Efectivo Hoy:</span>
+                        <span style={{ fontWeight: 700, color: financeStats.cash.dayBalance >= 0 ? tokens.greenText : tokens.redText }}>
+                          {financeStats.cash.dayBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.dayBalance)}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                        <span style={{ color: tokens.grayText }}>Efectivo Semana:</span>
+                        <span style={{ fontWeight: 700, color: financeStats.cash.weekBalance >= 0 ? tokens.greenText : tokens.redText }}>
+                          {financeStats.cash.weekBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.weekBalance)}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                    <span style={{ color: tokens.grayText }}>Efectivo Hoy:</span>
-                    <span style={{ fontWeight: 700, color: financeStats.cash.dayBalance >= 0 ? tokens.greenText : tokens.redText }}>
-                      {financeStats.cash.dayBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.dayBalance)}
+                    <span style={{ color: tokens.grayText }}>
+                      Efectivo {esHistorico ? "histórico" : esMesActual ? "del mes" : "del período"}:
                     </span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                    <span style={{ color: tokens.grayText }}>Efectivo Semana:</span>
-                    <span style={{ fontWeight: 700, color: financeStats.cash.weekBalance >= 0 ? tokens.greenText : tokens.redText }}>
-                      {financeStats.cash.weekBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.weekBalance)}
+                    <span style={{ fontWeight: 700, color: financeStats.cash.periodBalance >= 0 ? tokens.greenText : tokens.redText }}>
+                      {financeStats.cash.periodBalance >= 0 ? '+' : ''} {formatCurrency(financeStats.cash.periodBalance)}
                     </span>
                   </div>
                   <div style={{ borderTop: `0.5px solid ${tokens.grayBorder}`, marginTop: 6, paddingTop: 6, display: "flex", flexDirection: "column", gap: 1 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: tokens.grayMuted }}>
-                      <span>Ingresos/Egresos Hoy:</span>
-                      <span>+{formatCurrency(financeStats.cash.dayIncome)} / -{formatCurrency(financeStats.cash.dayEgress)}</span>
+                      <span>Ingresos/Egresos {esMesActual ? "hoy" : "del período"}:</span>
+                      <span>
+                        +{formatCurrency(esMesActual ? financeStats.cash.dayIncome : financeStats.cash.periodIncome)} /
+                        -{formatCurrency(esMesActual ? financeStats.cash.dayEgress : financeStats.cash.periodEgress)}
+                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* ── Quick Filters row ── */}
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 20 }}>
-              <div style={{
-                background: tokens.white, padding: "6px 14px", borderRadius: 10,
-                border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
-                display: "flex", alignItems: "center", gap: 6
-              }}>
-                <Calendar size={14} /> Periodo: Todos
-              </div>
-              <div style={{
-                background: tokens.white, padding: "6px 14px", borderRadius: 10,
-                border: `0.5px solid ${tokens.grayBorder}`, fontSize: 12, color: tokens.grayText,
-                display: "flex", alignItems: "center", gap: 6
-              }}>
-                <CreditCard size={14} /> Forma de Pago: Todas
               </div>
             </div>
 
@@ -467,7 +587,13 @@ export default function CashFlow() {
                         <tr>
                           <td colSpan={6} style={{ textAlign: "center", padding: "56px 0" }}>
                             <DollarSign size={36} color={tokens.grayBorder} style={{ margin: "0 auto 12px", display: "block" }} />
-                            <p style={{ fontSize: 14, fontWeight: 500, color: tokens.grayMuted }}>No se registraron movimientos todavía</p>
+                            <p style={{ fontSize: 14, fontWeight: 500, color: tokens.grayMuted }}>
+                              {searchTerm
+                                ? "Ningún movimiento coincide con la búsqueda"
+                                : esHistorico
+                                  ? "No se registraron movimientos todavía"
+                                  : `Sin movimientos en ${formatMonthKey(periodo)}`}
+                            </p>
                           </td>
                         </tr>
                       ) : (
@@ -484,7 +610,7 @@ export default function CashFlow() {
                               <td style={{ padding: "14px 16px" }}>
                                 <div style={{ fontSize: 13, color: tokens.grayText, display: "flex", alignItems: "center", gap: 6 }}>
                                   <Calendar size={12} color={tokens.grayMuted} />
-                                  {format(new Date(m.fecha), "d MMM. yyyy", { locale: es })}
+                                  {formatLocalDate(m.fecha, { day: "numeric", month: "short", year: "numeric" })}
                                 </div>
                               </td>
 

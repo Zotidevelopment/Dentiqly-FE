@@ -6,6 +6,7 @@ import { cuentaCorrienteApi } from '../../api/cuenta-corriente'
 import type { MovimientoCuenta } from '../../types'
 import { useToast } from '../../hooks/use-toast'
 import { ConfirmationModal } from '../ui/ConfirmationModal'
+import { todayISO, formatLocalDate } from '../../utils/date'
 
 interface CuentaCorrienteSectionProps {
     pacienteId: string
@@ -28,7 +29,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
 
     // Form state
     const [formData, setFormData] = useState({
-        fecha: new Date().toISOString().split('T')[0],
+        fecha: todayISO(),
         monto: '',
         forma_pago: 'Efectivo',
         descripcion: ''
@@ -72,7 +73,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
     const handleOpenModal = (type: 'Ingreso' | 'Deuda') => {
         setModalType(type)
         setFormData({
-            fecha: new Date().toISOString().split('T')[0],
+            fecha: todayISO(),
             monto: '',
             forma_pago: 'Efectivo',
             descripcion: ''
@@ -184,7 +185,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
                                 movements.map((mov) => (
                                     <tr key={mov.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {new Date(mov.fecha).toLocaleDateString('es-ES')}
+                                            {formatLocalDate(mov.fecha, { day: '2-digit', month: '2-digit', year: 'numeric' }, 'es-ES')}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${mov.tipo === 'Ingreso' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

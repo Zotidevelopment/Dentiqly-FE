@@ -18,6 +18,18 @@ interface CuentaCorrienteResponse {
     }
 }
 
+export interface FlujoCajaResponse {
+    movimientos: any[]
+    /** Balance (ingresos - egresos) de los movimientos devueltos. */
+    balance: number
+    /** Balance de toda la historia, independiente del período consultado. */
+    balanceHistorico: number
+    resumen: { ingresos: number; egresos: number; deudas: number }
+    rango: { desde: string | null; hasta: string | null }
+    /** Meses con movimientos ("YYYY-MM"), más reciente primero. */
+    meses: string[]
+}
+
 export const cuentaCorrienteApi = {
     getByPaciente: async (pacienteId: string): Promise<CuentaCorrienteResponse> => {
         return await apiClient.get<CuentaCorrienteResponse>(`/cuenta-corriente/${pacienteId}`)
@@ -35,8 +47,12 @@ export const cuentaCorrienteApi = {
         return await apiClient.get<any[]>('/cuenta-corriente/deudores')
     },
 
-    getFlujoCaja: async (): Promise<{ movimientos: any[], balance: number }> => {
-        return await apiClient.get<{ movimientos: any[], balance: number }>('/cuenta-corriente/caja')
+    getFlujoCaja: async (params?: { desde?: string; hasta?: string }): Promise<FlujoCajaResponse> => {
+        const query = new URLSearchParams()
+        if (params?.desde) query.append('desde', params.desde)
+        if (params?.hasta) query.append('hasta', params.hasta)
+        const qs = query.toString()
+        return await apiClient.get<FlujoCajaResponse>(`/cuenta-corriente/caja${qs ? `?${qs}` : ''}`)
     },
 
     registrarCaja: async (data: RegistrarMovimientoData & { pacienteId?: string }): Promise<MovimientoCuenta> => {

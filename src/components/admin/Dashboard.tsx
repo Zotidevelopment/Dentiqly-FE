@@ -15,6 +15,7 @@ import type { Turno } from '../../types';
 import { OnboardingChecklist } from './OnboardingChecklist';
 import { onboardingApi } from '../../api/onboarding';
 import type { OnboardingStatus } from '../../api/onboarding';
+import { todayISO, toISODate } from '../../utils/date';
 
 interface DashboardStats {
   totalTurnos: number;
@@ -187,8 +188,8 @@ export const Dashboard: React.FC<{
       const [turnosRes, profRes, servRes, pacRes] = await Promise.all([
         turnosApi.listar({
           limit: 5000,
-          fecha_desde: desde.toISOString().split('T')[0],
-          fecha_hasta: hasta.toISOString().split('T')[0]
+          fecha_desde: toISODate(desde),
+          fecha_hasta: toISODate(hasta)
         }).catch(() => ({ data: [] })),
         profesionalesApi.listar({ estado: 'Activo', limit: 100 }).catch(() => ({ data: [] })),
         serviciosApi.listar({ limit: 100 }).catch(() => ({ data: [] })),
@@ -198,7 +199,7 @@ export const Dashboard: React.FC<{
       const turnos = turnosRes.data || [];
       const profesionales = profRes.data || [];
       const pacientes = pacRes.data || [];
-      const today = new Date().toISOString().split('T')[0];
+      const today = todayISO();
       const turnosDeHoy = turnos
         .filter(t => t.fecha === today)
         .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
@@ -221,7 +222,7 @@ export const Dashboard: React.FC<{
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = toISODate(date);
         const count = turnos.filter(t => t.fecha === dateStr).length;
         appointmentTrend.push({ fecha: dateStr, count });
       }

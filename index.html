@@ -6,6 +6,52 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
 
+  <!-- Consent Mode v2 — DEBE ir antes del contenedor de GTM -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+
+    // En el EEE, Reino Unido y Suiza el consentimiento es obligatorio: se
+    // deniega hasta que la persona acepte. GA4 igual recibe pings sin cookies,
+    // así que no se pierde el conteo básico.
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      wait_for_update: 500,
+      region: [
+        'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS',
+        'IE','IT','LV','LI','LT','LU','MT','NL','NO','PL','PT','RO','SK','SI',
+        'ES','SE','GB','CH'
+      ]
+    });
+
+    // Resto del mundo (Argentina incluida): se concede por defecto y el banner
+    // permite rechazarlo. Denegar acá costaría casi toda la data sin necesidad
+    // legal alguna.
+    gtag('consent', 'default', {
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted'
+    });
+
+    // Elección guardada de visitas anteriores: se aplica antes de que GTM cargue.
+    try {
+      var stored = localStorage.getItem('dentiqly_cookie_consent');
+      if (stored === 'granted' || stored === 'denied') {
+        gtag('consent', 'update', {
+          ad_storage: stored,
+          ad_user_data: stored,
+          ad_personalization: stored,
+          analytics_storage: stored
+        });
+      }
+    } catch (e) { /* localStorage bloqueado: se mantienen los valores por defecto */ }
+  </script>
+  <!-- End Consent Mode v2 -->
+
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

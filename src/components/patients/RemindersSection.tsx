@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { turnosApi, recordatoriosApi } from '../../api'
 import type { Turno } from '../../types'
+import { todayISO } from '../../utils/date'
 
 interface RemindersSectionProps {
   pacienteId: string
@@ -35,7 +36,7 @@ export const RemindersSection: React.FC<RemindersSectionProps> = ({ pacienteId }
     try {
       setLoading(true)
       // Fetch upcoming turnos for this patient
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayISO()
       const response = await turnosApi.listar({
         paciente_id: pacienteId,
         fecha_desde: today,

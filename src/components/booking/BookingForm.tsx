@@ -15,6 +15,7 @@ import { configuracionApi } from "../../api/configuracion"
 import { BranchSelection } from "./BranchSelection"
 import { Check, ArrowLeft, MapPin, Calendar } from "lucide-react"
 import { useToast } from "../../hooks/use-toast"
+import { parseLocalDate } from "../../utils/date"
 
 export const BookingForm: React.FC = () => {
   const [step, setStep] = useState(1)
@@ -87,7 +88,7 @@ export const BookingForm: React.FC = () => {
             const currentMonth = today.getMonth()
             const currentYear = today.getFullYear()
             const tieneTurnoEsteMes = turnos.some((t: any) => {
-              const fechaTurno = new Date(t.fecha)
+              const fechaTurno = parseLocalDate(t.fecha)
               return fechaTurno.getMonth() === currentMonth && 
                      fechaTurno.getFullYear() === currentYear &&
                      t.estado !== 'Cancelado'

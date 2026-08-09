@@ -25,6 +25,7 @@ import type { Paciente, CrearPacienteData, ObraSocial } from "../../types"
 import { PatientDetailView } from "./PatientDetailView"
 import { AdminAppointmentModal } from "../admin/AdminAppointmentModal"
 import { ImageCropper } from "../ui/ImageCropper"
+import { todayISO } from "../../utils/date"
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper, getInitials, getAvatarStyle } from '../admin/adminDesign'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
@@ -905,7 +906,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
           initialData={{
             paciente_id: selectedPatient.id,
             paciente_nombre: `${selectedPatient.apellido}, ${selectedPatient.nombre} (DNI: ${selectedPatient.numero_documento})`,
-            fecha: new Date().toISOString().split("T")[0],
+            fecha: todayISO(),
             sobre_turno: true,
           }}
           onClose={() => setShowBookingModal(false)}

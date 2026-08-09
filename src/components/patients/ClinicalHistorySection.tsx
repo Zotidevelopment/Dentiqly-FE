@@ -8,6 +8,7 @@ import { Plus, Edit, Trash2, FileText, Calendar, X } from "lucide-react"
 import { historialesClinicosApi, profesionalesApi } from "../../api"
 import type { HistorialClinico, CrearHistorialClinicoData } from "../../types"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { todayISO, formatLocalDate } from "../../utils/date"
 
 interface ClinicalHistorySectionProps {
   pacienteId: string | number
@@ -48,7 +49,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
   const handleCreate = () => {
     setFormData({
       paciente_id: String(pacienteId),
-      fecha: new Date().toISOString().split("T")[0],
+      fecha: todayISO(),
     })
     setModalMode("create")
     setShowModal(true)
@@ -139,7 +140,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-sm font-medium text-gray-900">
-                      {new Date(historial.fecha).toLocaleDateString("es-ES")}
+                      {formatLocalDate(historial.fecha, { day: "2-digit", month: "2-digit", year: "numeric" }, "es-ES")}
                     </span>
                   </div>
                   {historial.motivo_consulta && (
@@ -200,7 +201,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
               <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <p className="text-xs text-gray-500">Fecha</p>
-                  <p className="font-medium">{new Date(selectedHistorial.fecha).toLocaleDateString("es-ES")}</p>
+                  <p className="font-medium">{formatLocalDate(selectedHistorial.fecha, { day: "2-digit", month: "2-digit", year: "numeric" }, "es-ES")}</p>
                 </div>
                 {selectedHistorial.motivo_consulta && (
                   <div>

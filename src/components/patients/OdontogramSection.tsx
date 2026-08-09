@@ -10,6 +10,7 @@ import type { DientesData, DatosDiente } from "../../api/odontogramas"
 import type { Odontograma, CrearOdontogramaData } from "../../types"
 import { useToast } from "../../hooks/use-toast"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { todayISO, formatLocalDate } from "../../utils/date"
 import { getDienteImageSrc } from "../../utils/dienteImages"
 import { ToothAnatomicalSVG } from "./ToothAnatomicalSVG"
 
@@ -284,7 +285,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
       const dataToSend: CrearOdontogramaData = {
         paciente_id: String(pacienteId),
         profesional_id: profesionalActual,
-        fecha: new Date().toISOString().split("T")[0],
+        fecha: todayISO(),
         dientes_data: dientesData,
         observaciones: observaciones,
         tipo: tipo,
@@ -347,7 +348,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                   </div>
                   <div>
                     <span className="text-sm font-semibold text-[#0A0F2D]">
-                      {new Date(odontograma.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                      {formatLocalDate(odontograma.fecha, { day: "numeric", month: "long", year: "numeric" }, "es-ES")}
                     </span>
                     {odontograma.observaciones && (
                       <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">{odontograma.observaciones}</p>
@@ -400,7 +401,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                   </h3>
                   {selectedOdontograma && (
                     <p className="text-xs sm:text-sm text-blue-200/60">
-                      {new Date(selectedOdontograma.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                      {formatLocalDate(selectedOdontograma.fecha, { day: "numeric", month: "long", year: "numeric" }, "es-ES")}
                     </p>
                   )}
                 </div>

@@ -26,6 +26,7 @@ import { turnosApi, recordatoriosApi } from '../../api'
 import { useToast } from '../../hooks/use-toast'
 import { ConfirmationModal } from '../ui/ConfirmationModal'
 import type { Turno } from '../../types'
+import { toISODate } from '../../utils/date'
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
@@ -39,7 +40,7 @@ export const RemindersView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    return tomorrow.toISOString().split('T')[0]
+    return toISODate(tomorrow)
   })
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [loading, setLoading] = useState(true)
@@ -180,7 +181,7 @@ export const RemindersView: React.FC = () => {
   const navigateDate = (direction: 'prev' | 'next') => {
     const date = new Date(selectedDate + 'T00:00:00')
     date.setDate(date.getDate() + (direction === 'prev' ? -1 : 1))
-    setSelectedDate(date.toISOString().split('T')[0])
+    setSelectedDate(toISODate(date))
   }
 
   const formatDateStr = (fecha: string) => {

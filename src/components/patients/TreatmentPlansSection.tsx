@@ -9,6 +9,7 @@ import { planesTratamientoApi } from "../../api"
 import type { PlanTratamiento, CrearPlanTratamientoData } from "../../types"
 import { useToast } from "../../hooks/use-toast"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { todayISO } from "../../utils/date"
 
 interface TreatmentPlansSectionProps {
   pacienteId: string | number
@@ -49,7 +50,7 @@ export const TreatmentPlansSection: React.FC<TreatmentPlansSectionProps> = ({ pa
   const handleCreate = () => {
     setFormData({
       paciente_id: String(pacienteId),
-      fecha_inicio: new Date().toISOString().split("T")[0],
+      fecha_inicio: todayISO(),
       estado: "Planificado",
       tipo: "General",
     })

@@ -31,6 +31,7 @@ import { AdminAppointmentModal } from './AdminAppointmentModal'
 import { AdminBookingModal } from './AdminBookingModal'
 import { profesionalesApi } from '../../api/profesionales'
 import { configuracionApi } from '../../api/configuracion'
+import { toISODate } from '../../utils/date'
 
 const PROF_COLORS = [
   '#F472B6', // pink-400
@@ -352,22 +353,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
         start.setDate(start.getDate() - 3)
         const end = new Date(currentDate)
         end.setDate(end.getDate() + 3)
-        fecha_desde = start.toISOString().split('T')[0]
-        fecha_hasta = end.toISOString().split('T')[0]
+        fecha_desde = toISODate(start)
+        fecha_hasta = toISODate(end)
       } else if (viewType === 'week') {
         // Fetch 2 weeks around the current week
         const start = new Date(currentDate)
         start.setDate(start.getDate() - start.getDay() - 7)
         const end = new Date(currentDate)
         end.setDate(end.getDate() - end.getDay() + 20)
-        fecha_desde = start.toISOString().split('T')[0]
-        fecha_hasta = end.toISOString().split('T')[0]
+        fecha_desde = toISODate(start)
+        fecha_hasta = toISODate(end)
       } else {
         // Month view: fetch prev month + current month + next month
         const start = new Date(year, month - 1, 1)
         const end = new Date(year, month + 2, 0)
-        fecha_desde = start.toISOString().split('T')[0]
-        fecha_hasta = end.toISOString().split('T')[0]
+        fecha_desde = toISODate(start)
+        fecha_hasta = toISODate(end)
       }
 
       const response = await turnosApi.listar({ limit: 5000, fecha_desde, fecha_hasta })

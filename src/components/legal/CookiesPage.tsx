@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { LegalLayout } from './LegalLayout';
+import { ConsentSettings } from './ConsentSettings';
 
 export const CookiesPage: React.FC = () => {
   return (
@@ -72,9 +73,16 @@ export const CookiesPage: React.FC = () => {
 
       <h2>5. Como gestionar las cookies</h2>
       <p>
-        Puedes controlar y eliminar cookies a traves de la configuracion de tu navegador. Ten en
-        cuenta que deshabilitar las cookies esenciales puede impedir el correcto funcionamiento
-        de la plataforma.
+        Podes cambiar cuando quieras tu decision sobre las cookies de analitica desde aca mismo.
+        El cambio se aplica de inmediato.
+      </p>
+
+      <ConsentSettings />
+
+      <p>
+        Tambien podes controlar y eliminar cookies a traves de la configuracion de tu navegador.
+        Ten en cuenta que deshabilitar las cookies esenciales puede impedir el correcto
+        funcionamiento de la plataforma.
       </p>
       <ul>
         <li><strong>Chrome:</strong> Configuracion &gt; Privacidad y seguridad &gt; Cookies</li>

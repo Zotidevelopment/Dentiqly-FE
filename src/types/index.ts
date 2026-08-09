@@ -263,6 +263,8 @@ export interface Turno {
   servicio?: Servicio
   subservicio?: SubServicio
   sobre_turno?: boolean
+  /** true si pasó a "Ausente" por el cierre automático del día, no a mano. */
+  ausencia_automatica?: boolean
 }
 
 export interface CrearTurnoData {

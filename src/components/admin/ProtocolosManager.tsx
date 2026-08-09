@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { pacientesApi, profesionalesApi, protocolosApi } from "../../api"
 import type { Paciente, Profesional } from "../../types"
+import { toISODate } from "../../utils/date"
 import { useToast } from "../../hooks/use-toast"
 
 interface ProtocoloTratamiento {
@@ -46,7 +47,7 @@ export const ProtocolosManager: React.FC = () => {
     const day = d.getDay()
     const diff = d.getDate() - day + (day === 0 ? -6 : 1) // ajustar al lunes anterior
     const monday = new Date(d.setDate(diff))
-    return monday.toISOString().split("T")[0]
+    return toISODate(monday)
   })
 
   const [protocols, setProtocols] = useState<ProtocoloTratamiento[]>([])
@@ -148,7 +149,7 @@ export const ProtocolosManager: React.FC = () => {
   const navigateWeek = (weeks: number) => {
     const current = new Date(selectedMonday + "T12:00:00")
     current.setDate(current.getDate() + weeks * 7)
-    setSelectedMonday(current.toISOString().split("T")[0])
+    setSelectedMonday(toISODate(current))
   }
 
   const getWeekRangeLabel = () => {
