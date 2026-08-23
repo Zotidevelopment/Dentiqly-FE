@@ -1,5 +1,4 @@
 import React from 'react'
-import { dentalColors } from '../../config/colors'
 
 interface CardProps {
   children: React.ReactNode
@@ -18,18 +17,18 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div 
-      className={`bg-white rounded-xl shadow-sm border border-[${dentalColors.gray200}] overflow-hidden ${className}`}
+      className={`bg-white rounded-xl shadow-sm border border-[#E5E7EB] overflow-hidden ${className}`}
       style={style}
     >
       {(title || subtitle) && (
-        <div className={`px-6 py-4 border-b border-[${dentalColors.gray200}]`}>
+        <div className={`px-6 py-4 border-b border-[#E5E7EB]`}>
           {title && (
-            <h3 className={`text-lg font-semibold text-[${dentalColors.gray900}]`}>
+            <h3 className={`text-lg font-semibold text-[#0A0F2D]`}>
               {title}
             </h3>
           )}
           {subtitle && (
-            <p className={`text-sm text-[${dentalColors.gray600}] mt-1`}>
+            <p className={`text-sm text-[#4B5563] mt-1`}>
               {subtitle}
             </p>
           )}
@@ -43,15 +42,15 @@ export const Card: React.FC<CardProps> = ({
 }
 
 export const CardHeader: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`px-6 py-4 border-b border-[${dentalColors.gray200}] ${className}`}>{children}</div>
+  <div className={`px-6 py-4 border-b border-[#E5E7EB] ${className}`}>{children}</div>
 )
 
 export const CardTitle: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <h3 className={`text-lg font-semibold text-[${dentalColors.gray900}] ${className}`}>{children}</h3>
+  <h3 className={`text-lg font-semibold text-[#0A0F2D] ${className}`}>{children}</h3>
 )
 
 export const CardDescription: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <p className={`text-sm text-[${dentalColors.gray600}] mt-1 ${className}`}>{children}</p>
+  <p className={`text-sm text-[#4B5563] mt-1 ${className}`}>{children}</p>
 )
 
 export const CardContent: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (

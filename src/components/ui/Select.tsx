@@ -1,6 +1,5 @@
 import React from 'react'
 import { ChevronDown } from 'lucide-react'
-import { dentalColors } from '../../config/colors'
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string
@@ -18,16 +17,16 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className="mb-4">
       {label && (
-        <label className={`block text-sm font-medium text-[${dentalColors.gray700}] mb-1`}>
+        <label className={`block text-sm font-medium text-[#374151] mb-1`}>
           {label}
         </label>
       )}
       <div className="relative">
         <select
-          className={`w-full px-3 py-2 border rounded-lg appearance-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[${dentalColors.primary}] focus:border-transparent ${
+          className={`w-full px-3 py-2 border rounded-lg appearance-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#2563FF)] focus:border-transparent ${
             error 
-              ? `border-[${dentalColors.error}]` 
-              : `border-[${dentalColors.gray300}] hover:border-[${dentalColors.gray400}]`
+              ? `border-[#EF4444]` 
+              : `border-[#D1D5DB] hover:border-[#9CA3AF]`
           } ${className}`}
           {...props}
         >
@@ -37,10 +36,10 @@ export const Select: React.FC<SelectProps> = ({
             </option>
           ))}
         </select>
-        <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[${dentalColors.gray400}] pointer-events-none`} />
+        <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9CA3AF] pointer-events-none`} />
       </div>
       {error && (
-        <p className={`mt-1 text-sm text-[${dentalColors.error}]`}>{error}</p>
+        <p className={`mt-1 text-sm text-[#EF4444]`}>{error}</p>
       )}
     </div>
   )

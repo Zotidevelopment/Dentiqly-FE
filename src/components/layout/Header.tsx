@@ -1,12 +1,11 @@
 import React from 'react'
-import { dentalColors } from '../../config/colors'
 import { Calendar, Phone, MapPin } from 'lucide-react'
 
 export const Header: React.FC = () => {
   return (
-    <header className={`bg-white shadow-sm border-b border-[${dentalColors.gray200}]`}>
+    <header className={`bg-white shadow-sm border-b border-[#E5E7EB]`}>
       {/* Top bar con información de contacto */}
-      <div className={`bg-[${dentalColors.primary}] text-white`}>
+      <div className={`bg-[var(--brand-primary,#2563FF)] text-white`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-10 text-sm">
             <div className="flex items-center space-x-6">
@@ -30,14 +29,14 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <div className={`w-10 h-10 bg-[${dentalColors.primary}] rounded-lg flex items-center justify-center`}>
+            <div className={`w-10 h-10 bg-[var(--brand-primary,#2563FF)] rounded-lg flex items-center justify-center`}>
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div className="ml-3">
-              <h1 className={`text-xl font-bold text-[${dentalColors.gray900}]`}>
+              <h1 className={`text-xl font-bold text-[#0A0F2D]`}>
                 Centro Odontológico
               </h1>
-              <p className={`text-sm text-[${dentalColors.gray600}]`}>
+              <p className={`text-sm text-[#4B5563]`}>
                 Sistema de Reservas
               </p>
             </div>
@@ -45,10 +44,10 @@ export const Header: React.FC = () => {
 
           <div className="hidden md:flex items-center space-x-4">
             <div className="text-right">
-              <p className={`text-sm font-medium text-[${dentalColors.gray900}]`}>
+              <p className={`text-sm font-medium text-[#0A0F2D]`}>
                 ¿Necesitas ayuda?
               </p>
-              <p className={`text-xs text-[${dentalColors.gray600}]`}>
+              <p className={`text-xs text-[#4B5563]`}>
                 +54 9 11 4048-3693
               </p>
             </div>

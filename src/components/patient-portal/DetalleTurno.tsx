@@ -102,7 +102,7 @@ export const DetalleTurno: React.FC = () => {
 
         <div className="grid gap-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: `${dentalColors.primary}15` }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--brand-primary, #2563FF) 8%, transparent)' }}>
               <Calendar size={24} style={{ color: dentalColors.primary }} />
             </div>
             <div>
@@ -114,7 +114,7 @@ export const DetalleTurno: React.FC = () => {
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: `${dentalColors.primary}15` }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--brand-primary, #2563FF) 8%, transparent)' }}>
               <Clock size={24} style={{ color: dentalColors.primary }} />
             </div>
             <div>
@@ -126,7 +126,7 @@ export const DetalleTurno: React.FC = () => {
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: `${dentalColors.primary}15` }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--brand-primary, #2563FF) 8%, transparent)' }}>
               <User size={24} style={{ color: dentalColors.primary }} />
             </div>
             <div>
@@ -143,7 +143,7 @@ export const DetalleTurno: React.FC = () => {
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: `${dentalColors.primary}15` }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--brand-primary, #2563FF) 8%, transparent)' }}>
               <FileText size={24} style={{ color: dentalColors.primary }} />
             </div>
             <div>

@@ -9,6 +9,14 @@ export function useLenis() {
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
+    // En touch no se monta. Lenis reemplaza el scroll nativo por uno calculado
+    // en JS: en el navegador embebido de Instagram eso significa perder el
+    // momentum del sistema y ganar jank, sin ningún beneficio visual. También
+    // se respeta a quien pidió menos movimiento en su sistema operativo.
+    const esTouch = window.matchMedia('(pointer: coarse)').matches
+    const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (esTouch || prefiereMenosMovimiento) return
+
     const lenis = new Lenis({
       lerp: 0.08,
       duration: 1.4,

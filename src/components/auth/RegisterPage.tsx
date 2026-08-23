@@ -1,13 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { apiClient } from '../../lib/api-client';
-import { Shield, CheckCircle2, ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Globe, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
+import { Shield, CheckCircle2, ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { SEO, PAGE_SEO } from '../seo/SEO';
 import { trackSignupStarted } from '../../lib/analytics';
+import { useBillingPlans } from '../../hooks/useBillingPlans';
 
 type Step = 'form' | 'plan';
+
+/**
+ * Réplica de utils/slugify.js del backend, que es quien genera el slug real a
+ * partir del nombre de la clínica.
+ *
+ * Sirve solo para previsualizar la URL de reservas mientras se escribe. El
+ * backend puede agregarle un sufijo (-1, -2) si el slug ya está tomado, así
+ * que esto es una aproximación, no una promesa.
+ */
+const previsualizarSlug = (nombre: string): string =>
+  nombre
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-');
+
+/**
+ * `text-base` (16px) en móvil no es una decisión estética: Safari en iOS hace
+ * zoom automático sobre cualquier input de menos de 16px al enfocarlo, y el
+ * formulario entero queda descuadrado. Desde `sm` vuelve a 14px, que es lo que
+ * pide el diseño en pantallas donde el problema no existe.
+ */
+const inputClass =
+  'block w-full pl-9 pr-3 py-2.5 text-base sm:text-sm bg-[#F7F8FA] border border-transparent rounded-xl ' +
+  'focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]';
 
 export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
@@ -21,18 +49,21 @@ export const RegisterPage: React.FC = () => {
   // intención real de completar el formulario.
   const signupStartedRef = React.useRef(false);
 
+  // Lo imprescindible para crear la cuenta, más el teléfono: es el canal por
+  // el que se contacta a la clínica después del registro. El resto de los
+  // datos se piden en el onboarding, cuando la persona ya entró y tiene algo
+  // que ganar completándolos.
   const [formData, setFormData] = useState({
     nombre_clinica: '',
     nombre_admin: '',
     email_admin: '',
-    password: '',
     telefono: '',
-    web_url: '',
+    password: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.nombre_clinica || !formData.nombre_admin || !formData.email_admin || !formData.password) {
+    if (!formData.nombre_clinica || !formData.nombre_admin || !formData.email_admin || !formData.telefono || !formData.password) {
       toast({
         title: "Campos requeridos",
         description: "Por favor completá todos los campos obligatorios.",
@@ -94,20 +125,24 @@ export const RegisterPage: React.FC = () => {
       signupStartedRef.current = true;
       trackSignupStarted();
     }
-    let value = e.target.value;
-    if (e.target.name === 'web_url') {
-      if (value.includes('/')) {
-        const parts = value.split('/').filter(Boolean);
-        value = parts[parts.length - 1] || '';
-      }
-      value = value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    }
-    setFormData({ ...formData, [e.target.name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const monthlyPrice = 80000;
-  const annualPrice = 864000;
-  const annualMonthly = Math.round(annualPrice / 12);
+  // Los precios vienen de /api/billing/plans, la misma fuente que usa la
+  // sección de precios de la landing. Antes estaban hardcodeados acá y no
+  // coincidían: la landing mostraba el anual con 17% off y el registro con
+  // 10%, sobre un total $58.000 más caro que el real.
+  const plans = useBillingPlans();
+  const monthlyUsd = plans?.usd.monthly.price;
+  const annualUsd = plans?.usd.annual.price;
+  const annualUsdPerMonth = plans
+    ? plans.usd.annual.pricePerMonth ?? Math.round(plans.usd.annual.price / 12)
+    : undefined;
+  const annualDiscount = plans?.usd.annual.discount;
+  const displayUsd = billingCycle === 'monthly' ? monthlyUsd : annualUsdPerMonth;
+  const displayArs = billingCycle === 'monthly'
+    ? plans?.ars.monthly.price
+    : plans?.ars.annual.pricePerMonth ?? (plans ? Math.round(plans.ars.annual.price / 12) : undefined);
 
   return (
     <>
@@ -191,115 +226,118 @@ export const RegisterPage: React.FC = () => {
 
               <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-gray-100/70 p-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Clínica</label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Building2 className="h-4 w-4 text-[#8A93A8]" />
-                        </div>
-                        <input
-                          type="text"
-                          name="nombre_clinica"
-                          required
-                          value={formData.nombre_clinica}
-                          onChange={handleChange}
-                          className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
-                          placeholder="Ej: Clínica Dental"
-                        />
+                  <div>
+                    <label htmlFor="nombre_clinica" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Nombre de tu clínica</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Building2 className="h-4 w-4 text-[#8A93A8]" />
                       </div>
+                      <input
+                        id="nombre_clinica"
+                        type="text"
+                        name="nombre_clinica"
+                        required
+                        autoComplete="organization"
+                        value={formData.nombre_clinica}
+                        onChange={handleChange}
+                        className={inputClass}
+                        placeholder="Ej: Clínica Dental"
+                      />
                     </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Administrador</label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <User className="h-4 w-4 text-[#8A93A8]" />
-                        </div>
-                        <input
-                          type="text"
-                          name="nombre_admin"
-                          required
-                          value={formData.nombre_admin}
-                          onChange={handleChange}
-                          className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
-                          placeholder="Tu nombre"
-                        />
-                      </div>
-                    </div>
+                    {/* La URL de reservas sale del nombre: se muestra para que se
+                        entienda qué se está creando, no para que la configuren. */}
+                    <p className="mt-1 text-[11px] text-[#8A93A8]">
+                      Tu página de reservas va a ser{' '}
+                      <span className="font-semibold text-[#2563FF]">
+                        dentiqly.com/{previsualizarSlug(formData.nombre_clinica) || 'tu-clinica'}
+                      </span>
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Teléfono</label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Phone className="h-4 w-4 text-[#8A93A8]" />
-                        </div>
-                        <input
-                          type="tel"
-                          name="telefono"
-                          value={formData.telefono}
-                          onChange={handleChange}
-                          className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
-                          placeholder="+54 11 ..."
-                        />
+                  <div>
+                    <label htmlFor="nombre_admin" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Tu nombre</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User className="h-4 w-4 text-[#8A93A8]" />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Enlace de reservas (Slug)</label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Globe className="h-4 w-4 text-[#8A93A8]" />
-                        </div>
-                        <input
-                          type="text"
-                          name="web_url"
-                          value={formData.web_url}
-                          onChange={handleChange}
-                          className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
-                          placeholder="tu-centro"
-                        />
-                      </div>
-                      <p className="mt-1 text-[11px] text-[#8A93A8]">
-                        Reserva online en:{' '}
-                        <span className="font-semibold text-[#2563FF]">dentiqly.com/{formData.web_url || 'tu-centro'}</span>
-                      </p>
+                      <input
+                        id="nombre_admin"
+                        type="text"
+                        name="nombre_admin"
+                        required
+                        autoComplete="name"
+                        value={formData.nombre_admin}
+                        onChange={handleChange}
+                        className={inputClass}
+                        placeholder="Tu nombre"
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Email profesional</label>
+                    <label htmlFor="email_admin" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Email profesional</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-4 w-4 text-[#8A93A8]" />
                       </div>
                       <input
+                        id="email_admin"
                         type="email"
                         name="email_admin"
                         required
+                        autoComplete="email"
+                        inputMode="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={formData.email_admin}
                         onChange={handleChange}
-                        className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                        className={inputClass}
                         placeholder="ejemplo@clinica.com"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Contraseña</label>
+                    <label htmlFor="telefono" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Teléfono / WhatsApp</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Phone className="h-4 w-4 text-[#8A93A8]" />
+                      </div>
+                      <input
+                        id="telefono"
+                        type="tel"
+                        name="telefono"
+                        required
+                        autoComplete="tel"
+                        inputMode="tel"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        className={inputClass}
+                        placeholder="+54 9 11 0000-0000"
+                      />
+                    </div>
+                    <p className="mt-1 text-[11px] text-[#8A93A8]">
+                      Para ayudarte a configurar tu clínica y resolverte dudas.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Contraseña</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Lock className="h-4 w-4 text-[#8A93A8]" />
                       </div>
                       <input
+                        id="password"
                         type="password"
                         name="password"
                         required
+                        minLength={6}
+                        autoComplete="new-password"
                         value={formData.password}
                         onChange={handleChange}
-                        className="block w-full pl-9 pr-3 py-2.5 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                        className={inputClass}
                         placeholder="Mínimo 6 caracteres"
                       />
                     </div>
@@ -399,11 +437,13 @@ export const RegisterPage: React.FC = () => {
                   }`}
                 >
                   Anual
-                  <span className={`text-[10px] px-1 py-0.5 rounded-md ${
-                    billingCycle === 'annual' ? 'bg-white/20 text-white' : 'bg-green-150 text-green-700'
-                  }`}>
-                    -10%
-                  </span>
+                  {annualDiscount !== undefined && (
+                    <span className={`text-[10px] px-1 py-0.5 rounded-md ${
+                      billingCycle === 'annual' ? 'bg-white/20 text-white' : 'bg-green-150 text-green-700'
+                    }`}>
+                      -{annualDiscount}%
+                    </span>
+                  )}
                 </button>
               </div>
 
@@ -426,17 +466,22 @@ export const RegisterPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
+                    {/* Mientras /billing/plans no responde no se muestra ningún
+                        número: un precio provisorio que después cambia es peor
+                        que un espacio en blanco de medio segundo. */}
                     <p className="text-xl font-extrabold text-[#0B1023]">
-                      ${billingCycle === 'monthly'
-                        ? monthlyPrice.toLocaleString('es-AR')
-                        : annualMonthly.toLocaleString('es-AR')
-                      }
+                      {displayUsd !== undefined ? `USD ${displayUsd}` : '—'}
                     </p>
                     <p className="text-[10px] text-[#8A93A8]">
-                      ARS / mes
-                      {billingCycle === 'annual' && (
+                      / mes
+                      {displayArs !== undefined && (
+                        <span className="block">
+                          aprox. ${displayArs.toLocaleString('es-AR')} ARS
+                        </span>
+                      )}
+                      {billingCycle === 'annual' && annualUsd !== undefined && (
                         <span className="block text-green-650 font-bold">
-                          ${annualPrice.toLocaleString('es-AR')} /año
+                          USD {annualUsd} /año
                         </span>
                       )}
                     </p>

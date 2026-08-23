@@ -5,14 +5,18 @@
  * lugar donde se empujan eventos: nunca llamar a window.dataLayer.push()
  * directamente desde un componente.
  *
- * GA4 (G-7FTCE52704) se configura DENTRO de GTM, no acá. Así se puede
- * cambiar de proveedor de analytics sin tocar el código del producto.
+ * GA4 (G-7FTCE52704) iba a configurarse DENTRO de GTM, pero el contenedor
+ * quedó vacío y ningún evento llegaba a destino. Hasta que eso se resuelva,
+ * tracking.ts carga GA4 y el Pixel de Meta desde el código y push() les
+ * reenvía cada evento. Los componentes siguen llamando solo a este módulo.
  *
  * OJO: los eventos de dinero (purchase, subscription_renewed) NO se disparan
  * desde acá. El pago se confirma por webhook en el backend
  * (billingController.handleWebhookMP), sin browser de por medio. Ver el
  * comentario en trackCheckoutStarted().
  */
+
+import { forwardEvent, setPixelConsent } from './tracking'
 
 type DataLayerEvent = Record<string, unknown> & { event: string }
 
@@ -42,6 +46,9 @@ function push(event: DataLayerEvent): void {
   if (!isBrowser) return
   window.dataLayer = window.dataLayer || []
   window.dataLayer.push(event)
+  // El contenedor de GTM está vacío, así que además del dataLayer el evento se
+  // manda directo a GA4 y al Pixel. Ver el comentario de cabecera de tracking.ts.
+  forwardEvent(event)
 }
 
 /**
@@ -182,6 +189,9 @@ export function setConsent(value: ConsentValue): void {
     ad_personalization: value,
     analytics_storage: value,
   })
+
+  // El Pixel de Meta tiene su propio consentimiento, aparte del de Google.
+  setPixelConsent(value)
 
   push({ event: 'cookie_consent_decision', consent_state: value })
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import { dentalColors } from '../../config/colors'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -25,7 +24,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="mb-4">
       {label && (
-        <label htmlFor={inputId} className={`block text-sm font-medium text-[${dentalColors.gray700}] mb-1`}>
+        <label htmlFor={inputId} className={`block text-sm font-medium text-[#374151] mb-1`}>
           {label}
         </label>
       )}
@@ -33,18 +32,18 @@ export const Input: React.FC<InputProps> = ({
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`w-full px-3 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[${dentalColors.primary}] focus:border-transparent ${
+        className={`w-full px-3 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#2563FF)] focus:border-transparent ${
           error
-            ? `border-[${dentalColors.error}]`
-            : `border-[${dentalColors.gray300}] hover:border-[${dentalColors.gray400}]`
+            ? `border-[#EF4444]`
+            : `border-[#D1D5DB] hover:border-[#9CA3AF]`
         } ${className}`}
         {...props}
       />
       {error && (
-        <p id={errorId} className={`mt-1 text-sm text-[${dentalColors.error}]`}>{error}</p>
+        <p id={errorId} className={`mt-1 text-sm text-[#EF4444]`}>{error}</p>
       )}
       {helperText && !error && (
-        <p className={`mt-1 text-sm text-[${dentalColors.gray500}]`}>{helperText}</p>
+        <p className={`mt-1 text-sm text-[#5C6B7B]`}>{helperText}</p>
       )}
     </div>
   )
