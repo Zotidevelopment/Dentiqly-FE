@@ -1,17 +1,17 @@
 import type React from "react"
 
 export const tokens = {
-  blue: "var(--brand-primary, #2563FF)",
+  blue: "var(--brand-primary, #2458ED)",
   blueHover: "var(--brand-primary-hover, #1E40AF)",
-  blueFaint: "#EEF3FF",
-  navy: "#0B1023",
+  blueFaint: "#EAF2FF",
+  navy: "#0B2440",
 
   grayText: "#4B5568",
-  grayMuted: "#8A93A8",
-  grayBorder: "#E2E0DB",
-  grayBg: "#F7F8FA",
-  grayRow: "#F7F8FA",
-  rowHover: "#F0F2F5",
+  grayMuted: "#65788D",
+  grayBorder: "#DCE5EE",
+  grayBg: "#F5F8FF",
+  grayRow: "#F8FAFF",
+  rowHover: "#EAF2FF",
   white: "#FFFFFF",
 
   green: "#22C55E",
@@ -33,16 +33,16 @@ export const tokens = {
   grayPill: "#F1F5F9",
   grayPillTx: "#64748B",
 
-  cardBorder: "#E2E5EB",
+  cardBorder: "#DCE5EE",
   cardBg: "#FFFFFF",
-  pageBg: "#FFFFFF",
-  sidebarBg: "#0B1023",
+  pageBg: "#F5F8FF",
+  sidebarBg: "#0B2440",
 
-  celeste: "var(--brand-secondary, #2563FF)",
+  celeste: "var(--brand-secondary, #2458ED)",
   celesteHover: "#00C4DD",
 
   avatarColors: [
-    { bg: "#DBEAFE", color: "#2563FF" },
+    { bg: "#DBEAFE", color: "#2458ED" },
     { bg: "#D1FAE5", color: "#16A34A" },
     { bg: "#EDE9FE", color: "#7C3AED" },
     { bg: "#FEF3C7", color: "#B45309" },
@@ -70,12 +70,12 @@ export const inputStyle: React.CSSProperties = {
   outline: "none",
   color: tokens.navy,
   background: tokens.white,
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
   transition: "all 0.15s",
 }
 
 export const pageWrapper: React.CSSProperties = {
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
 }
 
 export const cardStyle: React.CSSProperties = {
@@ -106,7 +106,7 @@ export const btnPrimary: React.CSSProperties = {
   alignItems: "center",
   gap: 8,
   padding: "10px 20px",
-  background: "var(--admin-button-bg, #2563FF)",
+  background: "var(--admin-button-bg, #2458ED)",
   color: "var(--admin-button-text, #FFFFFF)",
   border: "none",
   borderRadius: 12,
@@ -114,7 +114,7 @@ export const btnPrimary: React.CSSProperties = {
   fontWeight: 700,
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
 }
 
 export const btnSecondary: React.CSSProperties = {
@@ -130,7 +130,7 @@ export const btnSecondary: React.CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
 }
 
 export const btnDanger: React.CSSProperties = {
@@ -146,7 +146,7 @@ export const btnDanger: React.CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   transition: "all 0.15s",
-  fontFamily: "Inter, -apple-system, sans-serif",
+  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
 }
 
 export const modalOverlay: React.CSSProperties = {

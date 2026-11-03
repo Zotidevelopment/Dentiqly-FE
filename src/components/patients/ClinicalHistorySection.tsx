@@ -5,7 +5,9 @@ import { useState, useEffect } from "react"
 import { Card } from "../ui/Card"
 import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, FileText, Calendar, X } from "lucide-react"
-import { historialesClinicosApi, profesionalesApi } from "../../api"
+import { historialesClinicosApi } from "../../api"
+import { useToast } from "../../hooks/use-toast"
+import { useProfesionalesActivos, nombreProfesional } from "./useProfesionalesActivos"
 import type { HistorialClinico, CrearHistorialClinicoData } from "../../types"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { todayISO, formatLocalDate } from "../../utils/date"
@@ -22,16 +24,12 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
   const [selectedHistorial, setSelectedHistorial] = useState<HistorialClinico | null>(null)
   const [formData, setFormData] = useState<Partial<CrearHistorialClinicoData>>({})
   const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
-  const [defaultProfesionalId, setDefaultProfesionalId] = useState<number | null>(null)
+  const [saving, setSaving] = useState(false)
+  const profesionales = useProfesionalesActivos()
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchHistoriales()
-    profesionalesApi.listar({ estado: 'Activo', limit: 1 })
-      .then(res => {
-        const profs = res.data || res
-        if (Array.isArray(profs) && profs.length > 0) setDefaultProfesionalId(profs[0].id)
-      })
-      .catch(() => {})
   }, [pacienteId])
 
   const fetchHistoriales = async () => {
@@ -50,14 +48,23 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
     setFormData({
       paciente_id: String(pacienteId),
       fecha: todayISO(),
-    })
+      profesional_id: profesionales[0]?.id,
+    } as Partial<CrearHistorialClinicoData>)
     setModalMode("create")
     setShowModal(true)
   }
 
   const handleEdit = (historial: HistorialClinico) => {
     setSelectedHistorial(historial)
-    setFormData(historial)
+    // El backend guarda examen_clinico y tratamiento_realizado; el formulario
+    // usa examen_fisico y tratamiento. Sin este mapeo, al editar esos campos
+    // aparecían vacíos y lo que se escribía pisaba el texto original.
+    const h = historial as HistorialClinico & { examen_clinico?: string; tratamiento_realizado?: string }
+    setFormData({
+      ...historial,
+      examen_fisico: h.examen_clinico ?? h.examen_fisico ?? "",
+      tratamiento: h.tratamiento_realizado ?? h.tratamiento ?? "",
+    })
     setModalMode("edit")
     setShowModal(true)
   }
@@ -87,16 +94,22 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
+    const profesionalId = (formData as any).profesional_id || profesionales[0]?.id
+    if (!profesionalId) {
+      toast({ variant: "destructive", title: "Falta el profesional", description: "Cargá al menos un profesional activo para registrar historias clínicas." })
+      return
+    }
+    const { profesional: _p, paciente: _pa, createdAt: _c, updatedAt: _u, examen_fisico, tratamiento, ...resto } = formData as any
+    const payload = {
+      ...resto,
+      profesional_id: profesionalId,
+      // Se mandan aunque estén vacíos para que el usuario pueda borrarlos.
+      examen_clinico: examen_fisico ?? null,
+      tratamiento_realizado: tratamiento ?? null,
+    }
     try {
-      const payload: any = {
-        ...formData,
-        profesional_id: defaultProfesionalId,
-        examen_clinico: formData.examen_fisico || (formData as any).examen_clinico,
-        tratamiento_realizado: formData.tratamiento || (formData as any).tratamiento_realizado,
-      }
-      delete payload.examen_fisico
-      delete payload.tratamiento
-
+      setSaving(true)
       if (modalMode === "create") {
         await historialesClinicosApi.crear(payload)
       } else if (modalMode === "edit" && selectedHistorial) {
@@ -104,8 +117,11 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
       }
       setShowModal(false)
       fetchHistoriales()
+      toast({ title: modalMode === "create" ? "Registro creado" : "Cambios guardados" })
     } catch (error) {
-      console.error("Error saving clinical history:", error)
+      toast({ variant: "destructive", title: "No se pudo guardar", description: error instanceof Error ? error.message : "Intentá de nuevo." })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -266,6 +282,19 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Profesional que atendió *</label>
+                  <select
+                    required
+                    value={(formData as any).profesional_id || ""}
+                    onChange={(e) => setFormData({ ...formData, profesional_id: Number(e.target.value) } as Partial<CrearHistorialClinicoData>)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="" disabled>Elegí un profesional</option>
+                    {profesionales.map((p) => <option key={p.id} value={p.id}>{nombreProfesional(p)}</option>)}
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Motivo de Consulta</label>
                   <textarea
                     rows={2}
@@ -349,7 +378,7 @@ export const ClinicalHistorySection: React.FC<ClinicalHistorySectionProps> = ({ 
                   <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                     Cancelar
                   </Button>
-                  <Button type="submit" className="w-full sm:w-auto">{modalMode === "create" ? "Crear Registro" : "Guardar Cambios"}</Button>
+                  <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Guardando..." : modalMode === "create" ? "Crear Registro" : "Guardar Cambios"}</Button>
                 </div>
               </form>
             )}

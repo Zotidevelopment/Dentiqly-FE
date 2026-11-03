@@ -26,12 +26,15 @@ import {
 } from 'lucide-react'
 import { turnosApi, adminApi, exportApi } from '../../api'
 import type { Turno, Profesional } from '../../types'
+import { getObraSocialNombre, tieneObraSocial } from '../../utils/obraSocial'
 import { EditAppointmentModal } from './EditAppointmentModal'
 import { AdminAppointmentModal } from './AdminAppointmentModal'
 import { AdminBookingModal } from './AdminBookingModal'
 import { profesionalesApi } from '../../api/profesionales'
 import { configuracionApi } from '../../api/configuracion'
 import { toISODate } from '../../utils/date'
+import { useAuth } from '../../hooks/useAuth'
+import { puede } from '../../config/permissions'
 
 const PROF_COLORS = [
   '#F472B6', // pink-400
@@ -135,6 +138,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingMode }) => {
+  const { user } = useAuth()
   const { toast } = useToast()
   const [confirmAction, setConfirmAction] = useState<{ isOpen: boolean, title: string, message: string, onConfirm: () => void } | null>(null)
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -579,6 +583,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
       } else if (viewType === 'week') {
         newDate.setDate(prev.getDate() + (direction === 'prev' ? -7 : 7))
       } else {
+        // Primero al día 1: setMonth sobre el 31 de enero da 3 de marzo.
+        newDate.setDate(1)
         newDate.setMonth(prev.getMonth() + (direction === 'prev' ? -1 : 1))
       }
       return newDate
@@ -654,11 +660,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
           <div className="p-2 border-r border-[#E8E0D6]/40 flex items-center justify-center">
             <Clock className="h-4 w-4 text-[#8A93A8]" />
           </div>
-          <div className="p-2 text-center bg-[#EEF3FF]/30">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-[#2563FF]">
+          <div className="p-2 text-center bg-[#EAF2FF]/30">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[#2458ED]">
               {currentDate.toLocaleDateString('es-ES', { weekday: 'long' })}
             </div>
-            <div className="text-lg font-bold text-[#0B1023]">
+            <div className="text-lg font-bold text-[#0B2440]">
               {currentDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
             </div>
           </div>
@@ -813,10 +819,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                 const isToday = day.toDateString() === new Date().toDateString()
                 return (
                   <div key={i} className={`p-2 text-center border-r border-[#E8E0D6]/30 last:border-r-0 bg-white`}>
-                    <div className={`text-[10px] font-bold uppercase tracking-widest ${isToday ? 'text-[#2563FF]' : 'text-[#8A93A8]'}`}>
+                    <div className={`text-[10px] font-bold uppercase tracking-widest ${isToday ? 'text-[#2458ED]' : 'text-[#8A93A8]'}`}>
                       {day.toLocaleDateString('es-ES', { weekday: 'short' })}
                     </div>
-                    <div className={`text-sm font-bold ${isToday ? 'text-[#2563FF] bg-[#EEF3FF]/60 rounded-full inline-block px-2' : 'text-[#0B1023]'}`}>
+                    <div className={`text-sm font-bold ${isToday ? 'text-[#2458ED] bg-[#EAF2FF]/60 rounded-full inline-block px-2' : 'text-[#0B2440]'}`}>
                       {day.getDate()}/{day.getMonth() + 1}
                     </div>
                   </div>
@@ -836,7 +842,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                     {weekDays.map((day, i) => (
                       <div
                         key={i}
-                        className={`border-r border-[#E8E0D6]/15 last:border-r-0 relative group transition-colors cursor-pointer ${draggingAppointment ? 'bg-[#EEF3FF]/20' : 'hover:bg-[#EEF3FF]/30'} ${i % 2 === 0 ? 'bg-gray-50/10' : 'bg-white'}`}
+                        className={`border-r border-[#E8E0D6]/15 last:border-r-0 relative group transition-colors cursor-pointer ${draggingAppointment ? 'bg-[#EAF2FF]/20' : 'hover:bg-[#EAF2FF]/30'} ${i % 2 === 0 ? 'bg-gray-50/10' : 'bg-white'}`}
                         onClick={() => {
                           const y = day.getFullYear()
                           const m = String(day.getMonth() + 1).padStart(2, '0')
@@ -1045,8 +1051,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                   }}
                   style={{ cursor: 'pointer' }}
                 >
-                  <div className={`text-sm font-semibold mb-2 flex justify-end ${isToday ? 'text-[#2563FF]' : 'text-[#0B1023]'}`}>
-                    <span className={`${isToday ? 'bg-[#EEF3FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
+                  <div className={`text-sm font-semibold mb-2 flex justify-end ${isToday ? 'text-[#2458ED]' : 'text-[#0B2440]'}`}>
+                    <span className={`${isToday ? 'bg-[#EAF2FF] w-6 h-6 flex items-center justify-center rounded-full' : ''}`}>
                       {day.date.getDate()}
                     </span>
                   </div>
@@ -1138,11 +1144,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
           <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4 text-[#8A93A8]">
             <CalendarIcon className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-semibold text-[#0B1023] mb-1">No hay turnos agendados</h3>
+          <h3 className="text-base font-semibold text-[#0B2440] mb-1">No hay turnos agendados</h3>
           <p className="text-[13px] text-[#8A93A8] max-w-sm mb-6">
             No se encontraron citas programadas para este día o con los filtros activos.
           </p>
-          <Button onClick={() => setShowBookingModal(true)} className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white rounded-xl px-5 py-2 flex items-center gap-2 text-[13px] font-bold">
+          <Button onClick={() => setShowBookingModal(true)} className="bg-[#2458ED] hover:bg-[#1744CD] text-white rounded-xl px-5 py-2 flex items-center gap-2 text-[13px] font-bold">
             <Plus className="w-4 h-4" /> Agendar Turno
           </Button>
         </div>
@@ -1168,7 +1174,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               {/* Left Side: Time and Patient Info */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                 {/* Time Slot Badge */}
-                <div className="flex sm:flex-col items-center sm:items-start shrink-0 bg-[#EEF3FF] text-[#2563FF] px-3.5 py-2.5 rounded-xl border border-[#2563FF]/10 min-w-[100px] gap-2 sm:gap-0">
+                <div className="flex sm:flex-col items-center sm:items-start shrink-0 bg-[#EAF2FF] text-[#2458ED] px-3.5 py-2.5 rounded-xl border border-[#2458ED]/10 min-w-[100px] gap-2 sm:gap-0">
                   <div className="flex items-center gap-1.5 sm:mb-0.5">
                     <Clock className="w-3.5 h-3.5" />
                     <span className="text-xs font-bold font-mono">{appt.hora_inicio.substring(0, 5)}</span>
@@ -1179,7 +1185,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                 {/* Patient Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="text-[15px] font-bold text-[#0B1023] capitalize truncate">
+                    <h3 className="text-[15px] font-bold text-[#0B2440] capitalize truncate">
                       {patientName}
                     </h3>
                     {appt.sobre_turno && (
@@ -1198,10 +1204,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                         {appt.paciente.telefono}
                       </span>
                     )}
-                    {(appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom) && (
+                    {tieneObraSocial(appt.paciente) && (
                       <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-[10px] font-semibold border border-emerald-100">
-                        {appt.paciente.obraSocial?.nombre || appt.paciente.obra_social_nombre_custom}
-                        {appt.paciente.numero_afiliado ? ` (Nº ${appt.paciente.numero_afiliado})` : ''}
+                        {getObraSocialNombre(appt.paciente)}
+                        {appt.paciente?.numero_afiliado ? ` (Nº ${appt.paciente.numero_afiliado})` : ''}
                       </span>
                     )}
                   </div>
@@ -1219,7 +1225,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                     {getInitials(appt.profesional)}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-[#0B1023]">
+                    <p className="text-xs font-semibold text-[#0B2440]">
                       {appt.profesional?.nombre} {appt.profesional?.apellido}
                     </p>
                     <p className="text-[10px] text-gray-400 font-medium">
@@ -1233,7 +1239,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                   <span className="text-xs font-medium text-gray-600 truncate max-w-[120px]">
                     {appt.servicio?.nombre}
                   </span>
-                  <span className="text-xs font-semibold text-[#2563FF] mt-0.5">
+                  <span className="text-xs font-semibold text-[#2458ED] mt-0.5">
                     ${appt.servicio?.precio_base}
                   </span>
                 </div>
@@ -1291,7 +1297,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                   {/* Edit button */}
                   <button
                     onClick={() => { setSelectedAppointment(appt); setShowEditModal(true); }}
-                    className="p-2 bg-gray-50 text-gray-600 border border-gray-100 hover:bg-[#2563FF] hover:text-white rounded-xl transition-all shadow-sm"
+                    className="p-2 bg-gray-50 text-gray-600 border border-gray-100 hover:bg-[#2458ED] hover:text-white rounded-xl transition-all shadow-sm"
                     title="Editar Turno"
                   >
                     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1327,7 +1333,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
       {!landingMode && (
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 shrink-0">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#0B1023] tracking-[-0.3px]">Calendario de Turnos</h1>
+          <h1 className="text-[22px] font-semibold text-[#0B2440] tracking-[-0.3px]">Calendario de Turnos</h1>
           <p className="text-[13px] text-[#8A93A8] mt-1">Gestión de agenda y citas</p>
         </div>
         <Button onClick={() => {
@@ -1348,7 +1354,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               onClick={() => setShowFilterPanel(!showFilterPanel)}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
             >
-              <Filter className="w-4 h-4 text-[#8A93A8]" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-[#2563FF]"></span>}
+              <Filter className="w-4 h-4 text-[#8A93A8]" /> Filtros {(selectedProfessionalId || selectedServiceId) && <span className="w-2 h-2 rounded-full bg-[#2458ED]"></span>}
             </button>
 
             {showFilterPanel && (
@@ -1361,7 +1367,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                       <select
                         value={selectedProfessionalId || ''}
                         onChange={(e) => setSelectedProfessionalId(e.target.value ? parseInt(e.target.value) : null)}
-                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
+                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B2440] focus:border-[#2458ED] outline-none"
                       >
                         <option value="">Todos los profesionales</option>
                         {professionals.map(p => (
@@ -1374,7 +1380,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                       <select
                         value={selectedServiceId || ''}
                         onChange={(e) => setSelectedServiceId(e.target.value ? parseInt(e.target.value) : null)}
-                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B1023] focus:border-[#2563FF] outline-none"
+                        className="w-full border border-[#E8E0D6] rounded-xl p-2 bg-gray-50 text-[13px] font-medium text-[#0B2440] focus:border-[#2458ED] outline-none"
                       >
                         <option value="">Todos los servicios</option>
                         {servicios.map(s => (
@@ -1397,35 +1403,37 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
             )}
           </div>
           <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
-            <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
-            <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
-            <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
-            <button onClick={() => setViewType('agenda')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'agenda' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Agenda</button>
+            <button onClick={() => setViewType('day')} className={`px-4 h-full transition ${viewType === 'day' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Diario</button>
+            <button onClick={() => setViewType('week')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'week' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Semanal</button>
+            <button onClick={() => setViewType('month')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'month' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Mensual</button>
+            <button onClick={() => setViewType('agenda')} className={`px-4 h-full border-l border-[#E8E0D6] transition ${viewType === 'agenda' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}>Agenda</button>
           </div>
           {/* Color Mode Selector */}
           <div className="flex items-center bg-white border border-[#E8E0D6] rounded-xl overflow-hidden h-[38px] text-[13px] font-medium">
             <span className="px-3 text-[#8A93A8] border-r border-[#E8E0D6] bg-gray-50/50 h-full flex items-center text-[10px] uppercase tracking-wider font-bold shrink-0">Colores</span>
             <button 
               onClick={() => setColorMode('service')} 
-              className={`px-3.5 h-full transition ${colorMode === 'service' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              className={`px-3.5 h-full transition ${colorMode === 'service' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
               title="Colorear por Servicios"
             >
               Servicios
             </button>
             <button 
               onClick={() => setColorMode('status')} 
-              className={`px-3.5 h-full border-l border-[#E8E0D6] transition ${colorMode === 'status' ? 'bg-[#0B1023] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
+              className={`px-3.5 h-full border-l border-[#E8E0D6] transition ${colorMode === 'status' ? 'bg-[#0B2440] text-white font-semibold' : 'text-[#8A93A8] hover:bg-gray-50 hover:text-[#4B5568]'}`}
               title="Colorear por Estados"
             >
               Estados
             </button>
           </div>
+          {puede(user?.role, 'exportarTurnos') && (
           <button
             onClick={() => exportApi.turnos().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar turnos" }))}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
           >
             <Download className="w-4 h-4 text-[#8A93A8]" /> Exportar
           </button>
+          )}
           <button
             onClick={toggleFullscreen}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E0D6] text-[#4B5568] rounded-xl font-medium hover:bg-gray-50 text-[13px] transition"
@@ -1451,7 +1459,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               value={patientSearch}
               onChange={(e) => setPatientSearch(e.target.value)}
               onFocus={() => patientSearch.trim().length >= 2 && setShowSearchResults(true)}
-              className="pl-9 pr-4 py-2 bg-white border border-[#E8E0D6] rounded-xl text-[13px] text-[#0B1023] outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 w-full sm:w-64 placeholder:text-[#B5AFA8] transition-all" />
+              className="pl-9 pr-4 py-2 bg-white border border-[#E8E0D6] rounded-xl text-[13px] text-[#0B2440] outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/10 w-full sm:w-64 placeholder:text-[#B5AFA8] transition-all" />
             {showSearchResults && searchResults.length > 0 && (
               <div className="absolute top-full right-0 mt-2 w-full sm:w-80 bg-white border border-[#E8E0D6] rounded-2xl shadow-xl z-[100] max-h-60 overflow-y-auto no-scrollbar">
                 <div className="p-2">
@@ -1467,7 +1475,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                       }}
                       className="p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors border-b border-[#E8E0D6]/30 last:border-0"
                     >
-                      <div className="text-[12px] font-semibold text-[#0B1023] capitalize">
+                      <div className="text-[12px] font-semibold text-[#0B2440] capitalize">
                         {turno.paciente?.nombre} {turno.paciente?.apellido}
                       </div>
                       <div className="flex justify-between text-[10px] text-[#8A93A8] font-medium mt-1">
@@ -1495,7 +1503,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
           {/* Navigation Header */}
           {!landingMode && <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-5 border-b border-[#E8E0D6]/60 gap-4 bg-white shrink-0">
             <div className="flex flex-wrap items-center gap-4">
-              <h2 className="text-lg font-semibold text-[#0B1023] capitalize min-w-[150px]">{getViewTitle()}</h2>
+              <h2 className="text-lg font-semibold text-[#0B2440] capitalize min-w-[150px]">{getViewTitle()}</h2>
               <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-[#E8E0D6]">
                 <button onClick={goToToday} className="px-3 py-1 text-[11px] font-semibold text-[#4B5568] hover:bg-white rounded-lg transition-colors">Hoy</button>
                 <button onClick={() => navigate('prev')} className="p-1 hover:bg-white rounded-lg transition-colors"><ChevronLeft className="w-4 h-4 text-[#8A93A8]" /></button>
@@ -1584,7 +1592,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               <button onClick={() => {
                 setNewAppointmentData({ fecha: '', hora_inicio: '', sobre_turno: true });
                 setShowNewModal(true);
-              }} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2563FF] hover:bg-[#EEF3FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
+              }} className="px-3 py-1.5 border border-[#E8E0D6] rounded-xl text-[#2458ED] hover:bg-[#EAF2FF] flex items-center gap-1 transition-colors font-semibold"><Plus className="w-3 h-3" /> Sobreturno</button>
             </div>
           </div>}
 
@@ -1598,10 +1606,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
       </div>
 
       {!landingMode && selectedAppointment && (
-        <div className="fixed inset-0 bg-[#0B1023]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-[#0B2440]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] max-w-md w-full overflow-hidden">
             <div className="px-6 py-4 border-b border-[#E8E0D6] flex items-center justify-between">
-              <h3 className="text-[16px] font-semibold text-[#0B1023]">
+              <h3 className="text-[16px] font-semibold text-[#0B2440]">
                 Detalles del Turno
               </h3>
               <span
@@ -1618,11 +1626,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
             <div className="p-6 space-y-4">
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-xl bg-[#EEF3FF] flex items-center justify-center mr-3 shrink-0">
-                    <CalendarIcon className="h-4 w-4 text-[#2563FF]" />
+                  <div className="w-8 h-8 rounded-xl bg-[#EAF2FF] flex items-center justify-center mr-3 shrink-0">
+                    <CalendarIcon className="h-4 w-4 text-[#2458ED]" />
                   </div>
                   <div>
-                    <p className="font-medium text-[13px] text-[#0B1023]">
+                    <p className="font-medium text-[13px] text-[#0B2440]">
                       {new Date(selectedAppointment.fecha + 'T00:00:00').toLocaleDateString('es-ES', {
                         weekday: 'long',
                         year: 'numeric',
@@ -1641,7 +1649,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                     <User className="h-4 w-4 text-[#7C3AED]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[13px] text-[#0B1023]">
+                    <p className="font-medium text-[13px] text-[#0B2440]">
                       {selectedAppointment.paciente?.nombre} {selectedAppointment.paciente?.apellido}
                     </p>
                     <div className="flex items-center gap-3 mt-0.5 flex-wrap">
@@ -1669,7 +1677,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                     <User className="h-4 w-4 text-[#22C55E]" />
                   </div>
                   <div>
-                    <p className="font-medium text-[13px] text-[#0B1023]">
+                    <p className="font-medium text-[13px] text-[#0B2440]">
                       {selectedAppointment.profesional?.nombre} {selectedAppointment.profesional?.apellido}
                     </p>
                     <p className="text-[12px] text-[#8A93A8]">
@@ -1683,10 +1691,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                     <Briefcase className="h-4 w-4 text-[#F59E0B]" />
                   </div>
                   <div>
-                    <p className="font-medium text-[13px] text-[#0B1023]">
+                    <p className="font-medium text-[13px] text-[#0B2440]">
                       {selectedAppointment.servicio?.nombre}
                     </p>
-                    <p className="text-[13px] text-[#2563FF] font-semibold mt-0.5">
+                    <p className="text-[13px] text-[#2458ED] font-semibold mt-0.5">
                       ${selectedAppointment.servicio?.precio_base}
                     </p>
                   </div>
@@ -1715,7 +1723,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                       setSelectedAppointment(null)
                       onNavigate('patients', { patientId: selectedAppointment.paciente_id })
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-bold text-[#2563FF] bg-[#EEF3FF] border border-[#2563FF]/10 rounded-xl hover:bg-[#2563FF] hover:text-white transition-all"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-bold text-[#2458ED] bg-[#EAF2FF] border border-[#2458ED]/10 rounded-xl hover:bg-[#2458ED] hover:text-white transition-all"
                   >
                     <User className="h-3.5 w-3.5" />
                     Ver ficha del paciente
@@ -1763,7 +1771,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
                 </button>
                 <button
                   onClick={() => setShowEditModal(true)}
-                  className="px-4 py-2 text-[13px] font-bold text-white bg-[#2563FF] rounded-xl hover:bg-[#1D4ED8] transition-all"
+                  className="px-4 py-2 text-[13px] font-bold text-white bg-[#2458ED] rounded-xl hover:bg-[#1744CD] transition-all"
                 >
                   Editar Turno
                 </button>
@@ -1850,7 +1858,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               {hoveredAppt.appointment.estado}
             </span>
           </div>
-          <div className="font-bold text-xs text-[#0B1023] capitalize leading-snug">
+          <div className="font-bold text-xs text-[#0B2440] capitalize leading-snug">
             {hoveredAppt.appointment.paciente?.nombre} {hoveredAppt.appointment.paciente?.apellido}
           </div>
           <div className="text-[10px] text-gray-500 font-medium leading-none">
@@ -1861,16 +1869,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onNavigate, landingM
               <Phone className="w-2.5 h-2.5" /> {hoveredAppt.appointment.paciente.telefono}
             </div>
           )}
-          {(hoveredAppt.appointment.paciente?.obraSocial?.nombre || hoveredAppt.appointment.paciente?.obra_social_nombre_custom) && (
+          {tieneObraSocial(hoveredAppt.appointment.paciente) && (
             <div className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 w-fit">
-              {hoveredAppt.appointment.paciente.obraSocial?.nombre || hoveredAppt.appointment.paciente.obra_social_nombre_custom}
-              {hoveredAppt.appointment.paciente.numero_afiliado ? ` (Nº ${hoveredAppt.appointment.paciente.numero_afiliado})` : ''}
+              {getObraSocialNombre(hoveredAppt.appointment.paciente)}
+              {hoveredAppt.appointment.paciente?.numero_afiliado ? ` (Nº ${hoveredAppt.appointment.paciente.numero_afiliado})` : ''}
             </div>
           )}
           <hr className="border-gray-100 my-0.5" />
           <div className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: hoveredAppt.profColor }} />
-            <span className="text-[10px] font-semibold text-[#0B1023]">
+            <span className="text-[10px] font-semibold text-[#0B2440]">
               {hoveredAppt.appointment.profesional?.nombre} {hoveredAppt.appointment.profesional?.apellido}
             </span>
           </div>

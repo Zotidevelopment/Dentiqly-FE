@@ -1,3 +1,4 @@
+import { BrandLogo } from './brand/BrandLogo'
 import React, { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 
@@ -62,7 +63,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: strin
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2458ED]"></div>
       </div>
     )
   }
@@ -90,14 +91,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: strin
  * Header de branding Dentiqly para las páginas de booking público.
  */
 const DentiqlyBookingHeader: React.FC = () => (
-  <header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+  <header className="dentiqly-booking-header w-full sticky top-0 z-50">
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <span className="text-[10px] sm:text-xs font-semibold text-gray-400 tracking-widest uppercase">
         Reserva online
       </span>
       <div className="flex items-center gap-3">
-        <img
-          src="/assets/dentiqly-logo.png"
+        <BrandLogo
           alt="Dentiqly - Dental Software SaaS"
           className="h-8 sm:h-9 w-auto object-contain"
         />
@@ -190,7 +190,7 @@ export const AppRouter: React.FC = () => {
     <RouteTracker />
     <React.Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2458ED]"></div>
       </div>
     }>
       <Routes>

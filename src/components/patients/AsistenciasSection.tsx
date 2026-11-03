@@ -225,7 +225,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
   if (loading) {
     return (
       <div className="py-20 flex flex-col items-center justify-center gap-3 bg-white border border-[#E8E0D6] rounded-2xl">
-        <Loader2 className="h-8 w-8 text-[#2563FF] animate-spin" />
+        <Loader2 className="h-8 w-8 text-[#2458ED] animate-spin" />
         <span className="text-sm font-semibold text-gray-500">Cargando historial de asistencias...</span>
       </div>
     )
@@ -237,7 +237,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
       <Card className="p-6 border border-[#E8E0D6] rounded-2xl bg-white shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8E0D6]/60 pb-4 mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#2563FF]/10 flex items-center justify-center text-[#2563FF]">
+            <div className="w-10 h-10 rounded-xl bg-[#2458ED]/10 flex items-center justify-center text-[#2458ED]">
               <CalendarCheck className="h-5.5 w-5.5" />
             </div>
             <div>
@@ -250,7 +250,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => handleOpenRegistrarSesion(activeCycle)}
-                className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white py-1.5 px-3.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm"
+                className="bg-[#2458ED] hover:bg-[#1744CD] text-white py-1.5 px-3.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Registrar Sesión
@@ -265,7 +265,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
               </Button>
               <Button
                 onClick={() => handleArchive(activeCycle.id)}
-                className="bg-[#0B1023] hover:bg-[#1A2542] text-white py-1.5 px-3.5 text-xs font-semibold rounded-xl"
+                className="bg-[#0B2440] hover:bg-[#1A2542] text-white py-1.5 px-3.5 text-xs font-semibold rounded-xl"
               >
                 Finalizar Ciclo
               </Button>
@@ -279,7 +279,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
             <div className="space-y-2">
               <div className="flex justify-between items-end text-sm">
                 <span className="font-extrabold text-gray-800">
-                  Sesiones Completadas: <span className="text-[#2563FF]">{activeCycle.sesiones_completadas}</span> / {activeCycle.sesiones_totales}
+                  Sesiones Completadas: <span className="text-[#2458ED]">{activeCycle.sesiones_completadas}</span> / {activeCycle.sesiones_totales}
                 </span>
                 <span className="text-xs font-bold text-[#8A93A8]">
                   {Math.round((activeCycle.sesiones_completadas / activeCycle.sesiones_totales) * 100)}%
@@ -287,7 +287,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
               </div>
               <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-100/50 p-0.5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#2563FF] to-[#02E3FF] transition-all duration-500 ease-out"
+                  className="h-full rounded-full bg-[#2458ED] transition-all duration-500 ease-out"
                   style={{ width: `${Math.min(100, (activeCycle.sesiones_completadas / activeCycle.sesiones_totales) * 100)}%` }}
                 />
               </div>
@@ -348,7 +348,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
             <p className="text-sm text-gray-500 font-medium">No hay ningún ciclo activo abierto para este paciente.</p>
             <Button
               onClick={() => setCreatingCycle(true)}
-              className="mt-4 bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold py-1.5 px-4 text-xs rounded-xl flex items-center gap-1"
+              className="mt-4 bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold py-1.5 px-4 text-xs rounded-xl flex items-center gap-1"
             >
               <Plus className="h-4 w-4" />
               Iniciar Ciclo
@@ -447,7 +447,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
           <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h3 className="font-extrabold text-gray-900 text-sm uppercase tracking-wide flex items-center gap-1.5">
-                <Settings className="h-4.5 w-4.5 text-[#2563FF]" />
+                <Settings className="h-4.5 w-4.5 text-[#2458ED]" />
                 Ajustar Ciclo
               </h3>
               <button
@@ -465,7 +465,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   min={1}
                   value={newLimit}
                   onChange={(e) => setNewLimit(parseInt(e.target.value) || 10)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800 font-semibold"
                 />
               </div>
               <div>
@@ -475,7 +475,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   placeholder="Ej: Orden médica autorizada por 10 sesiones, kinesiología..."
                   value={newObservaciones}
                   onChange={(e) => setNewObservaciones(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800"
                 />
               </div>
               <div className="flex items-center justify-end gap-3.5 pt-2 border-t border-gray-100">
@@ -489,7 +489,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-5 py-2 text-xs"
+                  className="bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold rounded-xl px-5 py-2 text-xs"
                 >
                   Guardar Cambios
                 </Button>
@@ -505,7 +505,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
           <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h3 className="font-extrabold text-gray-900 text-sm uppercase tracking-wide flex items-center gap-1.5">
-                <Plus className="h-4.5 w-4.5 text-[#2563FF]" />
+                <Plus className="h-4.5 w-4.5 text-[#2458ED]" />
                 Nuevo Ciclo de Asistencia
               </h3>
               <button
@@ -523,7 +523,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   min={1}
                   value={manualLimit}
                   onChange={(e) => setManualLimit(parseInt(e.target.value) || 10)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800 font-semibold"
                 />
               </div>
               <div>
@@ -533,7 +533,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   placeholder="Ej: Autorizado por 10 sesiones, obra social..."
                   value={manualObs}
                   onChange={(e) => setManualObs(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800"
                 />
               </div>
               <div className="flex items-center justify-end gap-3.5 pt-2 border-t border-gray-100">
@@ -547,7 +547,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-5 py-2 text-xs"
+                  className="bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold rounded-xl px-5 py-2 text-xs"
                 >
                   Iniciar
                 </Button>
@@ -563,7 +563,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
           <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h3 className="font-extrabold text-gray-900 text-sm uppercase tracking-wide flex items-center gap-1.5">
-                <Calendar className="h-4.5 w-4.5 text-[#2563FF]" />
+                <Calendar className="h-4.5 w-4.5 text-[#2458ED]" />
                 Registrar Sesión
               </h3>
               <button
@@ -581,7 +581,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                    required
                    value={fechaSesion}
                    onChange={(e) => setFechaSesion(e.target.value)}
-                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800 font-semibold"
                  />
               </div>
               <div>
@@ -590,7 +590,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   required
                   value={selectedServicioId || ""}
                   onChange={(e) => setSelectedServicioId(parseInt(e.target.value) || null)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800 font-semibold"
                 >
                   <option value="" disabled>Seleccione un tratamiento...</option>
                   {servicios.map(s => (
@@ -604,7 +604,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                   required
                   value={selectedProfesionalId || ""}
                   onChange={(e) => setSelectedProfesionalId(parseInt(e.target.value) || null)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 text-gray-800 font-semibold"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 text-gray-800 font-semibold"
                 >
                   <option value="" disabled>Seleccione un profesional...</option>
                   {profesionales.map(p => (
@@ -624,7 +624,7 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-5 py-2 text-xs flex items-center gap-1.5"
+                  className="bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold rounded-xl px-5 py-2 text-xs flex items-center gap-1.5"
                   disabled={submittingSesion}
                 >
                   {submittingSesion ? (

@@ -106,7 +106,7 @@ export interface CrearPacienteData {
   nombre: string
   tipo_documento: 'DNI' | 'Pasaporte' | 'Cédula'
   numero_documento: string
-  obra_social_id?: number
+  obra_social_id?: number | null
   condicion?: string
   fecha_nacimiento: string
   sexo: 'Masculino' | 'Femenino' | 'Otro'
@@ -123,7 +123,7 @@ export interface CrearPacienteData {
   contacto_emergencia?: string
   telefono_emergencia?: string
   observaciones?: string
-  obra_social_nombre_custom?: string
+  obra_social_nombre_custom?: string | null
   tratamiento?: string
 }
 

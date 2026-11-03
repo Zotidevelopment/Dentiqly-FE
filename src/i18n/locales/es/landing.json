@@ -1,47 +1,51 @@
 {
   "nav": {
     "features": "Funcionalidades",
-    "whyDentiqly": "Por qué Dentiqly",
+    "demo": "Demo",
     "pricing": "Precios",
     "faq": "Preguntas",
     "login": "Iniciar sesión",
-    "signup": "Creá tu cuenta gratis"
+    "signup": "Empezar gratis"
   },
   "hero": {
-    "headline": "Tu agenda, sin papel ni WhatsApp.",
-    "headlineHighlight": "Sola. Automática. Lista.",
-    "subheadline": "Recordatorios automáticos por WhatsApp, agenda online 24 hs y fichas digitales en un solo lugar. Menos llamadas, menos ausencias, más tiempo para atender.",
-    "benefit1": "Recordatorios por WhatsApp — reduce ausencias hasta un 40%",
-    "benefit2": "Turnos online disponibles 24 hs, sin llamadas ni secretaria",
-    "benefit3": "Fichas, odontograma e imágenes en un solo lugar",
-    "ctaPrimary": "Empezar gratis — 14 días",
-    "ctaDemo": "Ver demo en vivo",
-    "noCard": "Sin tarjeta de crédito · Configuración en menos de 5 minutos"
+    "eyebrow": "Software para clínicas dentales",
+    "headline": "Tu clínica dental, ordenada y en",
+    "headlineHighlight": "piloto automático.",
+    "subheadline": "Agenda online 24/7, recordatorios por email, odontograma digital y caja en un solo panel. Para clínicas que quieren crecer sin sumar trabajo administrativo.",
+    "ctaPrimary": "Empezar gratis 14 días",
+    "ctaDemo": "Ver demo interactiva",
+    "trust1": "Sin tarjeta de crédito",
+    "trust2": "Listo en 10 minutos",
+    "trust3": "Cancelás cuando quieras"
   },
   "pricing": {
-    "title": "Precios y planes",
+    "eyebrow": "Precios",
+    "title": "Un plan simple. Todo incluido.",
+    "subtitle": "Sin módulos ocultos ni costo por usuario. Pagás por clínica y usás todas las funcionalidades desde el primer día.",
     "monthly": "Mensual",
     "annual": "Anual",
+    "popular": "Más elegido",
     "professional": "Profesional",
     "enterprise": "Enterprise",
-    "usdMonth": "USD / mes / clínica",
+    "usdMonth": "USD por mes, por clínica",
     "trial": "14 días de prueba gratis. Sin tarjeta de crédito.",
-    "cta": "Comenzar ahora",
-    "allFeatures": "Ver todas las funcionalidades",
-    "enterpriseDesc": "Obtené una cotización personalizada de nuestro equipo para las necesidades únicas de tu clínica.",
-    "contactSales": "Contactar ventas",
+    "cta": "Empezar prueba gratis",
+    "allFeatures": "Ver las +33 funcionalidades",
+    "enterpriseDesc": "Para grupos con muchas sucursales o necesidades especiales: integraciones a medida, migración dedicada y soporte prioritario.",
+    "contactSales": "Hablar con ventas",
     "featureCount": "+33 funcionalidades incluidas sin costo extra",
-    "startTrial": "Comenzar prueba gratis",
+    "startTrial": "Empezar prueba gratis",
     "modalTitle": "Todas las funcionalidades",
     "modalSubtitle": "Todo incluido en el Plan Profesional",
     "arsEquiv": "aprox. ${{amount}} ARS",
+    "compareTitle": "Comparativa de planes",
     "mainFeatures": [
-      "Agenda y turnos online",
-      "Gestión completa de pacientes",
+      "Agenda y turnos online 24/7",
+      "Pacientes, historia clínica y archivos",
       "Odontograma interactivo",
-      "Liquidación de profesionales",
-      "Flujo de caja y finanzas",
-      "Multi-sucursal"
+      "Recordatorios por email",
+      "Caja, deudores y liquidaciones",
+      "Multi-sucursal y roles de equipo"
     ],
     "featureCategories": [
       {
@@ -51,7 +55,7 @@
           "Turnos con duración personalizable por servicio",
           "Reservas online desde el portal de pacientes",
           "Gestión de ausencias y feriados",
-          "Recordatorios automáticos por email",
+          "Recordatorios por email en un clic",
           "Reprogramación y cancelación con un click"
         ]
       },
@@ -102,7 +106,7 @@
         "items": [
           "Encriptación AES-256 de datos sensibles",
           "Backups automáticos diarios",
-          "Soporte prioritario 24/7",
+          "Soporte humano por email y chat",
           "Actualizaciones continuas sin costo extra",
           "Onboarding asistido y migración de datos gratuita"
         ]
@@ -112,72 +116,84 @@
       { "name": "Usuarios y profesionales", "pro": "Ilimitados", "enterprise": "Ilimitados" },
       { "name": "Sucursales", "pro": "Hasta 3", "enterprise": "Ilimitadas" },
       { "name": "Historias clínicas", "pro": "Ilimitadas", "enterprise": "Ilimitadas" },
-      { "name": "Soporte", "pro": "Email y chat", "enterprise": "Prioritario 24/7" },
+      { "name": "Soporte", "pro": "Email y chat", "enterprise": "Prioritario" },
       { "name": "Migración de datos", "pro": "Asistida", "enterprise": "Dedicada con consultor" },
-      { "name": "Integraciones personalizadas", "pro": "+$10.000 /mes", "enterprise": "Incluidas" }
+      { "name": "Integraciones personalizadas", "pro": "A cotizar", "enterprise": "Incluidas" }
     ]
   },
   "faq": {
-    "badge": "Preguntas frecuentes",
-    "title": "Todo lo que necesitas saber sobre Dentiqly",
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que nos preguntan antes de empezar.",
+    "subtitle": "Si tu duda no está acá, escribinos y te respondemos en el día.",
+    "contact": "Escribinos a hola@dentiqly.com",
     "items": [
       {
         "question": "¿Cuánto tiempo lleva configurar Dentiqly?",
-        "answer": "Menos de 10 minutos. Te registrás, creás tu clínica y ya podés empezar a cargar pacientes, configurar servicios y agendar turnos. No necesitás instalar nada ni contratar soporte técnico."
+        "answer": "Menos de 10 minutos. Te registrás, creás tu clínica y ya podés cargar pacientes, configurar servicios y agendar turnos. No hay nada que instalar ni soporte técnico que contratar."
       },
       {
-        "question": "¿Puedo gestionar varias sucursales desde una sola cuenta?",
-        "answer": "Sí. Dentiqly está diseñado como multi-sucursal nativo. Desde un único panel podés ver métricas, agendar turnos y gestionar profesionales de todas tus clínicas en tiempo real."
+        "question": "¿Funciona desde el celular o la tablet?",
+        "answer": "Sí. Dentiqly es 100% web: entrás desde cualquier computadora, tablet o celular con tu usuario y ves la misma información en todos lados."
       },
       {
-        "question": "¿Mis datos están seguros?",
-        "answer": "Absolutamente. Usamos encriptación AES-256, conexiones SSL/TLS y backups automáticos cada hora. Cada clínica tiene sus datos completamente aislados en un modelo multi-tenant seguro."
+        "question": "¿Cómo funcionan los recordatorios?",
+        "answer": "Desde Recordatorios elegís el día y les mandás el recordatorio por email a todos los pacientes con turno, con un solo clic. El mensaje lo escribís vos."
       },
       {
-        "question": "¿Cómo funcionan los recordatorios automáticos?",
-        "answer": "Dentiqly envía recordatorios automáticos por email a tus pacientes antes de cada turno. Podés personalizar el mensaje y los tiempos de envío. Esto reduce las inasistencias hasta un 40%."
+        "question": "¿Puedo migrar los datos que ya tengo?",
+        "answer": "Sí. Te ayudamos a migrar pacientes, historiales y turnos desde planillas de Excel u otros sistemas, sin costo adicional. Nuestro equipo te acompaña durante todo el proceso."
       },
       {
-        "question": "¿Puedo migrar datos desde otro sistema?",
-        "answer": "Sí. Ofrecemos asistencia para migrar pacientes, historiales y turnos desde planillas de Excel u otros sistemas. Nuestro equipo te guía durante todo el proceso sin costo adicional."
+        "question": "¿Puedo gestionar varias sucursales y profesionales?",
+        "answer": "Sí. Usuarios y profesionales son ilimitados, y el plan Profesional incluye hasta 3 sucursales. Desde un único panel ves la agenda, las métricas y la caja de todas tus sedes."
+      },
+      {
+        "question": "¿Mis datos y los de mis pacientes están seguros?",
+        "answer": "Sí. Usamos encriptación AES-256, conexiones SSL/TLS y backups automáticos diarios. Los datos de cada clínica están completamente aislados de los de las demás."
       },
       {
         "question": "¿Hay período de prueba gratuito?",
-        "answer": "Sí. Tenés 14 días de prueba gratuita con acceso completo a todas las funcionalidades. No se requiere tarjeta de crédito para comenzar."
+        "answer": "Sí. Tenés 14 días con acceso completo a todas las funcionalidades, sin tarjeta de crédito. Si al terminar no querés seguir, no pagás nada."
       }
     ]
   },
   "cta": {
-    "badge": "Contacto",
-    "title": "Digitalizá tu clínica dental",
+    "eyebrow": "Empezá hoy",
+    "title": "Empezá a ordenar tu clínica",
     "titleLine2": "hoy mismo.",
-    "subtitle": "Unite a las clínicas que ya ahorran tiempo y brindan una experiencia excepcional a sus pacientes. Empezá gratis.",
+    "subtitle": "Creá tu cuenta gratis en dos minutos. Si preferís que te lo mostremos primero, dejanos tus datos y coordinamos una demo personalizada.",
     "ctaButton": "Crear mi cuenta gratis",
-    "formTitle": "¿Querés hablar con nosotros?",
-    "emailLabel": "Correo electrónico de trabajo*",
+    "bullets": [
+      "14 días gratis con todas las funcionalidades",
+      "Migración de tus datos sin costo",
+      "Soporte humano del equipo que construyó Dentiqly"
+    ],
+    "formTitle": "¿Preferís que te lo mostremos?",
+    "formSubtitle": "Dejanos tus datos y te contactamos en el día.",
+    "emailLabel": "Email de trabajo*",
     "emailPlaceholder": "tu@clinica.com",
     "nameLabel": "Nombre*",
     "namePlaceholder": "Tu nombre",
     "lastNameLabel": "Apellido*",
     "lastNamePlaceholder": "Tu apellido",
-    "clinicLabel": "Nombre de la clínica*",
-    "clinicPlaceholder": "Nombre de clínica",
-    "phoneLabel": "Número de teléfono",
+    "clinicLabel": "Clínica*",
+    "clinicPlaceholder": "Nombre de tu clínica",
+    "phoneLabel": "Teléfono",
     "phonePlaceholder": "+54 9 11 0000-0000",
-    "reasonLabel": "Motivo de interés*",
+    "reasonLabel": "Motivo*",
     "reasonPlaceholder": "Seleccioná una opción",
     "reasonOptions": {
       "contratar": "Quiero contratar Dentiqly",
-      "demostracion": "Solicitar una demostración",
+      "demostracion": "Quiero una demo personalizada",
       "precios": "Consultar sobre planes y precios",
       "soporte": "Soporte o dudas técnicas",
       "otro": "Otro motivo"
     },
     "messageLabel": "¿En qué podemos ayudarte?",
-    "messagePlaceholder": "Escribí tu mensaje acá...",
-    "submit": "Enviar",
+    "messagePlaceholder": "Contanos un poco sobre tu clínica...",
+    "submit": "Quiero que me contacten",
     "submitting": "Enviando...",
-    "successTitle": "¡Mensaje enviado!",
-    "successText": "Nos pondremos en contacto contigo a la brevedad."
+    "successTitle": "¡Listo, recibimos tu mensaje!",
+    "successText": "Te vamos a contactar en el día para coordinar."
   }
 }

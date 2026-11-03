@@ -1,0 +1,57 @@
+{
+  "capturedAt": "2026-11-02T21:51:33.891Z",
+  "environment": "Public /demo route, synthetic demonstration data",
+  "viewport": {
+    "width": 1536,
+    "height": 864,
+    "deviceScaleFactor": 1.25
+  },
+  "source": "Browser screenshots of the actual React application. No generated or reconstructed interface.",
+  "captures": [
+    {
+      "view": "dashboard",
+      "description": "Panel principal de Dentiqly con indicadores y agenda del día",
+      "full": "product-dashboard-v3.png",
+      "web": "product-dashboard-v3.webp",
+      "detail": "product-dashboard-v3-detail.webp",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "view": "calendar",
+      "description": "Agenda semanal con profesionales, horarios y estados de turnos",
+      "full": "product-calendar-v3.png",
+      "web": "product-calendar-v3.webp",
+      "detail": "product-calendar-v3-detail.webp",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "view": "patient",
+      "description": "Ficha del paciente con información personal, contacto y cobertura",
+      "full": "product-patient-v3.png",
+      "web": "product-patient-v3.webp",
+      "detail": "product-patient-v3-detail.webp",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "view": "odontogram",
+      "description": "Odontograma del paciente abierto en el visor clínico",
+      "full": "product-odontogram-v3.png",
+      "web": "product-odontogram-v3.webp",
+      "detail": "product-odontogram-v3-detail.webp",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "view": "finance",
+      "description": "Flujo de caja con el historial de movimientos, ingresos y egresos del consultorio",
+      "full": "product-finance-v3.png",
+      "web": "product-finance-v3.webp",
+      "detail": "product-finance-v3-detail.webp",
+      "width": 1920,
+      "height": 1080
+    }
+  ]
+}

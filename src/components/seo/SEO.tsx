@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async'
+import { brand } from '../../config/brand'
 
 interface SEOProps {
   title?: string
@@ -12,8 +13,8 @@ interface SEOProps {
 
 const BASE_URL = 'https://dentiqly.com'
 const DEFAULT_TITLE = 'Dentiqly - Software de Gestión Dental | Turnos, Historias Clínicas y Odontogramas'
-const DEFAULT_DESCRIPTION = 'Dentiqly es el software dental todo en uno para clínicas odontológicas. Gestión de turnos online, historias clínicas digitales, odontogramas y recordatorios por WhatsApp. Prueba gratuita 14 días.'
-const DEFAULT_IMAGE = `${BASE_URL}/assets/og-image.png`
+const DEFAULT_DESCRIPTION = 'Dentiqly conecta la agenda, las historias clínicas, los odontogramas y los cobros de tu consultorio. Probalo gratis durante 14 días, sin tarjeta de crédito.'
+const DEFAULT_IMAGE = `${BASE_URL}${brand.assets.social}`
 
 export const SEO: React.FC<SEOProps> = ({
   title,

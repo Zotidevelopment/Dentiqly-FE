@@ -86,7 +86,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   if (fetching) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-[#2563FF]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#2458ED]" />
         <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Obteniendo datos de pago...</p>
       </div>
     )
@@ -98,7 +98,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         {/* Reservation Summary */}
         <div className="space-y-6">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-widest">
-            <Info className="text-[#2563FF]" size={16} />
+            <Info className="text-[#2458ED]" size={16} />
             Resumen de reserva
           </h3>
           
@@ -110,12 +110,12 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
               { icon: User, label: "Paciente", value: `${patientData.nombre} ${patientData.apellido}`, sub: `DNI: ${patientData.numero_documento}` }
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#2563FF] flex-shrink-0 border border-gray-50">
+                <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#2458ED] flex-shrink-0 border border-gray-50">
                   <item.icon size={14} />
                 </div>
                 <div>
                   <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{item.label}</p>
-                  <p className={`font-bold text-sm ${item.accent ? 'text-[#2563FF]' : 'text-gray-900'} capitalize leading-tight`}>{item.value}</p>
+                  <p className={`font-bold text-sm ${item.accent ? 'text-[#2458ED]' : 'text-gray-900'} capitalize leading-tight`}>{item.value}</p>
                   <p className="text-[10px] text-gray-500 font-medium mt-0.5">{item.sub}</p>
                 </div>
               </div>
@@ -126,14 +126,14 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         {/* Payment Data */}
         <div className="space-y-6">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-widest">
-            <Wallet className="text-[#2563FF]" size={16} />
+            <Wallet className="text-[#2458ED]" size={16} />
             Pago de Seña
           </h3>
 
-          <div className="bg-white p-6 rounded-2xl border border-[#2563FF]/20 space-y-6 shadow-sm">
+          <div className="bg-white p-6 rounded-2xl border border-[#2458ED]/20 space-y-6 shadow-sm">
             <div className="flex flex-col items-center text-center space-y-1 pb-4 border-b border-gray-100">
               <span className="text-gray-500 font-bold text-[10px] uppercase tracking-wider">Monto a abonar</span>
-              <span className="text-3xl font-black text-[#2563FF]">${paymentInfo.amount}</span>
+              <span className="text-3xl font-black text-[#2458ED]">${paymentInfo.amount}</span>
               <p className="text-xs text-gray-500 font-medium max-w-[200px]">Transferencia para confirmar tu turno en el sistema.</p>
             </div>
 
@@ -174,7 +174,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
       <button
         onClick={onConfirm}
         disabled={confirmLoading}
-        className="w-full mt-4 h-14 bg-[#2563FF] text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
+        className="w-full mt-4 h-14 bg-[#2458ED] text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
       >
         {confirmLoading ? "Confirmando..." : "CONFIRMAR TURNO"}
       </button>

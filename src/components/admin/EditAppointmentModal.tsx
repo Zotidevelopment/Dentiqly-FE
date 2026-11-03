@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useAuth } from '../../hooks/useAuth'
+import { puede } from '../../config/permissions'
 import { createPortal } from 'react-dom'
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
@@ -14,6 +16,7 @@ interface EditAppointmentModalProps {
 }
 
 export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appointment, onClose, onUpdate }) => {
+    const { user } = useAuth()
     const { toast } = useToast()
     const [formData, setFormData] = useState({
         fecha: appointment.fecha.split('T')[0],
@@ -189,6 +192,7 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-100 sticky bottom-0 bg-white py-3">
+                        {puede(user?.role, 'enviarRecordatorios') ? (
                         <Button
                             type="button"
                             variant="outline"
@@ -210,6 +214,7 @@ export const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({ appo
                             <Mail className="h-4 w-4 mr-2" />
                             {sendingReminder ? 'Enviando...' : 'Recordatorio'}
                         </Button>
+                        ) : <span />}
                         <div className="flex gap-2 sm:gap-3">
                             <Button type="button" variant="outline" onClick={onClose} className="flex-1 sm:flex-none rounded-xl font-bold shadow-sm py-2.5">
                                 Cancelar

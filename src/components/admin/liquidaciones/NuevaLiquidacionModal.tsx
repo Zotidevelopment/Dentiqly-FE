@@ -66,7 +66,7 @@ export function NuevaLiquidacionModal({
     const cargarDatos = async () => {
         try {
             const [profesionalesRes, obrasSocialesRes] = await Promise.all([
-                profesionalesApi.listar({ estado: "Activo" }),
+                profesionalesApi.listar({ estado: "Activo", limit: 200 }),
                 obrasSocialesApi.getAll(),
             ])
             setProfesionales(profesionalesRes.data)

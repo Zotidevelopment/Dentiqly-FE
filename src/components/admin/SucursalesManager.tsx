@@ -137,7 +137,7 @@ export const SucursalesManager: React.FC = () => {
             background: tokens.blue, color: tokens.white,
             border: "none", borderRadius: 10, padding: "9px 18px",
             fontSize: 13, fontWeight: 700, cursor: "pointer",
-            fontFamily: "Inter, -apple-system, sans-serif",
+            fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             transition: "background 0.15s",
           }}
           onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
@@ -164,7 +164,7 @@ export const SucursalesManager: React.FC = () => {
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, flex: 1,
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             }}
           />
         </div>
@@ -341,7 +341,7 @@ export const SucursalesManager: React.FC = () => {
                     padding: "9px 18px", fontSize: 13, fontWeight: 500,
                     border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 9,
                     background: tokens.white, color: tokens.grayText, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.grayBg }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.white }}
@@ -354,7 +354,7 @@ export const SucursalesManager: React.FC = () => {
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
                     background: tokens.blue, color: tokens.white,
                     border: "none", borderRadius: 9, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "background 0.15s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.blueHover }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.blue }}

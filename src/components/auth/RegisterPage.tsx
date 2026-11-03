@@ -1,11 +1,14 @@
+import { AuthBrandPanel } from '../brand/AuthBrandPanel'
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Shield, CheckCircle2, ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
+import { ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { SEO, PAGE_SEO } from '../seo/SEO';
 import { trackSignupStarted } from '../../lib/analytics';
 import { useBillingPlans } from '../../hooks/useBillingPlans';
+import { ContinuarConGoogle, type SesionGoogle } from './ContinuarConGoogle';
 
 type Step = 'form' | 'plan';
 
@@ -35,7 +38,7 @@ const previsualizarSlug = (nombre: string): string =>
  */
 const inputClass =
   'block w-full pl-9 pr-3 py-2.5 text-base sm:text-sm bg-[#F7F8FA] border border-transparent rounded-xl ' +
-  'focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]';
+  'focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all text-[#0B2440]';
 
 export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
@@ -60,6 +63,17 @@ export const RegisterPage: React.FC = () => {
     telefono: '',
     password: '',
   });
+
+  // Con Google la clínica arranca en prueba gratis y va directo al panel
+  // (donde la recibe el onboarding). Si el email ya tenía cuenta, entra.
+  const entrarConGoogle = (r: SesionGoogle) => {
+    const slug = r.tenant?.slug || r.clinica?.slug;
+    toast({
+      title: r.nuevo ? "¡Bienvenido a Dentiqly!" : "Ya tenías una cuenta",
+      description: r.nuevo ? "Tu prueba gratuita de 14 días ya empezó." : "Te llevamos a tu panel.",
+    });
+    navigate(slug ? `/${slug}/admin` : '/admin');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,87 +161,35 @@ export const RegisterPage: React.FC = () => {
   return (
     <>
     <SEO {...PAGE_SEO.register} />
-    <div className="min-h-screen flex items-stretch">
-      {/* Left — Brand Primary branding panel */}
-      <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-hover,#1D4ED8)] relative overflow-hidden flex-col justify-between p-12">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-white/10 rounded-full blur-[100px]" />
-          <div className="absolute bottom-[20%] -left-[10%] w-[50%] h-[50%] bg-white/5 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="relative z-10">
-          <Link to="/">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-9 w-auto brightness-0 invert" />
-          </Link>
-        </div>
-
-        <div className="relative z-10 max-w-sm">
-          <h2 className="text-3xl font-extrabold text-white mb-3 tracking-tight leading-tight">
-            {step === 'form'
-              ? 'Comenzá tu transformación digital.'
-              : 'Elegí cómo querés empezar.'
-            }
-          </h2>
-          <p className="text-white/80 text-base leading-relaxed">
-            {step === 'form'
-              ? 'Configurá tu clínica en minutos y simplificá tu administración diaria.'
-              : '14 días de prueba gratuita sin compromiso, o activá directamente tu suscripción.'
-            }
-          </p>
-
-          <div className="space-y-3.5 mt-8">
-            {(step === 'form' ? [
-              'Prueba de 14 días totalmente gratis',
-              'No necesitás ingresar tarjetas de crédito',
-              'Configuración automática de tu especialidad',
-            ] : [
-              'Acceso completo sin límites',
-              'Historias clínicas y odontogramas digitales',
-              'Recordatorios automatizados por WhatsApp',
-            ]).map((text, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                </div>
-                <span className="text-white/95 text-sm font-semibold">{text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative z-10">
-          <div className="p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="h-4.5 w-4.5 text-white" />
-              <span className="text-white text-xs font-bold uppercase tracking-wider">Seguridad y Respaldo</span>
-            </div>
-            <p className="text-white/80 text-xs leading-relaxed">
-              Tus datos están protegidos con encriptación AES-256 y respaldados automáticamente cada hora.
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="dentiqly-auth min-h-screen flex items-stretch">
+      <AuthBrandPanel title={"Un lugar para todo lo que pasa en tu clínica."} description={"Creá tu cuenta y empezá a conectar la agenda, la atención y la administración de tu consultorio."} />
 
       {/* Right — Form / Plan selection */}
-      <div className="w-full lg:w-[55%] flex items-center lg:justify-start lg:pl-16 xl:pl-24 justify-center p-6 sm:p-8 md:p-10 bg-[#FAFCFF]">
+      <div className="dentiqly-auth-form w-full lg:w-[56%] flex items-center lg:justify-start lg:pl-16 xl:pl-24 justify-center p-6 sm:p-8 md:p-10 bg-[#FAFCFF]">
         <div className="w-full max-w-lg">
           <div className="lg:hidden mb-6">
             <Link to="/">
-              <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-9 w-auto" />
+              <BrandLogo alt="Dentiqly" className="h-9 w-auto" />
             </Link>
           </div>
 
           {step === 'form' ? (
             <>
               <div className="mb-5">
-                <h1 className="text-2xl font-extrabold text-[#0B1023] mb-1">Crear nueva clínica</h1>
+                <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Crear nueva clínica</h1>
                 <p className="text-[var(--brand-secondary)] text-sm font-semibold">Configurá tu espacio de trabajo en segundos.</p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-gray-100/70 p-6">
+                <ContinuarConGoogle
+                  texto="signup_with"
+                  onSesion={entrarConGoogle}
+                  onError={(mensaje) => toast({ title: "No pudimos registrarte con Google", description: mensaje, variant: "destructive" })}
+                />
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label htmlFor="nombre_clinica" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Nombre de tu clínica</label>
+                    <label htmlFor="nombre_clinica" className="block text-xs font-bold text-[#0B2440] mb-1 uppercase tracking-wider">Nombre de tu clínica</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Building2 className="h-4 w-4 text-[#8A93A8]" />
@@ -248,14 +210,14 @@ export const RegisterPage: React.FC = () => {
                         entienda qué se está creando, no para que la configuren. */}
                     <p className="mt-1 text-[11px] text-[#8A93A8]">
                       Tu página de reservas va a ser{' '}
-                      <span className="font-semibold text-[#2563FF]">
+                      <span className="font-semibold text-[#2458ED]">
                         dentiqly.com/{previsualizarSlug(formData.nombre_clinica) || 'tu-clinica'}
                       </span>
                     </p>
                   </div>
 
                   <div>
-                    <label htmlFor="nombre_admin" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Tu nombre</label>
+                    <label htmlFor="nombre_admin" className="block text-xs font-bold text-[#0B2440] mb-1 uppercase tracking-wider">Tu nombre</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <User className="h-4 w-4 text-[#8A93A8]" />
@@ -275,7 +237,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="email_admin" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Email profesional</label>
+                    <label htmlFor="email_admin" className="block text-xs font-bold text-[#0B2440] mb-1 uppercase tracking-wider">Email profesional</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-4 w-4 text-[#8A93A8]" />
@@ -299,7 +261,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="telefono" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Teléfono / WhatsApp</label>
+                    <label htmlFor="telefono" className="block text-xs font-bold text-[#0B2440] mb-1 uppercase tracking-wider">Teléfono / WhatsApp</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Phone className="h-4 w-4 text-[#8A93A8]" />
@@ -323,7 +285,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="password" className="block text-xs font-bold text-[#0B1023] mb-1 uppercase tracking-wider">Contraseña</label>
+                    <label htmlFor="password" className="block text-xs font-bold text-[#0B2440] mb-1 uppercase tracking-wider">Contraseña</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Lock className="h-4 w-4 text-[#8A93A8]" />
@@ -346,7 +308,7 @@ export const RegisterPage: React.FC = () => {
                   <div className="pt-1">
                     <button
                       type="submit"
-                      className="w-full bg-[#2563FF] text-white py-3 px-6 rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.2)] hover:shadow-[0_12px_30px_rgba(37,99,255,0.3)] flex items-center justify-center gap-2"
+                      className="w-full bg-[#2458ED] text-white py-3 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.2)] hover:shadow-[0_12px_30px_rgba(37,99,255,0.3)] flex items-center justify-center gap-2"
                     >
                       Continuar
                       <ArrowRight className="h-4 w-4" />
@@ -355,8 +317,8 @@ export const RegisterPage: React.FC = () => {
 
                   <p className="text-center text-[11px] text-[#8A93A8] mt-3">
                     Al registrarte, aceptás nuestros{' '}
-                    <Link to="/terminos" className="text-[#2563FF] hover:text-[#1D4ED8] font-semibold transition-colors">Términos de Servicio</Link> y{' '}
-                    <Link to="/privacidad" className="text-[#2563FF] hover:text-[#1D4ED8] font-semibold transition-colors">Política de Privacidad</Link>.
+                    <Link to="/terminos" className="text-[#2458ED] hover:text-[#1744CD] font-semibold transition-colors">Términos de Servicio</Link> y{' '}
+                    <Link to="/privacidad" className="text-[#2458ED] hover:text-[#1744CD] font-semibold transition-colors">Política de Privacidad</Link>.
                   </p>
                 </form>
               </div>
@@ -366,14 +328,14 @@ export const RegisterPage: React.FC = () => {
               <div className="mb-5">
                 <button
                   onClick={() => setStep('form')}
-                  className="flex items-center gap-1.5 text-xs text-[#8A93A8] hover:text-[#0B1023] transition-colors mb-3"
+                  className="flex items-center gap-1.5 text-xs text-[#8A93A8] hover:text-[#0B2440] transition-colors mb-3"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   Volver
                 </button>
-                <h1 className="text-2xl font-extrabold text-[#0B1023] mb-1">Elegí tu plan</h1>
+                <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Elegí tu plan</h1>
                 <p className="text-[var(--brand-secondary)] text-sm font-semibold">
-                  Registrando: <span className="text-[#0B1023] font-bold">{formData.nombre_clinica}</span>
+                  Registrando: <span className="text-[#0B2440] font-bold">{formData.nombre_clinica}</span>
                 </p>
               </div>
 
@@ -381,19 +343,19 @@ export const RegisterPage: React.FC = () => {
               <button
                 onClick={() => handlePlanSelect('trial')}
                 disabled={loading}
-                className="w-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#02E3FF]/30 p-5 text-left hover:border-[#02E3FF] hover:shadow-[0_8px_30px_rgba(2,227,255,0.1)] transition-all group disabled:opacity-50"
+                className="w-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#2458ED]/30 p-5 text-left hover:border-[#2458ED] hover:shadow-[0_8px_30px_rgba(2,227,255,0.1)] transition-all group disabled:opacity-50"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#02E3FF]/20 to-[#02E3FF]/5 flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-[#02E3FF]" />
+                    <div className="w-10 h-10 rounded-2xl bg-[#2458ED]/20 flex items-center justify-center">
+                      <Sparkles className="h-5 w-5 text-[#2458ED]" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#0B1023] text-base">Prueba Gratuita</h3>
+                      <h3 className="font-bold text-[#0B2440] text-base">Prueba Gratuita</h3>
                       <p className="text-xs text-[#8A93A8]">14 días sin compromiso</p>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#02E3FF]/10 text-[#0891B2] text-[10px] font-bold uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#2458ED]/10 text-[#0891B2] text-[10px] font-bold uppercase">
                     Gratis
                   </span>
                 </div>
@@ -401,7 +363,7 @@ export const RegisterPage: React.FC = () => {
                   <Clock className="h-3.5 w-3.5" />
                   <span>Acceso completo sin tarjeta de crédito</span>
                 </div>
-                <div className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-[#02E3FF] group-hover:text-[#0891B2] transition-colors">
+                <div className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-[#2458ED] group-hover:text-[#0891B2] transition-colors">
                   Comenzar prueba gratuita
                   <ArrowRight className="h-3.5 w-3.5" />
                 </div>
@@ -422,7 +384,7 @@ export const RegisterPage: React.FC = () => {
                   onClick={() => setBillingCycle('monthly')}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     billingCycle === 'monthly'
-                      ? 'bg-[#2563FF] text-white shadow-md'
+                      ? 'bg-[#2458ED] text-white shadow-md'
                       : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   }`}
                 >
@@ -432,7 +394,7 @@ export const RegisterPage: React.FC = () => {
                   onClick={() => setBillingCycle('annual')}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                     billingCycle === 'annual'
-                      ? 'bg-[#2563FF] text-white shadow-md'
+                      ? 'bg-[#2458ED] text-white shadow-md'
                       : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   }`}
                 >
@@ -451,15 +413,15 @@ export const RegisterPage: React.FC = () => {
               <button
                 onClick={() => handlePlanSelect(billingCycle)}
                 disabled={loading}
-                className="w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#2563FF]/20 p-5 text-left hover:border-[#2563FF] hover:shadow-[0_8px_30px_rgba(37,99,255,0.1)] transition-all group disabled:opacity-50"
+                className="w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#2458ED]/20 p-5 text-left hover:border-[#2458ED] hover:shadow-[0_8px_30px_rgba(37,99,255,0.1)] transition-all group disabled:opacity-50"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#2563FF]/20 to-[#2563FF]/5 flex items-center justify-center">
-                      <CreditCard className="h-5 w-5 text-[#2563FF]" />
+                    <div className="w-10 h-10 rounded-2xl bg-[#2458ED]/20 flex items-center justify-center">
+                      <CreditCard className="h-5 w-5 text-[#2458ED]" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#0B1023] text-base">Plan Pro</h3>
+                      <h3 className="font-bold text-[#0B2440] text-base">Plan Pro</h3>
                       <p className="text-xs text-[#8A93A8]">
                         {billingCycle === 'monthly' ? 'Suscripción mensual' : 'Suscripción anual'}
                       </p>
@@ -469,7 +431,7 @@ export const RegisterPage: React.FC = () => {
                     {/* Mientras /billing/plans no responde no se muestra ningún
                         número: un precio provisorio que después cambia es peor
                         que un espacio en blanco de medio segundo. */}
-                    <p className="text-xl font-extrabold text-[#0B1023]">
+                    <p className="text-xl font-extrabold text-[#0B2440]">
                       {displayUsd !== undefined ? `USD ${displayUsd}` : '—'}
                     </p>
                     <p className="text-[10px] text-[#8A93A8]">
@@ -494,17 +456,17 @@ export const RegisterPage: React.FC = () => {
                     'Agenda online',
                     'Historias clínicas',
                     'Control de caja',
-                    'WhatsApp automático',
+                    'Recordatorios por email',
                     'Soporte prioritario',
                   ].map((feat, i) => (
                     <div key={i} className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-                      <Check className="h-3 w-3 text-[#2563FF] shrink-0" />
+                      <Check className="h-3 w-3 text-[#2458ED] shrink-0" />
                       <span>{feat}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#2563FF] group-hover:text-[#1D4ED8] transition-colors">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#2458ED] group-hover:text-[#1744CD] transition-colors">
                   {loading ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -524,7 +486,7 @@ export const RegisterPage: React.FC = () => {
           <div className="mt-5 text-center">
             <p className="text-xs text-[#8A93A8]">
               ¿Ya tenés una cuenta?{' '}
-              <Link to="/login" className="text-[#2563FF] font-bold hover:text-[#1D4ED8] transition-colors">
+              <Link to="/login" className="text-[#2458ED] font-bold hover:text-[#1744CD] transition-colors">
                 Iniciá sesión acá
               </Link>
             </p>

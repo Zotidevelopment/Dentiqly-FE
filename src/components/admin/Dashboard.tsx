@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Users, Check, X, Copy,
   Link2,
   CalendarDays, Activity, ArrowRight, ChevronLeft, ChevronRight,
-  ClipboardList, Sparkles
+  ClipboardList, Sparkles, Compass
 } from 'lucide-react';
-import { turnosApi, profesionalesApi, serviciosApi, pacientesApi, sucursalesApi, obrasSocialesApi } from '../../api';
+import { turnosApi, profesionalesApi, serviciosApi, pacientesApi, obrasSocialesApi } from '../../api';
+import { feriadosApi } from '../../api/feriados';
 import { configuracionApi } from '../../api/configuracion';
-import { liquidacionesApi } from '../../api/liquidaciones';
-import { cuentaCorrienteApi } from '../../api/cuenta-corriente';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/use-toast';
 import type { Turno } from '../../types';
-import { OnboardingChecklist } from './OnboardingChecklist';
-import { onboardingApi } from '../../api/onboarding';
-import type { OnboardingStatus } from '../../api/onboarding';
+import { GuiaInicio } from './guia/GuiaInicio';
 import { todayISO, toISODate } from '../../utils/date';
 
 interface DashboardStats {
@@ -129,8 +126,10 @@ const MiniCalendar: React.FC<{ turnosDeHoy?: Turno[] }> = () => {
 
 export const Dashboard: React.FC<{
   onNavigate?: (view: string, params?: Record<string, any>) => void,
-  slug?: string
-}> = ({ onNavigate, slug }) => {
+  slug?: string,
+  /** Abre el recorrido guiado del panel. */
+  onRecorrido?: () => void
+}> = ({ onNavigate, slug, onRecorrido }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -144,31 +143,20 @@ export const Dashboard: React.FC<{
     turnosDeHoy: []
   });
   const [loading, setLoading] = useState(true);
-  const [onboardingDismissed, setOnboardingDismissed] = useState(() =>
-    sessionStorage.getItem('onboarding_checklist_dismissed_session') === 'true'
-  );
+  // La guía se oculta para siempre en esta computadora (antes volvía a
+  // aparecer en cada sesión); se vuelve a abrir desde el saludo.
+  const claveGuiaOculta = `dq_guia_oculta_${slug || 'clinica'}`;
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
+    try { return localStorage.getItem(claveGuiaOculta) === '1'; } catch { return false; }
+  });
+  const [profesionalesIncompletos, setProfesionalesIncompletos] = useState(0);
   const [clinicConfig, setClinicConfig] = useState<{ hasClinicInfo: boolean; hasSchedule: boolean }>({
     hasClinicInfo: false,
     hasSchedule: false,
   });
   const [clinicConfigLoaded, setClinicConfigLoaded] = useState(false);
-  const [onboardingExtra, setOnboardingExtra] = useState({
-    hasSucursales: false,
-    hasObrasSociales: false,
-    hasLiquidaciones: false,
-    hasCashflowIngresos: false,
-    hasCashflowEgresos: false,
-  });
+  const [onboardingExtra, setOnboardingExtra] = useState({ obrasSociales: 0, feriadosDelAnio: 0 });
   const [onboardingExtraLoaded, setOnboardingExtraLoaded] = useState(false);
-  const [patientOnboarding, setPatientOnboarding] = useState<OnboardingStatus>({
-    hasHistoriaClinica: false,
-    hasOdontograma: false,
-    hasPrescripcion: false,
-    hasTratamiento: false,
-    hasArchivos: false,
-    hasCuentaCorriente: false,
-  });
-  const [patientOnboardingLoaded, setPatientOnboardingLoaded] = useState(false);
 
   const handleCopyLink = () => {
     if (!bookingUrl) return;
@@ -198,6 +186,9 @@ export const Dashboard: React.FC<{
 
       const turnos = turnosRes.data || [];
       const profesionales = profRes.data || [];
+      setProfesionalesIncompletos(
+        profesionales.filter((p: { numero_matricula?: string | null; numero_documento?: string | null }) => String(p.numero_matricula || '').startsWith('PEND-') || String(p.numero_documento || '').startsWith('PEND-')).length
+      );
       const pacientes = pacRes.data || [];
       const today = todayISO();
       const turnosDeHoy = turnos
@@ -248,22 +239,16 @@ export const Dashboard: React.FC<{
 
   const fetchOnboardingExtra = async () => {
     try {
-      const [sucursales, obrasSociales, liquidaciones, flujoCaja] = await Promise.all([
-        sucursalesApi.listar().catch(() => []),
+      const [obrasSociales, feriados] = await Promise.all([
         obrasSocialesApi.listar().catch(() => []),
-        liquidacionesApi.listar({ limit: 1 }).catch(() => ({ data: [] })),
-        cuentaCorrienteApi.getFlujoCaja().catch(() => ({ movimientos: [] })),
+        feriadosApi.listar(new Date().getFullYear()).catch(() => []),
       ]);
-      const movimientos = flujoCaja?.movimientos || [];
       setOnboardingExtra({
-        hasSucursales: Array.isArray(sucursales) && sucursales.length > 0,
-        hasObrasSociales: Array.isArray(obrasSociales) && obrasSociales.length > 0,
-        hasLiquidaciones: (liquidaciones?.data?.length || 0) > 0,
-        hasCashflowIngresos: movimientos.some((m: any) => m.tipo === 'Ingreso'),
-        hasCashflowEgresos: movimientos.some((m: any) => m.tipo === 'Egreso'),
+        obrasSociales: Array.isArray(obrasSociales) ? obrasSociales.length : 0,
+        feriadosDelAnio: Array.isArray(feriados) ? feriados.length : 0,
       });
     } catch {
-      // silent
+      // silencioso
     } finally {
       setOnboardingExtraLoaded(true);
     }
@@ -273,7 +258,6 @@ export const Dashboard: React.FC<{
     fetchStats();
     fetchClinicConfig();
     fetchOnboardingExtra();
-    fetchPatientOnboarding();
   }, []);
 
   const fetchClinicConfig = async () => {
@@ -302,29 +286,19 @@ export const Dashboard: React.FC<{
     }
   };
 
-  const fetchPatientOnboarding = async () => {
-    try {
-      const status = await onboardingApi.getStatus();
-      setPatientOnboarding(status);
-    } catch {
-      // silent
-    } finally {
-      setPatientOnboardingLoaded(true);
-    }
-  };
-
-  const handleDismissOnboarding = () => {
-    sessionStorage.setItem('onboarding_checklist_dismissed_session', 'true');
+  const handleDismissOnboarding = useCallback(() => {
+    try { localStorage.setItem(claveGuiaOculta, '1'); } catch { /* no crítico */ }
     setOnboardingDismissed(true);
+  }, [claveGuiaOculta]);
+
+  const mostrarGuia = () => {
+    try { localStorage.removeItem(claveGuiaOculta); } catch { /* no crítico */ }
+    setOnboardingDismissed(false);
   };
 
-  const showOnboarding =
-    !loading &&
-    clinicConfigLoaded &&
-    onboardingExtraLoaded &&
-    patientOnboardingLoaded &&
-    !onboardingDismissed &&
-    user?.role === 'admin';
+  const esAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const guiaLista = !loading && clinicConfigLoaded && onboardingExtraLoaded && esAdmin;
+  const showOnboarding = guiaLista && !onboardingDismissed;
 
   const handleUpdateStatus = async (id: number, nuevoEstado: string) => {
     try {
@@ -348,8 +322,8 @@ export const Dashboard: React.FC<{
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#0B1023] flex items-center justify-center animate-pulse-soft">
-            <Sparkles className="w-5 h-5 text-[#2563FF]" />
+          <div className="w-12 h-12 rounded-2xl bg-[#0B2440] flex items-center justify-center animate-pulse-soft">
+            <Sparkles className="w-5 h-5 text-[#2458ED]" />
           </div>
           <p className="text-sm font-medium text-gray-400">Cargando dashboard...</p>
         </div>
@@ -367,54 +341,7 @@ export const Dashboard: React.FC<{
 
   return (
     <div className="font-sans relative">
-      {/* ── Decorative background reliefs ── */}
-      <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-        {/* Large gradient wash — top right corner */}
-        <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full opacity-100"
-          style={{ background: 'radial-gradient(circle, rgba(37,99,255,0.07) 0%, rgba(11,16,35,0.04) 40%, transparent 70%)' }}
-        />
-        {/* Medium blob — bottom left */}
-        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full opacity-100"
-          style={{ background: 'radial-gradient(circle, rgba(11,16,35,0.05) 0%, rgba(37,99,255,0.03) 40%, transparent 70%)' }}
-        />
-        {/* Accent glow — mid-right */}
-        <div className="absolute top-[40%] -right-10 w-[350px] h-[350px] rounded-full opacity-100"
-          style={{ background: 'radial-gradient(circle, rgba(37,99,255,0.05) 0%, transparent 60%)' }}
-        />
-
-        {/* Dot grid pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.07]">
-          <defs>
-            <pattern id="dashboard-dots" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="#0B1023" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dashboard-dots)" />
-        </svg>
-
-        {/* Dashed circle — top left area */}
-        <svg className="absolute top-20 left-4 w-[160px] h-[160px] opacity-[0.06]" viewBox="0 0 160 160" fill="none">
-          <circle cx="80" cy="80" r="72" stroke="#0B1023" strokeWidth="1.5" strokeDasharray="10 8" />
-          <circle cx="80" cy="80" r="45" stroke="#2563FF" strokeWidth="1" strokeDasharray="6 5" />
-          <circle cx="80" cy="80" r="20" stroke="#0B1023" strokeWidth="0.8" strokeDasharray="3 4" />
-        </svg>
-
-        {/* Rounded rect — bottom right */}
-        <svg className="absolute bottom-24 right-24 w-[120px] h-[120px] opacity-[0.05]" viewBox="0 0 120 120" fill="none">
-          <rect x="10" y="10" width="100" height="100" rx="24" stroke="#0B1023" strokeWidth="1.5" strokeDasharray="8 6" />
-          <rect x="30" y="30" width="60" height="60" rx="14" stroke="#2563FF" strokeWidth="1" strokeDasharray="5 5" />
-        </svg>
-
-        {/* Diamond shape — mid left */}
-        <svg className="absolute top-[55%] left-10 w-[80px] h-[80px] opacity-[0.045]" viewBox="0 0 80 80" fill="none">
-          <rect x="15" y="15" width="50" height="50" rx="8" stroke="#0B1023" strokeWidth="1.5" transform="rotate(45 40 40)" />
-        </svg>
-
-        {/* Horizontal accent line — top */}
-        <div className="absolute top-[180px] left-0 right-0 h-px opacity-[0.04]"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, #0B1023 30%, #2563FF 50%, #0B1023 70%, transparent 100%)' }}
-        />
-      </div>
+      <div className="dentiqly-dashboard-art" aria-hidden="true" />
 
       {/* ── Main content (above decorative layer) ── */}
       <div className="flex flex-col xl:flex-row gap-6 relative z-10">
@@ -423,39 +350,55 @@ export const Dashboard: React.FC<{
 
           {/* Greeting */}
           <div className="mb-6 animate-fade-in">
-            <h1 className="text-2xl lg:text-[28px] font-extrabold text-[#0B1023] tracking-tight">
+            <h1 className="text-2xl lg:text-[28px] font-extrabold text-[#0B2440] tracking-tight">
               {getGreeting()}, {user?.nombre || 'Doc'}!
             </h1>
             <p className="text-gray-400 mt-1 text-sm leading-relaxed max-w-xl">
-              {showOnboarding
+              {showOnboarding && stats.totalTurnos === 0
                 ? 'Bienvenido a Dentiqly. Seguí estos pasos para dejar tu clínica lista.'
-                : <>Hoy tenés <span className="font-semibold text-[#0B1023]">{stats.turnosHoy} turnos</span> programados. Controlá los pacientes y el rendimiento de tu clínica.</>
+                : <>Hoy tenés <span className="font-semibold text-[#0B2440]">{stats.turnosHoy} turnos</span> programados. Controlá los pacientes y el rendimiento de tu clínica.</>
               }
             </p>
+            {guiaLista && onboardingDismissed && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={mostrarGuia}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-[#2458ED] ring-1 ring-[#DCE5EE] hover:ring-[#2458ED]"
+                >
+                  <ClipboardList className="h-3.5 w-3.5" /> Guía de inicio
+                </button>
+                {onRecorrido && (
+                  <button
+                    type="button"
+                    onClick={onRecorrido}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-[#0B2440] ring-1 ring-[#DCE5EE] hover:ring-[#2458ED]"
+                  >
+                    <Compass className="h-3.5 w-3.5" /> Recorrido del panel
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ═══ ONBOARDING CHECKLIST ═══ */}
           {showOnboarding && (
-            <OnboardingChecklist
-              totalProfesionales={stats.totalProfesionales}
-              totalServicios={stats.totalServicios}
-              totalPacientes={stats.totalPacientes}
-              hasClinicInfo={clinicConfig.hasClinicInfo}
-              hasSchedule={clinicConfig.hasSchedule}
-              hasSucursales={onboardingExtra.hasSucursales}
-              hasObrasSociales={onboardingExtra.hasObrasSociales}
-              hasLiquidaciones={onboardingExtra.hasLiquidaciones}
-              hasCashflowIngresos={onboardingExtra.hasCashflowIngresos}
-              hasCashflowEgresos={onboardingExtra.hasCashflowEgresos}
-              hasHistoriaClinica={patientOnboarding.hasHistoriaClinica}
-              hasOdontograma={patientOnboarding.hasOdontograma}
-              hasPrescripcion={patientOnboarding.hasPrescripcion}
-              hasTratamiento={patientOnboarding.hasTratamiento}
-              hasArchivos={patientOnboarding.hasArchivos}
-              hasCuentaCorriente={patientOnboarding.hasCuentaCorriente}
+            <GuiaInicio
               slug={slug}
-              onNavigate={(view) => onNavigate?.(view)}
-              onDismiss={handleDismissOnboarding}
+              datos={{
+                tieneDatosClinica: clinicConfig.hasClinicInfo,
+                tieneHorarios: clinicConfig.hasSchedule,
+                profesionales: stats.totalProfesionales,
+                profesionalesIncompletos,
+                servicios: stats.totalServicios,
+                obrasSociales: onboardingExtra.obrasSociales,
+                feriadosDelAnio: onboardingExtra.feriadosDelAnio,
+                pacientes: stats.totalPacientes,
+                turnos: stats.totalTurnos,
+              }}
+              onNavigate={(view, params) => onNavigate?.(view, params)}
+              onRecorrido={() => onRecorrido?.()}
+              onOcultar={handleDismissOnboarding}
             />
           )}
 
@@ -589,7 +532,7 @@ export const Dashboard: React.FC<{
             <div className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center justify-between mb-6 relative overflow-hidden animate-fade-in shadow-sm">
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
                 <svg viewBox="0 0 400 120" className="w-full h-full">
-                  <circle cx="350" cy="20" r="80" fill="#2563FF" />
+                  <circle cx="350" cy="20" r="80" fill="#2458ED" />
                   <circle cx="380" cy="100" r="40" fill="var(--brand-secondary)" />
                 </svg>
               </div>
@@ -598,14 +541,14 @@ export const Dashboard: React.FC<{
                   <Link2 className="w-5 h-5 text-dental-secondary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#0B1023]">Compartí tu portal de reservas automático</h3>
+                  <h3 className="text-sm font-bold text-[#0B2440]">Compartí tu portal de reservas automático</h3>
                   <p className="text-xs text-gray-400 mt-0.5">Tus pacientes pueden reservar online 24/7</p>
                 </div>
               </div>
               <div className="relative z-10 flex items-center gap-2">
                 <button
                   onClick={handleCopyLink}
-                  className="flex items-center gap-2 text-sm font-semibold bg-gray-50 hover:bg-gray-100 text-[#0B1023] px-4 py-2 rounded-xl transition-all active:scale-[0.98] border border-gray-100"
+                  className="flex items-center gap-2 text-sm font-semibold bg-gray-50 hover:bg-gray-100 text-[#0B2440] px-4 py-2 rounded-xl transition-all active:scale-[0.98] border border-gray-100"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
                   {copied ? '¡Copiado!' : 'Copiar enlace'}
@@ -623,7 +566,7 @@ export const Dashboard: React.FC<{
           {/* ═══ PATIENT LIST ═══ */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-fade-in" style={{ animationDelay: '200ms' }}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-sm font-bold text-[#0B1023] flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[#0B2440] flex items-center gap-2">
                 Lista de pacientes
               </h2>
               <button
@@ -674,7 +617,7 @@ export const Dashboard: React.FC<{
                               </div>
                               <span
                                 onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
-                                className="font-semibold text-[#2563FF] hover:text-[#1D4ED8] cursor-pointer hover:underline truncate max-w-[120px] text-[13px]"
+                                className="font-semibold text-[#2458ED] hover:text-[#1744CD] cursor-pointer hover:underline truncate max-w-[120px] text-[13px]"
                               >
                                 {turno.paciente?.nombre} {turno.paciente?.apellido}
                               </span>
@@ -738,7 +681,7 @@ export const Dashboard: React.FC<{
 
           {/* Calendar */}
           {/* Calendar Wrapper */}
-          <div className="bg-[#0B1023] rounded-2xl p-5 shadow-lg animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <div className="bg-[#0B2440] rounded-2xl p-5 shadow-lg animate-fade-in" style={{ animationDelay: '100ms' }}>
             <MiniCalendar />
             <button
               onClick={() => onNavigate?.('calendar')}
@@ -752,7 +695,7 @@ export const Dashboard: React.FC<{
           {/* Today's Timeline */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-fade-in" style={{ animationDelay: '160ms' }}>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-sm font-bold text-[#0B1023] capitalize">{todayLabel}</h3>
+              <h3 className="text-sm font-bold text-[#0B2440] capitalize">{todayLabel}</h3>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <p className="text-xs text-gray-400">Agenda de hoy</p>
@@ -775,13 +718,13 @@ export const Dashboard: React.FC<{
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="text-xs font-bold text-[#0B1023]">
+                          <p className="text-xs font-bold text-[#0B2440]">
                             {turno.servicio?.nombre || 'Consulta'}
                           </p>
                           <p className="text-[11px] text-gray-500 mt-0.5">
                             <span
                               onClick={() => onNavigate?.('patients', { patientId: turno.paciente?.id })}
-                              className="text-gray-500 hover:text-[#2563FF] cursor-pointer hover:underline font-medium"
+                              className="text-gray-500 hover:text-[#2458ED] cursor-pointer hover:underline font-medium"
                             >
                               {turno.paciente?.nombre} {turno.paciente?.apellido}
                             </span>

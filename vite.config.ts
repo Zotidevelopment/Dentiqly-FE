@@ -9,9 +9,15 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // favico.png pesa 868 KB y no lo referencia nadie: el favicon real es
-      // favicon.ico (41 KB). Estaba acá solo para forzarlo al precache.
-      includeAssets: ['assets/dentiqly-logo.png'],
+      includeAssets: [
+        'manifest.json',
+        'favicon.ico',
+        'assets/brand/dentiqly-logo-v2.webp',
+        'assets/brand/dentiqly-logo-white-v2.webp',
+        'assets/brand/dentiqly-symbol-v2.webp',
+        'assets/brand/dentiqly-symbol-white-v2.webp',
+        'assets/brand/icons/*.png',
+      ],
       manifest: false, // use public/manifest.json as-is
       workbox: {
         // El glob de PNG barría las 104 imágenes del odontograma (las de
@@ -101,7 +107,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
           'vendor-animation': ['framer-motion', 'gsap', 'lenis'],
         },
       },

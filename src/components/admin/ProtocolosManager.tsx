@@ -19,6 +19,7 @@ import {
 import { pacientesApi, profesionalesApi, protocolosApi } from "../../api"
 import type { Paciente, Profesional } from "../../types"
 import { toISODate } from "../../utils/date"
+import { getObraSocialNombre } from "../../utils/obraSocial"
 import { useToast } from "../../hooks/use-toast"
 
 interface ProtocoloTratamiento {
@@ -83,7 +84,7 @@ export const ProtocolosManager: React.FC = () => {
   useEffect(() => {
     const loadProfessionals = async () => {
       try {
-        const res = await profesionalesApi.listar()
+        const res = await profesionalesApi.listar({ estado: "Activo", limit: 200 })
         setProfessionals(res.data)
       } catch (err) {
         console.error("Error al cargar profesionales:", err)
@@ -291,7 +292,7 @@ export const ProtocolosManager: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-            <FileText className="h-6 w-6 text-[#2563FF]" />
+            <FileText className="h-6 w-6 text-[#2458ED]" />
             Protocolos de Tratamientos
           </h1>
           <p className="text-sm text-[#9C9489] mt-1">
@@ -300,7 +301,7 @@ export const ProtocolosManager: React.FC = () => {
         </div>
         <Button
           onClick={handleOpenCreate}
-          className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold flex items-center gap-2 rounded-xl py-2 px-4 shadow-[0_8px_20px_rgba(37,99,255,0.25)] active:scale-95 transition-all self-start md:self-auto"
+          className="bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold flex items-center gap-2 rounded-xl py-2 px-4 shadow-[0_8px_20px_rgba(37,99,255,0.25)] active:scale-95 transition-all self-start md:self-auto"
         >
           <Plus className="h-4.5 w-4.5" />
           Añadir Protocolo
@@ -343,7 +344,7 @@ export const ProtocolosManager: React.FC = () => {
                 placeholder="Buscar por paciente, tratamiento..."
                 value={filterPatientSearch}
                 onChange={(e) => setFilterPatientSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 transition-all text-gray-800"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 transition-all text-gray-800"
               />
               {filterPatientSearch && (
                 <button
@@ -359,7 +360,7 @@ export const ProtocolosManager: React.FC = () => {
               <select
                 value={filterProfId}
                 onChange={(e) => setFilterProfId(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:bg-white focus:border-[#2563FF] transition-all"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:bg-white focus:border-[#2458ED] transition-all"
               >
                 <option value="TODOS">Filtrar por Profesional: TODOS</option>
                 {professionals.map(p => (
@@ -374,12 +375,12 @@ export const ProtocolosManager: React.FC = () => {
       {/* ═══ PROTOCOLS GRID ═══ */}
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="h-10 w-10 text-[#2563FF] animate-spin" />
+          <Loader2 className="h-10 w-10 text-[#2458ED] animate-spin" />
           <span className="text-sm font-semibold text-gray-500">Cargando protocolos...</span>
         </div>
       ) : filteredProtocols.length === 0 ? (
         <div className="py-16 text-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 flex flex-col items-center justify-center p-6">
-          <div className="w-14 h-14 rounded-full bg-[#2563FF]/10 flex items-center justify-center mb-3.5 text-[#2563FF]">
+          <div className="w-14 h-14 rounded-full bg-[#2458ED]/10 flex items-center justify-center mb-3.5 text-[#2458ED]">
             <FileText className="h-7 w-7" />
           </div>
           <h3 className="text-base font-extrabold text-gray-800">No hay protocolos anotados</h3>
@@ -412,7 +413,7 @@ export const ProtocolosManager: React.FC = () => {
               <div className="p-5 flex-1 space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-[#2563FF]">
+                    <div className="flex items-center gap-2 text-[#2458ED]">
                       <User className="h-4 w-4 shrink-0 text-gray-400" />
                       <span className="text-[15px] font-extrabold text-gray-900">
                         {proto.paciente ? `${proto.paciente.nombre} ${proto.paciente.apellido}` : "Paciente General"}
@@ -420,7 +421,7 @@ export const ProtocolosManager: React.FC = () => {
                     </div>
                     
                     {proto.tratamiento && (
-                      <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#2563FF]/10 text-[#2563FF] border border-[#2563FF]/5">
+                      <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#2458ED]/10 text-[#2458ED] border border-[#2458ED]/5">
                         <Activity className="h-3.5 w-3.5 shrink-0" />
                         {proto.tratamiento}
                       </div>
@@ -448,7 +449,7 @@ export const ProtocolosManager: React.FC = () => {
 
                 {/* Contenido / Cuidados */}
                 <div className="bg-gray-50 border border-gray-100/50 rounded-xl p-4 min-h-[90px] flex items-start gap-2.5">
-                  <AlertCircle className="h-4.5 w-4.5 text-[#2563FF] shrink-0 mt-0.5" />
+                  <AlertCircle className="h-4.5 w-4.5 text-[#2458ED] shrink-0 mt-0.5" />
                   <p className="text-sm text-gray-600 font-medium whitespace-pre-line leading-relaxed">
                     {proto.cuidado_atencion}
                   </p>
@@ -476,7 +477,7 @@ export const ProtocolosManager: React.FC = () => {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h2 className="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-[#2563FF]" />
+                <FileText className="h-5 w-5 text-[#2458ED]" />
                 {editingProtocolId ? "Editar Protocolo" : "Añadir Protocolo de Cuidado"}
               </h2>
               <button
@@ -509,7 +510,7 @@ export const ProtocolosManager: React.FC = () => {
                       }
                     }}
                     onFocus={() => setShowPatientDropdown(true)}
-                    className="w-full pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 transition-all text-gray-800"
+                    className="w-full pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 transition-all text-gray-800"
                   />
                   {patientSearchQuery && (
                     <button
@@ -535,7 +536,7 @@ export const ProtocolosManager: React.FC = () => {
                   >
                     {patientSearchLoading ? (
                       <div className="px-4 py-3 text-xs text-gray-500 flex items-center gap-2">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-[#2563FF]" />
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-[#2458ED]" />
                         Buscando paciente...
                       </div>
                     ) : patientResults.length === 0 ? (
@@ -551,7 +552,7 @@ export const ProtocolosManager: React.FC = () => {
                           className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex flex-col"
                         >
                           <span className="font-bold">{p.nombre} {p.apellido}</span>
-                          <span className="text-[10px] text-gray-400">DNI: {p.numero_documento} | {p.obra_social_nombre_custom || p.obraSocial?.nombre || "Particular"}</span>
+                          <span className="text-[10px] text-gray-400">DNI: {p.numero_documento} | {getObraSocialNombre(p)}</span>
                         </button>
                       ))
                     )}
@@ -567,7 +568,7 @@ export const ProtocolosManager: React.FC = () => {
                 <select
                   value={formData.profesional_id}
                   onChange={(e) => setFormData(prev => ({ ...prev, profesional_id: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 transition-all"
+                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 transition-all"
                 >
                   <option value="">Cualquier profesional</option>
                   {professionals.map(p => (
@@ -586,13 +587,13 @@ export const ProtocolosManager: React.FC = () => {
                   placeholder="Ej: Ortodoncia, Implante, Extracción..."
                   value={formData.tratamiento}
                   onChange={(e) => setFormData(prev => ({ ...prev, tratamiento: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 transition-all text-gray-800"
+                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 transition-all text-gray-800"
                 />
               </div>
 
               {/* Cuidado / Atención */}
               <div>
-                <label className="block text-xs font-bold text-[#2563FF] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                <label className="block text-xs font-bold text-[#2458ED] uppercase tracking-wider mb-1.5 flex items-center gap-1">
                   Cuidado o Atención Especial Requerida *
                 </label>
                 <textarea
@@ -600,7 +601,7 @@ export const ProtocolosManager: React.FC = () => {
                   placeholder="Detallar indicaciones específicas para este tratamiento durante esta semana..."
                   value={formData.cuidado_atencion}
                   onChange={(e) => setFormData(prev => ({ ...prev, cuidado_atencion: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/5 transition-all text-gray-800 font-medium"
+                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/5 transition-all text-gray-800 font-medium"
                 />
               </div>
 
@@ -616,7 +617,7 @@ export const ProtocolosManager: React.FC = () => {
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-semibold rounded-xl px-6 py-2.5 shadow-[0_8px_20px_rgba(37,99,255,0.25)] active:scale-95 transition-all"
+                  className="bg-[#2458ED] hover:bg-[#1744CD] text-white font-semibold rounded-xl px-6 py-2.5 shadow-[0_8px_20px_rgba(37,99,255,0.25)] active:scale-95 transition-all"
                 >
                   {editingProtocolId ? "Actualizar" : "Guardar"}
                 </Button>

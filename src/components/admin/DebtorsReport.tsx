@@ -141,7 +141,7 @@ const DebtorsReport = () => {
                     style={{
                       border: "none", outline: "none", background: "transparent",
                       fontSize: 13, color: tokens.navy, flex: 1,
-                      fontFamily: "Inter, -apple-system, sans-serif",
+                      fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                     }}
                   />
                 </div>

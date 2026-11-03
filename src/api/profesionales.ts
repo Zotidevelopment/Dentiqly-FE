@@ -56,9 +56,10 @@ export const profesionalesApi = {
     return apiClient.put<HorariosResponse & { message: string }>(`/profesionales/${id}/horarios`, { horarios })
   },
 
-  async obtenerHorariosDisponibles(id: number, fecha: string, isAdmin: boolean = false): Promise<HorariosDisponiblesResponse> {
+  async obtenerHorariosDisponibles(id: number, fecha: string, isAdmin: boolean = false, duracion?: number): Promise<HorariosDisponiblesResponse> {
     const queryParams = new URLSearchParams({ fecha })
     if (isAdmin) queryParams.append("isAdmin", "true")
+    if (duracion && duracion > 0) queryParams.append("duracion", String(duracion))
     return apiClient.get<HorariosDisponiblesResponse>(
       `/profesionales/${id}/horarios-disponibles?${queryParams.toString()}`,
     )

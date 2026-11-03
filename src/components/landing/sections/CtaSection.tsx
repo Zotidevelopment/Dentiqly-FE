@@ -1,16 +1,19 @@
-import React, { useEffect, useRef, useState } from "react"
-import { TrialLink } from "../../ui/TrialLink"
-import { Mail, Send } from "lucide-react"
+import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ThinArrow } from "../components/ThinArrow"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { ArrowRight, Check, Send, ChevronDown } from "lucide-react"
+import { TrialLink } from "../../ui/TrialLink"
+import { Eyebrow } from "../ui/SectionHeading"
+import { Reveal } from "../ui/Reveal"
+import { btnOnDark } from "../ui/cta"
 
-gsap.registerPlugin(ScrollTrigger)
+const inputClass =
+  "w-full rounded-xl bg-brand-surface px-4 py-3 text-[14.5px] text-brand-ink placeholder:text-brand-muted/60 ring-1 ring-inset ring-brand-ink/[0.08] transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue"
+const labelClass = "mb-1.5 block text-[12.5px] font-semibold text-brand-ink"
 
 export const CtaSection: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null)
-  const { t } = useTranslation('landing')
+  const { t } = useTranslation("landing")
+  const bullets = t("cta.bullets", { returnObjects: true }) as string[]
+
   const [formData, setFormData] = useState({
     email: "",
     nombre: "",
@@ -24,310 +27,151 @@ export const CtaSection: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".cta-left > *", {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.14,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 78%",
-        },
-      })
-      gsap.from(".cta-right", {
-        y: 50,
-        opacity: 0,
-        duration: 0.9,
-        delay: 0.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 78%",
-        },
-      })
-    }, sectionRef)
-
-    return () => ctx.revert()
-  }, [])
+  const set = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    setFormData((d) => ({ ...d, [field]: e.target.value }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setErrorMessage(null)
-
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
       const response = await fetch(`${apiBaseUrl}/saas/contacto`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       })
-
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}))
-        throw new Error(errData.error || "Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.")
+        throw new Error(errData.error || "Hubo un error al enviar el mensaje. Por favor, intentá de nuevo.")
       }
-
       setSent(true)
-    } catch (err: any) {
-      setErrorMessage(err.message || "Error de conexión con el servidor.")
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Error de conexión con el servidor.")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <section
-      ref={sectionRef}
-      id="contacto"
-      className="relative overflow-hidden bg-[#0047FF] py-24 md:py-32"
-      style={{
-        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)`,
-        backgroundSize: "28px 28px",
-      }}
-    >
-      {/* Mini tooth decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {/* Tooth SVG component */}
-        {[
-          { top: "8%", left: "5%", size: 22, opacity: 0.12, rotate: -15 },
-          { top: "15%", left: "88%", size: 18, opacity: 0.10, rotate: 20 },
-          { top: "72%", left: "3%", size: 26, opacity: 0.08, rotate: -8 },
-          { top: "80%", left: "90%", size: 20, opacity: 0.11, rotate: 30 },
-          { top: "45%", left: "92%", size: 16, opacity: 0.09, rotate: -25 },
-          { top: "55%", left: "1%", size: 14, opacity: 0.10, rotate: 10 },
-          { top: "30%", left: "96%", size: 12, opacity: 0.08, rotate: 40 },
-          { top: "90%", left: "50%", size: 18, opacity: 0.07, rotate: -5 },
-        ].map((t, i) => (
-          <svg
-            key={i}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 28"
-            fill="white"
-            style={{
-              position: "absolute",
-              top: t.top,
-              left: t.left,
-              width: t.size,
-              height: t.size,
-              opacity: t.opacity,
-              transform: `rotate(${t.rotate}deg)`,
-            }}
-          >
-            {/* Simple molar tooth path */}
-            <path d="M7 2C4.5 2 3 4 3 6.5c0 1.5.5 3 1 4.5.8 2.5 1.2 5 1 7.5-.1 1.5.5 5.5 2 7 .6.7 1.3 1 2 .5.7-.5 1-1.5 1-2.5 0-1 .4-2 1-2s1 1 1 2c0 1 .3 2 1 2.5.7.5 1.4.2 2-.5 1.5-1.5 2.1-5.5 2-7-.2-2.5.2-5 1-7.5.5-1.5 1-3 1-4.5C18 4 16.5 2 14 2c-1 0-2 .5-2 1.5C12 2.5 11 2 10 2c-1 0-2 .5-2.5 0C7 2 7 2 7 2z" />
-          </svg>
-        ))}
-      </div>
+    <section id="contacto" className="relative overflow-hidden bg-brand-navy py-24 text-white sm:py-32">
+      <div className="bg-dot-grid-light mask-fade-radial pointer-events-none absolute inset-0 opacity-50" aria-hidden="true" />
+      <div className="landing-glow left-[-120px] top-[-120px] h-[520px] w-[520px] bg-brand-blue/35" aria-hidden="true" />
+      <div className="landing-glow bottom-[-200px] right-[10%] h-[480px] w-[480px] bg-brand-blue-light/20" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-16 lg:gap-24">
+      <div className="relative mx-auto grid max-w-6xl gap-14 px-6 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
+        {/* Izquierda */}
+        <Reveal>
+          <Eyebrow dark>{t("cta.eyebrow")}</Eyebrow>
+          <h2 className="mt-6 font-display text-[2.4rem] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[3rem] lg:text-[3.6rem]">
+            {t("cta.title")}
+            <br />
+            <span className="text-gradient-blue">{t("cta.titleLine2")}</span>
+          </h2>
+          <p className="mt-6 max-w-lg text-[1.05rem] leading-relaxed text-white/65 sm:text-lg">{t("cta.subtitle")}</p>
 
-          {/* ── Left: headline + contact info ── */}
-          <div className="cta-left flex-1 lg:max-w-[540px]">
-            <div className="mb-5">
-              <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
-                {t('cta.badge')}
-              </span>
-            </div>
+          <ul className="mt-8 space-y-3">
+            {bullets.map((b) => (
+              <li key={b} className="flex items-center gap-3 text-[15px] text-white/85">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white">
+                  <Check size={12} strokeWidth={3} />
+                </span>
+                {b}
+              </li>
+            ))}
+          </ul>
 
-            <h2 className="text-4xl sm:text-5xl xl:text-[3.6rem] font-semibold text-white tracking-[-3px] leading-[1.08] mb-8">
-              {t('cta.title')}
-              <br />
-              {t('cta.titleLine2')}
-            </h2>
-
-            <p className="text-white/70 text-lg leading-relaxed mb-12 max-w-[440px]">
-              {t('cta.subtitle')}
-            </p>
-
-            {/* Contact details */}
-            <div className="space-y-5 mb-12">
-              <a
-                href="mailto:hola@dentiqly.com"
-                className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
-              >
-                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5 rounded-full">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <span className="text-base font-medium">hola@dentiqly.com</span>
-              </a>
-              {/* <a
-                href="tel:+5491100000000"
-                className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
-              >
-                <div className="w-11 h-11 flex items-center justify-center border border-white/20 group-hover:border-white/50 transition-colors bg-white/5 rounded-full">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <span className="text-base font-medium">+54 9 11 0000-0000</span>
-              </a> */}
-            </div>
-
-            <TrialLink
-              ctaLocation="cta_section"
-              ctaLabel={t('cta.ctaButton')}
-              className="inline-flex items-center gap-3 bg-white text-[#0047FF] px-8 py-4 font-bold text-base hover:bg-blue-50 transition-colors group rounded-full"
-            >
-              {t('cta.ctaButton')}
-              <ThinArrow size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
+          <div className="mt-10">
+            <TrialLink ctaLocation="cta_section" ctaLabel={t("cta.ctaButton")} className={btnOnDark}>
+              {t("cta.ctaButton")}
+              <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </TrialLink>
           </div>
+        </Reveal>
 
-          {/* ── Right: contact form ── */}
-          <div className="cta-right flex-1 lg:max-w-[620px] w-full">
-            <div className="bg-white rounded-[2rem] p-8 sm:p-12 border border-gray-100/50 shadow-[0_24px_50px_rgba(0,0,0,0.06)]">
-              {sent ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-16 h-16 flex items-center justify-center bg-[#0047FF]/10 border border-[#0047FF]/20 rounded-full mb-6">
-                    <Send className="w-7 h-7 text-[#0047FF]" />
+        {/* Formulario */}
+        <Reveal delay={0.12}>
+          <div className="rounded-[28px] bg-white p-6 text-brand-ink shadow-[0_50px_120px_-40px_rgba(0,0,0,0.6)] sm:p-9">
+            {sent ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-brand-blue-tint text-brand-blue">
+                  <Send className="h-7 w-7" />
+                </span>
+                <h3 className="font-display text-[1.6rem] font-semibold tracking-tight">{t("cta.successTitle")}</h3>
+                <p className="mt-2 text-[14.5px] text-brand-muted">{t("cta.successText")}</p>
+              </div>
+            ) : (
+              <>
+                <h3 className="font-display text-[1.45rem] font-semibold tracking-tight">{t("cta.formTitle")}</h3>
+                <p className="mt-1 text-[14px] text-brand-muted">{t("cta.formSubtitle")}</p>
+
+                <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+                  <div>
+                    <label htmlFor="email-input" className={labelClass}>{t("cta.emailLabel")}</label>
+                    <input id="email-input" type="email" required value={formData.email} onChange={set("email")} className={inputClass} placeholder={t("cta.emailPlaceholder")} autoComplete="email" />
                   </div>
-                  <h3 className="text-2xl font-bold text-[#0A0F2D] mb-2">{t('cta.successTitle')}</h3>
-                  <p className="text-[#0A0F2D]/70 text-sm">
-                    {t('cta.successText')}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <h3 className="text-xl font-bold text-[#0A0F2D] mb-8 text-[13px] tracking  text-left opacity-85">
-                    {t('cta.formTitle')}
-                  </h3>
 
-                  <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="email-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking- mb-2">
-                        {t('cta.emailLabel')}
-                      </label>
-                      <input
-                        id="email-input"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                        placeholder={t('cta.emailPlaceholder')}
-                      />
+                      <label htmlFor="nombre-input" className={labelClass}>{t("cta.nameLabel")}</label>
+                      <input id="nombre-input" type="text" required value={formData.nombre} onChange={set("nombre")} className={inputClass} placeholder={t("cta.namePlaceholder")} autoComplete="given-name" />
                     </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="nombre-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          {t('cta.nameLabel')}
-                        </label>
-                        <input
-                          id="nombre-input"
-                          type="text"
-                          required
-                          value={formData.nombre}
-                          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                          className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder={t('cta.namePlaceholder')}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="apellido-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          {t('cta.lastNameLabel')}
-                        </label>
-                        <input
-                          id="apellido-input"
-                          type="text"
-                          required
-                          value={formData.apellido}
-                          onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                          className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder={t('cta.lastNamePlaceholder')}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="clinica-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          {t('cta.clinicLabel')}
-                        </label>
-                        <input
-                          id="clinica-input"
-                          type="text"
-                          required
-                          value={formData.clinica}
-                          onChange={(e) => setFormData({ ...formData, clinica: e.target.value })}
-                          className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder={t('cta.clinicPlaceholder')}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="telefono-input" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                          {t('cta.phoneLabel')}
-                        </label>
-                        <input
-                          id="telefono-input"
-                          type="tel"
-                          value={formData.telefono}
-                          onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                          className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors"
-                          placeholder={t('cta.phonePlaceholder')}
-                        />
-                      </div>
-                    </div>
-
                     <div>
-                      <label htmlFor="motivo-select" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                        {t('cta.reasonLabel')}
-                      </label>
-                      <select
-                        id="motivo-select"
-                        required
-                        value={formData.motivo}
-                        onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
-                        className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors cursor-pointer appearance-none"
-                      >
-                        <option value="" disabled className="text-gray-400">{t('cta.reasonPlaceholder')}</option>
-                        <option value="contratar" className="text-[#0A0F2D]">{t('cta.reasonOptions.contratar')}</option>
-                        <option value="demostracion" className="text-[#0A0F2D]">{t('cta.reasonOptions.demostracion')}</option>
-                        <option value="precios" className="text-[#0A0F2D]">{t('cta.reasonOptions.precios')}</option>
-                        <option value="soporte" className="text-[#0A0F2D]">{t('cta.reasonOptions.soporte')}</option>
-                        <option value="otro" className="text-[#0A0F2D]">{t('cta.reasonOptions.otro')}</option>
+                      <label htmlFor="apellido-input" className={labelClass}>{t("cta.lastNameLabel")}</label>
+                      <input id="apellido-input" type="text" required value={formData.apellido} onChange={set("apellido")} className={inputClass} placeholder={t("cta.lastNamePlaceholder")} autoComplete="family-name" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="clinica-input" className={labelClass}>{t("cta.clinicLabel")}</label>
+                      <input id="clinica-input" type="text" required value={formData.clinica} onChange={set("clinica")} className={inputClass} placeholder={t("cta.clinicPlaceholder")} autoComplete="organization" />
+                    </div>
+                    <div>
+                      <label htmlFor="telefono-input" className={labelClass}>{t("cta.phoneLabel")}</label>
+                      <input id="telefono-input" type="tel" value={formData.telefono} onChange={set("telefono")} className={inputClass} placeholder={t("cta.phonePlaceholder")} autoComplete="tel" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="motivo-select" className={labelClass}>{t("cta.reasonLabel")}</label>
+                    <div className="relative">
+                      <select id="motivo-select" required value={formData.motivo} onChange={set("motivo")} className={`${inputClass} cursor-pointer appearance-none pr-10 ${formData.motivo ? "" : "text-brand-muted/60"}`}>
+                        <option value="" disabled>{t("cta.reasonPlaceholder")}</option>
+                        <option value="contratar">{t("cta.reasonOptions.contratar")}</option>
+                        <option value="demostracion">{t("cta.reasonOptions.demostracion")}</option>
+                        <option value="precios">{t("cta.reasonOptions.precios")}</option>
+                        <option value="soporte">{t("cta.reasonOptions.soporte")}</option>
+                        <option value="otro">{t("cta.reasonOptions.otro")}</option>
                       </select>
+                      <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted" />
                     </div>
+                  </div>
 
-                    <div>
-                      <label htmlFor="mensaje-textarea" className="block text-[12px] sm:text-[14px] font-bold text-[#0A0F2D] tracking mb-2">
-                        {t('cta.messageLabel')}
-                      </label>
-                      <textarea
-                        id="mensaje-textarea"
-                        value={formData.mensaje}
-                        onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
-                        rows={3}
-                        className="w-full bg-transparent border-t-0 border-l-0 border-r-0 border-b border-gray-300 focus:border-[#0047FF] focus:border-b-2 text-[#0A0F2D] placeholder:text-gray-300 pb-3 px-0 text-base focus:outline-none focus:ring-0 rounded-none transition-colors resize-none"
-                        placeholder={t('cta.messagePlaceholder')}
-                      />
+                  <div>
+                    <label htmlFor="mensaje-textarea" className={labelClass}>{t("cta.messageLabel")}</label>
+                    <textarea id="mensaje-textarea" value={formData.mensaje} onChange={set("mensaje")} rows={3} className={`${inputClass} resize-none`} placeholder={t("cta.messagePlaceholder")} />
+                  </div>
+
+                  {errorMessage && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-[13.5px] font-medium text-red-600">
+                      {errorMessage}
                     </div>
+                  )}
 
-                    {errorMessage && (
-                      <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl font-medium text-left">
-                        ⚠️ {errorMessage}
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full bg-[#0047FF] text-white py-5 px-6 text-sm tracking-wider font-extrabold hover:bg-[#0036CC] transition-colors flex items-center justify-center gap-2 group rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      {loading ? t('cta.submitting') : t('cta.submit')}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand-blue py-4 text-[15px] font-semibold text-white shadow-[0_10px_28px_-10px_rgba(37,99,255,0.8)] transition-all hover:bg-brand-blue-hover disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {loading ? t("cta.submitting") : t("cta.submit")}
+                    {!loading && <ArrowRight size={17} className="transition-transform duration-200 group-hover:translate-x-0.5" />}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
-
-        </div>
+        </Reveal>
       </div>
     </section>
   )

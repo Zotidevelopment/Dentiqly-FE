@@ -195,7 +195,7 @@ export const BookingForm: React.FC = () => {
   if (loadingSettings) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-[#f8fafc]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563FF]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2458ED]"></div>
       </div>
     )
   }
@@ -283,7 +283,7 @@ export const BookingForm: React.FC = () => {
                 <div 
                   key={stepNumber}
                   className={`bg-white rounded-2xl sm:rounded-3xl border transition-all duration-300 ${
-                    isActive ? "border-[#2563FF] shadow-lg shadow-[#2563FF]/10" : 
+                    isActive ? "border-[#2458ED] shadow-lg shadow-[#2458ED]/10" : 
                     isCompleted ? "border-gray-200 hover:border-blue-300 cursor-pointer" : "border-gray-100 opacity-60"
                   }`}
                   onClick={() => {
@@ -294,11 +294,11 @@ export const BookingForm: React.FC = () => {
                   <div className={`p-5 sm:p-6 flex items-center justify-between ${isActive ? "border-b border-gray-100" : ""}`}>
                     <div className="flex items-center gap-4">
                       {isCompleted ? (
-                        <div className="w-8 h-8 rounded-full bg-[#2563FF] text-white flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-[#2458ED] text-white flex items-center justify-center">
                           <Check size={16} strokeWidth={3} />
                         </div>
                       ) : isActive ? (
-                        <div className="w-8 h-8 rounded-full bg-[#2563FF] text-white flex items-center justify-center font-bold text-sm">
+                        <div className="w-8 h-8 rounded-full bg-[#2458ED] text-white flex items-center justify-center font-bold text-sm">
                           {stepNumber}
                         </div>
                       ) : (
@@ -311,7 +311,7 @@ export const BookingForm: React.FC = () => {
                       </h3>
                     </div>
                     {isCompleted && !isActive && (
-                      <span className="text-sm font-bold text-[#2563FF]">
+                      <span className="text-sm font-bold text-[#2458ED]">
                         {getStepSummary(stepNumber)}
                       </span>
                     )}
@@ -368,7 +368,7 @@ export const BookingForm: React.FC = () => {
                             <button
                               onClick={handleFinalSubmit}
                               disabled={loading}
-                              className="w-full h-14 bg-[#2563FF] text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
+                              className="w-full h-14 bg-[#2458ED] text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
                             >
                               {loading ? "Confirmando..." : "CONFIRMAR TURNO"}
                             </button>

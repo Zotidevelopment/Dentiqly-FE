@@ -65,7 +65,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({ onBranchSelect
           onClick={() => onBranchSelect(sucursal)}
           className={`group relative p-6 text-left rounded-2xl border-2 transition-all duration-300 hover:shadow-md ${
             selectedBranch?.id === sucursal.id
-              ? "border-[#2563FF] bg-[#2563FF]/5 ring-1 ring-[#2563FF]"
+              ? "border-[#2458ED] bg-[#2458ED]/5 ring-1 ring-[#2458ED]"
               : "border-gray-100 bg-white hover:border-blue-200"
           }`}
         >
@@ -73,7 +73,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({ onBranchSelect
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-xl transition-colors ${
-                  selectedBranch?.id === sucursal.id ? "bg-[#2563FF] text-white" : "bg-blue-50 text-[#2563FF] group-hover:bg-[#2563FF] group-hover:text-white"
+                  selectedBranch?.id === sucursal.id ? "bg-[#2458ED] text-white" : "bg-blue-50 text-[#2458ED] group-hover:bg-[#2458ED] group-hover:text-white"
                 }`}>
                   <MapPin size={20} />
                 </div>
@@ -94,7 +94,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({ onBranchSelect
             </div>
 
             <div className={`mt-2 p-2 rounded-full transition-all ${
-              selectedBranch?.id === sucursal.id ? "bg-[#2563FF] text-white rotate-90" : "bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-[#2563FF] group-hover:translate-x-1"
+              selectedBranch?.id === sucursal.id ? "bg-[#2458ED] text-white rotate-90" : "bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-[#2458ED] group-hover:translate-x-1"
             }`}>
               <ChevronRight size={20} />
             </div>
@@ -102,7 +102,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({ onBranchSelect
 
           {selectedBranch?.id === sucursal.id && (
             <div className="absolute top-4 right-12">
-              <span className="bg-[#2563FF] text-white text-[10px] font-black px-2 py-1 rounded-full tracking-wider uppercase">
+              <span className="bg-[#2458ED] text-white text-[10px] font-black px-2 py-1 rounded-full tracking-wider uppercase">
                 Seleccionado
               </span>
             </div>

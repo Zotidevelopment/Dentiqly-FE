@@ -1,3 +1,4 @@
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert, Users, Building, Activity, LogOut, CheckCircle, Clock, XCircle,
@@ -167,7 +168,7 @@ const ClinicDetailView: React.FC<{ clinicId: string; onBack: () => void }> = ({ 
           <button
             onClick={handleGenerateTestPayment}
             disabled={generatingPayment}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 transition-all shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-bold shadow-[0_4px_12px_rgba(16,185,129,0.2)] hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 transition-all shrink-0"
           >
             {generatingPayment ? (
               <Activity className="h-4 w-4 animate-spin" />
@@ -381,7 +382,7 @@ export const SuperAdminApp: React.FC = () => {
         <ShieldAlert className="w-16 h-16 text-red-500" />
         <h1 className="text-2xl font-bold text-gray-900">Acceso Denegado</h1>
         <p className="text-gray-500">Esta área es exclusiva para los administradores de la plataforma.</p>
-        <button onClick={logout} className="px-4 py-2 bg-[#2563FF] text-white rounded-lg font-medium">Volver</button>
+        <button onClick={logout} className="px-4 py-2 bg-[#2458ED] text-white rounded-lg font-medium">Volver</button>
       </div>
     );
   }
@@ -395,13 +396,13 @@ export const SuperAdminApp: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="dentiqly-workspace min-h-screen flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#0A0F2D] text-white flex flex-col h-screen fixed">
+      <div className="dentiqly-sidebar w-64 bg-[#0B2440] text-white flex flex-col h-screen fixed">
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <ShieldAlert className="w-8 h-8 text-[#02E3FF]" />
+          
           <div>
-            <h1 className="font-bold text-xl">Dentiqly</h1>
+            <BrandLogo tone="inverse" className="h-9 w-auto" />
             <p className="text-xs text-blue-200 uppercase tracking-widest">SuperAdmin</p>
           </div>
         </div>
@@ -510,13 +511,13 @@ export const SuperAdminApp: React.FC = () => {
                         placeholder="Buscar clínica, email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF] focus:border-[#2563FF] outline-none text-sm w-full md:w-72"
+                        className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED] focus:border-[#2458ED] outline-none text-sm w-full md:w-72"
                       />
                     </div>
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563FF]"
+                      className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2458ED]"
                     >
                       <option value="all">Todos</option>
                       <option value="active">Activas</option>
@@ -590,7 +591,7 @@ export const SuperAdminApp: React.FC = () => {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleViewDetail(clinic.id)}
-                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-[#2563FF]"
+                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-[#2458ED]"
                                   title="Ver detalle"
                                 >
                                   <Eye className="w-4 h-4" />
@@ -608,7 +609,7 @@ export const SuperAdminApp: React.FC = () => {
                                   )}
                                 </button>
                                 <select
-                                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#2563FF] bg-white"
+                                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-[#2458ED] bg-white"
                                   value=""
                                   onChange={(e) => handleUpdateStatus(clinic.id, e.target.value)}
                                   disabled={updating === clinic.id}
@@ -675,7 +676,7 @@ const ConfigSection: React.FC = () => {
       <div className="max-w-2xl space-y-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-[#2563FF]" />
+            <CreditCard className="h-5 w-5 text-[#2458ED]" />
             MercadoPago
           </h3>
           <p className="text-sm text-gray-500 mb-6">
@@ -690,7 +691,7 @@ const ConfigSection: React.FC = () => {
                 type="password"
                 value={config.mp_access_token}
                 onChange={(e) => setConfig({ ...config, mp_access_token: e.target.value })}
-                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all"
+                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all"
                 placeholder="APP_USR-..."
               />
             </div>
@@ -701,7 +702,7 @@ const ConfigSection: React.FC = () => {
                 type="text"
                 value={config.mp_public_key}
                 onChange={(e) => setConfig({ ...config, mp_public_key: e.target.value })}
-                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all"
+                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all"
                 placeholder="APP_USR-..."
               />
             </div>
@@ -712,7 +713,7 @@ const ConfigSection: React.FC = () => {
                 type="url"
                 value={config.mp_webhook_url}
                 onChange={(e) => setConfig({ ...config, mp_webhook_url: e.target.value })}
-                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all"
+                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all"
                 placeholder="https://tu-backend.com/api/billing/webhook"
               />
             </div>
@@ -721,7 +722,7 @@ const ConfigSection: React.FC = () => {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-[#2563FF]" />
+            <BarChart3 className="h-5 w-5 text-[#2458ED]" />
             Precios
           </h3>
 
@@ -732,7 +733,7 @@ const ConfigSection: React.FC = () => {
                 type="number"
                 value={config.monthly_price}
                 onChange={(e) => setConfig({ ...config, monthly_price: e.target.value })}
-                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all"
+                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all"
               />
             </div>
             <div>
@@ -741,7 +742,7 @@ const ConfigSection: React.FC = () => {
                 type="number"
                 value={config.annual_price}
                 onChange={(e) => setConfig({ ...config, annual_price: e.target.value })}
-                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all"
+                className="block w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all"
               />
               <p className="text-xs text-gray-400 mt-1">
                 Equivale a ${Math.round(Number(config.annual_price) / 12).toLocaleString('es-AR')}/mes (10% dto)
@@ -755,7 +756,7 @@ const ConfigSection: React.FC = () => {
           className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
             saved
               ? 'bg-green-500 text-white'
-              : 'bg-[#2563FF] text-white hover:bg-[#1D4ED8] shadow-[0_8px_20px_rgba(37,99,255,0.25)]'
+              : 'bg-[#2458ED] text-white hover:bg-[#1744CD] shadow-[0_8px_20px_rgba(37,99,255,0.25)]'
           }`}
         >
           {saved ? 'Guardado' : 'Guardar configuración'}

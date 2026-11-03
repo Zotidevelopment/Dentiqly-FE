@@ -24,7 +24,7 @@ export const MisDatos: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563FF]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2458ED]" />
           <span className="text-[#8A93A8] font-medium">Cargando...</span>
         </div>
       </div>
@@ -52,17 +52,17 @@ export const MisDatos: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-[#0B1023]">Mis Datos Personales</h1>
+      <h1 className="text-2xl font-extrabold text-[#0B2440]">Mis Datos Personales</h1>
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {/* Header */}
         <div className="p-6 lg:p-8 border-b border-gray-100">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2563FF] to-[#02E3FF] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#2458ED] flex items-center justify-center">
               <span className="text-white text-xl font-bold">{initials}</span>
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-[#0B1023]">
+              <h2 className="text-xl font-extrabold text-[#0B2440]">
                 {paciente.nombre} {paciente.apellido}
               </h2>
               <p className="text-sm text-[#8A93A8] font-medium mt-0.5">
@@ -98,12 +98,12 @@ export const MisDatos: React.FC = () => {
 
 const DataRow: React.FC<{ icon: any; label: string; value: string | null }> = ({ icon: Icon, label, value }) => (
   <div className="flex items-center gap-4 px-6 lg:px-8 py-4 hover:bg-[#F7F8FA]/50 transition-colors">
-    <div className="w-10 h-10 rounded-xl bg-[#2563FF]/8 flex items-center justify-center shrink-0">
-      <Icon size={18} className="text-[#2563FF]" />
+    <div className="w-10 h-10 rounded-xl bg-[#2458ED]/8 flex items-center justify-center shrink-0">
+      <Icon size={18} className="text-[#2458ED]" />
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-xs text-[#8A93A8] font-medium uppercase tracking-wider">{label}</p>
-      <p className="text-sm font-semibold text-[#0B1023] mt-0.5 truncate">{value || "-"}</p>
+      <p className="text-sm font-semibold text-[#0B2440] mt-0.5 truncate">{value || "-"}</p>
     </div>
   </div>
 )

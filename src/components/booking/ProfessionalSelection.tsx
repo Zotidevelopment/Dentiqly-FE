@@ -86,15 +86,15 @@ export const ProfessionalSelection: React.FC<ProfessionalSelectionProps> = ({
             className={`
               relative flex flex-col items-center p-5 rounded-2xl border transition-all duration-300 cursor-pointer text-center
               ${isSelected
-                ? "border-[#2563FF] bg-blue-50/50 shadow-md scale-[1.01]"
-                : "border-gray-100 bg-white hover:border-[#2563FF]/30 hover:shadow-sm"
+                ? "border-[#2458ED] bg-blue-50/50 shadow-md scale-[1.01]"
+                : "border-gray-100 bg-white hover:border-[#2458ED]/30 hover:shadow-sm"
               }
             `}
           >
             {/* Avatar */}
             <div className={`
               relative w-20 h-20 sm:w-24 sm:h-24 rounded-full mb-4 p-1 border-2 transition-all duration-300
-              ${isSelected ? "border-[#2563FF]" : "border-gray-100"}
+              ${isSelected ? "border-[#2458ED]" : "border-gray-100"}
             `}>
               <div className="w-full h-full rounded-full overflow-hidden bg-gray-50 shadow-inner">
                 {professional.foto_url ? (
@@ -112,14 +112,14 @@ export const ProfessionalSelection: React.FC<ProfessionalSelectionProps> = ({
               
               {/* Selection Indicator */}
               {isSelected && (
-                <div className="absolute -top-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 bg-[#2563FF] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                <div className="absolute -top-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 bg-[#2458ED] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
                   <Check size={14} strokeWidth={3} />
                 </div>
               )}
             </div>
 
             <div className="space-y-1">
-              <h4 className={`text-base font-bold leading-tight transition-colors ${isSelected ? "text-blue-900" : "text-[#0A0F2D]"}`}>
+              <h4 className={`text-base font-bold leading-tight transition-colors ${isSelected ? "text-blue-900" : "text-[#0B2440]"}`}>
                 {professional.apellido} {professional.nombre}
               </h4>
               <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{professional.especialidad}</p>

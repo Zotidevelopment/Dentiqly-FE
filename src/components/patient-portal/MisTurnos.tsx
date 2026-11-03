@@ -88,7 +88,7 @@ export const MisTurnos: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563FF]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2458ED]" />
           <span className="text-[#8A93A8] font-medium">Cargando...</span>
         </div>
       </div>
@@ -98,7 +98,7 @@ export const MisTurnos: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-[#0B1023]">Mis Turnos</h1>
+        <h1 className="text-2xl font-extrabold text-[#0B2440]">Mis Turnos</h1>
       </div>
 
       {/* Filters */}
@@ -109,8 +109,8 @@ export const MisTurnos: React.FC = () => {
             onClick={() => setFiltro(f)}
             className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${
               filtro === f
-                ? "bg-[#2563FF] text-white shadow-[0_4px_15px_rgba(37,99,255,0.25)]"
-                : "bg-white text-[#5A6178] border border-gray-100 hover:border-[#2563FF]/30 hover:text-[#2563FF]"
+                ? "bg-[#2458ED] text-white shadow-[0_4px_15px_rgba(37,99,255,0.25)]"
+                : "bg-white text-[#5A6178] border border-gray-100 hover:border-[#2458ED]/30 hover:text-[#2458ED]"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -124,10 +124,10 @@ export const MisTurnos: React.FC = () => {
           <div className="w-16 h-16 rounded-2xl bg-[#F7F8FA] flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-[#8A93A8]" />
           </div>
-          <h3 className="text-lg font-bold text-[#0B1023] mb-2">No hay turnos en esta categoria</h3>
+          <h3 className="text-lg font-bold text-[#0B2440] mb-2">No hay turnos en esta categoria</h3>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-[#2563FF] text-white rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)]"
+            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-[#2458ED] text-white rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)]"
           >
             Reservar Turno
             <ArrowRight size={16} />
@@ -158,7 +158,7 @@ export const MisTurnos: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="flex items-center gap-2.5">
                       <Calendar size={16} className="text-[#8A93A8]" />
-                      <span className="text-sm font-semibold text-[#0B1023] capitalize">{formatearFecha(turno.fecha)}</span>
+                      <span className="text-sm font-semibold text-[#0B2440] capitalize">{formatearFecha(turno.fecha)}</span>
                     </div>
                     <div className="flex items-center gap-2.5">
                       <Clock size={16} className="text-[#8A93A8]" />
@@ -176,7 +176,7 @@ export const MisTurnos: React.FC = () => {
                 <div className="flex gap-2 shrink-0">
                   <Link
                     to={`/paciente/turnos/${turno.id}`}
-                    className="px-4 py-2 rounded-xl font-bold text-sm border border-gray-200 text-[#5A6178] hover:border-[#2563FF]/30 hover:text-[#2563FF] transition-all"
+                    className="px-4 py-2 rounded-xl font-bold text-sm border border-gray-200 text-[#5A6178] hover:border-[#2458ED]/30 hover:text-[#2458ED] transition-all"
                   >
                     Ver
                   </Link>
@@ -184,7 +184,7 @@ export const MisTurnos: React.FC = () => {
                     <>
                       <Link
                         to={`/paciente/turnos/${turno.id}/reprogramar`}
-                        className="px-4 py-2 rounded-xl font-bold text-sm bg-[#2563FF] text-white hover:bg-[#1D4ED8] transition-colors"
+                        className="px-4 py-2 rounded-xl font-bold text-sm bg-[#2458ED] text-white hover:bg-[#1744CD] transition-colors"
                       >
                         Reprogramar
                       </Link>

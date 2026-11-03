@@ -18,11 +18,15 @@ import { TreatmentPlansSection } from "./TreatmentPlansSection"
 import { FilesSection } from "./FilesSection"
 import { CuentaCorrienteSection } from "./CuentaCorrienteSection"
 import { RemindersSection } from "./RemindersSection"
+import { useAuth } from "../../hooks/useAuth"
+import { puede } from "../../config/permissions"
 import { TurnosSection } from "./TurnosSection"
 import { AsistenciasSection } from "./AsistenciasSection"
 import { turnosApi, pacientesApi } from "../../api"
 import { useToast } from "../../hooks/use-toast"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
+import { getObraSocialNombre } from "../../utils/obraSocial"
+import { parseLocalDate, formatLocalDate } from "../../utils/date"
 
 interface PatientDetailViewProps {
   patient: Paciente
@@ -45,6 +49,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   uploadingPhoto,
   getPhotoUrl,
 }) => {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<TabType>("informacion")
   const [asistenciasCount, setAsistenciasCount] = useState<number>(0)
   const [asistenciasLoading, setAsistenciasLoading] = useState<boolean>(true)
@@ -113,7 +118,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
     { id: "tratamientos" as TabType, label: "Tratamientos" },
     { id: "archivos" as TabType, label: "Archivos" },
     { id: "cuenta_corriente" as TabType, label: "Cuenta Corriente" },
-    { id: "recordatorios" as TabType, label: "Recordatorios" },
+    ...(puede(user?.role, "enviarRecordatorios") ? [{ id: "recordatorios" as TabType, label: "Recordatorios" }] : []),
     { id: "asistencias" as TabType, label: "Asistencias" },
     { id: "turnos" as TabType, label: "Turnos" },
   ]
@@ -121,7 +126,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   const calculateAge = (birthDate: string) => {
     if (!birthDate) return 0
     const today = new Date()
-    const birth = new Date(birthDate)
+    const birth = parseLocalDate(birthDate)
     let age = today.getFullYear() - birth.getFullYear()
     const monthDiff = today.getMonth() - birth.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
@@ -141,7 +146,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
       <div className="flex items-center gap-2 text-[13px] font-medium mb-6">
         <button
           onClick={onBack}
-          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white border border-[#E8E0D6] text-[#8A93A8] hover:bg-[#F5F0EA] hover:text-[#0B1023] transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white border border-[#E8E0D6] text-[#8A93A8] hover:bg-[#F5F0EA] hover:text-[#0B2440] transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -152,7 +157,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           Pacientes
         </span>
         <span className="text-[#E8E0D6]">/</span>
-        <span className="text-[#0B1023] font-semibold">Detalle</span>
+        <span className="text-[#0B2440] font-semibold">Detalle</span>
       </div>
 
       {/* Profile Header Block */}
@@ -167,7 +172,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                   className="h-[72px] w-[72px] rounded-2xl object-cover border border-[#E8E0D6]"
                 />
               ) : (
-                <div className="h-[72px] w-[72px] rounded-2xl bg-gradient-to-br from-[#2563FF] to-[#7C3AED] flex items-center justify-center">
+                <div className="h-[72px] w-[72px] rounded-2xl bg-[#2458ED] flex items-center justify-center">
                   <span className="text-white text-xl font-bold">
                     {getAvatarInitials(patient.nombre, patient.apellido)}
                   </span>
@@ -185,13 +190,13 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
               </label>
               {uploadingPhoto && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl">
-                  <div className="h-5 w-5 border-2 border-[#2563FF] border-t-transparent animate-spin rounded-full" />
+                  <div className="h-5 w-5 border-2 border-[#2458ED] border-t-transparent animate-spin rounded-full" />
                 </div>
               )}
             </div>
 
             <div>
-              <h1 className="text-xl font-semibold text-[#0B1023] tracking-[-0.3px] mb-1 flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl font-semibold text-[#0B2440] tracking-[-0.3px] mb-1 flex items-center gap-2 flex-wrap">
                 <span>{patient.nombre} {patient.apellido}</span>
                 {asistenciasLoading ? (
                   <div className="h-4.5 w-4.5 border-2 border-green-600 border-t-transparent rounded-full animate-spin shrink-0" />
@@ -211,7 +216,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                 </div>
                 <button
                   onClick={() => onEdit(patient)}
-                  className="text-[12px] font-semibold text-[#2563FF] hover:text-[#1E40AF] transition-colors"
+                  className="text-[12px] font-semibold text-[#2458ED] hover:text-[#1E40AF] transition-colors"
                 >
                   Editar
                 </button>
@@ -229,7 +234,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           <div className="flex items-center gap-3 w-full md:w-auto">
             <Button
               onClick={onBookTurno}
-              className="bg-dental-secondary hover:opacity-90 text-[#0B1023] font-bold rounded-xl px-5 py-2.5 h-auto text-[13px] shadow-sm transition-all w-full md:w-auto justify-center"
+              className="bg-dental-secondary hover:opacity-90 text-[#0B2440] font-bold rounded-xl px-5 py-2.5 h-auto text-[13px] shadow-sm transition-all w-full md:w-auto justify-center"
             >
               Agendar Turno
             </Button>
@@ -248,7 +253,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`h-full px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium whitespace-nowrap border-b-2 transition-all flex items-center justify-center ${
                   isActive
-                    ? "border-[#2563FF] text-[#2563FF]"
+                    ? "border-[#2458ED] text-[#2458ED]"
                     : "border-transparent text-[#8A93A8] hover:text-[#4B5568] hover:border-[#E8E0D6]"
                 }`}
               >
@@ -265,38 +270,38 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           <div className="max-w-4xl animate-in fade-in duration-300">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="bg-white rounded-2xl border border-[#E8E0D6] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-                <h3 className="text-[13px] font-semibold text-[#0B1023] mb-4 pb-3 border-b border-[#E8E0D6]/50">Información Personal</h3>
+                <h3 className="text-[13px] font-semibold text-[#0B2440] mb-4 pb-3 border-b border-[#E8E0D6]/50">Información Personal</h3>
                 <div className="space-y-3.5">
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Documento</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.tipo_documento} {patient.numero_documento}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.tipo_documento} {patient.numero_documento}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Nacimiento</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">
-                      {patient.fecha_nacimiento ? new Date(patient.fecha_nacimiento).toLocaleDateString("es-ES") : "-"}
+                    <span className="text-[13px] font-medium text-[#0B2440]">
+                      {patient.fecha_nacimiento ? formatLocalDate(patient.fecha_nacimiento, { day: "2-digit", month: "2-digit", year: "numeric" }) : "-"}
                       <span className="text-[#8A93A8] ml-1 font-normal">({calculateAge(patient.fecha_nacimiento)} años)</span>
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Sexo</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.sexo}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.sexo}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Ocupación</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.ocupacion || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.ocupacion || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Recomendado por</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.recomendado_por || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.recomendado_por || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Condición IVA</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.condicion_iva || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.condicion_iva || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Tratamiento</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.tratamiento || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.tratamiento || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center pt-2.5 border-t border-gray-100">
                     <span className="text-[12px] text-[#8A93A8]">Asistencias registradas</span>
@@ -308,41 +313,41 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
               </div>
 
               <div className="bg-white rounded-2xl border border-[#E8E0D6] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-                <h3 className="text-[13px] font-semibold text-[#0B1023] mb-4 pb-3 border-b border-[#E8E0D6]/50">Contacto y Cobertura</h3>
+                <h3 className="text-[13px] font-semibold text-[#0B2440] mb-4 pb-3 border-b border-[#E8E0D6]/50">Contacto y Cobertura</h3>
                 <div className="space-y-3.5">
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Teléfono</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.telefono || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.telefono || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Email</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.email || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.email || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Dirección</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.direccion || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.direccion || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Obra Social</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">
-                      {patient.obra_social_nombre_custom || patient.obraSocial?.nombre || "PARTICULARES"}
+                    <span className="text-[13px] font-medium text-[#0B2440]">
+                      {getObraSocialNombre(patient)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Afiliado Nº</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.numero_afiliado || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.numero_afiliado || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Contacto Emerg.</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.contacto_emergencia || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.contacto_emergencia || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Tel. Emergencia</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">{patient.telefono_emergencia || "-"}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.telefono_emergencia || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Facturación</span>
-                    <span className="text-[13px] font-medium text-[#0B1023]">Factura {patient.tipo_facturacion} {patient.numero_facturacion ? `(${patient.numero_facturacion})` : ""}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">Factura {patient.tipo_facturacion} {patient.numero_facturacion ? `(${patient.numero_facturacion})` : ""}</span>
                   </div>
                 </div>
               </div>

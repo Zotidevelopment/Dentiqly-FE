@@ -1,79 +1,83 @@
 {
   "nav": {
     "features": "Features",
-    "whyDentiqly": "Why Dentiqly",
+    "demo": "Demo",
     "pricing": "Pricing",
     "faq": "FAQ",
-    "login": "Sign in",
-    "signup": "Get started free"
+    "login": "Log in",
+    "signup": "Start for free"
   },
   "hero": {
-    "headline": "Your schedule, without paper or WhatsApp.",
-    "headlineHighlight": "Automatic. Smart. Ready.",
-    "subheadline": "Automatic appointment reminders, 24/7 online booking, and digital patient records — all in one place. Fewer calls, fewer no-shows, more time to care.",
-    "benefit1": "WhatsApp reminders — reduce no-shows by up to 40%",
-    "benefit2": "Online booking available 24/7, no calls or receptionist needed",
-    "benefit3": "Patient records, dental chart, and images in one place",
-    "ctaPrimary": "Start free — 14 days",
-    "ctaDemo": "See live demo",
-    "noCard": "No credit card · Setup in under 5 minutes"
+    "eyebrow": "Software for dental clinics",
+    "headline": "Your dental clinic, organized and on",
+    "headlineHighlight": "autopilot.",
+    "subheadline": "24/7 online booking, email reminders, digital dental charts and cash flow in a single panel. For clinics that want to grow without adding admin work.",
+    "ctaPrimary": "Start free for 14 days",
+    "ctaDemo": "See interactive demo",
+    "trust1": "No credit card",
+    "trust2": "Ready in 10 minutes",
+    "trust3": "Cancel anytime"
   },
   "pricing": {
-    "title": "Pricing",
+    "eyebrow": "Pricing",
+    "title": "One simple plan. Everything included.",
+    "subtitle": "No hidden modules, no per-user fees. Pay per clinic and use every feature from day one.",
     "monthly": "Monthly",
     "annual": "Annual",
+    "popular": "Most popular",
     "professional": "Professional",
     "enterprise": "Enterprise",
-    "usdMonth": "USD / month / clinic",
+    "usdMonth": "USD per month, per clinic",
     "trial": "14-day free trial. No credit card required.",
-    "cta": "Start now",
-    "allFeatures": "See all features",
-    "enterpriseDesc": "Get a custom quote from our team for your clinic's unique needs.",
-    "contactSales": "Contact sales",
-    "featureCount": "+33 features included at no extra cost",
+    "cta": "Start free trial",
+    "allFeatures": "See all 33+ features",
+    "enterpriseDesc": "For groups with many locations or special needs: custom integrations, dedicated migration and priority support.",
+    "contactSales": "Talk to sales",
+    "featureCount": "33+ features included at no extra cost",
     "startTrial": "Start free trial",
     "modalTitle": "All features",
     "modalSubtitle": "Everything included in the Professional Plan",
     "arsEquiv": "approx. ${{amount}} ARS",
+    "compareTitle": "Plan comparison",
     "mainFeatures": [
-      "Online scheduling & appointments",
-      "Complete patient management",
+      "24/7 online scheduling",
+      "Patients, clinical history and files",
       "Interactive dental chart",
-      "Professional billing & payroll",
-      "Cash flow & finances",
-      "Multi-location support"
+      "Email reminders",
+      "Cash flow, debtors and payouts",
+      "Multi-location and team roles"
     ],
     "featureCategories": [
       {
-        "category": "Scheduling & Appointments",
+        "category": "Scheduling",
         "items": [
-          "Visual calendar with daily, weekly, and monthly views",
-          "Appointments with customizable duration per service",
+          "Visual calendar with daily, weekly and monthly views",
+          "Custom appointment duration per service",
           "Online booking from the patient portal",
           "Absence and holiday management",
-          "Automatic email reminders",
-          "Reschedule and cancel with one click"
+          "One-click email reminders",
+          "One-click rescheduling and cancellation"
         ]
       },
       {
         "category": "Patients",
         "items": [
-          "Complete patient profile with personal and contact info",
+          "Complete record with personal and contact data",
           "Unlimited digital clinical history",
           "Interactive dental chart with per-tooth records",
-          "Treatment plans with progress tracking",
+          "Treatment plans with follow-up",
           "Digital prescriptions",
-          "Attachments (X-rays, photos, documents)",
-          "Per-patient billing account"
+          "Attachments (x-rays, photos, documents)",
+          "Per-patient account balance"
         ]
       },
       {
-        "category": "Finances",
+        "category": "Finance",
         "items": [
-          "Automatic professional payroll",
+          "Automatic professional payouts",
           "Cash flow with income and expenses",
           "Real-time debtor report",
-          "Health insurance management",
+          "Insurance and prepaid plan management",
           "Configurable commissions per professional"
         ]
       },
@@ -81,9 +85,9 @@
         "category": "Administration",
         "items": [
           "Centralized multi-location management",
-          "Roles & permissions (admin, professional, reception)",
-          "Service catalog with pricing and duration",
-          "Full clinic configuration",
+          "Roles and permissions (admin, professional, reception)",
+          "Service catalog with prices and durations",
+          "Complete clinic configuration",
           "Dashboard with real-time metrics and KPIs"
         ]
       },
@@ -91,18 +95,18 @@
         "category": "Patient Portal",
         "items": [
           "Self-service web portal for patients",
-          "Online appointment booking 24/7",
+          "24/7 online appointment booking",
           "Access to appointment and treatment history",
-          "File and document download",
+          "File and document downloads",
           "Personal data updates"
         ]
       },
       {
         "category": "Security & Support",
         "items": [
-          "AES-256 encryption for sensitive data",
+          "AES-256 encryption of sensitive data",
           "Automatic daily backups",
-          "Priority 24/7 support",
+          "Human support via email and chat",
           "Continuous updates at no extra cost",
           "Assisted onboarding and free data migration"
         ]
@@ -112,72 +116,84 @@
       { "name": "Users and professionals", "pro": "Unlimited", "enterprise": "Unlimited" },
       { "name": "Locations", "pro": "Up to 3", "enterprise": "Unlimited" },
       { "name": "Clinical records", "pro": "Unlimited", "enterprise": "Unlimited" },
-      { "name": "Support", "pro": "Email & chat", "enterprise": "Priority 24/7" },
+      { "name": "Support", "pro": "Email and chat", "enterprise": "Priority" },
       { "name": "Data migration", "pro": "Assisted", "enterprise": "Dedicated consultant" },
-      { "name": "Custom integrations", "pro": "+$10 /mo", "enterprise": "Included" }
+      { "name": "Custom integrations", "pro": "Quoted", "enterprise": "Included" }
     ]
   },
   "faq": {
-    "badge": "FAQ",
-    "title": "Everything you need to know about Dentiqly",
+    "eyebrow": "FAQ",
+    "title": "What clinics ask before getting started.",
+    "subtitle": "If your question isn't here, write to us and we'll answer the same day.",
+    "contact": "Write to hola@dentiqly.com",
     "items": [
       {
         "question": "How long does it take to set up Dentiqly?",
-        "answer": "Less than 10 minutes. Sign up, create your clinic, and you're ready to add patients, configure services, and schedule appointments. No installation or technical support needed."
+        "answer": "Less than 10 minutes. Sign up, create your clinic and you can start adding patients, configuring services and scheduling appointments. Nothing to install, no technical support to hire."
       },
       {
-        "question": "Can I manage multiple locations from one account?",
-        "answer": "Yes. Dentiqly is natively multi-location. From a single dashboard you can view metrics, schedule appointments, and manage professionals across all your clinics in real time."
+        "question": "Does it work from a phone or tablet?",
+        "answer": "Yes. Dentiqly is 100% web-based: log in from any computer, tablet or phone and see the same information everywhere."
       },
       {
-        "question": "Is my data safe?",
-        "answer": "Absolutely. We use AES-256 encryption, SSL/TLS connections, and automatic hourly backups. Each clinic's data is fully isolated in a secure multi-tenant architecture."
+        "question": "How do reminders work?",
+        "answer": "From the Reminders screen you pick a day and email a reminder to every patient with an appointment in one click. You write the message."
       },
       {
-        "question": "How do automated reminders work?",
-        "answer": "Dentiqly sends automatic email reminders to your patients before each appointment. You can customize the message and timing. This reduces no-shows by up to 40%."
+        "question": "Can I migrate the data I already have?",
+        "answer": "Yes. We help you migrate patients, records and appointments from Excel spreadsheets or other systems at no additional cost. Our team guides you through the whole process."
       },
       {
-        "question": "Can I migrate data from another system?",
-        "answer": "Yes. We offer free assisted migration of patients, histories, and appointments from Excel spreadsheets or other systems. Our team guides you through the entire process at no extra cost."
+        "question": "Can I manage several locations and professionals?",
+        "answer": "Yes. Users and professionals are unlimited, and the Professional plan includes up to 3 locations. From a single panel you see the schedule, metrics and cash flow of every site."
+      },
+      {
+        "question": "Is my data and my patients' data secure?",
+        "answer": "Yes. We use AES-256 encryption, SSL/TLS connections and automatic daily backups. Each clinic's data is completely isolated from every other clinic's."
       },
       {
         "question": "Is there a free trial?",
-        "answer": "Yes. You get a 14-day free trial with full access to all features. No credit card required to get started."
+        "answer": "Yes. You get 14 days with full access to every feature, no credit card required. If you don't want to continue, you pay nothing."
       }
     ]
   },
   "cta": {
-    "badge": "Contact",
-    "title": "Digitize your dental clinic",
-    "titleLine2": "starting today.",
-    "subtitle": "Join the clinics already saving time and delivering exceptional patient experiences. Get started free.",
+    "eyebrow": "Get started today",
+    "title": "Start organizing your clinic",
+    "titleLine2": "today.",
+    "subtitle": "Create your free account in two minutes. If you'd rather see it first, leave your details and we'll set up a personalized demo.",
     "ctaButton": "Create my free account",
-    "formTitle": "Want to talk to us?",
-    "emailLabel": "Work email address*",
+    "bullets": [
+      "14 days free with every feature",
+      "Free data migration",
+      "Human support from the team that built Dentiqly"
+    ],
+    "formTitle": "Prefer a walkthrough?",
+    "formSubtitle": "Leave your details and we'll contact you the same day.",
+    "emailLabel": "Work email*",
     "emailPlaceholder": "you@clinic.com",
     "nameLabel": "First name*",
     "namePlaceholder": "Your first name",
     "lastNameLabel": "Last name*",
     "lastNamePlaceholder": "Your last name",
-    "clinicLabel": "Clinic name*",
-    "clinicPlaceholder": "Clinic name",
-    "phoneLabel": "Phone number",
-    "phonePlaceholder": "+1 555 000-0000",
-    "reasonLabel": "Reason for interest*",
+    "clinicLabel": "Clinic*",
+    "clinicPlaceholder": "Your clinic's name",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "+54 9 11 0000-0000",
+    "reasonLabel": "Reason*",
     "reasonPlaceholder": "Select an option",
     "reasonOptions": {
       "contratar": "I want to subscribe to Dentiqly",
-      "demostracion": "Request a demo",
+      "demostracion": "I want a personalized demo",
       "precios": "Ask about plans and pricing",
-      "soporte": "Technical support or questions",
-      "otro": "Other reason"
+      "soporte": "Support or technical questions",
+      "otro": "Other"
     },
     "messageLabel": "How can we help?",
-    "messagePlaceholder": "Write your message here...",
-    "submit": "Send",
+    "messagePlaceholder": "Tell us a bit about your clinic...",
+    "submit": "Contact me",
     "submitting": "Sending...",
-    "successTitle": "Message sent!",
-    "successText": "We'll get back to you shortly."
+    "successTitle": "Got it, message received!",
+    "successText": "We'll reach out today to coordinate."
   }
 }

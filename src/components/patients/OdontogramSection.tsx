@@ -13,6 +13,7 @@ import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { todayISO, formatLocalDate } from "../../utils/date"
 import { getDienteImageSrc } from "../../utils/dienteImages"
 import { ToothAnatomicalSVG } from "./ToothAnatomicalSVG"
+import { useProfesionalesActivos, nombreProfesional } from "./useProfesionalesActivos"
 
 interface OdontogramSectionProps {
   pacienteId: string | number
@@ -91,7 +92,11 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
   const [dientesData, setDientesData] = useState<DientesData>({})
   const [observaciones, setObservaciones] = useState("")
   const [tipo, setTipo] = useState<"Inicial" | "Control" | "Tratamiento">("Inicial")
-  const [profesionalActual] = useState(1)
+  // Antes era un 1 fijo: todos los odontogramas quedaban a nombre del
+  // profesional con id 1 de la plataforma (de otra clínica, en la mayoría).
+  const profesionales = useProfesionalesActivos()
+  const [profesionalActual, setProfesionalActual] = useState<number | "">("")
+  const [saving, setSaving] = useState(false)
   const [mostrarTemporarios, setMostrarTemporarios] = useState(false)
 
   const [selectedTratamiento, setSelectedTratamiento] = useState<string>("")
@@ -140,6 +145,8 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
 
   const handleCreate = () => {
     inicializarDientesVacios()
+    setSelectedOdontograma(null)
+    setProfesionalActual(profesionales[0]?.id ?? "")
     setObservaciones("")
     setTipo("Inicial")
     setSelectedTratamiento("")
@@ -154,6 +161,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
     setDientesData(odontograma.dientes_data)
     setObservaciones(odontograma.observaciones || "")
     setTipo(odontograma.tipo)
+    setProfesionalActual((odontograma as any).profesional_id ?? profesionales[0]?.id ?? "")
     setSelectedTratamiento("")
     setSelectedEstado("mal_estado")
     setIsBorrarMode(false)
@@ -281,11 +289,19 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
   }
 
   const handleSubmit = async () => {
+    if (saving) return
+    const profesional = profesionalActual || profesionales[0]?.id
+    if (!profesional) {
+      toast({ variant: "destructive", title: "Falta el profesional", description: "Cargá al menos un profesional activo para guardar odontogramas." })
+      return
+    }
     try {
+      setSaving(true)
       const dataToSend: CrearOdontogramaData = {
         paciente_id: String(pacienteId),
-        profesional_id: profesionalActual,
-        fecha: todayISO(),
+        profesional_id: profesional,
+        // Al editar se conserva la fecha original del odontograma.
+        fecha: modalMode === "edit" && selectedOdontograma ? selectedOdontograma.fecha : todayISO(),
         dientes_data: dientesData,
         observaciones: observaciones,
         tipo: tipo,
@@ -299,16 +315,19 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
 
       setShowModal(false)
       fetchOdontogramas()
+      toast({ title: "Odontograma guardado" })
     } catch (error) {
       console.error("Error saving odontograma:", error)
-      toast({ variant: "destructive", title: "Error", description: "Error al guardar el odontograma" })
+      toast({ variant: "destructive", title: "No se pudo guardar", description: error instanceof Error ? error.message : "Error al guardar el odontograma" })
+    } finally {
+      setSaving(false)
     }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-8 h-8 border-2 border-[#2563FF] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#2458ED] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -316,7 +335,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-[#0A0F2D]">Odontogramas</h3>
+        <h3 className="text-lg font-semibold text-[#0B2440]">Odontogramas</h3>
         <Button onClick={handleCreate} size="sm">
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Odontograma
@@ -326,7 +345,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
       {odontogramas.length === 0 ? (
         <Card className="p-10 text-center">
           <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
-            <Plus className="h-6 w-6 text-[#2563FF]" />
+            <Plus className="h-6 w-6 text-[#2458ED]" />
           </div>
           <p className="text-gray-500 mb-4">No hay odontogramas registrados</p>
           <Button onClick={handleCreate} variant="outline" size="sm">
@@ -338,16 +357,16 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
           {odontogramas.map((odontograma) => (
             <div
               key={odontograma.id}
-              className="bg-white rounded-xl border border-gray-100 p-4 hover:border-[#2563FF]/20 hover:shadow-sm transition-all cursor-pointer group"
+              className="bg-white rounded-xl border border-gray-100 p-4 hover:border-[#2458ED]/20 hover:shadow-sm transition-all cursor-pointer group"
               onClick={() => handleView(odontograma)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                    <Calendar className="h-4 w-4 text-[#2563FF]" />
+                    <Calendar className="h-4 w-4 text-[#2458ED]" />
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-[#0A0F2D]">
+                    <span className="text-sm font-semibold text-[#0B2440]">
                       {formatLocalDate(odontograma.fecha, { day: "numeric", month: "long", year: "numeric" }, "es-ES")}
                     </span>
                     {odontograma.observaciones && (
@@ -359,10 +378,10 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                   </span>
                 </div>
                 <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
-                  <button onClick={() => handleView(odontograma)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-[#2563FF] transition-colors">
+                  <button onClick={() => handleView(odontograma)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-[#2458ED] transition-colors">
                     <Eye className="h-4 w-4" />
                   </button>
-                  <button onClick={() => handleEdit(odontograma)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-[#2563FF] transition-colors">
+                  <button onClick={() => handleEdit(odontograma)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-[#2458ED] transition-colors">
                     <Edit3 className="h-4 w-4" />
                   </button>
                   <button onClick={() => handleDelete(odontograma.id)} className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors">
@@ -393,7 +412,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
           <div className="bg-white rounded-none sm:rounded-2xl shadow-2xl max-w-[1400px] w-full h-full sm:h-[90vh] overflow-hidden flex flex-col border border-gray-100">
 
             {/* ── Header ── */}
-            <div className="bg-gradient-to-r from-[#0A0F2D] to-[#1a2456] px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center shrink-0">
+            <div className="bg-[#0B2440] px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold text-white">
@@ -408,9 +427,23 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                 {modalMode !== "view" && (
                   <div className="relative">
                     <select
+                      aria-label="Profesional"
+                      value={profesionalActual}
+                      onChange={(e) => setProfesionalActual(Number(e.target.value))}
+                      className="appearance-none pl-3 pr-7 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#2458ED] cursor-pointer max-w-[180px]"
+                    >
+                      <option value="" disabled className="text-gray-900">Profesional</option>
+                      {profesionales.map((p) => <option key={p.id} value={p.id} className="text-gray-900">{nombreProfesional(p)}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/60 pointer-events-none" />
+                  </div>
+                )}
+                {modalMode !== "view" && (
+                  <div className="relative">
+                    <select
                       value={tipo}
                       onChange={(e) => setTipo(e.target.value as "Inicial" | "Control" | "Tratamiento")}
-                      className="appearance-none pl-3 pr-7 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#2563FF] cursor-pointer"
+                      className="appearance-none pl-3 pr-7 py-1.5 bg-white/10 border border-white/20 rounded-lg text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#2458ED] cursor-pointer"
                     >
                       <option value="Inicial" className="text-gray-900">Inicial</option>
                       <option value="Control" className="text-gray-900">Control</option>
@@ -424,7 +457,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                 {modalMode !== "view" && (
                   <button
                     onClick={handleSubmit}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2458ED] hover:bg-[#1744CD] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors"
                   >
                     <Save className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Guardar</span>
@@ -448,7 +481,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                     type="checkbox"
                     checked={mostrarTemporarios}
                     onChange={(e) => setMostrarTemporarios(e.target.checked)}
-                    className="w-3.5 h-3.5 text-[#2563FF] border-gray-300 rounded focus:ring-[#2563FF]"
+                    className="w-3.5 h-3.5 text-[#2458ED] border-gray-300 rounded focus:ring-[#2458ED]"
                   />
                   <span className="text-gray-700">Temporarios</span>
                 </label>
@@ -478,7 +511,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                       setSelectedTratamiento(e.target.value)
                       if (e.target.value) setIsBorrarMode(false)
                     }}
-                    className="w-full appearance-none pl-3 pr-8 py-1.5 border border-gray-200 rounded-lg text-xs bg-white hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all cursor-pointer"
+                    className="w-full appearance-none pl-3 pr-8 py-1.5 border border-gray-200 rounded-lg text-xs bg-white hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] transition-all cursor-pointer"
                   >
                     <option value="">Seleccionar tratamiento...</option>
                     {TRATAMIENTOS.map((t) => (
@@ -502,11 +535,11 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                     onClick={() => setSelectedEstado("buen_estado")}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all ${
                       selectedEstado === "buen_estado"
-                        ? "bg-[#2563FF] text-white"
+                        ? "bg-[#2458ED] text-white"
                         : "bg-white text-gray-600 hover:bg-gray-50"
                     }`}
                   >
-                    <div className={`w-2 h-2 rounded-full ${selectedEstado === "buen_estado" ? "bg-white" : "bg-[#2563FF]"}`} />
+                    <div className={`w-2 h-2 rounded-full ${selectedEstado === "buen_estado" ? "bg-white" : "bg-[#2458ED]"}`} />
                     Buen estado
                   </button>
                   <button
@@ -542,7 +575,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                     type="checkbox"
                     checked={mostrarTemporarios}
                     onChange={(e) => setMostrarTemporarios(e.target.checked)}
-                    className="w-4 h-4 text-[#2563FF] border-gray-300 rounded focus:ring-[#2563FF]"
+                    className="w-4 h-4 text-[#2458ED] border-gray-300 rounded focus:ring-[#2458ED]"
                   />
                   <span className="text-gray-700">Temporarios</span>
                 </label>
@@ -661,7 +694,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                     value={observaciones}
                     onChange={(e) => setObservaciones(e.target.value)}
                     disabled={modalMode === "view"}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm disabled:bg-gray-50/50 disabled:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2563FF]/10 focus:border-[#2563FF] transition-all resize-none min-h-[100px]"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm disabled:bg-gray-50/50 disabled:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2458ED]/10 focus:border-[#2458ED] transition-all resize-none min-h-[100px]"
                     rows={4}
                     placeholder="Observaciones generales del odontograma..."
                   />
@@ -672,7 +705,7 @@ export const OdontogramSection: React.FC<OdontogramSectionProps> = ({ pacienteId
                   </label>
                   <div className="bg-white rounded-xl border border-gray-200/60 p-5 space-y-4 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="w-3.5 h-3.5 rounded-full bg-[#2563FF] shadow-sm shadow-blue-200" />
+                      <div className="w-3.5 h-3.5 rounded-full bg-[#2458ED] shadow-sm shadow-blue-200" />
                       <span className="text-sm font-medium text-gray-600">Buen estado</span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -825,13 +858,13 @@ const DienteVisual: React.FC<DienteVisualProps> = ({
       {esSuperior ? (
         <>
           {renderToothImage()}
-          <div className="text-center text-[9px] font-bold text-gray-400 my-0.5 group-hover:text-[#2563FF] transition-colors">{numero}</div>
+          <div className="text-center text-[9px] font-bold text-gray-400 my-0.5 group-hover:text-[#2458ED] transition-colors">{numero}</div>
           {renderSurfaceSVG()}
         </>
       ) : (
         <>
           {renderSurfaceSVG()}
-          <div className="text-center text-[9px] font-bold text-gray-400 my-0.5 group-hover:text-[#2563FF] transition-colors">{numero}</div>
+          <div className="text-center text-[9px] font-bold text-gray-400 my-0.5 group-hover:text-[#2458ED] transition-colors">{numero}</div>
           {renderToothImage()}
         </>
       )}

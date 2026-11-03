@@ -199,7 +199,7 @@ export const ServicesManager: React.FC = () => {
             background: tokens.blue, color: tokens.white,
             border: "none", borderRadius: 10, padding: "9px 18px",
             fontSize: 13, fontWeight: 700, cursor: "pointer",
-            fontFamily: "Inter, -apple-system, sans-serif",
+            fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             transition: "background 0.15s",
           }}
           onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
@@ -226,7 +226,7 @@ export const ServicesManager: React.FC = () => {
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, flex: 1,
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             }}
           />
         </div>
@@ -551,7 +551,7 @@ export const ServicesManager: React.FC = () => {
                           height: 30,
                           borderRadius: '50%',
                           backgroundColor: colorVal,
-                          border: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                          border: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '3px solid #0B2440' : '1px solid rgba(0,0,0,0.15)',
                           cursor: 'pointer',
                           transition: 'all 0.12s',
                           boxShadow: formData.color?.toUpperCase() === colorVal.toUpperCase() ? '0 0 6px rgba(0,0,0,0.3)' : 'none',
@@ -573,7 +573,7 @@ export const ServicesManager: React.FC = () => {
                             borderRadius: '50%',
                             backgroundColor: isCustom ? formData.color : 'transparent',
                             backgroundImage: isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
-                            border: isCustom ? '3px solid #0B1023' : '1px solid rgba(0,0,0,0.15)',
+                            border: isCustom ? '3px solid #0B2440' : '1px solid rgba(0,0,0,0.15)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -621,7 +621,7 @@ export const ServicesManager: React.FC = () => {
                     padding: "9px 18px", fontSize: 13, fontWeight: 500,
                     border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 9,
                     background: tokens.white, color: tokens.grayText, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.grayBg }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.white }}
@@ -634,7 +634,7 @@ export const ServicesManager: React.FC = () => {
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
                     background: tokens.blue, color: tokens.white,
                     border: "none", borderRadius: 9, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "background 0.15s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.blueHover }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.blue }}

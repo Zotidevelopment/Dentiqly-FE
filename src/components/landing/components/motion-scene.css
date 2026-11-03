@@ -1,0 +1,143 @@
+/* The source artwork for the exported, deterministic eight-second product loops. */
+.motion-scene { width:1120px;height:840px;position:relative;overflow:hidden;background:#E7F1EC;color:#0B2440;font-family:'Instrument Sans',sans-serif;line-height:1.4;isolation:isolate; }
+.motion-scene * { box-sizing:border-box; }
+.motion-scene h3,.motion-scene h4,.motion-scene p { margin:0;font-family:inherit; }
+.motion-scene-agenda { background:#E8EEFC; }
+.motion-scene-patient { background:#EEE8F7; }
+.motion-scene-finance { background:#FAEDDA; }
+.motion-art-geometry { position:absolute;inset:0;pointer-events:none;z-index:-1;color:#B2CDC1; }
+.motion-scene-agenda .motion-art-geometry { color:#BDCCED; }
+.motion-scene-patient .motion-art-geometry { color:#CEC0E5; }
+.motion-scene-finance .motion-art-geometry { color:#E3CFAB; }
+.motion-art-geometry i { position:absolute;display:block;border:1px solid currentColor; }
+.motion-art-geometry i:first-child { width:260px;height:400px;border-radius:130px;right:-170px;top:5px;transform:rotate(26deg); }
+.motion-art-geometry i:nth-child(2) { width:240px;height:380px;border-radius:120px;left:-170px;bottom:-110px;transform:rotate(26deg); }
+.motion-art-geometry i:last-child { width:160px;height:160px;border-radius:25px;left:-100px;top:180px;transform:rotate(-18deg); }
+.motion-scene-brand { position:absolute;top:40px;left:54px;right:54px;display:flex;justify-content:space-between;align-items:center; }
+.motion-scene-brand .motion-brand-logo { height:31px;width:auto; }
+.motion-scene-brand>span { display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;color:#49695A; }
+.motion-scene-agenda .motion-scene-brand>span { color:#49638C; }
+.motion-scene-patient .motion-scene-brand>span { color:#76628E; }
+.motion-scene-finance .motion-scene-brand>span { color:#806839; }
+.motion-scene-action { position:absolute;inset:0; }
+.motion-white-card { position:absolute;background:#FFFFFF;border:1px solid #DCE5EE;border-radius:25px;box-shadow:0 12px 36px #0B24400A; }
+.motion-white-card h3 { font-size:26px;font-weight:600;letter-spacing:-.035em;line-height:1.2; }
+.motion-white-card small { font-size:12px;color:#75879B; }
+.motion-white-card label { display:block;font-size:13px;font-weight:500; }
+.motion-white-card label>span { display:flex;align-items:center;justify-content:space-between;gap:10px;height:48px;padding:0 14px;border:1px solid #DCE5EE;border-radius:9px;font-size:16px;font-weight:400;margin-top:7px;color:#61748C;background:#FBFCFF; }
+.motion-white-card label>span.motion-field-active { border-color:#6B95F5;background:#F5F8FF;color:#0B2440; }
+.motion-cursor { position:absolute;z-index:9;filter:drop-shadow(0 2px 3px #0B24401A); }
+.motion-toast { position:absolute;left:280px;top:706px;width:560px;display:flex;gap:16px;align-items:center;padding:18px 23px;background:#FFF;border:1px solid #D8E6DC;border-radius:18px;box-shadow:0 8px 30px #0B24400A;z-index:10; }
+.motion-toast>span { display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#E5F2E9;color:#438061;flex-shrink:0; }
+.motion-toast strong { display:block;font-size:17px;font-weight:600;letter-spacing:-.015em; }
+.motion-toast p { font-size:12px;color:#75879B;margin-top:4px; }
+.motion-avatar { display:grid;place-items:center;width:54px;height:54px;flex-shrink:0;border-radius:16px;background:#EAF2FF;color:#35619E;font-size:17px;font-weight:600; }
+.motion-primary-button { display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:48px;background:#2458ED;color:white;font-size:14px;font-weight:500;border-radius:9px; }
+.motion-booking-card { left:130px;top:150px;width:860px;height:477px;padding:28px; }
+.motion-booking-heading { display:flex;align-items:center;gap:17px;padding-bottom:22px;border-bottom:1px solid #E5EBF3; }
+.motion-booking-heading small { display:block;font-size:11px;margin-bottom:5px; }
+.motion-booking-heading h3 { font-size:23px; }
+.motion-booking-heading p { font-size:12px;display:flex;align-items:center;gap:6px;margin-top:7px;color:#75879B; }
+.motion-booking-columns { display:grid;grid-template-columns:1.15fr 1fr;gap:40px;padding-top:22px; }
+.motion-month>div:first-child { display:flex;justify-content:space-between;align-items:center;font-size:15px; }
+.motion-month>div:first-child>span { display:flex;gap:17px;color:#8698AD; }
+.motion-week-labels,.motion-month-days { display:grid;grid-template-columns:repeat(7,1fr);gap:5px; }
+.motion-week-labels { margin-top:16px;font-size:10px;color:#8191A5;text-align:center; }
+.motion-month-days { margin-top:8px; }
+.motion-month-days>span { display:grid;place-items:center;width:36px;height:36px;margin:auto;font-size:13px;color:#4E6683;border-radius:50%;background:#F5F8FE; }
+.motion-month-days>span.motion-selected-day { background:#2458ED;color:#FFF;box-shadow:0 0 0 4px #DBE7FF; }
+.motion-times>strong { font-size:13px;font-weight:500;display:block;margin-bottom:10px; }
+.motion-times>span { display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #D9E5F5;border-radius:7px;font-size:13px;height:37px;margin-top:8px;background:#FAFCFF;color:#4E6683; }
+.motion-times>span.motion-selected-time { background:#EAF2FF;border-color:#2458ED;color:#2458ED;font-weight:600; }
+.motion-book-button { height:38px;display:flex;align-items:center;justify-content:center;gap:14px;background:#E8EEF8;color:#8B9BB0;border-radius:7px;font-size:12px;margin-top:12px; }
+.motion-book-button.motion-button-ready { background:#2458ED;color:#FFF; }
+.motion-booking-foot { display:flex;align-items:center;gap:9px;border-top:1px solid #E5EBF3;margin-top:20px;padding-top:15px;font-size:11px;color:#506982; }
+.motion-small-avatar { display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#EFF1F9;color:#72819C;font-size:8px; }
+.motion-booking-foot>span:last-child { margin-left:auto;font-size:10px;color:#8695A8; }
+.motion-booking-success { left:225px;top:155px;width:670px;height:480px;padding:42px;text-align:center; }
+.motion-large-check { display:grid;place-items:center;width:80px;height:80px;border-radius:50%;background:#E4F3E9;color:#418164;margin:0 auto 22px; }
+.motion-booking-success>small { display:block;letter-spacing:.12em;font-size:10px;margin-bottom:10px; }
+.motion-booking-success h3 { font-size:30px; }
+.motion-booking-success>p { margin-top:12px;font-size:15px;color:#75879B; }
+.motion-booking-success>div { display:flex;align-items:center;gap:18px;text-align:left;background:#F5F9F6;border:1px solid #DCE9E0;border-radius:13px;padding:18px;margin-top:30px; }
+.motion-booking-success>div>svg { color:#467F65;--icon-fill:#DCEDE2;flex-shrink:0; }
+.motion-booking-success>div strong { font-size:15px;font-weight:500; }
+.motion-booking-success>div p { font-size:12px;color:#75879B;margin-top:6px; }
+.motion-agenda-board { left:78px;top:158px;width:870px;height:474px;padding:26px; }
+.motion-board-heading { display:flex;align-items:center;justify-content:space-between; }
+.motion-board-heading h3 { font-size:24px;margin-top:6px; }
+.motion-board-heading small { font-size:9px;letter-spacing:.1em; }
+.motion-board-heading>span { display:flex;align-items:center;gap:6px;padding:9px 12px;background:#EAF2FF;color:#2458ED;border-radius:8px;font-size:10px; }
+.motion-day-bar { display:flex;align-items:center;justify-content:space-between;padding:20px 0 15px;font-size:12px; }
+.motion-day-bar>span { display:flex;gap:15px;align-items:center;color:#8797AB;font-size:10px; }
+.motion-day-bar i { width:4px;height:4px;background:#C6D1DF;border-radius:50%; }
+.motion-agenda-grid { display:flex;border:1px solid #E1E8F1;border-radius:9px;overflow:hidden; }
+.motion-agenda-hours { display:grid;grid-template-rows:repeat(5,55px);width:60px;flex-shrink:0;font-size:10px;color:#8394AA; }
+.motion-agenda-hours>span { padding:12px 9px;border-bottom:1px solid #EBEFF5; }
+.motion-agenda-slots { position:relative;flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,55px); }
+.motion-agenda-slots>span { border-left:1px solid #E5EBF3;border-bottom:1px solid #E5EBF3; }
+.motion-agenda-slots>span:nth-child(even) { background:#FAFBFF; }
+.motion-existing-appointment { position:absolute;top:6px;left:7px;width:calc(50% - 14px);padding:9px 12px;background:#E7ECFD;border-left:3px solid #6D8CE7;border-radius:7px; }
+.motion-existing-appointment strong,.motion-new-appointment strong { display:block;font-size:12px;font-weight:600; }
+.motion-existing-appointment span,.motion-new-appointment span { display:block;font-size:10px;margin-top:4px;color:#7385A0; }
+.motion-existing-appointment.second { left:calc(50% + 7px);top:61px;background:#E3F1EA;border-left-color:#7BB69A; }
+.motion-new-appointment { position:absolute;top:171px;left:7px;width:calc(50% - 14px);padding:9px 12px;background:#2458ED;color:#FFF;border-radius:7px; }
+.motion-new-appointment span { color:#D5E2FF; }
+.motion-new-appointment>svg { position:absolute;right:12px;top:16px; }
+.motion-appointment-form { top:222px;left:560px;width:425px;padding:25px;z-index:3; }
+.motion-appointment-form>div:first-child { display:flex;align-items:center;justify-content:space-between;margin-bottom:22px; }
+.motion-appointment-form h3 { font-size:21px; }
+.motion-appointment-form>div:first-child>span { color:#95A4B5;font-size:22px;transform:rotate(45deg); }
+.motion-appointment-form label { margin-bottom:15px; }
+.motion-form-row { display:grid;grid-template-columns:1.15fr 1fr;gap:12px; }
+.motion-form-row label>span { font-size:12px; }
+.motion-input-caret { width:1px;height:19px;background:#2458ED;margin-right:auto; }
+.motion-patient-card { top:153px;left:130px;width:860px;height:480px;padding:28px; }
+.motion-patient-heading { display:flex;align-items:center;gap:16px; }
+.motion-patient-heading small { font-size:9px;letter-spacing:.1em; }
+.motion-patient-heading h3 { font-size:24px;margin-top:5px; }
+.motion-patient-status { margin-left:auto;padding:7px 10px;border-radius:18px;background:#ECF6EE;color:#5B8766;font-size:10px; }
+.motion-patient-nav { display:flex;align-items:center;gap:29px;border-bottom:1px solid #E5EBF3;margin-top:25px; }
+.motion-patient-nav>span { font-size:12px;color:#8B9AAF;padding:14px 0;border-bottom:2px solid transparent; }
+.motion-patient-nav>span.active { color:#2458ED;border-color:#2458ED; }
+.motion-patient-note { position:absolute;left:28px;right:28px;top:200px;padding:25px;background:#F7F9FD;border:1px solid #E5EBF3;border-radius:13px; }
+.motion-patient-note small { font-size:9px;letter-spacing:.08em; }
+.motion-patient-note h4 { font-size:19px;font-weight:500;margin-top:12px; }
+.motion-patient-note>p { color:#75879B;font-size:14px;line-height:1.7;margin-top:12px; }
+.motion-patient-note>div { display:flex;justify-content:space-between;font-size:11px;color:#75879B;border-top:1px solid #E5EBF3;margin-top:17px;padding-top:15px; }
+.motion-patient-note>div>span:last-child { display:flex;align-items:center;gap:6px; }
+.motion-dental-chart { position:absolute;left:28px;right:28px;top:200px;background:#FBFAFD;border:1px solid #E7E1F1;border-radius:13px;padding:20px; }
+.motion-dental-chart>div:first-child { display:flex;justify-content:space-between;align-items:center;font-size:12px; }
+.motion-dental-chart>div:first-child strong { font-weight:500; }
+.motion-dental-chart>div:first-child>span { font-size:10px;color:#98A2B4; }
+.motion-teeth { display:flex;justify-content:center;gap:15px;padding:18px 8px; }
+.motion-teeth>span { flex:1;min-width:0;display:flex;align-items:center;flex-direction:column;padding:8px 5px;border:1px solid transparent;border-radius:8px; }
+.motion-teeth img { height:78px;width:36px;object-fit:contain;mix-blend-mode:multiply; }
+.motion-teeth small { margin-top:7px;font-size:10px; }
+.motion-teeth i { display:block;border:1px solid #D5DEED;border-radius:5px;width:27px;height:20px;margin-top:9px; }
+.motion-teeth .motion-tooth-selected { border-color:#9EBAF6;background:#EDF3FF; }
+.motion-tooth-selected i { background:#D6E5FF;border-color:#6C97ED; }
+.motion-tooth-detail { display:flex;align-items:center;gap:15px;border-top:1px solid #E7E1F1;padding-top:12px;font-size:11px; }
+.motion-tooth-detail>span:first-child { display:flex;align-items:center;gap:8px; }
+.motion-tooth-detail>span:nth-child(2) { color:#98A2B4; }
+.motion-tooth-detail>strong { display:flex;align-items:center;gap:15px;margin-left:auto;background:#2458ED;color:#FFF;border-radius:6px;padding:8px 13px;font-weight:500; }
+.motion-finance-ledger { top:171px;left:93px;width:760px;min-height:438px;padding:30px; }
+.motion-finance-ledger>small { font-size:9px;letter-spacing:.1em; }
+.motion-finance-ledger h3 { font-size:27px;margin-top:9px; }
+.motion-balance { margin-top:25px;padding-bottom:25px;border-bottom:1px solid #E5EBF3; }
+.motion-balance>span { display:block;font-size:12px;color:#8797AB; }
+.motion-balance>strong { display:block;font-size:38px;font-weight:500;letter-spacing:-.04em;margin-top:8px;color:#3F775A; }
+.motion-ledger-row { display:flex;align-items:center;gap:12px;padding:17px 0;border-bottom:1px solid #E5EBF3;max-width:410px; }
+.motion-ledger-icon { display:grid;place-items:center;width:34px;height:34px;background:#EAF3ED;border-radius:9px;color:#5A8D6D;flex-shrink:0; }
+.motion-ledger-row>span:nth-child(2) { font-size:12px; }
+.motion-ledger-row small { display:block;font-size:10px;margin-top:4px; }
+.motion-ledger-row>strong { margin-left:auto;color:#4E8866;font-size:12px;font-weight:500; }
+.motion-finance-form { left:572px;top:194px;width:416px;padding:26px; }
+.motion-finance-form-title { display:flex;align-items:center;gap:12px;margin-bottom:23px; }
+.motion-finance-form-title>span { display:grid;place-items:center;width:43px;height:43px;background:#FFF2DB;border-radius:10px;color:#806839;--icon-fill:#F5E4C5; }
+.motion-finance-form-title h3 { font-size:22px; }
+.motion-finance-form label { margin-top:16px; }
+.motion-finance-form label>span { font-size:15px; }
+.motion-finance-form label>span>small { font-size:17px;color:#98A6B8;margin-right:8px; }
+.motion-finance-form label:nth-of-type(2)>span { justify-content:flex-start;font-size:23px; }
+.motion-finance-form>.motion-primary-button { margin-top:23px; }

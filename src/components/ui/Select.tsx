@@ -23,7 +23,7 @@ export const Select: React.FC<SelectProps> = ({
       )}
       <div className="relative">
         <select
-          className={`w-full px-3 py-2 border rounded-lg appearance-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#2563FF)] focus:border-transparent ${
+          className={`w-full px-3 py-2 border rounded-lg appearance-none transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#2458ED)] focus:border-transparent ${
             error 
               ? `border-[#EF4444]` 
               : `border-[#D1D5DB] hover:border-[#9CA3AF]`

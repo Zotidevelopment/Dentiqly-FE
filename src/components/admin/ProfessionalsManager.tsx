@@ -63,7 +63,7 @@ export const ProfessionalsManager: React.FC = () => {
     telefono: "",
     especialidad: "",
     numero_matricula: "",
-    color: "#2563FF",
+    color: "#2458ED",
     foto_url: "",
   })
 
@@ -87,7 +87,8 @@ export const ProfessionalsManager: React.FC = () => {
       setLoading(true)
       const response = await adminApi.profesionales.listar({
         search: searchTerm,
-        estado: statusFilter,
+        estado: statusFilter || "todos",
+        limit: 200,
       })
       setProfessionals(response.data)
     } catch (error) {
@@ -157,7 +158,7 @@ export const ProfessionalsManager: React.FC = () => {
       telefono: professional.telefono || "",
       especialidad: professional.especialidad,
       numero_matricula: professional.numero_matricula,
-      color: professional.color || "#2563FF",
+      color: professional.color || "#2458ED",
       foto_url: professional.foto_url || "",
     })
     setShowForm(true)
@@ -217,7 +218,7 @@ export const ProfessionalsManager: React.FC = () => {
       telefono: "",
       especialidad: "",
       numero_matricula: "",
-      color: "#2563FF",
+      color: "#2458ED",
       foto_url: "",
     })
     setErrors({})
@@ -256,7 +257,7 @@ export const ProfessionalsManager: React.FC = () => {
               background: tokens.white, color: tokens.grayText,
               border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
               fontSize: 13, fontWeight: 500, cursor: "pointer",
-              fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
             }}
             onMouseEnter={e => e.currentTarget.style.background = tokens.grayBg}
             onMouseLeave={e => e.currentTarget.style.background = tokens.white}
@@ -287,7 +288,7 @@ export const ProfessionalsManager: React.FC = () => {
               background: tokens.white, color: tokens.grayText,
               border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
               fontSize: 13, fontWeight: 500, cursor: "pointer",
-              fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
             }}
             onMouseEnter={e => e.currentTarget.style.background = tokens.grayBg}
             onMouseLeave={e => e.currentTarget.style.background = tokens.white}
@@ -319,7 +320,7 @@ export const ProfessionalsManager: React.FC = () => {
             background: tokens.blue, color: tokens.white,
             border: "none", borderRadius: 10, padding: "9px 18px",
             fontSize: 13, fontWeight: 700, cursor: "pointer",
-            fontFamily: "Inter, -apple-system, sans-serif",
+            fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             transition: "background 0.15s",
           }}
           onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
@@ -347,7 +348,7 @@ export const ProfessionalsManager: React.FC = () => {
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, flex: 1,
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             }}
           />
         </div>
@@ -364,7 +365,7 @@ export const ProfessionalsManager: React.FC = () => {
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, cursor: "pointer",
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             }}
           >
             <option value="">Todos los estados</option>
@@ -745,7 +746,7 @@ export const ProfessionalsManager: React.FC = () => {
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <input
                       type="color"
-                      value={formData.color || "#2563FF"}
+                      value={formData.color || "#2458ED"}
                       onChange={e => handleChange("color", e.target.value)}
                       style={{ width: 40, height: 40, padding: 2, border: `1px solid ${tokens.grayBorder}`, borderRadius: 8, background: tokens.white, cursor: "pointer" }}
                     />
@@ -765,7 +766,7 @@ export const ProfessionalsManager: React.FC = () => {
                     padding: "9px 18px", fontSize: 13, fontWeight: 500,
                     border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 9,
                     background: tokens.white, color: tokens.grayText, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.grayBg }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.white }}
@@ -779,7 +780,7 @@ export const ProfessionalsManager: React.FC = () => {
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
                     background: saving ? tokens.grayBorder : tokens.blue, color: tokens.white,
                     border: "none", borderRadius: 9, cursor: saving ? "not-allowed" : "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "background 0.15s",
                     opacity: saving ? 0.7 : 1,
                   }}
                   onMouseEnter={e => { if (!saving) e.currentTarget.style.background = tokens.blueHover }}

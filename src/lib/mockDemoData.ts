@@ -51,7 +51,7 @@ const defaultProfesionales: Profesional[] = [
     telefono: "11-4567-8901",
     email: "lucas.diaz@dentiqly.com",
     estado: "Activo",
-    color: "#2563FF", // Azul dental
+    color: "#2458ED", // Azul dental
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -745,6 +745,31 @@ if (typeof window !== "undefined") {
 }
 
 // MOTOR DE MOCKS (SIMULADOR DE ENDPOINTS)
+// Feriados nacionales para el demo (en la app real los da el backend).
+const feriadosNacionalesDemo = (year: number) => {
+  const lista: [string, string, "inamovible" | "trasladable" | "puente"][] = year === 2026
+    ? [
+        ["01-01", "Año nuevo", "inamovible"], ["02-16", "Carnaval", "inamovible"], ["02-17", "Carnaval", "inamovible"],
+        ["03-23", "Puente turístico no laborable", "puente"], ["03-24", "Día Nacional de la Memoria por la Verdad y la Justicia", "inamovible"],
+        ["04-02", "Día del Veterano y de los Caídos en la Guerra de Malvinas", "inamovible"], ["04-03", "Viernes Santo", "inamovible"],
+        ["05-01", "Día del Trabajador", "inamovible"], ["05-25", "Día de la Revolución de Mayo", "inamovible"],
+        ["06-15", "Paso a la Inmortalidad del General Martín Güemes (17/6)", "trasladable"],
+        ["06-20", "Paso a la Inmortalidad del General Manuel Belgrano", "inamovible"], ["07-09", "Día de la Independencia", "inamovible"],
+        ["07-10", "Puente turístico no laborable", "puente"], ["08-17", "Paso a la Inmortalidad del Gral. José de San Martín", "trasladable"],
+        ["10-12", "Día del Respeto a la Diversidad Cultural", "trasladable"], ["11-23", "Día de la Soberanía Nacional (20/11)", "trasladable"],
+        ["12-07", "Puente turístico no laborable", "puente"], ["12-08", "Día de la Inmaculada Concepción de María", "inamovible"],
+        ["12-25", "Navidad", "inamovible"],
+      ]
+    : [
+        ["01-01", "Año nuevo", "inamovible"], ["03-24", "Día Nacional de la Memoria por la Verdad y la Justicia", "inamovible"],
+        ["04-02", "Día del Veterano y de los Caídos en la Guerra de Malvinas", "inamovible"], ["05-01", "Día del Trabajador", "inamovible"],
+        ["05-25", "Día de la Revolución de Mayo", "inamovible"], ["06-20", "Paso a la Inmortalidad del General Manuel Belgrano", "inamovible"],
+        ["07-09", "Día de la Independencia", "inamovible"], ["12-08", "Día de la Inmaculada Concepción de María", "inamovible"],
+        ["12-25", "Navidad", "inamovible"],
+      ]
+  return lista.map(([md, nombre, tipo]) => ({ fecha: `${year}-${md}`, nombre, tipo }))
+}
+
 export const handleMockRequest = async (endpoint: string, method: string, body?: any): Promise<any> => {
   // Simular latencia de red aleatoria entre 100ms y 250ms
   await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 150))
@@ -763,7 +788,15 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
       trial_ends_at: null,
       trial_days_remaining: 30,
       show_trial_warning: false,
+      billing_plan: "monthly",
+      billing_cycle_end: new Date(Date.now() + 20 * 86400000).toISOString(),
+      payment_provider: "lemonsqueezy",
+      cancel_at_period_end: false,
     }
+  }
+  // En el demo no se cancela nada de verdad.
+  if (path === "/api/billing/cancel") {
+    return { ok: true, cancel_at_period_end: true }
   }
 
   // 2. CONFIGURACION
@@ -1311,6 +1344,27 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
       setStorageItem(KEYS.FERIADOS, fers)
       return nuevo
     }
+  }
+  if (path === "/api/feriados/nacionales" || path === "/api/feriados/importar") {
+    const fers = getStorageItem(KEYS.FERIADOS, defaultFeriados)
+    const year = method === "GET"
+      ? parseInt(query.get("year") || String(new Date().getFullYear()))
+      : (typeof body === "string" ? JSON.parse(body) : body).year
+    const nacionales = feriadosNacionalesDemo(year)
+    if (method === "GET") {
+      const cargadas = new Set(fers.map((f: any) => f.fecha))
+      return { year, fuente: "oficial", feriados: nacionales.map((f) => ({ ...f, cargado: cargadas.has(f.fecha) })) }
+    }
+    const data = typeof body === "string" ? JSON.parse(body) : body
+    const pedidas = new Set<string>(data.fechas || [])
+    let creados = 0
+    for (const f of nacionales) {
+      if (!pedidas.has(f.fecha) || fers.some((x: any) => x.fecha === f.fecha)) continue
+      fers.push({ id: Date.now() + creados, fecha: f.fecha, descripcion: f.nombre, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
+      creados++
+    }
+    setStorageItem(KEYS.FERIADOS, fers)
+    return { creados, yaCargados: pedidas.size - creados, fallidos: 0 }
   }
   if (path.startsWith("/api/feriados/")) {
     const fers = getStorageItem(KEYS.FERIADOS, defaultFeriados)

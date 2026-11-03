@@ -31,6 +31,7 @@ interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   login: (data: LoginData) => Promise<any>;
+  loginConGoogle: (data: { credential: string; nombre_clinica?: string; telefono?: string }) => Promise<any>;
   register: (data: SaasRegisterData) => Promise<any>;
   logout: () => void;
 }
@@ -50,10 +51,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(userData);
           localStorage.setItem('user', JSON.stringify(userData));
           identifyFromUser(userData);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to restore session:', error);
-          apiClient.clearToken();
-          localStorage.removeItem('user');
+          // Solo un 401 significa que el token no sirve. Un corte de red o un
+          // 429/500 momentáneo no tiene que desloguear a nadie: se usa el
+          // usuario guardado y la próxima llamada vuelve a intentar.
+          if (error?.response?.status === 401) {
+            apiClient.clearToken();
+            localStorage.removeItem('user');
+          } else {
+            try {
+              const guardado = localStorage.getItem('user');
+              if (guardado) setUser(JSON.parse(guardado));
+            } catch {
+              /* usuario guardado ilegible: se sigue sin sesión */
+            }
+          }
         }
       } else if (typeof window !== 'undefined' && (window.location.pathname.startsWith('/demo') || window.location.pathname === '/')) {
         // Usuario demo sintético: NO se identifica en analytics, si no cada
@@ -106,6 +119,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return response;
   };
 
+  const loginConGoogle = async (data: { credential: string; nombre_clinica?: string; telefono?: string }) => {
+    const response = await authApi.google(data);
+    if (response.needs_clinic || !response.token) return response;
+    const userWithClinic: AuthUser = { ...response.user, clinica: response.clinica };
+    setUser(userWithClinic);
+    localStorage.setItem('user', JSON.stringify(userWithClinic));
+    identifyFromUser(userWithClinic);
+    if (response.nuevo) trackSignupCompleted('google');
+    else trackLogin('google', false);
+    return response;
+  };
+
   const logout = () => {
     authApi.logout();
     setUser(null);
@@ -114,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginConGoogle, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

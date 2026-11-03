@@ -1,44 +1,55 @@
 {
   "name": "Dentiqly - Software de Gestión Dental",
   "short_name": "Dentiqly",
-  "description": "Software dental todo en uno para clínicas odontológicas. Gestión de turnos, historias clínicas, odontogramas, facturación y recordatorios por WhatsApp.",
+  "description": "Software dental todo en uno para clínicas odontológicas. Gestión de turnos, historias clínicas, odontogramas, caja y recordatorios por email.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAFCFF",
-  "theme_color": "#2563FF",
+  "background_color": "#F5F8FF",
+  "theme_color": "#0B2440",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "es-AR",
   "dir": "ltr",
-  "categories": ["medical", "business", "productivity"],
+  "categories": [
+    "medical",
+    "business",
+    "productivity"
+  ],
   "icons": [
     {
-      "src": "/assets/dentiqly-logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/favico.png",
+      "src": "/assets/brand/icons/icon-192-v2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/icons/icon-512-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/icons/icon-maskable-512-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "/assets/screenshots/dashboard.png",
-      "sizes": "1280x720",
+      "src": "/assets/screenshots/product-dashboard-v3.png",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Panel principal de Dentiqly"
     },
     {
-      "src": "/assets/screenshots/calendario.png",
-      "sizes": "1280x720",
+      "src": "/assets/screenshots/product-calendar-v3.png",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Agenda y calendario de turnos"
+      "label": "Agenda semanal de Dentiqly"
     }
-  ]
+  ],
+  "id": "/"
 }

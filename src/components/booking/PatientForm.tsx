@@ -76,7 +76,13 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
     localStorage.setItem("dentiqly_patient_data", JSON.stringify(dataToCache))
   }, [formData])
 
+  // En la reserva pública, la búsqueda por DNI no devuelve los datos de
+  // contacto del paciente (cualquiera que conozca un DNI podría verlos). Si se
+  // encontró al paciente, alcanza con su DNI: el turno se agenda sobre su ficha.
+  const ocultarDatosExistente = existingPatientLocked && !embedded
+
   const validateForm = () => {
+    if (ocultarDatosExistente) return Boolean(formData.numero_documento.trim())
     const newErrors: Partial<Record<keyof CrearPacienteData, string>> = {}
     if (!nombreCompleto.trim()) newErrors.nombre = "Requerido"
     else if (!nombreCompleto.trim().includes(' ')) newErrors.nombre = "Ingrese nombre y apellido"
@@ -184,10 +190,10 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
           <button
             type="button"
             onClick={() => setPatientMode("existing")}
-            className="flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#2563FF] hover:bg-blue-50/30 transition-all group"
+            className="flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#2458ED] hover:bg-blue-50/30 transition-all group"
           >
-            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-[#2563FF]/10 transition-colors">
-              <UserCheck className="h-6 w-6 text-[#2563FF]" />
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-[#2458ED]/10 transition-colors">
+              <UserCheck className="h-6 w-6 text-[#2458ED]" />
             </div>
             <div className="text-center">
               <p className="font-bold text-gray-900 text-sm">Ya soy paciente</p>
@@ -197,10 +203,10 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
           <button
             type="button"
             onClick={() => setPatientMode("new")}
-            className="flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#2563FF] hover:bg-blue-50/30 transition-all group"
+            className="flex flex-col items-center gap-3 p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#2458ED] hover:bg-blue-50/30 transition-all group"
           >
-            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-[#2563FF]/10 transition-colors">
-              <UserPlus className="h-6 w-6 text-[#2563FF]" />
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-[#2458ED]/10 transition-colors">
+              <UserPlus className="h-6 w-6 text-[#2458ED]" />
             </div>
             <div className="text-center">
               <p className="font-bold text-gray-900 text-sm">Primera vez</p>
@@ -230,7 +236,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
       {patientMode === "existing" && !existingPatientLocked && (
         <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-4">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-widest">
-            <Search className="text-[#2563FF]" size={16} />
+            <Search className="text-[#2458ED]" size={16} />
             Buscar por DNI
           </h3>
           <div className="flex gap-3">
@@ -240,13 +246,13 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
               onChange={(e) => { setDniSearch(e.target.value); setSearchResult("idle") }}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleDniSearch() } }}
               placeholder="Ingresá tu DNI"
-              className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition-all"
+              className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] transition-all"
             />
             <button
               type="button"
               onClick={handleDniSearch}
               disabled={searching || !dniSearch.trim()}
-              className="px-5 py-2.5 bg-[#2563FF] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50"
+              className="px-5 py-2.5 bg-[#2458ED] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50"
             >
               {searching ? "Buscando..." : "Buscar"}
             </button>
@@ -279,12 +285,23 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
       )}
 
       {/* Solo mostrar el formulario completo si es nuevo o ya se encontró al existente */}
-      {(patientMode === "new" || existingPatientLocked) && (
+      {ocultarDatosExistente && (
+        <button
+          type={embedded ? "button" : "submit"}
+          onClick={embedded ? handleClick : undefined}
+          disabled={loading}
+          className="w-full h-12 sm:h-14 bg-[#2458ED] text-white font-bold rounded-xl text-sm sm:text-base hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
+        >
+          {loading ? "Cargando..." : "Continuar"}
+        </button>
+      )}
+
+      {(patientMode === "new" || (existingPatientLocked && !ocultarDatosExistente)) && (
         <>
       {/* Sección 1: Información Personal */}
       <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-5">
         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-widest">
-           <User className="text-[#2563FF]" size={16} />
+           <User className="text-[#2458ED]" size={16} />
            Información Personal
         </h3>
 
@@ -371,7 +388,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
       {/* Sección 2: Cobertura Médica */}
       <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-5">
         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-widest">
-           <Shield className="text-[#2563FF]" size={16} />
+           <Shield className="text-[#2458ED]" size={16} />
            Cobertura Médica
         </h3>
 
@@ -459,7 +476,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
             onChange={(e) => handleChange("observaciones", e.target.value)}
             rows={3}
             placeholder="Escribe aquí cualquier detalle relevante..."
-            className="w-full rounded-xl border border-gray-200 bg-white p-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] resize-none"
+            className="w-full rounded-xl border border-gray-200 bg-white p-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] resize-none"
           />
         </div>
       </div>
@@ -468,7 +485,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
         type={embedded ? "button" : "submit"}
         onClick={embedded ? handleClick : undefined}
         disabled={loading}
-        className="w-full h-12 sm:h-14 bg-[#2563FF] text-white font-bold rounded-xl text-sm sm:text-base hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
+        className="w-full h-12 sm:h-14 bg-[#2458ED] text-white font-bold rounded-xl text-sm sm:text-base hover:bg-blue-700 transition-all uppercase tracking-widest disabled:opacity-50"
       >
         {loading ? "Cargando..." : "Confirmar Datos"}
       </button>

@@ -59,16 +59,16 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
             className={`
               relative group p-4 rounded-xl border transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[100px]
               ${isSelected
-                ? "border-[#2563FF] bg-blue-50/50 shadow-md scale-[1.01]"
-                : "border-gray-100 bg-white hover:border-[#2563FF]/30 hover:shadow-sm"
+                ? "border-[#2458ED] bg-blue-50/50 shadow-md scale-[1.01]"
+                : "border-gray-100 bg-white hover:border-[#2458ED]/30 hover:shadow-sm"
               }
             `}
           >
             <div className="flex-1 pr-6 space-y-1">
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? "text-[#2563FF]/80" : "text-gray-400"}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? "text-[#2458ED]/80" : "text-gray-400"}`}>
                 {service.categoria || "TRATAMIENTO"}
               </span>
-              <h4 className={`text-sm font-bold leading-tight ${isSelected ? "text-blue-900" : "text-[#0A0F2D]"} transition-colors`}>
+              <h4 className={`text-sm font-bold leading-tight ${isSelected ? "text-blue-900" : "text-[#0B2440]"} transition-colors`}>
                 {service.nombre}
               </h4>
             </div>
@@ -81,7 +81,7 @@ export const ServiceSelection: React.FC<ServiceSelectionProps> = ({ selectedServ
             {/* Selection Tick */}
             <div className={`
               absolute top-4 right-4 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300
-              ${isSelected ? "bg-[#2563FF] text-white opacity-100" : "bg-gray-100 text-gray-300 opacity-0 group-hover:opacity-100"}
+              ${isSelected ? "bg-[#2458ED] text-white opacity-100" : "bg-gray-100 text-gray-300 opacity-0 group-hover:opacity-100"}
             `}>
               <Plus size={12} className={isSelected ? "rotate-45" : ""} />
             </div>

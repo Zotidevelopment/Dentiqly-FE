@@ -1,10 +1,10 @@
 export const dentalColors = {
-  primary: "var(--brand-primary, #2563FF)", // Electric Blue
-  secondary: "var(--brand-secondary, #2563FF)", // Soft Cyan (Now Blue)
+  primary: "var(--brand-primary, #2458ED)", // Electric Blue
+  secondary: "var(--brand-secondary, #2458ED)", // Soft Cyan (Now Blue)
   white: "#FFFFFF", // Pure White
   // Variaciones del color principal para diferentes usos
   primaryLight: "#5A8BFF", // Azul más claro para hover
-  primaryDark: "#1D4ED8", // Azul más oscuro para estados activos
+  primaryDark: "#1744CD", // Azul más oscuro para estados activos
   // Grises adicionales para UI
   gray50: "#F4F7FB", // Soft Gray
   gray100: "#F3F4F6",
@@ -15,7 +15,7 @@ export const dentalColors = {
   gray600: "#4B5563",
   gray700: "#374151",
   gray800: "#1F2937",
-  gray900: "#0A0F2D", // Dark Navy
+  gray900: "#0B2440", // Dark Navy
   // Estados
   success: "#10B981",
   warning: "#F59E0B",

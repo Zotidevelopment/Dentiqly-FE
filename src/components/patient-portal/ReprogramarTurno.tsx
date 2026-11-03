@@ -47,15 +47,11 @@ export const ReprogramarTurno: React.FC = () => {
       if (!fechaSeleccionada || !turno?.profesional_id) return
 
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/profesionales/${turno.profesional_id}/horarios?fecha=${fechaSeleccionada}`
-        )
-        if (response.ok) {
-          const data = await response.json()
-          setHorariosDisponibles(data.horarios || [])
-        } else {
-          setHorariosDisponibles([])
-        }
+        // Antes pedía /horarios sin token: el backend respondía 401 y siempre
+        // se mostraba "no hay horarios". Ahora trae los horarios libres reales.
+        const aMin = (h: string) => { const [hh, mm] = String(h).slice(0, 5).split(":").map(Number); return hh * 60 + mm }
+        const duracion = turno.hora_inicio && turno.hora_fin ? Math.max(aMin(turno.hora_fin) - aMin(turno.hora_inicio), 10) : 30
+        setHorariosDisponibles(await patientPortalApi.obtenerHorariosDisponibles(turno.profesional_id, fechaSeleccionada, duracion))
       } catch (err) {
         console.error("Error al cargar horarios:", err)
         setHorariosDisponibles([])
@@ -74,7 +70,10 @@ export const ReprogramarTurno: React.FC = () => {
     setError("")
 
     try {
-      const horaFin = incrementTime(horaSeleccionada, 30)
+      // Se respeta la duración original del turno (antes siempre 30 minutos).
+      const aMin = (h: string) => { const [hh, mm] = String(h).slice(0, 5).split(":").map(Number); return hh * 60 + mm }
+      const duracion = turno?.hora_inicio && turno?.hora_fin ? Math.max(aMin(turno.hora_fin) - aMin(turno.hora_inicio), 10) : 30
+      const horaFin = incrementTime(horaSeleccionada, duracion)
       await patientPortalApi.reprogramarTurno(Number(id), fechaSeleccionada, horaSeleccionada, horaFin)
       setCompletado(true)
     } catch (err: any) {

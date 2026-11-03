@@ -3,6 +3,8 @@ import { Card } from '../ui/Card'
 import { Button } from '../ui/Button'
 import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, X } from 'lucide-react'
 import { cuentaCorrienteApi } from '../../api/cuenta-corriente'
+import { useAuth } from '../../hooks/useAuth'
+import { puede } from '../../config/permissions'
 import type { MovimientoCuenta } from '../../types'
 import { useToast } from '../../hooks/use-toast'
 import { ConfirmationModal } from '../ui/ConfirmationModal'
@@ -19,6 +21,8 @@ interface SummaryData {
 }
 
 export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ pacienteId }) => {
+    const { user } = useAuth()
+    const puedeRegistrar = puede(user?.role, 'registrarPagosPaciente')
     const [movements, setMovements] = useState<MovimientoCuenta[]>([])
     const [summary, setSummary] = useState<SummaryData>({ ingresos: 0, deudas: 0, saldo: 0 })
     const [loading, setLoading] = useState(true)
@@ -81,14 +85,18 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
         setShowModal(true)
     }
 
+    const [guardando, setGuardando] = useState(false)
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (guardando) return
         const montoNum = parseFloat(formData.monto)
         if (isNaN(montoNum) || montoNum <= 0) {
             toast({ variant: "destructive", title: "Validación", description: "Por favor, ingrese un monto válido mayor a 0." })
             return
         }
         try {
+            setGuardando(true)
             await cuentaCorrienteApi.registrar(pacienteId, {
                 fecha: formData.fecha,
                 tipo: modalType,
@@ -100,7 +108,9 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
             fetchData()
         } catch (error) {
             console.error('Error registering movement:', error)
-            toast({ variant: "destructive", title: "Error", description: "Error al registrar el movimiento" })
+            toast({ variant: "destructive", title: "No se pudo registrar", description: error instanceof Error ? error.message : "Error al registrar el movimiento" })
+        } finally {
+            setGuardando(false)
         }
     }
 
@@ -152,6 +162,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+                {puedeRegistrar && (<>
                 <Button className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto justify-center" onClick={() => handleOpenModal('Deuda')}>
                     <Plus className="h-4 w-4 mr-2" />
                     Registrar Deuda
@@ -160,6 +171,7 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
                     <Plus className="h-4 w-4 mr-2" />
                     Registrar Ingreso
                 </Button>
+                </>)}
             </div>
 
             {/* Table */}
@@ -204,9 +216,9 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
                                             {mov.tipo === 'Ingreso' ? '+' : '-'}{formatCurrency(mov.monto)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button onClick={() => handleDelete(mov.id)} className="text-red-600 hover:text-red-900">
+                                            {puedeRegistrar && (<button onClick={() => handleDelete(mov.id)} className="text-red-600 hover:text-red-900">
                                                 <Trash2 className="h-4 w-4" />
-                                            </button>
+                                            </button>)}
                                         </td>
                                     </tr>
                                 ))
@@ -294,8 +306,8 @@ export const CuentaCorrienteSection: React.FC<CuentaCorrienteSectionProps> = ({ 
                                 <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                                     Cancelar
                                 </Button>
-                                <Button type="submit" className={`w-full sm:w-auto ${modalType === 'Ingreso' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
-                                    Registrar
+                                <Button type="submit" disabled={guardando} className={`w-full sm:w-auto ${modalType === 'Ingreso' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
+                                    {guardando ? 'Registrando...' : 'Registrar'}
                                 </Button>
                             </div>
                         </form>

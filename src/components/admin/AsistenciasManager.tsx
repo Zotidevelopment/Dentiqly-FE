@@ -26,6 +26,7 @@ import { pacientesApi } from "../../api/pacientes"
 import type { Turno } from "../../types"
 import { toISODate, todayISO, addDaysISO, formatLocalDate } from "../../utils/date"
 import { useToast } from "../../hooks/use-toast"
+import { getObraSocialNombre } from "../../utils/obraSocial"
 
 export const AsistenciasManager: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>(() => todayISO())
@@ -359,7 +360,7 @@ export const AsistenciasManager: React.FC = () => {
   const obraSocialCounts: Record<string, number> = {}
   periodAppointments.forEach((appt) => {
     if (appt.estado === periodEstado) {
-      const name = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
+      const name = getObraSocialNombre(appt.paciente, "PARTICULARES")
       obraSocialCounts[name] = (obraSocialCounts[name] || 0) + 1
     }
   })
@@ -398,7 +399,7 @@ export const AsistenciasManager: React.FC = () => {
           id,
           nombre: `${appt.paciente.nombre} ${appt.paciente.apellido}`,
           telefono: appt.paciente.telefono,
-          obraSocial: appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES",
+          obraSocial: getObraSocialNombre(appt.paciente, "PARTICULARES"),
           ausencias: 0,
           ultimaFecha: appt.fecha,
         }
@@ -425,7 +426,7 @@ export const AsistenciasManager: React.FC = () => {
       : ausentesDelPeriodo
 
   const allObrasSociales = Array.from(
-    new Set(appointments.map((appt) => appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"))
+    new Set(appointments.map((appt) => getObraSocialNombre(appt.paciente, "PARTICULARES")))
   ).sort()
 
   const filteredAppointments = dailyAppointments.filter((appt) => {
@@ -436,7 +437,7 @@ export const AsistenciasManager: React.FC = () => {
     const patientPhone = appt.paciente?.telefono || ""
     const profName = `${appt.profesional?.nombre || ""} ${appt.profesional?.apellido || ""}`.toLowerCase()
     const matchesSearch = patientName.includes(term) || patientDoc.includes(term) || patientEmail.includes(term) || patientPhone.includes(term) || profName.includes(term)
-    const patientOS = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
+    const patientOS = getObraSocialNombre(appt.paciente, "PARTICULARES")
     const matchesOS = selectedObraSocial === "TODAS" || patientOS === selectedObraSocial
     const matchesEstado = selectedEstado === "TODOS" || appt.estado === selectedEstado
     return matchesSearch && matchesOS && matchesEstado
@@ -457,7 +458,7 @@ export const AsistenciasManager: React.FC = () => {
       ════════════════════════════════════════════════════════════════════ */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#0B1023] tracking-tight">Control de Asistencias</h2>
+          <h2 className="text-xl font-bold text-[#0B2440] tracking-tight">Control de Asistencias</h2>
           <p className="text-xs text-gray-500 mt-0.5">Supervisión diaria y desglose de cobertura médica.</p>
         </div>
 
@@ -476,7 +477,7 @@ export const AsistenciasManager: React.FC = () => {
                 onClick={b.fn}
                 className={`h-8 px-3.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
                   b.active
-                    ? "bg-white text-[#2563FF] shadow-xs border border-gray-200/40"
+                    ? "bg-white text-[#2458ED] shadow-xs border border-gray-200/40"
                     : "text-gray-500 hover:text-gray-900 bg-transparent"
                 }`}
               >
@@ -523,13 +524,13 @@ export const AsistenciasManager: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           SECTION 1 — FREE PATIENT SEARCH (no appointment required)
       ════════════════════════════════════════════════════════════════════ */}
-      <Card className="p-5 border-[#E8E0D6] bg-gradient-to-br from-[#EEF3FF]/60 to-white" style={{ overflow: "visible" }}>
+      <Card className="p-5 border-[#E8E0D6] bg-[#EAF2FF]/60" style={{ overflow: "visible" }}>
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-[#2563FF] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-[#2458ED] flex items-center justify-center">
             <UserCheck className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#0B1023]">Confirmar asistencia por paciente</h3>
+            <h3 className="text-sm font-bold text-[#0B2440]">Confirmar asistencia por paciente</h3>
             <p className="text-[11px] text-gray-400">Buscá cualquier paciente aunque no esté agendado hoy</p>
           </div>
         </div>
@@ -546,10 +547,10 @@ export const AsistenciasManager: React.FC = () => {
                 if (selectedFreePatient) setSelectedFreePatient(null)
               }}
               placeholder="Nombre o apellido del paciente..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all shadow-sm"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/10 transition-all shadow-sm"
             />
             {patientSearchLoading && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2563FF] animate-spin" />
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2458ED] animate-spin" />
             )}
 
             {/* Dropdown */}
@@ -563,9 +564,9 @@ export const AsistenciasManager: React.FC = () => {
                       setPatientSearch(`${p.nombre} ${p.apellido}`)
                       setShowPatientDropdown(false)
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#EEF3FF] transition-colors text-left group"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#EAF2FF] transition-colors text-left group"
                   >
-                    <div className="w-7 h-7 rounded-full bg-[#2563FF]/10 flex items-center justify-center text-[10px] font-bold text-[#2563FF] shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[#2458ED]/10 flex items-center justify-center text-[10px] font-bold text-[#2458ED] shrink-0">
                       {p.nombre?.[0]}{p.apellido?.[0]}
                     </div>
                     <div>
@@ -573,7 +574,7 @@ export const AsistenciasManager: React.FC = () => {
                       <div className="text-[10px] text-gray-400">
                         {p.numero_documento && `DNI ${p.numero_documento}`}
                         {p.numero_documento && " • "}
-                        {p.obraSocial?.nombre || p.obra_social_nombre_custom || "PARTICULARES"}
+                        {getObraSocialNombre(p, "PARTICULARES")}
                       </div>
                     </div>
                   </button>
@@ -664,18 +665,18 @@ export const AsistenciasManager: React.FC = () => {
         {/* Selected patient info pill */}
         {selectedFreePatient && (
           <div className="mt-3 flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-sm">
-            <div className="w-8 h-8 rounded-full bg-[#2563FF]/10 flex items-center justify-center text-[11px] font-bold text-[#2563FF] shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#2458ED]/10 flex items-center justify-center text-[11px] font-bold text-[#2458ED] shrink-0">
               {selectedFreePatient.nombre?.[0]}{selectedFreePatient.apellido?.[0]}
             </div>
             <div>
-              <span className="font-bold text-[#0B1023]">{selectedFreePatient.nombre} {selectedFreePatient.apellido}</span>
+              <span className="font-bold text-[#0B2440]">{selectedFreePatient.nombre} {selectedFreePatient.apellido}</span>
               <div className="text-gray-400 text-xs mt-0.5">
                 {selectedFreePatient.numero_documento && `DNI ${selectedFreePatient.numero_documento}`}
                 {selectedFreePatient.numero_documento && " • "}
-                {selectedFreePatient.obraSocial?.nombre || selectedFreePatient.obra_social_nombre_custom || "PARTICULARES"}
+                {getObraSocialNombre(selectedFreePatient, "PARTICULARES")}
               </div>
               {freePatientTurno && (
-                <span className="ml-3 bg-[#EEF3FF] text-[#2563FF] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="ml-3 bg-[#EAF2FF] text-[#2458ED] text-[10px] font-bold px-2 py-0.5 rounded-full">
                   Turno {freePatientTurno.hora_inicio.substring(0, 5)} hs — {freePatientTurno.estado}
                 </span>
               )}
@@ -693,7 +694,7 @@ export const AsistenciasManager: React.FC = () => {
           <div className="flex flex-col gap-3 pb-4 border-b border-[#E8E0D6]/60 mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Building className="h-4 w-4 text-[#2563FF]" />
+                <Building className="h-4 w-4 text-[#2458ED]" />
                 <h3 className="text-sm font-bold text-gray-900">
                   Desglose de {breakdownMetric === "atendidos" ? "Asistencias" : "Ausencias"}
                 </h3>
@@ -704,7 +705,7 @@ export const AsistenciasManager: React.FC = () => {
                     key={f}
                     onClick={() => setPeriodFilter(f)}
                     className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                      periodFilter === f ? "bg-white text-[#2563FF] shadow-xs" : "text-gray-500 hover:text-gray-900 bg-transparent"
+                      periodFilter === f ? "bg-white text-[#2458ED] shadow-xs" : "text-gray-500 hover:text-gray-900 bg-transparent"
                     }`}
                   >
                     {f === "diario" ? "Día" : f === "semana" ? "Sem." : "Mes"}
@@ -720,7 +721,7 @@ export const AsistenciasManager: React.FC = () => {
                   onClick={() => setBreakdownType(t)}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-center ${
                     breakdownType === t
-                      ? "bg-white text-[#2563FF] shadow-sm border border-gray-200/30"
+                      ? "bg-white text-[#2458ED] shadow-sm border border-gray-200/30"
                       : "text-gray-500 hover:text-gray-900 bg-transparent"
                   }`}
                 >
@@ -874,7 +875,7 @@ export const AsistenciasManager: React.FC = () => {
         {/* Appointments Table */}
         <Card className="p-5 border-[#E8E0D6] lg:col-span-2 flex flex-col">
           <div className="flex items-center gap-2 pb-4 border-b border-[#E8E0D6]/60 mb-4">
-            <CheckSquare className="h-4 w-4 text-[#2563FF]" />
+            <CheckSquare className="h-4 w-4 text-[#2458ED]" />
             <h3 className="text-sm font-bold text-gray-900">Registro Diario de Pacientes</h3>
           </div>
 
@@ -887,7 +888,7 @@ export const AsistenciasManager: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar paciente por nombre o DNI..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/10 transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2458ED] focus:ring-2 focus:ring-[#2458ED]/10 transition-all"
               />
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -924,7 +925,7 @@ export const AsistenciasManager: React.FC = () => {
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
-              <Loader2 className="h-8 w-8 animate-spin text-[#2563FF]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#2458ED]" />
               <p className="text-xs">Cargando turnos...</p>
             </div>
           ) : filteredAppointments.length === 0 ? (
@@ -947,7 +948,7 @@ export const AsistenciasManager: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs">
                   {paginatedAppointments.map((appt) => {
-                    const osName = appt.paciente?.obraSocial?.nombre || appt.paciente?.obra_social_nombre_custom || "PARTICULARES"
+                    const osName = getObraSocialNombre(appt.paciente, "PARTICULARES")
                     const isAttended = appt.estado === "Atendido"
                     const isAbsent = appt.estado === "Ausente"
                     return (

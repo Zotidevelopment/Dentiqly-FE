@@ -42,7 +42,7 @@ export function ComisionManager() {
   const cargarProfesionales = async () => {
     try {
       setLoading(true)
-      const response = await profesionalesApi.listar({ estado: "Activo" })
+      const response = await profesionalesApi.listar({ estado: "Activo", limit: 200 })
       setProfesionales(response.data)
     } catch (error) {
       toast({

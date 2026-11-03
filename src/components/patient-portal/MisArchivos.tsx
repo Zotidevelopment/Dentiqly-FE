@@ -46,7 +46,7 @@ export const MisArchivos: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563FF]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2458ED]" />
           <span className="text-[#8A93A8] font-medium">Cargando...</span>
         </div>
       </div>
@@ -55,14 +55,14 @@ export const MisArchivos: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-[#0B1023]">Mis Archivos</h1>
+      <h1 className="text-2xl font-extrabold text-[#0B2440]">Mis Archivos</h1>
 
       {archivos.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#F7F8FA] flex items-center justify-center mx-auto mb-4">
             <Folder size={28} className="text-[#8A93A8]" />
           </div>
-          <h3 className="text-lg font-bold text-[#0B1023] mb-2">No hay archivos cargados</h3>
+          <h3 className="text-lg font-bold text-[#0B2440] mb-2">No hay archivos cargados</h3>
           <p className="text-sm text-[#8A93A8]">
             Los documentos de tus consultas apareceran aqui.
           </p>
@@ -86,7 +86,7 @@ export const MisArchivos: React.FC = () => {
                     <FileIcon size={22} style={{ color: iconColor }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm text-[#0B1023] truncate">
+                    <p className="font-bold text-sm text-[#0B2440] truncate">
                       {archivo.nombre || "Archivo"}
                     </p>
                     <p className="text-xs text-[#8A93A8] mt-0.5">
@@ -100,7 +100,7 @@ export const MisArchivos: React.FC = () => {
                     href={archivo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-[#5A6178] hover:border-[#2563FF]/30 hover:text-[#2563FF] hover:bg-[#2563FF]/5 transition-all"
+                    className="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-[#5A6178] hover:border-[#2458ED]/30 hover:text-[#2458ED] hover:bg-[#2458ED]/5 transition-all"
                   >
                     <Download size={15} />
                     Descargar

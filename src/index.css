@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -25,16 +23,16 @@
 
 :root {
   /* Brand Colors */
-  --brand-primary: #2563FF;
-  --brand-primary-hover: #1D4ED8;
-  --brand-secondary: #2563FF; /* Updated to match sidebar blue */
+  --brand-primary: #2458ED;
+  --brand-primary-hover: #1744CD;
+  --brand-secondary: #2458ED; /* Updated to match sidebar blue */
   
   /* Semantic Mappings */
   --admin-button-bg: var(--brand-primary);
   --admin-button-text: #FFFFFF;
   --admin-button-hover: var(--brand-primary-hover);
   
-  --admin-sidebar-bg: #0B1023;
+  --admin-sidebar-bg: #0B2440;
   --admin-card-bg: #FFFFFF;
 }
 
@@ -88,7 +86,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #2563FF;
+  background: #2458ED;
   border: 2px solid #FFFFFF;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   cursor: pointer;
@@ -97,7 +95,7 @@ input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #2563FF;
+  background: #2458ED;
   border: 2px solid #FFFFFF;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   cursor: pointer;
@@ -106,12 +104,15 @@ input[type="range"]::-moz-range-thumb {
 /* ─── Animations ────────────────────────────────────────────────────── */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  /* none (y no translateY(0)): un transform que queda aplicado convierte al
+     contenedor en referencia de los position:fixed y los modales no tapan
+     el menú. */
+  to { opacity: 1; transform: none; }
 }
 
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: none; }
 }
 
 @keyframes slide-in-left {
@@ -231,19 +232,19 @@ input[type="range"]::-moz-range-thumb {
 
 /* ─── Gradient Utilities ────────────────────────────────────────────── */
 .gradient-primary {
-  background: linear-gradient(135deg, #2563FF 0%, #1D4ED8 100%);
+  background: #2458ED;
 }
 
 .gradient-sidebar {
-  background: linear-gradient(180deg, #0B1023 0%, #0F172A 50%, #0B1023 100%);
+  background: #0B2440;
 }
 
 .gradient-accent {
-  background: linear-gradient(135deg, #2563FF 0%, var(--brand-secondary) 100%);
+  background: linear-gradient(135deg, #2458ED 0%, var(--brand-secondary) 100%);
 }
 
 .gradient-card-blue {
-  background: linear-gradient(135deg, #2563FF 0%, #3B82F6 50%, #60A5FA 100%);
+  background: linear-gradient(135deg, #2458ED 0%, #3B82F6 50%, #60A5FA 100%);
 }
 
 .gradient-card-emerald {
@@ -297,7 +298,7 @@ input[type="range"]::-moz-range-thumb {
   width: 3px;
   height: 60%;
   border-radius: 0 4px 4px 0;
-  background: linear-gradient(180deg, #2563FF, var(--brand-secondary));
+  background: linear-gradient(180deg, #2458ED, var(--brand-secondary));
   transition: all 0.3s ease;
 }
 
@@ -344,34 +345,6 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
-/* ─── Landing Page — Custom Cursor ─────────────────────────────────── */
-@media (pointer: coarse) {
-  .cursor-none {
-    cursor: auto !important;
-  }
-  .custom-cursor-dot,
-  .custom-cursor-ring {
-    display: none !important;
-  }
-}
-
-/* ─── Landing Page — Split Text Helpers ────────────────────────────── */
-.split-word-wrapper {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
-
-.split-word {
-  display: inline-block;
-  will-change: transform;
-}
-
-/* ─── Landing Page — GPU Acceleration ──────────────────────────────── */
-.will-change-transform {
-  will-change: transform;
-}
-
 /* ─── Landing Page — Lenis ─────────────────────────────────────────── */
 html.lenis, html.lenis body {
   height: auto;
@@ -389,82 +362,48 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
-/* ─── Button Shape Helpers ─────────────────────────────────────────── */
-.btn-hexagon {
-  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
+/* ─── Landing — Utilidades de identidad visual ────────────────────── */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(11, 16, 35, 0.11) 1px, transparent 1.3px);
+  background-size: 22px 22px;
 }
-
-/* ─── Premium Buttons (Wayflyer Style) ────────────────────────────── */
-.btn-wayflyer-primary {
-  font-family: 'Inter', sans-serif;
-  background-color: #0047FF;
-  color: #FFFFFF;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0;
-  padding: 12px 24px;
-  gap: 12px;
+.bg-dot-grid-light {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.13) 1px, transparent 1.3px);
+  background-size: 22px 22px;
 }
-.btn-wayflyer-primary:hover {
-  background-color: #0036CC;
-  transform: translateY(-1px);
+.mask-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
 }
-
-.btn-wayflyer-secondary {
-  font-family: 'Inter', sans-serif;
-  background-color: transparent;
-  border: 1px solid #0047FF;
-  color: #0047FF;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0;
-  padding: 12px 24px;
-  box-shadow: none;
+.mask-fade-radial {
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
 }
-.btn-wayflyer-secondary:hover {
-  background-color: #F9FAFB;
-  border-color: #D1D5DB;
+.text-gradient-blue {
+  background: linear-gradient(94deg, #2458ED 0%, #4F8BFF 55%, #63B3FF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-
-.btn-icon-circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  background-color: #FFFFFF;
-  border-radius: 50%;
-  color: #0047FF;
+.landing-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
 }
-
-/* Dark mode version of secondary for dark sections */
-.dark .btn-premium-secondary, .bg-navy .btn-premium-secondary, section[class*="bg-[#0B1023]"] .btn-premium-secondary {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
-.dark .btn-premium-secondary:hover, .bg-navy .btn-premium-secondary:hover, section[class*="bg-[#0B1023]"] .btn-premium-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.5);
+.animate-float-y {
+  animation: float-y 5.5s ease-in-out infinite;
 }
-
-/* Restore native cursor on interactive demo */
-#funcionalidades {
-  cursor: default;
+.animate-float-y-slow {
+  animation: float-y 7s ease-in-out infinite;
+  animation-delay: 1.2s;
 }
-
-/* Restore native cursor and hide custom cursor when the demo viewer is open */
-body.demo-viewer-open,
-body.demo-viewer-open .min-h-screen {
-  cursor: default !important;
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-y, .animate-float-y-slow { animation: none; }
 }
-body.demo-viewer-open .custom-cursor-dot,
-body.demo-viewer-open .custom-cursor-ring {
-  display: none !important;
-}
-
+/* El demo embebido monta el panel real: ahí el cursor es el del sistema. */
+body.demo-viewer-open { cursor: default; }

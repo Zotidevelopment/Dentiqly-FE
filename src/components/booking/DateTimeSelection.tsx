@@ -91,7 +91,9 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     setLoading(true)
     setError(null)
     try {
-      const response = await profesionalesApi.obtenerHorariosDisponibles(selectedProfessional!.id, selectedDate, isAdmin)
+      // Con la duración del servicio: un servicio de 45 min no puede ofrecerse
+      // en un hueco de 30 (antes fallaba recién al confirmar la reserva).
+      const response = await profesionalesApi.obtenerHorariosDisponibles(selectedProfessional!.id, selectedDate, isAdmin, selectedService?.duracion_estimada)
       if (response.disponible && response.horarios_disponibles) setAvailableSlots(response.horarios_disponibles)
       else setError(response.mensaje || "No hay horarios disponibles")
     } catch (e) {
@@ -141,7 +143,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                   onClick={() => setSelectedDate(dateStr)}
                   className={`
                     w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all
-                    ${isSelected ? "bg-[#2563FF] text-white shadow-md scale-105" : available ? "text-gray-700 hover:bg-blue-50 hover:text-[#2563FF]" : "text-gray-200 cursor-not-allowed"}
+                    ${isSelected ? "bg-[#2458ED] text-white shadow-md scale-105" : available ? "text-gray-700 hover:bg-blue-50 hover:text-[#2458ED]" : "text-gray-200 cursor-not-allowed"}
                   `}
                 >
                   {day}
@@ -169,7 +171,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         <div className={`space-y-4 w-full lg:col-span-7 ${selectedDate ? 'order-1 lg:order-2' : 'order-2 lg:order-2'}`}>
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-sm text-gray-900 uppercase tracking-widest flex items-center gap-2">
-              <Clock className="text-[#2563FF]" size={16} />
+              <Clock className="text-[#2458ED]" size={16} />
               HORARIOS
             </h3>
             {selectedDate && (
@@ -199,7 +201,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       onClick={() => onDateTimeSelect(`${selectedDate}T${time}:00`)}
                       className={`
                         py-2 sm:py-3 rounded-lg font-bold transition-all border text-xs sm:text-sm
-                        ${selectedDateTime?.includes(time) ? "bg-[#2563FF] text-white border-[#2563FF] shadow-md" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-[#2563FF]"}
+                        ${selectedDateTime?.includes(time) ? "bg-[#2458ED] text-white border-[#2458ED] shadow-md" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-[#2458ED]"}
                       `}
                     >
                       {time}

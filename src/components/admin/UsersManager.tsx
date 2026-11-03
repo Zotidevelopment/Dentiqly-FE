@@ -228,7 +228,7 @@ export function UsersManager() {
             background: tokens.blue, color: tokens.white,
             border: "none", borderRadius: 10, padding: "9px 18px",
             fontSize: 13, fontWeight: 700, cursor: "pointer",
-            fontFamily: "Inter, -apple-system, sans-serif",
+            fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             transition: "background 0.15s",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.background = tokens.blueHover)}
@@ -257,7 +257,7 @@ export function UsersManager() {
             style={{
               border: "none", outline: "none", background: "transparent",
               fontSize: 13, color: tokens.navy, flex: 1,
-              fontFamily: "Inter, -apple-system, sans-serif",
+              fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
             }}
           />
         </div>

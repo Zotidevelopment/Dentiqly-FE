@@ -1,3 +1,4 @@
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
@@ -22,13 +23,13 @@ export const ForgotPasswordPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFCFF] p-4">
+    <div className="dentiqly-auth-recovery min-h-screen flex items-center justify-center bg-[#FAFCFF] p-4">
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <Link to="/">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto mx-auto mb-6" />
+            <BrandLogo alt="Dentiqly" className="h-10 w-auto mx-auto mb-6" />
           </Link>
-          <h1 className="text-2xl font-extrabold text-[#0B1023] mb-1">Recuperar contraseña</h1>
+          <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Recuperar contraseña</h1>
           <p className="text-[#8A93A8] text-sm">
             {sent ? 'Revisá tu bandeja de entrada' : 'Ingresá tu email y te enviaremos un enlace'}
           </p>
@@ -45,7 +46,7 @@ export const ForgotPasswordPage: React.FC = () => {
               </p>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 text-[#2563FF] font-bold text-sm hover:underline"
+                className="inline-flex items-center gap-2 text-[#2458ED] font-bold text-sm hover:underline"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Volver al login
@@ -54,7 +55,7 @@ export const ForgotPasswordPage: React.FC = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#0B1023] mb-1.5 uppercase tracking-wider">Email</label>
+                <label className="block text-xs font-bold text-[#0B2440] mb-1.5 uppercase tracking-wider">Email</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="h-4 w-4 text-[#8A93A8]" />
@@ -64,7 +65,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     required
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all text-[#0B2440]"
                     placeholder="tu@email.com"
                   />
                 </div>
@@ -73,7 +74,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-[#2458ED] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -89,7 +90,7 @@ export const ForgotPasswordPage: React.FC = () => {
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/login" className="text-sm text-[#8A93A8] hover:text-[#2563FF] transition-colors">
+          <Link to="/login" className="text-sm text-[#8A93A8] hover:text-[#2458ED] transition-colors">
             <ArrowLeft className="h-3 w-3 inline mr-1" />
             Volver al login
           </Link>

@@ -1,0 +1,306 @@
+/* Shared application identity. Clinical statuses retain their semantic colors. */
+:root {
+  --brand-font: "Instrument Sans", system-ui, sans-serif;
+  --brand-ink: #0b2440;
+  --brand-surface: #f5f8ff;
+  --brand-tint: #eaf2ff;
+  --brand-border: #dce5ee;
+}
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--brand-font);
+}
+body {
+  color: var(--brand-ink);
+}
+:where(.dentiqly-brand-logo) {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.dentiqly-workspace {
+  background: var(--brand-surface);
+}
+.dentiqly-workspace-main {
+  background: var(--brand-surface);
+}
+.dentiqly-workspace table {
+  font-variant-numeric: tabular-nums;
+}
+.dentiqly-workspace-header {
+  border-bottom: 1px solid var(--brand-border);
+}
+.dentiqly-sidebar {
+  background: var(--brand-ink);
+  box-shadow: 0 5px 22px #0b244010;
+}
+.dentiqly-sidebar nav button {
+  min-height: 38px;
+}
+.dentiqly-sidebar nav button:focus-visible,
+.dentiqly-sidebar nav a:focus-visible {
+  outline: 2px solid #a4c4ff;
+  outline-offset: -2px;
+}
+.dentiqly-workspace :is(input, select, textarea):focus-visible,
+.dentiqly-auth :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+.dentiqly-workspace button:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+.dentiqly-dashboard-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dentiqly-dashboard-art::before {
+  content: "";
+  position: absolute;
+  width: 340px;
+  height: 490px;
+  border: 1px solid #d5e3f7;
+  border-radius: 170px;
+  right: -210px;
+  top: -310px;
+  transform: rotate(25deg);
+}
+.dentiqly-auth {
+  background: #fff;
+  color: var(--brand-ink);
+}
+.dentiqly-auth-panel {
+  width: 44%;
+  padding: 48px;
+  background: var(--brand-tint);
+  position: relative;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.dentiqly-auth-panel h2 {
+  font-size: clamp(30px, 3.2vw, 46px);
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.dentiqly-auth-eyebrow {
+  color: #2458ed;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.dentiqly-auth-description {
+  margin-top: 23px;
+  font-size: 16px;
+  color: #53677e;
+  line-height: 1.8;
+  max-width: 390px;
+}
+.dentiqly-brand-pattern {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dentiqly-brand-pattern::before,
+.dentiqly-brand-pattern::after {
+  content: "";
+  position: absolute;
+  border: 1px solid #bcd1f0;
+  border-radius: 180px;
+  transform: rotate(25deg);
+}
+.dentiqly-brand-pattern::before {
+  width: 370px;
+  height: 550px;
+  top: -220px;
+  right: -270px;
+}
+.dentiqly-brand-pattern::after {
+  width: 300px;
+  height: 440px;
+  bottom: -320px;
+  left: -180px;
+}
+.dentiqly-auth-summary {
+  background: #ffffff;
+  border: 1px solid #dce6f4;
+  border-radius: 22px;
+  padding: 23px;
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  max-width: 400px;
+  box-shadow: 0 8px 20px #0b244006;
+}
+.dentiqly-auth-summary > div {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.dentiqly-auth-summary > div > span {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: #eaf2ff;
+  color: #2458ed;
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+.dentiqly-auth-summary strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.dentiqly-auth-summary p {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #65788d;
+}
+.dentiqly-auth-form {
+  width: 56%;
+  background: #fff;
+}
+.dentiqly-auth-form h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+.dentiqly-auth-form label {
+  letter-spacing: 0.025em;
+}
+.dentiqly-auth-form form button[type="submit"] {
+  box-shadow: none;
+  border-radius: 10px;
+  min-height: 46px;
+}
+.dentiqly-auth-recovery {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--brand-surface);
+}
+.dentiqly-auth-recovery::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 380px;
+  height: 560px;
+  border: 1px solid #d6e3f7;
+  border-radius: 190px;
+  top: -200px;
+  right: -180px;
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+.dentiqly-booking-header {
+  border-bottom: 1px solid var(--brand-border);
+  background: #fff;
+}
+.dentiqly-legal-header {
+  background: var(--brand-tint);
+}
+@media (max-width: 1023px) {
+  .dentiqly-auth-form {
+    width: 100%;
+  }
+  .dentiqly-auth {
+    background: var(--brand-surface);
+  }
+  .dentiqly-auth-form {
+    background: var(--brand-surface);
+  }
+  .dentiqly-auth-form h1 {
+    font-size: 27px;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .dentiqly-auth-panel {
+    padding: 32px;
+  }
+  .dentiqly-auth-panel h2 {
+    font-size: 35px;
+  }
+  .dentiqly-auth-summary {
+    padding: 19px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dentiqly-workspace *,
+  .dentiqly-auth * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Onboarding de clínicas nuevas (components/admin/onboarding) ─── */
+.dq-setup .dq-setup-panel {
+  width: 380px;
+  max-width: 36%;
+  padding: 40px 36px;
+}
+.dq-setup .dq-setup-panel h2 {
+  font-size: clamp(26px, 2.4vw, 34px);
+}
+/* Panel oscuro: da contraste a una pantalla que, si no, es toda blanca. */
+.dq-setup .dq-setup-panel {
+  background: #0b2440;
+  color: #fff;
+}
+.dq-setup .dq-setup-panel h2 { color: #fff; }
+.dq-setup .dq-setup-panel .dentiqly-auth-eyebrow { color: #8fb2ff; }
+.dq-setup .dq-setup-panel .dentiqly-auth-description { color: rgba(255, 255, 255, 0.68); }
+.dq-setup .dq-setup-panel .dentiqly-brand-pattern::before,
+.dq-setup .dq-setup-panel .dentiqly-brand-pattern::after {
+  border-color: rgba(143, 178, 255, 0.18);
+}
+/* Fondo oscuro de la pantalla de activación del plan. */
+.dq-dark-stage {
+  background: #0b2440;
+  position: relative;
+  overflow-x: hidden;
+}
+.dq-dark-stage .dentiqly-brand-pattern::before,
+.dq-dark-stage .dentiqly-brand-pattern::after {
+  border-color: rgba(143, 178, 255, 0.16);
+}
+/* Recorrido guiado del panel (components/admin/guia) */
+.dq-tour-spot {
+  position: fixed;
+  border-radius: 14px;
+  background: rgba(143, 178, 255, 0.14);
+  box-shadow: 0 0 0 4px #2458ed, 0 0 0 9999px rgba(11, 36, 64, 0.62);
+  transition: top 0.35s cubic-bezier(0.22, 1, 0.36, 1), left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 9998;
+}
+@keyframes dq-tour-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px #2458ed, 0 0 0 9999px rgba(11, 36, 64, 0.62); }
+  50% { box-shadow: 0 0 0 8px rgba(36, 88, 237, 0.55), 0 0 0 9999px rgba(11, 36, 64, 0.62); }
+}
+.dq-tour-spot { animation: dq-tour-pulse 1.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dq-tour-spot { animation: none; transition: none; }
+}
+@keyframes dq-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.dq-fade-in {
+  animation: dq-fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dq-fade-in { animation: none; }
+}

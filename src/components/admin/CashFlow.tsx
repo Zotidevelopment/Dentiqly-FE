@@ -265,7 +265,7 @@ export default function CashFlow() {
                         background: tokens.white, color: tokens.grayText,
                         border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
                         fontSize: 13, fontWeight: 500, cursor: "pointer",
-                        fontFamily: "Inter, -apple-system, sans-serif",
+                        fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                         transition: "all 0.15s",
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
@@ -278,14 +278,14 @@ export default function CashFlow() {
                       onClick={() => handleOpenModal('Egreso')}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
-                        background: "#2563FF", color: "#FFFFFF",
+                        background: "#2458ED", color: "#FFFFFF",
                         border: "none", borderRadius: 10, padding: "9px 18px",
                         fontSize: 13, fontWeight: 700, cursor: "pointer",
-                        fontFamily: "Inter, -apple-system, sans-serif",
+                        fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                         transition: "background 0.15s",
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#1E40AF")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "#2563FF")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "#2458ED")}
                     >
                       <Minus size={15} />
                       Extraer / Deuda
@@ -294,14 +294,14 @@ export default function CashFlow() {
                       onClick={() => handleOpenModal('Ingreso')}
                       style={{
                         display: "flex", alignItems: "center", gap: 7,
-                        background: "#2563FF", color: "#FFFFFF",
+                        background: "#2458ED", color: "#FFFFFF",
                         border: "none", borderRadius: 10, padding: "9px 18px",
                         fontSize: 13, fontWeight: 700, cursor: "pointer",
-                        fontFamily: "Inter, -apple-system, sans-serif",
+                        fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                         transition: "background 0.15s",
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#1E40AF")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "#2563FF")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "#2458ED")}
                     >
                       <Plus size={15} />
                       Registrar Ingreso
@@ -360,7 +360,7 @@ export default function CashFlow() {
                   style={{
                     padding: "6px 12px", borderRadius: 8, border: `0.5px solid ${tokens.grayBorder}`,
                     background: tokens.white, cursor: "pointer", fontSize: 12, fontWeight: 600, color: tokens.blue,
-                    fontFamily: "Inter, -apple-system, sans-serif",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                   }}
                 >
                   Ir al mes actual
@@ -528,7 +528,7 @@ export default function CashFlow() {
                     style={{
                       border: "none", outline: "none", background: "transparent",
                       fontSize: 13, color: tokens.navy, flex: 1,
-                      fontFamily: "Inter, -apple-system, sans-serif",
+                      fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                     }}
                   />
                 </div>

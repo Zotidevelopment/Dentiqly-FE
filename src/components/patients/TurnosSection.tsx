@@ -134,7 +134,7 @@ export const TurnosSection: React.FC<PatientAppointmentsSectionProps> = ({ pacie
                   <button
                     type="button"
                     onClick={() => setSelectedTurno(turno)}
-                    className="p-2 h-9 w-9 flex items-center justify-center text-[#8A93A8] hover:text-[#2563FF] hover:bg-[#F5F8FF] rounded-xl transition-all border border-[#E8E0D6] bg-white shrink-0 shadow-sm"
+                    className="p-2 h-9 w-9 flex items-center justify-center text-[#8A93A8] hover:text-[#2458ED] hover:bg-[#F5F8FF] rounded-xl transition-all border border-[#E8E0D6] bg-white shrink-0 shadow-sm"
                     title="Editar Turno"
                   >
                     <Edit className="h-4 w-4" />

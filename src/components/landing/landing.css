@@ -1,0 +1,3806 @@
+/* Marketing styles are scoped to keep the clinical application independent. */
+.dentiqly-landing {
+  --lp-paper: #ffffff;
+  --lp-ink: #0b2440;
+  --lp-muted: #53677e;
+  --lp-blue: #2458ed;
+  --lp-line: #dce5ee;
+  background: var(--lp-paper);
+  color: var(--lp-ink);
+  font-family: "Instrument Sans", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: clip;
+}
+.dentiqly-landing *,
+.dentiqly-landing *::before,
+.dentiqly-landing *::after {
+  box-sizing: border-box;
+}
+.dentiqly-landing button,
+.dentiqly-landing input,
+.dentiqly-landing select,
+.dentiqly-landing textarea {
+  font: inherit;
+}
+.dentiqly-landing button,
+.dentiqly-landing summary,
+.dentiqly-landing select {
+  cursor: pointer;
+}
+.dentiqly-landing :focus-visible {
+  outline: 3px solid #5080ff;
+  outline-offset: 5px;
+}
+.dentiqly-landing ::selection {
+  background: #cbdcff;
+  color: #172c35;
+}
+.dentiqly-landing section[id],
+.dentiqly-landing main[id] {
+  scroll-margin-top: 100px;
+}
+.lp-container {
+  width: calc(100% - 112px);
+  max-width: 1280px;
+  margin-inline: auto;
+}
+.lp-section {
+  padding-block: 100px;
+}
+.lp-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+}
+.lp-blue-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--lp-blue);
+  border-radius: 50%;
+}
+.lp-hero h1,
+.dentiqly-landing h2:not(:where(.lp-live-demo *)),
+.dentiqly-landing h3,
+.dentiqly-landing h4 {
+  margin: 0;
+  font-family: "Instrument Sans", sans-serif;
+}
+.dentiqly-landing h2:not(:where(.lp-live-demo *)) {
+  font-size: clamp(36px, 3.8vw, 54px);
+  font-weight: 500;
+  line-height: 1.09;
+  letter-spacing: -0.05em;
+}
+.lp-muted-heading {
+  color: #7b8781;
+}
+.lp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 54px;
+  padding: 15px 23px;
+  background: var(--lp-blue);
+  color: white;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.lp-button:hover {
+  background: #1744cd;
+  transform: translateY(-2px);
+}
+.lp-button svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.lp-button:hover svg {
+  transform: translate(2px, -2px);
+}
+.lp-button-small {
+  min-height: 41px;
+  padding: 10px 16px;
+  font-size: 12px;
+  gap: 16px;
+}
+.lp-button-dark {
+  background: var(--lp-ink);
+}
+.lp-button-dark:hover {
+  background: #2c4651;
+}
+.lp-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+.lp-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.lp-text-link:hover {
+  color: var(--lp-blue);
+}
+.lp-text-link svg {
+  transition: transform 0.2s;
+}
+.lp-text-link:hover svg {
+  transform: translateX(3px);
+}
+.lp-skip-link {
+  position: fixed;
+  top: -100px;
+  left: 20px;
+  z-index: 200;
+  background: white;
+  padding: 14px;
+}
+.lp-skip-link:focus {
+  top: 12px;
+}
+.lp-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--lp-line);
+  background: var(--lp-paper);
+}
+.lp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 82px;
+  gap: 32px;
+}
+.lp-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.lp-logo img {
+  width: 112px;
+  height: auto;
+}
+.lp-nav-links {
+  display: flex;
+  gap: 28px;
+  margin-left: 36px;
+}
+.lp-nav-links a,
+.lp-login {
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.lp-nav-links a:hover,
+.lp-login:hover {
+  color: var(--lp-blue);
+}
+.lp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.lp-menu-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  padding: 8px;
+}
+.lp-mobile-menu {
+  display: none;
+}
+.lp-hero h1 {
+  font-size: clamp(52px, 5.15vw, 75px);
+  font-weight: 500;
+  line-height: 0.99;
+  letter-spacing: -0.061em;
+}
+.lp-hero h1 > span {
+  color: var(--lp-blue);
+}
+.lp-hero-description {
+  max-width: 390px;
+  margin-top: 26px;
+  color: var(--lp-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.lp-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-top: 30px;
+}
+.lp-hero-actions .lp-text-link {
+  font-size: 12px;
+  gap: 9px;
+  white-space: nowrap;
+}
+.lp-hero-reassurance {
+  display: flex;
+  gap: 20px;
+  margin-top: 17px;
+  font-size: 10px;
+  color: var(--lp-muted);
+}
+.lp-hero-reassurance > span {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.lp-hero-reassurance svg {
+  color: #51795b;
+}
+.lp-section-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.lp-side-note {
+  font-size: 11px;
+  color: var(--lp-muted);
+}
+.lp-workflow {
+  background: #fff;
+  border-top: 1px solid var(--lp-line);
+}
+.lp-workflow-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 46px;
+  border-bottom: 1px solid var(--lp-line);
+  gap: 25px;
+}
+.lp-workflow-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  padding: 19px 0;
+  color: var(--lp-muted);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: -1px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.lp-workflow-tabs button > span {
+  font-size: 10px;
+  color: #89958c;
+}
+.lp-workflow-tabs button > svg {
+  margin-left: auto;
+}
+.lp-workflow-tabs button[aria-selected="true"] {
+  color: var(--lp-blue);
+  border-bottom-color: var(--lp-blue);
+}
+.lp-workflow-tabs button[aria-selected="true"] > span {
+  color: var(--lp-blue);
+}
+.lp-workflow-panel {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  align-items: center;
+  gap: 100px;
+  padding-top: 47px;
+  min-height: 490px;
+}
+.lp-workflow-copy {
+  animation: lp-enter 0.3s ease-out;
+}
+.lp-index {
+  color: var(--lp-blue);
+  font-size: 12px;
+  font-weight: 600;
+}
+.lp-workflow-copy h3 {
+  font-size: 34px;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+  max-width: 340px;
+  margin-top: 19px;
+}
+.lp-workflow-copy > p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--lp-muted);
+  margin-top: 19px;
+  max-width: 370px;
+}
+.lp-check-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 25px;
+}
+.lp-check-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.lp-check-list svg {
+  color: #447d5b;
+  flex-shrink: 0;
+}
+.lp-workflow-copy > .lp-text-link {
+  margin-top: 27px;
+  color: var(--lp-blue);
+}
+.lp-workflow-visual {
+  min-width: 0;
+  background: #edf1e9;
+  padding: 24px 24px 16px;
+  border-radius: 5px;
+}
+.lp-workflow-visual .lp-app {
+  border: 1px solid #d9e0d8;
+  box-shadow: 0 12px 26px #182f3510;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lp-visual-caption {
+  font-size: 9px;
+  color: #717e74;
+  display: block;
+  margin-top: 12px;
+  text-align: right;
+}
+.lp-extra-features {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid var(--lp-line);
+  margin-top: 47px;
+  padding-top: 24px;
+}
+.lp-extra-features > span {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--lp-muted);
+}
+.lp-extra-features svg {
+  color: #798d7c;
+  stroke-width: 1.5;
+}
+/* Illustrative product views use the app's actual domain and dental assets. */
+.lp-app {
+  display: flex;
+  background: #fff;
+  width: 100%;
+  min-height: 384px;
+  font-family: "Instrument Sans", sans-serif;
+  color: #293a42;
+  text-align: left;
+  line-height: 1.4;
+}
+.lp-app-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  width: 48px;
+  flex-shrink: 0;
+  background: #172d38;
+  color: #a9bbc4;
+  padding: 18px 0 15px;
+}
+.lp-app-monogram {
+  font-size: 26px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.1em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.lp-app-sidebar > span:not(.lp-app-monogram):not(.lp-app-avatar) {
+  padding: 7px;
+  margin-block: -7px;
+  border-radius: 4px;
+}
+.lp-app-sidebar .is-active {
+  background: #345cf0;
+  color: white;
+}
+.lp-app-avatar,
+.lp-app-user {
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+  font-weight: 600;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #e4ebee;
+  color: #3c5360;
+}
+.lp-app-avatar {
+  margin-top: auto;
+  background: #405967;
+  color: #fff;
+}
+.lp-app-main {
+  flex: 1;
+  min-width: 0;
+}
+.lp-app-topbar {
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid #edf0ee;
+}
+.lp-app-topbar > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 8px;
+  color: #7b898d;
+}
+.lp-agenda,
+.lp-patient,
+.lp-finance {
+  padding: 19px 17px 13px;
+}
+.lp-app-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.lp-app-kicker {
+  font-size: 6px;
+  letter-spacing: 0.09em;
+  color: #87928e;
+  font-weight: 500;
+  display: block;
+}
+.lp-app .lp-app-title h3 {
+  font-size: 19px;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 3px;
+}
+.lp-app-add {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7px;
+  padding: 7px 9px;
+  background: var(--lp-blue);
+  color: #fff;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.lp-agenda-toolbar {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  margin-top: 19px;
+  margin-bottom: 13px;
+}
+.lp-agenda-toolbar > strong {
+  font-size: 9px;
+  font-weight: 600;
+}
+.lp-agenda-toolbar > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 7px;
+}
+.lp-app-view {
+  font-size: 7px;
+  padding: 4px 8px;
+  border: 1px solid #e3e8e5;
+  border-radius: 3px;
+  background: #fafbf9;
+}
+.lp-agenda-toolbar > .lp-app-view {
+  margin-left: auto;
+}
+.lp-calendar {
+  border: 1px solid #e7ece8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.lp-calendar-days {
+  display: grid;
+  grid-template-columns: 35px repeat(3, 1fr);
+  border-bottom: 1px solid #e7ece8;
+}
+.lp-calendar-days > span {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-size: 6px;
+  gap: 2px;
+  padding: 6px 0;
+  color: #8b9692;
+  border-left: 1px solid #e7ece8;
+}
+.lp-calendar-days strong {
+  font-size: 12px;
+  color: #394c49;
+  font-weight: 500;
+}
+.lp-calendar-days .lp-calendar-today {
+  background: #f1f4fe;
+  color: var(--lp-blue);
+}
+.lp-calendar-days .lp-calendar-today strong {
+  color: var(--lp-blue);
+}
+.lp-calendar-grid {
+  display: flex;
+}
+.lp-calendar-hours {
+  display: grid;
+  grid-template-rows: repeat(5, 37px);
+  width: 35px;
+  flex-shrink: 0;
+  font-size: 6px;
+  color: #87938e;
+}
+.lp-calendar-hours > span {
+  padding-top: 6px;
+  padding-left: 5px;
+  border-bottom: 1px solid #eef1ed;
+}
+.lp-calendar-slots {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(5, 37px);
+  flex: 1;
+  min-width: 0;
+}
+.lp-calendar-slot {
+  border-left: 1px solid #e7ece8;
+  border-bottom: 1px solid #e7ece8;
+}
+.lp-calendar-slot:nth-child(3n + 2) {
+  background: #fafbfe;
+}
+.lp-appointment {
+  z-index: 1;
+  min-width: 0;
+  margin: 3px;
+  padding: 5px 6px;
+  border-left: 2px solid;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.lp-appointment strong {
+  font-size: 7px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+.lp-appointment > span {
+  font-size: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+.lp-appointment-blue {
+  background: #e5ecff;
+  border-color: #3f6aeb;
+  color: #3152a5;
+}
+.lp-appointment-mint {
+  background: #e1f0e5;
+  border-color: #70a888;
+  color: #3a7351;
+}
+.lp-appointment-peach {
+  background: #faeddf;
+  border-color: #d9a56c;
+  color: #946a3c;
+}
+.lp-calendar-now {
+  position: absolute;
+  top: 49%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #567aee;
+  pointer-events: none;
+  font-size: 0;
+}
+.lp-calendar-now > span {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #567aee;
+}
+.lp-app-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 13px;
+  color: #87958b;
+  font-size: 6px;
+}
+.lp-app-status > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.lp-app-status i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #76a685;
+}
+.lp-patient-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e7ece8;
+}
+.lp-patient-identity > span:first-child {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  background: #e4ece5;
+  color: #5d7866;
+  border-radius: 50%;
+  font-size: 12px;
+}
+.lp-patient-identity h4 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.lp-patient-identity p {
+  font-size: 8px;
+  color: #829087;
+  margin-top: 3px;
+}
+.lp-patient-badge {
+  margin-left: auto;
+  font-size: 7px;
+  padding: 4px 7px;
+  background: #e8f2e9;
+  color: #4c7d54;
+  border-radius: 3px;
+}
+.lp-patient-tabs {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  border-bottom: 1px solid #e7ece8;
+  margin-top: 5px;
+  font-size: 8px;
+  color: #829087;
+  white-space: nowrap;
+}
+.lp-patient-tabs > * {
+  padding: 10px 0;
+}
+.lp-patient-tabs > strong {
+  color: #3262dc;
+  border-bottom: 2px solid #3262dc;
+  font-weight: 500;
+}
+.lp-odontogram {
+  margin-top: 16px;
+  padding: 14px 9px;
+  background: #fafbf8;
+  border: 1px solid #e7ece8;
+  border-radius: 4px;
+}
+.lp-odontogram > div {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 15px;
+}
+.lp-odontogram > div > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  gap: 6px;
+}
+.lp-odontogram img {
+  width: 100%;
+  max-width: 25px;
+  height: 48px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.lp-odontogram small {
+  font-size: 6px;
+  color: #839087;
+}
+.lp-odontogram .lp-tooth-treated {
+  filter: sepia(1) saturate(2) hue-rotate(165deg);
+}
+.lp-odontogram > p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 6px;
+  color: #829087;
+  margin-top: 12px;
+}
+.lp-odontogram i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #b2bbae;
+}
+.lp-odontogram i:nth-of-type(2) {
+  background: #5b86f2;
+  margin-left: 10px;
+}
+.lp-clinical-note {
+  border-left: 2px solid #b9ccba;
+  margin-top: 15px;
+  padding-left: 9px;
+}
+.lp-clinical-note > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 7px;
+  color: #829087;
+}
+.lp-clinical-note > strong {
+  font-size: 9px;
+  display: block;
+  margin-top: 5px;
+  font-weight: 500;
+}
+.lp-clinical-note p {
+  font-size: 7px;
+  color: #829087;
+  margin-top: 4px;
+}
+.lp-finance-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #e7ece8;
+  padding-bottom: 17px;
+  gap: 15px;
+  margin-top: 22px;
+}
+.lp-finance-totals > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.lp-finance-totals > div + div {
+  border-left: 1px solid #e7ece8;
+  padding-left: 16px;
+}
+.lp-finance-totals span {
+  font-size: 8px;
+  color: #829087;
+}
+.lp-finance-totals strong {
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+.lp-finance-totals small {
+  font-size: 6px;
+  color: #829087;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.lp-finance-totals > div:first-child small {
+  color: #5c8a6a;
+}
+.lp-chart {
+  margin-top: 17px;
+}
+.lp-chart > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+}
+.lp-chart > div:first-child strong {
+  font-weight: 500;
+}
+.lp-chart > div:first-child > span {
+  font-size: 6px;
+  color: #829087;
+}
+.lp-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  height: 102px;
+  margin-top: 17px;
+  border-bottom: 1px solid #e7ece8;
+}
+.lp-bars > span {
+  flex: 1;
+  background: #dbe5fa;
+  border-radius: 2px 2px 0 0;
+}
+.lp-bars > span:nth-child(3n) {
+  background: #6e91e9;
+}
+.lp-bars > span:nth-child(8) {
+  background: var(--lp-blue);
+}
+.lp-chart-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 6px;
+  color: #829087;
+  margin-top: 7px;
+}
+.lp-finance-transaction {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-top: 1px solid #e7ece8;
+  margin-top: 21px;
+  padding-top: 14px;
+}
+.lp-transaction-icon {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  background: #edf2e8;
+  border-radius: 4px;
+}
+.lp-finance-transaction strong {
+  font-size: 8px;
+  font-weight: 500;
+  display: block;
+}
+.lp-finance-transaction div > span {
+  font-size: 7px;
+  color: #829087;
+  display: block;
+  margin-top: 3px;
+}
+.lp-finance-transaction > svg {
+  margin-left: auto;
+  color: #829087;
+}
+.lp-demo {
+  background: #edf1e9;
+}
+.lp-demo-heading {
+  display: grid;
+  grid-template-columns: 1fr 0.75fr;
+  gap: 80px;
+  align-items: end;
+  margin-bottom: 42px;
+}
+.lp-demo-heading .lp-eyebrow {
+  margin-bottom: 24px;
+}
+.lp-demo-intro > p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--lp-muted);
+  max-width: 360px;
+  margin-bottom: 21px;
+}
+.lp-small-note {
+  display: block;
+  font-size: 10px;
+  color: var(--lp-muted);
+  margin-top: 12px;
+}
+.lp-demo-screenshot {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: white;
+  border: 1px solid #d6ded6;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px #23432c0a;
+  transition: box-shadow 0.2s;
+  text-align: left;
+}
+.lp-demo-screenshot:hover {
+  box-shadow: 0 20px 50px #23432c1a;
+}
+.lp-browser-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  background: #f9fbf7;
+  padding: 0 18px;
+  border-bottom: 1px solid #e1e7df;
+  font-size: 9px;
+  color: #829087;
+}
+.lp-window-dots {
+  display: flex;
+  gap: 5px;
+}
+.lp-window-dots > i {
+  width: 6px;
+  height: 6px;
+  background: #d6ded5;
+  border-radius: 50%;
+}
+.lp-demo-screenshot > img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.lp-screenshot-action {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: #1b343c;
+  color: #fff;
+  border: 4px solid #ffffffeb;
+  border-radius: 8px;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 15px 45px #1b343c25;
+}
+.lp-live-demo {
+  border-radius: 6px;
+  border: 1px solid var(--lp-line);
+  overflow: clip;
+}
+.lp-live-demo > section {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  background: transparent !important;
+}
+.lp-live-demo > section > div {
+  max-width: none;
+  padding: 0;
+}
+.lp-live-demo .lp-embedded-product > div > div {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.lp-demo-loading {
+  padding: 80px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--lp-muted);
+}
+.lp-start {
+  border-bottom: 1px solid var(--lp-line);
+  padding-block: 45px;
+}
+.lp-start-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+  gap: 55px;
+}
+.lp-start .lp-start-grid > h2 {
+  font-size: 25px;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
+}
+.lp-start ol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+  gap: 26px;
+}
+.lp-start li {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+}
+.lp-start li > span {
+  font-size: 10px;
+  color: var(--lp-blue);
+  margin-top: 4px;
+}
+.lp-start h3 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.lp-start li p {
+  font-size: 11px;
+  color: var(--lp-muted);
+  margin-top: 5px;
+  line-height: 1.6;
+  max-width: 170px;
+}
+.lp-start li > svg {
+  color: #9daaa0;
+  margin-left: auto;
+  align-self: center;
+  flex-shrink: 0;
+}
+.lp-pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  gap: 120px;
+  align-items: start;
+}
+.lp-pricing-copy {
+  padding-top: 12px;
+}
+.lp-pricing-copy .lp-eyebrow {
+  margin-bottom: 27px;
+}
+.lp-pricing-copy > p:not(.lp-eyebrow) {
+  font-size: 15px;
+  color: var(--lp-muted);
+  margin-top: 24px;
+  max-width: 380px;
+  line-height: 1.8;
+}
+.lp-pricing-promises {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  list-style: none;
+  padding: 0;
+  margin-top: 38px;
+  max-width: 360px;
+}
+.lp-pricing-promises li {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  font-size: 13px;
+  color: var(--lp-muted);
+  line-height: 1.65;
+}
+.lp-pricing-promises svg {
+  flex-shrink: 0;
+  color: #66876a;
+  margin-top: 2px;
+  stroke-width: 1.4;
+}
+.lp-pricing-promises strong {
+  font-weight: 500;
+  color: var(--lp-ink);
+}
+.lp-enterprise {
+  border-top: 1px solid var(--lp-line);
+  margin-top: 37px;
+  padding-top: 25px;
+  max-width: 380px;
+}
+.lp-enterprise > span {
+  font-size: 12px;
+  color: var(--lp-muted);
+  display: block;
+  margin-bottom: 12px;
+}
+.lp-enterprise a {
+  color: var(--lp-blue);
+}
+.lp-price-card {
+  border: 1px solid #cad7c9;
+  background: #fff;
+  border-radius: 6px;
+  padding: 29px 32px 24px;
+  box-shadow: 7px 7px 0 #e6ede2;
+}
+.lp-price-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 23px;
+  border-bottom: 1px solid var(--lp-line);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.lp-price-tag {
+  background: #e9f0e4;
+  color: #5b7453;
+  padding: 5px 9px;
+  border-radius: 3px;
+  font-size: 9px;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+.lp-price-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22px;
+  gap: 15px;
+}
+.lp-price-period {
+  display: inline-flex;
+  background: #f1f3ef;
+  padding: 3px;
+  border-radius: 4px;
+}
+.lp-price-period > button {
+  font-size: 11px;
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  border-radius: 3px;
+  color: var(--lp-muted);
+}
+.lp-price-period > button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--lp-ink);
+  box-shadow: 0 1px 3px #233c2410;
+}
+.lp-price-period > button span {
+  font-size: 9px;
+  color: #658259;
+  padding-left: 4px;
+}
+.lp-currency {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.lp-currency select {
+  appearance: none;
+  font-size: 10px;
+  border: 0;
+  background: none;
+  padding: 5px 0 5px 5px;
+  outline-offset: 2px;
+}
+.lp-price-amount {
+  min-height: 123px;
+  padding-top: 23px;
+  padding-bottom: 20px;
+}
+.lp-price-amount > div {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.lp-price-amount strong {
+  font-size: 50px;
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+  font-weight: 500;
+}
+.lp-price-symbol {
+  font-size: 25px;
+}
+.lp-price-currency {
+  font-size: 11px;
+  margin-left: 5px;
+  color: var(--lp-muted);
+}
+.lp-price-amount p {
+  font-size: 11px;
+  color: var(--lp-muted);
+  margin-top: 7px;
+}
+.lp-price-amount small {
+  font-size: 10px;
+  color: var(--lp-muted);
+  margin-top: 6px;
+  display: block;
+}
+.lp-price-amount .lp-price-intro {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lp-ink);
+}
+.lp-price-intro span {
+  border-radius: 999px;
+  background: #e7f8ef;
+  color: #08794a;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.lp-price-card > .lp-button {
+  width: 100%;
+  justify-content: space-between;
+  min-height: 50px;
+  font-size: 13px;
+}
+.lp-price-trial {
+  font-size: 10px;
+  text-align: center;
+  color: var(--lp-muted);
+  margin-top: 11px;
+}
+.lp-price-features {
+  margin-top: 26px;
+  border-top: 1px solid var(--lp-line);
+  padding-top: 22px;
+  gap: 13px;
+}
+.lp-price-features li {
+  font-size: 12px;
+}
+.lp-price-detail {
+  border-top: 1px solid var(--lp-line);
+  margin-top: 23px;
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--lp-muted);
+}
+.lp-price-detail:hover {
+  color: var(--lp-blue);
+}
+.lp-price-amount > .lp-price-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  padding-top: 15px;
+  color: var(--lp-muted);
+}
+.lp-price-amount > .lp-price-error {
+  display: block;
+  padding-top: 3px;
+}
+.lp-price-amount .lp-price-error strong {
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 500;
+  display: block;
+}
+.lp-price-error button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--lp-blue);
+  font-size: 11px;
+  background: none;
+  border: 0;
+  margin-top: 10px;
+}
+.lp-faq {
+  border-top: 1px solid var(--lp-line);
+  background: #fff;
+  padding-bottom: 70px;
+}
+.lp-faq-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  gap: 100px;
+}
+.lp-faq .lp-eyebrow {
+  margin-bottom: 27px;
+}
+.lp-faq-grid > div:first-child > p:not(.lp-eyebrow) {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--lp-muted);
+  max-width: 290px;
+  margin-top: 23px;
+}
+.lp-faq .lp-text-link {
+  margin-top: 22px;
+  color: var(--lp-blue);
+}
+.lp-faq-list {
+  border-top: 1px solid var(--lp-line);
+}
+.lp-faq-list details {
+  border-bottom: 1px solid var(--lp-line);
+}
+.lp-faq-list summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  padding: 21px 0;
+}
+.lp-faq-list summary::-webkit-details-marker,
+.lp-contact summary::-webkit-details-marker {
+  display: none;
+}
+.lp-faq-list summary > svg {
+  flex-shrink: 0;
+  stroke-width: 1.4;
+  transition: transform 0.2s;
+}
+.lp-faq-list details[open] summary {
+  color: var(--lp-blue);
+}
+.lp-faq-list details[open] summary > svg {
+  transform: rotate(45deg);
+}
+.lp-faq-list details > p {
+  font-size: 12px;
+  color: var(--lp-muted);
+  line-height: 1.85;
+  padding: 0 30px 23px 0;
+  max-width: 480px;
+}
+.lp-contact {
+  background: #fff;
+  padding-bottom: 75px;
+}
+.lp-contact-details {
+  border: 1px solid var(--lp-line);
+  border-radius: 5px;
+}
+.lp-contact summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+  padding: 24px 27px;
+}
+.lp-contact summary > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.lp-contact summary small {
+  font-size: 11px;
+  color: var(--lp-muted);
+  display: block;
+  margin-top: 3px;
+  font-weight: 400;
+}
+.lp-contact-open {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--lp-blue);
+  white-space: nowrap;
+}
+.lp-contact-open svg {
+  transition: transform 0.2s;
+}
+.lp-contact-details[open] .lp-contact-open svg {
+  transform: rotate(45deg);
+}
+.lp-contact-form {
+  border-top: 1px solid var(--lp-line);
+  padding: 28px;
+}
+.lp-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.lp-contact-form label {
+  font-size: 12px;
+  font-weight: 500;
+}
+.lp-contact-form input,
+.lp-contact-form textarea {
+  width: 100%;
+  border: 1px solid #d5ded4;
+  background: var(--lp-paper);
+  border-radius: 3px;
+  margin-top: 7px;
+  padding: 11px 13px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.lp-contact-form textarea {
+  resize: vertical;
+}
+.lp-contact-form input:focus,
+.lp-contact-form textarea:focus {
+  border-color: var(--lp-blue);
+  background: #fff;
+}
+.lp-form-wide {
+  grid-column: 1/-1;
+}
+.lp-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  margin-top: 23px;
+}
+.lp-form-footer > span {
+  font-size: 11px;
+  color: var(--lp-muted);
+}
+.lp-form-footer > span a {
+  text-decoration: underline;
+}
+.lp-form-footer > .lp-button {
+  min-height: 43px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.lp-form-error {
+  font-size: 12px;
+  margin-top: 18px;
+  color: #ab3b38;
+}
+.lp-contact-success {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 35px;
+  border-top: 1px solid var(--lp-line);
+  color: #4d7757;
+}
+.lp-contact-success h3 {
+  font-size: 17px;
+  font-weight: 500;
+}
+.lp-contact-success p {
+  font-size: 13px;
+  color: var(--lp-muted);
+  margin-top: 8px;
+}
+.lp-final {
+  background: var(--lp-blue);
+  color: #fff;
+  padding: 56px 0 27px;
+}
+.lp-final .lp-eyebrow {
+  color: #d5e0ff;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.lp-final-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  padding: 28px 0 43px;
+}
+.lp-final-row h2 {
+  font-size: clamp(45px, 5.5vw, 78px);
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+  font-weight: 400;
+}
+.lp-final-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-decoration: none;
+  border: 1px solid #93b1ff80;
+  border-radius: 50%;
+  width: 192px;
+  height: 192px;
+  flex-shrink: 0;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.2s;
+}
+.lp-final-link > span {
+  font-size: 12px;
+}
+.lp-final-link:hover {
+  background: #fff;
+  color: var(--lp-blue);
+  transform: rotate(-4deg);
+}
+.lp-final-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid #9cb6ff50;
+  padding-top: 21px;
+  font-size: 10px;
+  color: #dce5ff;
+}
+.lp-footer {
+  padding-top: 55px;
+  padding-bottom: 23px;
+  background: var(--lp-paper);
+}
+.lp-footer-top {
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 1fr 1fr;
+  gap: 45px;
+  padding-bottom: 43px;
+}
+.lp-footer-top > div:first-child > p {
+  font-size: 11px;
+  color: var(--lp-muted);
+  line-height: 1.8;
+  margin-top: 18px;
+}
+.lp-footer nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.lp-footer nav > span,
+.lp-footer-account > span {
+  font-size: 9px;
+  color: #849086;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.lp-footer nav > a {
+  font-size: 11px;
+  color: var(--lp-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lp-footer nav > a:hover {
+  color: var(--lp-blue);
+}
+.lp-footer-account > span {
+  display: block;
+  margin-bottom: 17px;
+}
+.lp-footer-account .lp-text-link {
+  font-size: 11px;
+  font-weight: 500;
+}
+.lp-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid var(--lp-line);
+  padding-top: 21px;
+  font-size: 9px;
+  color: #7a877d;
+}
+.lp-footer-bottom > div {
+  display: flex;
+  gap: 25px;
+}
+.lp-footer-bottom a:hover {
+  color: var(--lp-blue);
+}
+@keyframes lp-enter {
+  from {
+    opacity: 0.3;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (min-width: 1500px) {
+  .lp-app {
+    min-height: 410px;
+  }
+  .lp-calendar-hours,
+  .lp-calendar-slots {
+    grid-template-rows: repeat(5, 41px);
+  }
+}
+@media (max-width: 1199px) {
+  .lp-container {
+    width: calc(100% - 72px);
+  }
+  .lp-nav-links {
+    gap: 20px;
+    margin-left: 0;
+  }
+  .lp-nav {
+    gap: 20px;
+  }
+  .lp-nav-actions {
+    gap: 18px;
+  }
+  .lp-nav-links a,
+  .lp-login {
+    font-size: 11px;
+  }
+  .lp-hero h1 {
+    font-size: 62px;
+  }
+  .lp-hero-description {
+    font-size: 14px;
+  }
+  .lp-hero-actions {
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lp-hero-actions > .lp-button {
+    font-size: 13px;
+    padding-inline: 18px;
+    gap: 16px;
+  }
+  .lp-workflow-panel {
+    gap: 60px;
+  }
+  .lp-workflow-copy h3 {
+    font-size: 30px;
+  }
+  .lp-workflow-visual {
+    padding: 17px 17px 13px;
+  }
+  .lp-pricing-grid,
+  .lp-faq-grid {
+    gap: 70px;
+  }
+  .lp-start-grid {
+    gap: 30px;
+  }
+  .lp-start ol {
+    gap: 17px;
+  }
+  .lp-start li {
+    gap: 8px;
+  }
+  .lp-start h3 {
+    font-size: 11px;
+  }
+  .lp-start li p {
+    font-size: 10px;
+  }
+  .lp-footer-top {
+    gap: 28px;
+  }
+}
+@media (max-width: 959px) {
+  .lp-container {
+    width: calc(100% - 56px);
+  }
+  .lp-nav {
+    height: 72px;
+  }
+  .lp-nav-links {
+    display: none;
+  }
+  .lp-nav-actions {
+    margin-left: auto;
+  }
+  .lp-menu-toggle {
+    display: block;
+  }
+  .lp-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--lp-paper);
+    padding: 15px 28px 28px;
+    border-bottom: 1px solid var(--lp-line);
+    box-shadow: 0 16px 25px #152f3510;
+  }
+  .lp-mobile-menu > a:not(.lp-button) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--lp-line);
+    font-size: 15px;
+  }
+  .lp-mobile-menu > .lp-button {
+    margin-top: 20px;
+  }
+  .lp-section {
+    padding-block: 80px;
+  }
+  .lp-hero h1 {
+    font-size: 53px;
+  }
+  .lp-hero-description {
+    font-size: 13px;
+    margin-top: 22px;
+  }
+  .lp-hero-reassurance {
+    font-size: 9px;
+    gap: 12px;
+  }
+  .lp-hero-actions {
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .lp-hero-actions .lp-text-link {
+    font-size: 11px;
+  }
+  .lp-app-sidebar {
+    width: 37px;
+    gap: 20px;
+  }
+  .lp-app-sidebar svg {
+    width: 14px;
+    height: 14px;
+  }
+  .lp-app-monogram {
+    font-size: 22px;
+  }
+  .lp-agenda,
+  .lp-patient,
+  .lp-finance {
+    padding: 15px 11px 11px;
+  }
+  .lp-app-topbar {
+    padding-inline: 11px;
+    height: 36px;
+  }
+  .lp-app-topbar > span:first-child {
+    font-size: 7px;
+  }
+  .lp-app {
+    min-height: 350px;
+  }
+  .lp-app .lp-app-title h3 {
+    font-size: 17px;
+  }
+  .lp-app-add {
+    font-size: 6px;
+    padding: 6px;
+    gap: 2px;
+  }
+  .lp-app-add svg {
+    width: 10px;
+  }
+  .lp-agenda-toolbar {
+    gap: 8px;
+    margin-top: 15px;
+  }
+  .lp-agenda-toolbar > strong {
+    font-size: 8px;
+  }
+  .lp-agenda-toolbar > span {
+    gap: 5px;
+  }
+  .lp-calendar-days {
+    grid-template-columns: 27px repeat(3, 1fr);
+  }
+  .lp-calendar-hours {
+    width: 27px;
+    font-size: 5px;
+  }
+  .lp-calendar-hours > span {
+    padding-left: 3px;
+  }
+  .lp-calendar-hours,
+  .lp-calendar-slots {
+    grid-template-rows: repeat(5, 34px);
+  }
+  .lp-appointment {
+    padding: 3px;
+    margin: 3px 2px;
+  }
+  .lp-appointment strong {
+    font-size: 6px;
+  }
+  .lp-appointment > span {
+    font-size: 5px;
+  }
+  .lp-side-note {
+    font-size: 10px;
+  }
+  .lp-workflow-panel {
+    gap: 30px;
+    grid-template-columns: 0.85fr 1fr;
+    min-height: 430px;
+  }
+  .lp-workflow-copy h3 {
+    font-size: 29px;
+  }
+  .lp-workflow-copy > p {
+    font-size: 13px;
+  }
+  .lp-workflow-visual {
+    padding: 13px 13px 10px;
+  }
+  .lp-workflow-tabs button {
+    font-size: 12px;
+    gap: 11px;
+  }
+  .lp-workflow-tabs button > svg {
+    width: 16px;
+  }
+  .lp-extra-features > span {
+    font-size: 10px;
+    gap: 7px;
+  }
+  .lp-extra-features svg {
+    width: 16px;
+  }
+  .lp-demo-heading {
+    gap: 45px;
+    grid-template-columns: 1fr 0.85fr;
+  }
+  .lp-demo-intro > p {
+    font-size: 13px;
+  }
+  .lp-start-grid {
+    grid-template-columns: 1fr;
+  }
+  .lp-start ol {
+    gap: 24px;
+  }
+  .lp-start .lp-start-grid > h2 br {
+    display: none;
+  }
+  .lp-start h3 {
+    font-size: 12px;
+  }
+  .lp-start li p {
+    font-size: 11px;
+  }
+  .lp-pricing-grid {
+    gap: 45px;
+    grid-template-columns: 1fr 0.95fr;
+  }
+  .lp-price-card {
+    padding: 23px;
+  }
+  .lp-price-amount strong {
+    font-size: 42px;
+  }
+  .lp-price-controls {
+    gap: 8px;
+  }
+  .lp-price-period > button {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  .lp-pricing-copy > p:not(.lp-eyebrow) {
+    font-size: 13px;
+  }
+  .lp-pricing-promises li {
+    font-size: 12px;
+  }
+  .lp-faq-grid {
+    gap: 40px;
+  }
+  .lp-faq-list summary {
+    font-size: 12px;
+  }
+  .lp-faq-grid > div:first-child > p:not(.lp-eyebrow) {
+    font-size: 13px;
+  }
+  .lp-footer-top {
+    grid-template-columns: 1.2fr 1fr 1fr;
+  }
+  .lp-footer-account {
+    grid-column: 1/-1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--lp-line);
+    padding-top: 23px;
+  }
+  .lp-footer-account > span {
+    margin: 0;
+  }
+}
+@media (max-width: 699px) {
+  .lp-container {
+    width: calc(100% - 40px);
+  }
+  .lp-nav {
+    height: 66px;
+    gap: 14px;
+  }
+  .lp-logo img {
+    width: 98px;
+  }
+  .lp-nav-actions {
+    gap: 0;
+  }
+  .lp-login {
+    display: none;
+  }
+  .lp-nav-actions > .lp-button {
+    font-size: 10px;
+    min-height: 36px;
+    padding: 8px 11px;
+    gap: 9px;
+  }
+  .lp-nav-actions > .lp-button svg {
+    width: 13px;
+    height: 13px;
+  }
+  .lp-menu-toggle {
+    padding: 7px 0 7px 7px;
+  }
+  .lp-menu-toggle svg {
+    width: 22px;
+  }
+  .lp-mobile-menu {
+    top: 66px;
+    padding-inline: 20px;
+  }
+  .lp-section {
+    padding-block: 62px;
+  }
+  .dentiqly-landing h2:not(:where(.lp-live-demo *)) {
+    font-size: 36px;
+    line-height: 1.12;
+  }
+  .lp-eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+  .lp-hero h1 {
+    font-size: clamp(47px, 10.7vw, 70px);
+    line-height: 1.01;
+    letter-spacing: -0.055em;
+  }
+  .lp-hero-description {
+    font-size: 14px;
+    line-height: 1.75;
+    max-width: 390px;
+    margin-top: 22px;
+  }
+  .lp-hero-actions {
+    gap: 20px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+  }
+  .lp-hero-actions > .lp-button {
+    font-size: 12px;
+    min-height: 50px;
+    padding: 13px 16px;
+    gap: 17px;
+  }
+  .lp-hero-actions .lp-text-link {
+    font-size: 11px;
+  }
+  .lp-hero-reassurance {
+    margin-top: 15px;
+    font-size: 9px;
+    gap: 18px;
+  }
+  .lp-app {
+    min-height: 340px;
+  }
+  .lp-app-sidebar {
+    width: 41px;
+    gap: 19px;
+  }
+  .lp-agenda,
+  .lp-patient,
+  .lp-finance {
+    padding: 15px 13px 10px;
+  }
+  .lp-app-topbar {
+    height: 36px;
+  }
+  .lp-app .lp-app-title h3 {
+    font-size: 18px;
+  }
+  .lp-app-kicker {
+    font-size: 6px;
+  }
+  .lp-app-add {
+    font-size: 6px;
+    padding: 6px 8px;
+  }
+  .lp-calendar-hours,
+  .lp-calendar-slots {
+    grid-template-rows: repeat(5, 34px);
+  }
+  .lp-calendar-days {
+    grid-template-columns: 30px repeat(3, 1fr);
+  }
+  .lp-calendar-hours {
+    width: 30px;
+    font-size: 6px;
+  }
+  .lp-appointment strong {
+    font-size: 7px;
+  }
+  .lp-appointment > span {
+    font-size: 6px;
+  }
+  .lp-appointment {
+    margin: 3px 2px;
+    padding: 4px;
+  }
+  .lp-section-top {
+    margin-bottom: 21px;
+  }
+  .lp-side-note {
+    display: none;
+  }
+  .lp-workflow-tabs {
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .lp-workflow-tabs button {
+    font-size: 10px;
+    gap: 7px;
+    align-items: flex-start;
+    padding: 15px 0;
+    flex-direction: column;
+    line-height: 1.5;
+  }
+  .lp-workflow-tabs button > span {
+    font-size: 8px;
+  }
+  .lp-workflow-tabs button > svg {
+    display: none;
+  }
+  .lp-workflow-panel {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 28px;
+    min-height: 0;
+  }
+  .lp-workflow-copy h3 {
+    font-size: 29px;
+    max-width: 320px;
+    margin-top: 12px;
+  }
+  .lp-workflow-copy > p {
+    font-size: 13px;
+    max-width: none;
+    margin-top: 16px;
+  }
+  .lp-check-list {
+    margin-top: 20px;
+    gap: 10px;
+  }
+  .lp-check-list li {
+    font-size: 11px;
+  }
+  .lp-workflow-copy > .lp-text-link {
+    margin-top: 22px;
+    font-size: 12px;
+  }
+  .lp-workflow-visual {
+    padding: 18px 18px 12px;
+  }
+  .lp-workflow-visual .lp-app {
+    min-height: 355px;
+  }
+  .lp-visual-caption {
+    font-size: 8px;
+  }
+  .lp-extra-features {
+    margin-top: 28px;
+    padding-top: 20px;
+    flex-wrap: wrap;
+    gap: 14px 21px;
+  }
+  .lp-extra-features > span {
+    font-size: 10px;
+  }
+  .lp-demo-heading {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin-bottom: 27px;
+  }
+  .lp-demo-heading .lp-eyebrow {
+    margin-bottom: 20px;
+  }
+  .lp-demo-intro > p {
+    max-width: none;
+    font-size: 13px;
+  }
+  .lp-demo-intro .lp-button {
+    min-height: 48px;
+    font-size: 12px;
+  }
+  .lp-small-note {
+    font-size: 9px;
+  }
+  .lp-browser-bar {
+    height: 33px;
+    font-size: 7px;
+    padding-inline: 11px;
+  }
+  .lp-demo-screenshot > img {
+    width: 175%;
+    max-width: none;
+    transform: translateX(-12%);
+    min-height: 235px;
+    object-fit: cover;
+  }
+  .lp-screenshot-action {
+    padding: 12px 17px;
+    font-size: 11px;
+    gap: 10px;
+    border-width: 3px;
+  }
+  .lp-screenshot-action svg {
+    width: 15px;
+  }
+  .lp-start {
+    padding-block: 33px;
+  }
+  .lp-start-grid {
+    gap: 25px;
+  }
+  .lp-start .lp-start-grid > h2 {
+    font-size: 25px;
+    max-width: 240px;
+  }
+  .lp-start ol {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .lp-start li {
+    gap: 16px;
+  }
+  .lp-start h3 {
+    font-size: 13px;
+  }
+  .lp-start li p {
+    max-width: none;
+    font-size: 12px;
+    margin-top: 3px;
+  }
+  .lp-start li > span {
+    font-size: 10px;
+  }
+  .lp-start li > svg {
+    display: none;
+  }
+  .lp-pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 33px;
+  }
+  .lp-pricing-copy {
+    padding-top: 0;
+  }
+  .lp-pricing-copy .lp-eyebrow {
+    margin-bottom: 20px;
+  }
+  .lp-pricing-copy > p:not(.lp-eyebrow) {
+    max-width: none;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+  .lp-pricing-promises {
+    gap: 18px;
+    margin-top: 25px;
+    max-width: none;
+  }
+  .lp-pricing-promises li {
+    font-size: 12px;
+  }
+  .lp-enterprise {
+    margin-top: 25px;
+    padding-top: 20px;
+  }
+  .lp-enterprise > span {
+    font-size: 11px;
+  }
+  .lp-enterprise a {
+    font-size: 12px;
+  }
+  .lp-price-card {
+    padding: 24px;
+    box-shadow: 5px 5px 0 #e6ede2;
+  }
+  .lp-price-card-header {
+    font-size: 10px;
+    padding-bottom: 20px;
+  }
+  .lp-price-controls {
+    margin-top: 20px;
+  }
+  .lp-price-period > button {
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+  .lp-price-amount strong {
+    font-size: 48px;
+  }
+  .lp-price-features li {
+    font-size: 11px;
+  }
+  .lp-faq {
+    padding-bottom: 40px;
+  }
+  .lp-faq-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .lp-faq .lp-eyebrow {
+    margin-bottom: 20px;
+  }
+  .lp-faq-grid > div:first-child > p:not(.lp-eyebrow) {
+    font-size: 13px;
+    max-width: 320px;
+    margin-top: 19px;
+  }
+  .lp-faq .lp-text-link {
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .lp-faq-list summary {
+    font-size: 13px;
+    padding: 18px 0;
+    gap: 15px;
+  }
+  .lp-faq-list details > p {
+    font-size: 12px;
+    padding-right: 20px;
+  }
+  .lp-contact {
+    padding-bottom: 45px;
+  }
+  .lp-contact summary {
+    padding: 20px;
+    gap: 18px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .lp-contact summary > span:first-child {
+    font-size: 12px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .lp-contact summary > span:first-child > svg {
+    width: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .lp-contact summary small {
+    font-size: 10px;
+    line-height: 1.7;
+  }
+  .lp-contact-open {
+    font-size: 11px;
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 30px;
+  }
+  .lp-contact-form {
+    padding: 20px;
+  }
+  .lp-form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .lp-form-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+  .lp-form-footer > .lp-button {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .lp-contact-success {
+    padding: 25px 20px;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  .lp-contact-success h3 {
+    font-size: 15px;
+  }
+  .lp-contact-success p {
+    font-size: 12px;
+  }
+  .lp-contact-success > svg {
+    flex-shrink: 0;
+  }
+  .lp-final {
+    padding-top: 37px;
+    padding-bottom: 22px;
+  }
+  .lp-final .lp-eyebrow {
+    font-size: 7px;
+  }
+  .lp-final-row {
+    padding: 25px 0 31px;
+    align-items: flex-start;
+    gap: 26px;
+    flex-direction: column;
+  }
+  .lp-final-row h2 {
+    font-size: 46px;
+  }
+  .lp-final-link {
+    width: auto;
+    height: auto;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    border: 1px solid #a9c0ff80;
+    border-radius: 4px;
+    padding: 13px 17px;
+    gap: 30px;
+  }
+  .lp-final-link svg {
+    width: 23px;
+    height: 23px;
+  }
+  .lp-final-link > span {
+    font-size: 12px;
+  }
+  .lp-final-link:hover {
+    transform: none;
+  }
+  .lp-final-bottom {
+    font-size: 9px;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 17px;
+  }
+  .lp-footer {
+    padding-top: 38px;
+    padding-bottom: 22px;
+  }
+  .lp-footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 20px;
+    padding-bottom: 25px;
+  }
+  .lp-footer-top > div:first-child {
+    grid-column: 1/-1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  .lp-footer-top > div:first-child > p {
+    font-size: 9px;
+    margin-top: 0;
+    max-width: 180px;
+  }
+  .lp-footer nav > span,
+  .lp-footer-account > span {
+    font-size: 8px;
+  }
+  .lp-footer nav > a {
+    font-size: 10px;
+  }
+  .lp-footer-account {
+    padding-top: 20px;
+  }
+  .lp-footer-account > .lp-text-link {
+    font-size: 10px;
+    gap: 8px;
+  }
+  .lp-footer-bottom {
+    flex-wrap: wrap;
+    font-size: 8px;
+    gap: 15px;
+  }
+  .lp-footer-bottom > span:nth-child(2) {
+    display: none;
+  }
+  .lp-footer-bottom > div {
+    gap: 18px;
+  }
+  .lp-app .lp-patient-tabs {
+    gap: 14px;
+  }
+}
+@media (max-width: 359px) {
+  .lp-container {
+    width: calc(100% - 32px);
+  }
+  .lp-hero h1 {
+    font-size: 44px;
+  }
+  .lp-hero-actions {
+    gap: 17px;
+  }
+  .lp-workflow-visual {
+    padding: 12px;
+  }
+  .lp-price-card {
+    padding: 20px;
+  }
+  .lp-final-row h2 {
+    font-size: 40px;
+  }
+  .lp-hero-reassurance {
+    gap: 10px;
+    font-size: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  .dentiqly-landing *,
+  .dentiqly-landing *::before,
+  .dentiqly-landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Centered, product-led composition inspired by the reference; flat brand colors. */
+.dentiqly-landing .lp-container {
+  max-width: 1200px;
+}
+.dentiqly-landing .lp-section {
+  padding-block: 96px;
+}
+.dentiqly-landing .lp-header {
+  background: #fff;
+  border-bottom: 0;
+}
+.dentiqly-landing .lp-nav {
+  height: 88px;
+}
+.dentiqly-landing .lp-logo img {
+  width: 140px;
+}
+.dentiqly-landing .lp-nav-links {
+  margin-right: auto;
+  margin-left: 30px;
+  gap: 28px;
+}
+.dentiqly-landing .lp-nav-links a,
+.dentiqly-landing .lp-login {
+  font-size: 14px;
+}
+.dentiqly-landing .lp-login {
+  border: 1px solid var(--lp-ink);
+  border-radius: 9px;
+  padding: 11px 17px;
+}
+.dentiqly-landing .lp-nav-actions {
+  gap: 12px;
+}
+.dentiqly-landing .lp-button {
+  border-radius: 9px;
+  min-height: 52px;
+  gap: 18px;
+  padding: 14px 23px;
+  font-size: 15px;
+}
+.dentiqly-landing .lp-button-small {
+  background: var(--lp-ink);
+  min-height: 46px;
+  font-size: 13px;
+  padding: 12px 18px;
+}
+.dentiqly-landing .lp-button-small:hover {
+  background: #173c64;
+}
+.dentiqly-landing .lp-button-outline {
+  color: var(--lp-ink);
+  background: #fff;
+  border-color: #b6cae4;
+}
+.dentiqly-landing .lp-button-outline:hover {
+  background: #f5f9ff;
+  border-color: var(--lp-blue);
+}
+.dentiqly-landing .lp-text-link {
+  font-size: 14px;
+}
+.dentiqly-landing .lp-eyebrow {
+  font-size: 14px;
+  letter-spacing: 0;
+  color: var(--lp-blue);
+  font-weight: 600;
+}
+.dentiqly-landing h2:not(:where(.lp-live-demo *)) {
+  font-size: clamp(34px, 3.5vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.14;
+}
+.dentiqly-landing .lp-muted-heading {
+  color: var(--lp-ink);
+}
+.dentiqly-landing .lp-hero {
+  margin: 0 24px;
+  padding: 60px 40px 48px;
+  background: #eaf2ff;
+  border-radius: 32px;
+  position: relative;
+  isolation: isolate;
+}
+.lp-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  color: #9ebce7;
+}
+.lp-hero-art svg {
+  position: absolute;
+}
+.lp-hero-sheet {
+  width: 270px;
+  left: -115px;
+  top: 140px;
+  transform: rotate(-16deg);
+  opacity: 0.65;
+}
+.lp-hero-orbit {
+  width: 370px;
+  right: -185px;
+  top: -30px;
+  transform: rotate(24deg);
+  opacity: 0.7;
+}
+.lp-hero-route {
+  width: 320px;
+  left: -135px;
+  top: 410px;
+  opacity: 0.65;
+}
+.lp-hero-intro {
+  text-align: center;
+  max-width: 1080px;
+  margin-inline: auto;
+}
+.lp-hero-category {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 24px;
+  background: #dce9fc;
+  color: #345981;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 22px;
+}
+.dentiqly-landing .lp-hero h1 {
+  font-size: clamp(44px, 4.5vw, 64px);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+.dentiqly-landing .lp-hero h1 > span {
+  color: var(--lp-blue);
+}
+.dentiqly-landing .lp-hero-description {
+  font-size: 18px;
+  line-height: 1.65;
+  max-width: 650px;
+  margin: 23px auto 0;
+}
+.dentiqly-landing .lp-hero-actions {
+  justify-content: center;
+  margin-top: 28px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.dentiqly-landing .lp-hero-reassurance {
+  justify-content: center;
+  font-size: 12px;
+  margin-top: 17px;
+  gap: 20px;
+}
+.dentiqly-landing .lp-hero-reassurance svg {
+  color: #4775ac;
+}
+.lp-product-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 38px auto 20px;
+}
+.dentiqly-landing .lp-product-switcher button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #526987;
+  background: transparent;
+  border: 1px solid #bfd1ed;
+  border-radius: 28px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.dentiqly-landing .lp-product-switcher button[aria-selected="true"] {
+  background: var(--lp-ink);
+  color: #fff;
+  border-color: var(--lp-ink);
+}
+.dentiqly-landing
+  .lp-product-switcher
+  button:hover:not([aria-selected="true"]) {
+  background: #dbe9ff;
+}
+.lp-hero-product-card {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 30px;
+  align-items: center;
+  max-width: 1080px;
+  min-height: 400px;
+  margin-inline: auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px #224f8310;
+}
+.lp-hero-product-copy {
+  padding: 15px 12px 15px 14px;
+  animation: lp-enter 0.25s ease-out;
+}
+.lp-product-name {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--lp-blue);
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+.dentiqly-landing .lp-hero-product-copy h2 {
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  max-width: 330px;
+}
+.lp-hero-product-copy > p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--lp-muted);
+  margin: 19px 0 23px;
+  max-width: 340px;
+}
+.lp-hero-product-copy .lp-text-link {
+  color: var(--lp-blue);
+}
+.lp-hero-product-visual {
+  background: #e7f0ff;
+  min-width: 0;
+  padding: 23px 23px 14px;
+  border-radius: 19px;
+}
+.lp-hero-visual-patient {
+  background: #e8f4f0;
+}
+.lp-hero-visual-finance {
+  background: #fff2df;
+}
+.lp-hero-product-visual .lp-app {
+  border-radius: 10px;
+  border: 1px solid #d6e1ed;
+  box-shadow: 0 8px 20px #3452720c;
+  overflow: hidden;
+  min-height: 350px;
+}
+.lp-hero-product-visual > p {
+  font-size: 10px;
+  text-align: center;
+  color: #526b88;
+  margin-top: 13px;
+}
+.lp-hero-product-visual .lp-visual-caption {
+  text-align: center;
+  font-size: 8px;
+  margin-top: 5px;
+  color: #6d8196;
+}
+.lp-trust-ribbon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  padding-block: 37px;
+}
+.lp-trust-ribbon > div > p {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.lp-trust-ribbon > div > span {
+  display: block;
+  font-size: 13px;
+  color: var(--lp-muted);
+  margin-top: 5px;
+}
+.lp-trust-ribbon > a {
+  display: flex;
+  align-items: center;
+  gap: 23px;
+  flex-shrink: 0;
+}
+.lp-trust-ribbon img {
+  object-fit: contain;
+  width: 77px;
+  height: auto;
+}
+.lp-trust-ribbon > a > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--lp-blue);
+  font-size: 12px;
+}
+.dentiqly-landing .lp-workflow {
+  border-top: 1px solid #edf1f6;
+}
+.dentiqly-landing .lp-section-top {
+  justify-content: center;
+  margin-bottom: 19px;
+}
+.dentiqly-landing .lp-side-note {
+  display: none;
+}
+.lp-workflow > .lp-container > h2 {
+  text-align: center;
+}
+.dentiqly-landing .lp-workflow-tabs {
+  background: #f4f7fc;
+  padding: 7px;
+  border: 0;
+  border-radius: 14px;
+  gap: 6px;
+  max-width: 880px;
+  margin: 36px auto 0;
+}
+.dentiqly-landing .lp-workflow-tabs button {
+  padding: 15px 18px;
+  border: 0;
+  border-radius: 9px;
+  font-size: 14px;
+  gap: 11px;
+  margin: 0;
+}
+.dentiqly-landing .lp-workflow-tabs button[aria-selected="true"] {
+  background: white;
+  box-shadow: 0 2px 8px #142b4910;
+}
+.dentiqly-landing .lp-workflow-tabs button > span {
+  font-size: 11px;
+}
+.dentiqly-landing .lp-workflow-panel {
+  gap: 70px;
+  padding-top: 44px;
+  min-height: 480px;
+}
+.dentiqly-landing .lp-workflow-copy h3 {
+  font-size: 34px;
+  font-weight: 600;
+  max-width: 350px;
+}
+.dentiqly-landing .lp-workflow-copy > p {
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 400px;
+}
+.dentiqly-landing .lp-check-list li {
+  font-size: 14px;
+}
+.dentiqly-landing .lp-check-list svg {
+  color: #3269bc;
+}
+.dentiqly-landing .lp-workflow-visual {
+  border-radius: 22px;
+  background: #edf4ff;
+  padding: 28px 28px 18px;
+}
+.dentiqly-landing .lp-workflow-visual .lp-app {
+  border-radius: 10px;
+  border-color: #d6e1ed;
+}
+.dentiqly-landing .lp-index {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-extra-features {
+  margin-top: 37px;
+  border-color: #e8eef5;
+}
+.dentiqly-landing .lp-extra-features > span {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-extra-features svg {
+  color: #6387af;
+}
+.dentiqly-landing .lp-demo {
+  background: #f5f8ff;
+}
+.dentiqly-landing .lp-demo-heading {
+  display: block;
+  text-align: center;
+  margin-bottom: 35px;
+}
+.lp-demo-heading .lp-eyebrow {
+  justify-content: center;
+}
+.dentiqly-landing .lp-demo-intro > p {
+  max-width: 580px;
+  margin: 20px auto 24px;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.dentiqly-landing .lp-demo-intro .lp-button {
+  background: var(--lp-blue);
+}
+.dentiqly-landing .lp-small-note {
+  font-size: 12px;
+}
+.dentiqly-landing .lp-demo-screenshot {
+  border-radius: 18px;
+  border-color: #d6e1ed;
+  box-shadow: 0 14px 34px #21466e0b;
+}
+.dentiqly-landing .lp-browser-bar {
+  background: #fff;
+  border-color: #e1e9f5;
+}
+.dentiqly-landing .lp-screenshot-action {
+  border-radius: 12px;
+  font-size: 14px;
+}
+.dentiqly-landing .lp-start {
+  background: #fff;
+  padding-block: 65px;
+  border-color: #e8eef5;
+}
+.dentiqly-landing .lp-start-grid {
+  display: block;
+}
+.dentiqly-landing .lp-start .lp-start-grid > h2 {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+}
+.lp-start-grid > h2 br {
+  display: none;
+}
+.dentiqly-landing .lp-start ol {
+  margin-top: 35px;
+  gap: 36px;
+}
+.dentiqly-landing .lp-start li {
+  gap: 15px;
+}
+.dentiqly-landing .lp-start li > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: #edf3ff;
+  border-radius: 50%;
+  margin: 0;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.dentiqly-landing .lp-start h3 {
+  font-size: 15px;
+}
+.dentiqly-landing .lp-start li p {
+  font-size: 13px;
+  max-width: 240px;
+}
+.dentiqly-landing .lp-pricing {
+  background: #fff;
+}
+.dentiqly-landing .lp-pricing-grid {
+  gap: 95px;
+}
+.dentiqly-landing .lp-pricing-copy > p:not(.lp-eyebrow) {
+  font-size: 16px;
+}
+.dentiqly-landing .lp-pricing-promises li {
+  font-size: 15px;
+}
+.dentiqly-landing .lp-pricing-promises {
+  max-width: 410px;
+}
+.dentiqly-landing .lp-pricing-promises svg {
+  color: #3d75b5;
+}
+.dentiqly-landing .lp-price-card {
+  border-radius: 20px;
+  border: 1px solid #d3e1f3;
+  padding: 32px;
+  box-shadow: 0 10px 35px #163c6910;
+}
+.dentiqly-landing .lp-price-tag {
+  background: #e8f1ff;
+  color: #3d6ba8;
+  border-radius: 20px;
+  font-size: 11px;
+}
+.dentiqly-landing .lp-price-card-header {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+.dentiqly-landing .lp-price-period {
+  border-radius: 8px;
+  background: #f1f5fb;
+}
+.dentiqly-landing .lp-price-period > button {
+  border-radius: 6px;
+  font-size: 13px;
+}
+.dentiqly-landing .lp-currency select {
+  font-size: 12px;
+}
+.dentiqly-landing .lp-price-amount p {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-price-amount small {
+  font-size: 12px;
+}
+.dentiqly-landing .lp-price-card > .lp-button {
+  font-size: 14px;
+}
+.dentiqly-landing .lp-price-trial {
+  font-size: 11px;
+}
+.dentiqly-landing .lp-price-features li {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-price-detail,
+.dentiqly-landing .lp-enterprise > span {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-faq {
+  background: #f8faff;
+  border-top: 0;
+}
+.dentiqly-landing .lp-faq-grid > div:first-child > p:not(.lp-eyebrow) {
+  font-size: 16px;
+}
+.dentiqly-landing .lp-faq-list summary {
+  font-size: 15px;
+  padding-block: 23px;
+}
+.dentiqly-landing .lp-faq-list details > p {
+  font-size: 14px;
+}
+.dentiqly-landing .lp-contact {
+  background: #f8faff;
+}
+.dentiqly-landing .lp-contact-details {
+  background: #fff;
+  border-color: #dce5f1;
+  border-radius: 14px;
+}
+.dentiqly-landing .lp-contact summary > span:first-child {
+  font-size: 15px;
+}
+.dentiqly-landing .lp-contact summary small,
+.dentiqly-landing .lp-contact-open {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-contact-form input,
+.dentiqly-landing .lp-contact-form textarea {
+  background: #f9fbff;
+  border-color: #d0ddef;
+  border-radius: 7px;
+}
+.dentiqly-landing .lp-final {
+  color: var(--lp-ink);
+  background: #eaf2ff;
+  text-align: center;
+  margin: 0 24px;
+  border-radius: 28px;
+  padding: 60px 25px 40px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.dentiqly-landing .lp-final::before,
+.dentiqly-landing .lp-final::after {
+  content: "";
+  position: absolute;
+  width: 350px;
+  height: 460px;
+  border: 1px solid #b7cdee;
+  border-radius: 175px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  transform: rotate(30deg);
+}
+.dentiqly-landing .lp-final::before {
+  left: -230px;
+  top: -180px;
+}
+.dentiqly-landing .lp-final::after {
+  right: -220px;
+  bottom: -180px;
+}
+.dentiqly-landing .lp-final .lp-eyebrow {
+  justify-content: center;
+  color: var(--lp-blue);
+  font-size: 14px;
+}
+.dentiqly-landing .lp-final-row {
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 20px 0 26px;
+}
+.dentiqly-landing .lp-final-row h2 {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.dentiqly-landing .lp-final-link {
+  background: var(--lp-blue);
+  color: #fff;
+  width: auto;
+  height: auto;
+  flex-direction: row-reverse;
+  border: 0;
+  border-radius: 9px;
+  padding: 15px 25px;
+  gap: 18px;
+}
+.dentiqly-landing .lp-final-link > span {
+  font-size: 15px;
+  font-weight: 500;
+}
+.dentiqly-landing .lp-final-link:hover {
+  background: #1744cd;
+  transform: translateY(-2px);
+}
+.dentiqly-landing .lp-final-bottom {
+  justify-content: center;
+  color: var(--lp-muted);
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  gap: 8px;
+}
+.lp-final-bottom > span + span::before {
+  content: "·";
+  margin-right: 8px;
+}
+.dentiqly-landing .lp-footer {
+  padding-top: 60px;
+}
+.dentiqly-landing .lp-footer-top > div:first-child > p {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-footer nav > span,
+.dentiqly-landing .lp-footer-account > span {
+  font-size: 11px;
+  color: #6d8299;
+}
+.dentiqly-landing .lp-footer nav > a,
+.dentiqly-landing .lp-footer-account .lp-text-link {
+  font-size: 13px;
+}
+.dentiqly-landing .lp-footer-bottom {
+  font-size: 11px;
+  color: #6d8299;
+}
+@media (max-width: 1100px) {
+  .dentiqly-landing .lp-nav-links {
+    gap: 18px;
+    margin-left: 5px;
+  }
+  .dentiqly-landing .lp-nav-links a {
+    font-size: 12px;
+  }
+  .lp-hero-product-card {
+    gap: 18px;
+    padding: 25px;
+  }
+  .dentiqly-landing .lp-hero-product-copy h2 {
+    font-size: 30px;
+  }
+  .lp-hero-product-copy {
+    padding-left: 5px;
+  }
+  .lp-hero-product-copy > p {
+    font-size: 14px;
+  }
+  .lp-hero-product-visual {
+    padding: 18px 18px 13px;
+  }
+  .dentiqly-landing .lp-pricing-grid {
+    gap: 55px;
+  }
+}
+@media (max-width: 959px) {
+  .dentiqly-landing .lp-nav {
+    height: 76px;
+  }
+  .dentiqly-landing .lp-mobile-menu {
+    top: 76px;
+    background: #fff;
+  }
+  .dentiqly-landing .lp-hero {
+    margin-inline: 16px;
+    padding: 48px 24px 30px;
+    border-radius: 25px;
+  }
+  .dentiqly-landing .lp-hero h1 {
+    font-size: 48px;
+  }
+  .dentiqly-landing .lp-hero-description {
+    font-size: 17px;
+  }
+  .lp-hero-product-card {
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 15px;
+    padding: 21px;
+  }
+  .dentiqly-landing .lp-hero-product-copy h2 {
+    font-size: 27px;
+  }
+  .lp-hero-product-copy > p {
+    font-size: 13px;
+  }
+  .lp-hero-product-copy .lp-text-link {
+    font-size: 12px;
+    gap: 7px;
+  }
+  .lp-hero-product-visual {
+    padding: 14px 14px 11px;
+  }
+  .lp-hero-product-visual > p {
+    font-size: 8px;
+  }
+  .lp-trust-ribbon {
+    gap: 24px;
+    padding-block: 30px;
+  }
+  .lp-trust-ribbon > div > p {
+    font-size: 15px;
+  }
+  .lp-trust-ribbon > div > span {
+    font-size: 11px;
+  }
+  .lp-trust-ribbon > a {
+    gap: 14px;
+  }
+  .lp-trust-ribbon > a > span {
+    max-width: 100px;
+    font-size: 10px;
+  }
+  .dentiqly-landing .lp-workflow-panel {
+    gap: 32px;
+  }
+  .dentiqly-landing .lp-workflow-copy h3 {
+    font-size: 29px;
+  }
+  .dentiqly-landing .lp-workflow-copy > p {
+    font-size: 14px;
+  }
+  .dentiqly-landing .lp-workflow-visual {
+    padding: 20px 20px 15px;
+  }
+  .dentiqly-landing .lp-workflow-tabs button {
+    padding: 12px;
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-check-list li {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-extra-features > span {
+    font-size: 11px;
+  }
+  .dentiqly-landing .lp-pricing-grid {
+    gap: 35px;
+  }
+  .dentiqly-landing .lp-price-card {
+    padding: 24px;
+  }
+  .dentiqly-landing .lp-price-period > button {
+    font-size: 11px;
+  }
+  .dentiqly-landing .lp-pricing-promises li {
+    font-size: 13px;
+  }
+  .dentiqly-landing .lp-price-features li {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-final-row h2 {
+    font-size: 42px;
+  }
+}
+@media (max-width: 699px) {
+  .dentiqly-landing .lp-container {
+    width: calc(100% - 40px);
+  }
+  .dentiqly-landing .lp-section {
+    padding-block: 60px;
+  }
+  .dentiqly-landing .lp-nav {
+    height: 70px;
+  }
+  .dentiqly-landing .lp-logo img {
+    width: 112px;
+  }
+  .dentiqly-landing .lp-mobile-menu {
+    top: 70px;
+  }
+  .dentiqly-landing .lp-nav-actions > .lp-button {
+    min-height: 38px;
+    font-size: 11px;
+    padding: 10px 12px;
+    gap: 9px;
+  }
+  .dentiqly-landing .lp-hero {
+    margin-inline: 10px;
+    padding: 34px 16px 20px;
+    border-radius: 22px;
+  }
+  .lp-hero-category {
+    font-size: 10px;
+    padding: 6px 10px;
+    margin-bottom: 19px;
+  }
+  .dentiqly-landing .lp-hero h1 {
+    font-size: clamp(32px, 6.5vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -0.045em;
+  }
+  .dentiqly-landing .lp-hero-description {
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 420px;
+    margin-top: 18px;
+  }
+  .lp-hero-sheet {
+    width: 190px;
+    left: -150px;
+    top: 190px;
+    opacity: 0.45;
+  }
+  .lp-hero-orbit {
+    width: 230px;
+    right: -180px;
+    top: -45px;
+    opacity: 0.5;
+  }
+  .lp-hero-route {
+    display: none;
+  }
+  .dentiqly-landing .lp-hero-actions {
+    gap: 10px;
+    margin-top: 23px;
+  }
+  .dentiqly-landing .lp-hero-actions .lp-button {
+    font-size: 12px;
+    min-height: 47px;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .dentiqly-landing .lp-hero-actions .lp-button svg {
+    width: 15px;
+  }
+  .dentiqly-landing .lp-hero-reassurance {
+    font-size: 10px;
+    gap: 13px;
+    margin-top: 15px;
+  }
+  .dentiqly-landing .lp-hero-reassurance svg {
+    width: 13px;
+  }
+  .lp-product-switcher {
+    gap: 7px;
+    margin-top: 28px;
+    margin-bottom: 15px;
+  }
+  .dentiqly-landing .lp-product-switcher button {
+    font-size: 11px;
+    padding: 9px 12px;
+    gap: 6px;
+  }
+  .lp-product-switcher svg {
+    width: 15px;
+    height: 15px;
+  }
+  .lp-hero-product-card {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 22px 16px 16px;
+    border-radius: 18px;
+    min-height: 0;
+  }
+  .lp-hero-product-copy {
+    text-align: center;
+    padding: 0 5px;
+  }
+  .lp-product-name {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  .dentiqly-landing .lp-hero-product-copy h2 {
+    font-size: 27px;
+    max-width: 320px;
+    margin-inline: auto;
+  }
+  .lp-hero-product-copy > p {
+    font-size: 13px;
+    line-height: 1.8;
+    max-width: 370px;
+    margin: 14px auto 17px;
+  }
+  .lp-hero-product-copy .lp-text-link {
+    font-size: 12px;
+  }
+  .lp-hero-product-visual {
+    padding: 13px 10px 11px;
+    border-radius: 13px;
+  }
+  .lp-hero-product-visual .lp-app {
+    min-height: 326px;
+  }
+  .lp-hero-product-visual .lp-app-sidebar {
+    width: 32px;
+  }
+  .lp-hero-product-visual .lp-agenda,
+  .lp-hero-product-visual .lp-patient,
+  .lp-hero-product-visual .lp-finance {
+    padding-inline: 9px;
+  }
+  .lp-hero-product-visual .lp-app-add {
+    padding-inline: 5px;
+  }
+  .lp-hero-product-visual .lp-appointment strong {
+    font-size: 6px;
+  }
+  .lp-hero-product-visual .lp-appointment > span {
+    font-size: 5px;
+  }
+  .lp-hero-product-visual .lp-app-topbar {
+    padding-inline: 9px;
+  }
+  .lp-hero-product-visual .lp-agenda-toolbar {
+    gap: 5px;
+  }
+  .lp-hero-product-visual .lp-agenda-toolbar > strong {
+    font-size: 7px;
+  }
+  .lp-hero-product-visual .lp-agenda-toolbar > span {
+    gap: 4px;
+  }
+  .lp-hero-product-visual > p {
+    font-size: 8px;
+    margin-top: 11px;
+  }
+  .lp-hero-product-visual .lp-visual-caption {
+    font-size: 7px;
+  }
+  .lp-trust-ribbon {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding-block: 29px;
+  }
+  .lp-trust-ribbon > div > p {
+    font-size: 16px;
+  }
+  .lp-trust-ribbon > div > span {
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 310px;
+    margin-top: 7px;
+  }
+  .lp-trust-ribbon > a {
+    gap: 19px;
+  }
+  .lp-trust-ribbon > a > span {
+    max-width: none;
+    font-size: 12px;
+  }
+  .lp-trust-ribbon img {
+    width: 67px;
+  }
+  .dentiqly-landing .lp-eyebrow {
+    font-size: 12px;
+  }
+  .dentiqly-landing h2:not(:where(.lp-live-demo *)) {
+    font-size: 32px;
+    line-height: 1.17;
+  }
+  .dentiqly-landing .lp-workflow-tabs {
+    gap: 3px;
+    padding: 5px;
+    margin-top: 27px;
+  }
+  .dentiqly-landing .lp-workflow-tabs button {
+    font-size: 10px;
+    padding: 10px 8px;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+  }
+  .dentiqly-landing .lp-workflow-tabs button > span {
+    font-size: 9px;
+  }
+  .dentiqly-landing .lp-workflow-panel {
+    gap: 28px;
+    padding-top: 28px;
+    min-height: 0;
+  }
+  .dentiqly-landing .lp-workflow-copy h3 {
+    font-size: 28px;
+  }
+  .dentiqly-landing .lp-workflow-copy > p {
+    font-size: 15px;
+  }
+  .dentiqly-landing .lp-check-list li {
+    font-size: 13px;
+  }
+  .dentiqly-landing .lp-workflow-visual {
+    padding: 18px 18px 13px;
+    border-radius: 17px;
+  }
+  .dentiqly-landing .lp-extra-features {
+    gap: 15px 20px;
+    margin-top: 27px;
+  }
+  .dentiqly-landing .lp-extra-features > span {
+    font-size: 11px;
+  }
+  .dentiqly-landing .lp-demo-intro > p {
+    font-size: 15px;
+    margin-top: 18px;
+  }
+  .dentiqly-landing .lp-demo-intro .lp-button {
+    font-size: 13px;
+  }
+  .dentiqly-landing .lp-small-note {
+    font-size: 11px;
+  }
+  .dentiqly-landing .lp-screenshot-action {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-start {
+    padding-block: 45px;
+  }
+  .dentiqly-landing .lp-start .lp-start-grid > h2 {
+    max-width: 310px;
+    font-size: 29px;
+    margin-inline: auto;
+  }
+  .dentiqly-landing .lp-start ol {
+    margin-top: 28px;
+    gap: 25px;
+  }
+  .dentiqly-landing .lp-start h3 {
+    font-size: 15px;
+  }
+  .dentiqly-landing .lp-start li p {
+    font-size: 13px;
+  }
+  .dentiqly-landing .lp-pricing-grid {
+    gap: 30px;
+  }
+  .dentiqly-landing .lp-pricing-copy > p:not(.lp-eyebrow) {
+    font-size: 15px;
+  }
+  .dentiqly-landing .lp-pricing-promises li {
+    font-size: 14px;
+  }
+  .dentiqly-landing .lp-price-features li {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-price-detail,
+  .dentiqly-landing .lp-enterprise > span {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-price-amount .lp-price-error strong {
+    font-size: 14px;
+  }
+  .dentiqly-landing .lp-faq-grid > div:first-child > p:not(.lp-eyebrow) {
+    font-size: 15px;
+  }
+  .dentiqly-landing .lp-faq-list summary {
+    font-size: 14px;
+    padding-block: 20px;
+  }
+  .dentiqly-landing .lp-faq-list details > p {
+    font-size: 13px;
+  }
+  .dentiqly-landing .lp-contact summary > span:first-child {
+    font-size: 14px;
+  }
+  .dentiqly-landing .lp-contact summary small,
+  .dentiqly-landing .lp-contact-open {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-final {
+    margin-inline: 10px;
+    padding: 40px 12px 30px;
+    border-radius: 22px;
+  }
+  .dentiqly-landing .lp-final .lp-container {
+    width: 100%;
+  }
+  .dentiqly-landing .lp-final .lp-eyebrow {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-final-row {
+    gap: 23px;
+    padding: 18px 0 22px;
+  }
+  .dentiqly-landing .lp-final-row h2 {
+    font-size: 32px;
+    line-height: 1.18;
+  }
+  .dentiqly-landing .lp-final-link {
+    padding: 14px 20px;
+  }
+  .dentiqly-landing .lp-final-link > span {
+    font-size: 14px;
+  }
+  .dentiqly-landing .lp-final-bottom {
+    font-size: 11px;
+    gap: 6px;
+  }
+  .lp-final-bottom > span + span::before {
+    content: none;
+  }
+  .dentiqly-landing .lp-footer {
+    padding-top: 40px;
+  }
+  .dentiqly-landing .lp-footer-top > div:first-child > p {
+    font-size: 10px;
+  }
+  .dentiqly-landing .lp-footer nav > span,
+  .dentiqly-landing .lp-footer-account > span {
+    font-size: 9px;
+  }
+  .dentiqly-landing .lp-footer nav > a,
+  .dentiqly-landing .lp-footer-account .lp-text-link {
+    font-size: 12px;
+  }
+  .dentiqly-landing .lp-footer-bottom {
+    font-size: 10px;
+  }
+}
+@media (max-width: 359px) {
+  .dentiqly-landing .lp-hero {
+    padding-inline: 12px;
+  }
+  .dentiqly-landing .lp-hero h1 {
+    font-size: 32px;
+  }
+  .dentiqly-landing .lp-product-switcher button {
+    padding-inline: 9px;
+    gap: 4px;
+    font-size: 10px;
+  }
+  .lp-hero-product-card {
+    padding-inline: 12px;
+  }
+  .lp-hero-product-visual {
+    padding-inline: 7px;
+  }
+  .lp-hero-product-visual .lp-app-sidebar {
+    width: 28px;
+  }
+  .lp-hero-product-visual .lp-app-add {
+    font-size: 5px;
+    gap: 2px;
+  }
+  .lp-hero-product-visual .lp-app-add svg {
+    width: 8px;
+  }
+}
+
+/* Actual browser captures of the application, with a full-size inspection view. */
+.lp-capture {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  background: #f5f8ff;
+  border: 1px solid #d6e1ed;
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: left;
+  box-shadow: 0 8px 20px #3452720c;
+}
+.lp-capture > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.lp-capture-expand {
+  display: inline-flex;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: #ffffff;
+  color: #0b2440;
+  border: 1px solid #dce5ee;
+  border-radius: 7px;
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 500;
+  box-shadow: 0 3px 9px #0b244010;
+}
+.lp-capture:hover .lp-capture-expand {
+  color: #2458ed;
+  border-color: #a4c0ef;
+}
+.lp-capture-dialog {
+  width: min(1440px, calc(100vw - 40px));
+  max-width: none;
+  max-height: 92dvh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #dce5ee;
+  border-radius: 16px;
+  background: #fff;
+  color: #0b2440;
+  box-shadow: 0 25px 100px #0b244045;
+}
+.lp-capture-dialog::backdrop {
+  background: #0b2440bf;
+}
+.lp-capture-dialog-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 92dvh;
+}
+.lp-capture-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #dce5ee;
+  flex-shrink: 0;
+}
+.lp-capture-dialog-header h3 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.lp-capture-dialog-header p {
+  font-size: 11px;
+  color: #65788d;
+  margin-top: 4px;
+}
+.lp-capture-dialog-header button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #dce5ee;
+  background: #fff;
+}
+.lp-capture-dialog-header button:hover {
+  background: #eaf2ff;
+}
+.lp-capture-dialog-image {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #f5f8ff;
+}
+.lp-capture-dialog-image img {
+  display: block;
+  width: 100%;
+  min-width: 960px;
+  height: auto;
+  max-width: none;
+}
+.lp-capture-dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 13px 22px;
+  border-top: 1px solid #dce5ee;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #65788d;
+}
+.lp-capture-dialog-footer a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #2458ed;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dentiqly-landing .lp-hero-product-card {
+  grid-template-columns: 0.72fr 1.28fr;
+}
+@media (max-width: 699px) {
+  .dentiqly-landing .lp-hero-product-card {
+    grid-template-columns: 1fr;
+  }
+  .lp-capture-expand {
+    right: 6px;
+    bottom: 6px;
+    padding: 5px 7px;
+    font-size: 8px;
+    gap: 5px;
+  }
+  .lp-capture-expand svg {
+    width: 11px;
+    height: 11px;
+  }
+  .lp-capture-dialog {
+    width: calc(100vw - 20px);
+    border-radius: 12px;
+  }
+  .lp-capture-dialog-header {
+    padding: 15px;
+    gap: 12px;
+  }
+  .lp-capture-dialog-header h3 {
+    font-size: 15px;
+  }
+  .lp-capture-dialog-header p {
+    font-size: 10px;
+    max-width: 235px;
+  }
+  .lp-capture-dialog-footer {
+    padding: 12px 15px;
+    font-size: 10px;
+    gap: 15px;
+  }
+  .lp-capture-dialog-footer > span {
+    max-width: 170px;
+  }
+}

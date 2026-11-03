@@ -118,7 +118,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
             borderBottom: '1px solid #F1F5F9',
           }}
         >
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0B1023', margin: 0 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0B2440', margin: 0 }}>
             Recortar imagen
           </h3>
           <button
@@ -144,7 +144,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
         </div>
 
         {/* Crop area */}
-        <div style={{ position: 'relative', width: '100%', height: 340, background: '#0B1023' }}>
+        <div style={{ position: 'relative', width: '100%', height: 340, background: '#0B2440' }}>
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -190,7 +190,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
                 height: 4,
                 borderRadius: 999,
                 appearance: 'none',
-                background: `linear-gradient(to right, #2563FF 0%, #2563FF ${((zoom - 1) / 2) * 100}%, #E2E8F0 ${((zoom - 1) / 2) * 100}%, #E2E8F0 100%)`,
+                background: `linear-gradient(to right, #2458ED 0%, #2458ED ${((zoom - 1) / 2) * 100}%, #E2E8F0 ${((zoom - 1) / 2) * 100}%, #E2E8F0 100%)`,
                 outline: 'none',
                 cursor: 'pointer',
               }}
@@ -234,7 +234,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
                 background: '#FFFFFF',
                 color: '#4B5568',
                 cursor: 'pointer',
-                fontFamily: 'Inter, -apple-system, sans-serif',
+                fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                 transition: 'all 0.15s',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = '#F7F8FA' }}
@@ -252,10 +252,10 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
                 fontWeight: 700,
                 border: 'none',
                 borderRadius: 12,
-                background: '#2563FF',
+                background: '#2458ED',
                 color: '#FFFFFF',
                 cursor: processing ? 'not-allowed' : 'pointer',
-                fontFamily: 'Inter, -apple-system, sans-serif',
+                fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                 transition: 'all 0.15s',
                 opacity: processing ? 0.7 : 1,
                 display: 'flex',

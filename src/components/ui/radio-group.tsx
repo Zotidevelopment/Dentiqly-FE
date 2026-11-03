@@ -50,12 +50,12 @@ export function RadioGroupItem({ value, id, className = "" }: RadioGroupItemProp
             className={`
         h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
         flex items-center justify-center
-        ${checked ? `border-[var(--brand-primary,#2563FF)]` : `border-gray-400`}
+        ${checked ? `border-[var(--brand-primary,#2458ED)]` : `border-gray-400`}
         ${className}
       `}
         >
             {checked && (
-                <div className={`h-2.5 w-2.5 rounded-full bg-[var(--brand-primary,#2563FF)]`} />
+                <div className={`h-2.5 w-2.5 rounded-full bg-[var(--brand-primary,#2458ED)]`} />
             )}
         </button>
     )

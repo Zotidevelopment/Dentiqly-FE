@@ -57,7 +57,7 @@ export const AboutPage: React.FC = () => {
   }, [])
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-white font-sans text-[#0A0F2D] selection:bg-[#0047FF] selection:text-white">
+    <div ref={rootRef} className="min-h-screen bg-white font-sans text-[#0B2440] selection:bg-[#0047FF] selection:text-white">
       <SEO {...PAGE_SEO.about} />
       <Navbar />
 
@@ -69,7 +69,7 @@ export const AboutPage: React.FC = () => {
               Sobre Dentiqly
             </div>
 
-            <h1 className="text-[2.5rem] sm:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-2px] leading-[1.08] text-[#0A0F2D] mb-5">
+            <h1 className="text-[2.5rem] sm:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-2px] leading-[1.08] text-[#0B2440] mb-5">
               Construimos el software
               <br />
               <span className="text-[#0047FF]">que el odontólogo necesita.</span>
@@ -90,7 +90,7 @@ export const AboutPage: React.FC = () => {
               </TrialLink>
               <a
                 href="mailto:hola@dentiqly.com"
-                className="bg-white border border-gray-200 text-[#0A0F2D] hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full text-[14.5px] font-semibold transition-all duration-200"
+                className="bg-white border border-gray-200 text-[#0B2440] hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full text-[14.5px] font-semibold transition-all duration-200"
               >
                 Contactarnos
               </a>
@@ -111,11 +111,11 @@ export const AboutPage: React.FC = () => {
             {[
               { number: '+500', label: 'Clínicas activas' },
               { number: '+50K', label: 'Pacientes gestionados' },
-              { number: '40%', label: 'Menos ausencias' },
+              { number: '1 clic', label: 'Para recordarle a todos tus pacientes' },
               { number: '24/7', label: 'Turnos online disponibles' },
             ].map((stat) => (
               <div key={stat.label} className="about-stat text-center">
-                <p className="text-[2.6rem] font-bold text-[#0A0F2D] tracking-[-2px] leading-none mb-1.5">{stat.number}</p>
+                <p className="text-[2.6rem] font-bold text-[#0B2440] tracking-[-2px] leading-none mb-1.5">{stat.number}</p>
                 <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
               </div>
             ))}
@@ -131,7 +131,7 @@ export const AboutPage: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0047FF]/8 text-[#0047FF] text-[13px] font-semibold mb-6">
                 Nuestra misión
               </div>
-              <h2 className="text-3xl lg:text-[2.4rem] font-bold text-[#0A0F2D] tracking-[-1.5px] leading-tight mb-6">
+              <h2 className="text-3xl lg:text-[2.4rem] font-bold text-[#0B2440] tracking-[-1.5px] leading-tight mb-6">
                 Que el odontólogo pueda
                 <br />
                 enfocarse en sus pacientes,
@@ -164,7 +164,7 @@ export const AboutPage: React.FC = () => {
                       <item.icon className={`w-4 h-4 ${item.color}`} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-[#0A0F2D] truncate">{item.label}</p>
+                      <p className="text-[13px] font-semibold text-[#0B2440] truncate">{item.label}</p>
                       <p className="text-[12px] text-gray-400">{item.sub}</p>
                     </div>
                     <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
@@ -172,7 +172,7 @@ export const AboutPage: React.FC = () => {
                 ))}
                 <div className="p-4 rounded-xl bg-[#0047FF]/5 border border-[#0047FF]/10">
                   <p className="text-[11px] font-semibold text-[#0047FF] uppercase tracking-wide mb-0.5">Esta semana</p>
-                  <p className="text-[14px] font-bold text-[#0A0F2D]">3 ausencias evitadas · +$45.000</p>
+                  <p className="text-[14px] font-bold text-[#0B2440]">3 ausencias evitadas · +$45.000</p>
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@ export const AboutPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0047FF]/8 text-[#0047FF] text-[13px] font-semibold mb-5">
               Por qué elegirnos
             </div>
-            <h2 className="text-3xl lg:text-[2.4rem] font-bold text-[#0A0F2D] tracking-[-1.5px] leading-tight">
+            <h2 className="text-3xl lg:text-[2.4rem] font-bold text-[#0B2440] tracking-[-1.5px] leading-tight">
               Todo lo que tu clínica necesita,
               <br />
               en un solo lugar.
@@ -205,17 +205,17 @@ export const AboutPage: React.FC = () => {
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-white tracking-[-1px] leading-tight mb-3">
-                  Recordatorios automáticos
+                  Recordatorios
                   <br />
-                  por WhatsApp
+                  por email
                 </h3>
                 <p className="text-white/70 text-[14px] leading-relaxed max-w-sm">
-                  Tus pacientes reciben un aviso antes del turno. Sin que vos hagas nada.
+                  Les avisás a tus pacientes antes del turno con un clic, sin llamar uno por uno.
                 </p>
               </div>
               <div className="relative z-10 mt-8">
-                <span className="text-[3.5rem] font-bold text-white tracking-[-3px] leading-none">−40%</span>
-                <p className="text-white/60 text-[13px] font-medium mt-1">de inasistencias promedio</p>
+                <span className="text-[3.5rem] font-bold text-white tracking-[-3px] leading-none">1 clic</span>
+                <p className="text-white/60 text-[13px] font-medium mt-1">para avisarle a todos los pacientes del día</p>
               </div>
             </div>
 
@@ -225,8 +225,8 @@ export const AboutPage: React.FC = () => {
                 <Clock className="w-5 h-5 text-[#0047FF]" />
               </div>
               <div>
-                <span className="text-[3.5rem] font-bold text-[#0A0F2D] tracking-[-3px] leading-none">24/7</span>
-                <h3 className="text-[15px] font-semibold text-[#0A0F2D] mt-3 mb-2">Agenda online disponible</h3>
+                <span className="text-[3.5rem] font-bold text-[#0B2440] tracking-[-3px] leading-none">24/7</span>
+                <h3 className="text-[15px] font-semibold text-[#0B2440] mt-3 mb-2">Agenda online disponible</h3>
                 <p className="text-[13.5px] text-gray-500 leading-relaxed">
                   Los pacientes reservan solos, en cualquier momento, sin llamar.
                 </p>
@@ -239,7 +239,7 @@ export const AboutPage: React.FC = () => {
                 <Users className="w-5 h-5 text-[#0047FF]" />
               </div>
               <div>
-                <h3 className="text-[15px] font-semibold text-[#0A0F2D] mb-2">Fichas y odontograma digital</h3>
+                <h3 className="text-[15px] font-semibold text-[#0B2440] mb-2">Fichas y odontograma digital</h3>
                 <p className="text-[13.5px] text-gray-500 leading-relaxed">
                   Historial clínico, imágenes y tratamientos siempre disponibles desde cualquier dispositivo.
                 </p>
@@ -247,7 +247,7 @@ export const AboutPage: React.FC = () => {
             </div>
 
             {/* Card grande — Multi-sucursal */}
-            <div className="about-feature md:col-span-2 bg-[#0A0F2D] rounded-[2rem] p-10 flex flex-col justify-between min-h-[280px] relative overflow-hidden">
+            <div className="about-feature md:col-span-2 bg-[#0B2440] rounded-[2rem] p-10 flex flex-col justify-between min-h-[280px] relative overflow-hidden">
               <div className="absolute right-8 top-8 grid grid-cols-2 gap-2 opacity-20">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="w-16 h-10 rounded-lg bg-white" />
@@ -274,7 +274,7 @@ export const AboutPage: React.FC = () => {
                 <Zap className="w-5 h-5 text-[#0047FF]" />
               </div>
               <div>
-                <h3 className="text-[15px] font-semibold text-[#0A0F2D] mb-2">Activación en minutos</h3>
+                <h3 className="text-[15px] font-semibold text-[#0B2440] mb-2">Activación en minutos</h3>
                 <p className="text-[13.5px] text-gray-500 leading-relaxed">
                   Sin IT, sin capacitaciones largas. El mismo día que te registrás, empezás a usarlo.
                 </p>
@@ -287,7 +287,7 @@ export const AboutPage: React.FC = () => {
                 <Shield className="w-5 h-5 text-[#0047FF]" />
               </div>
               <div>
-                <h3 className="text-[15px] font-semibold text-[#0A0F2D] mb-2">Soporte humano real</h3>
+                <h3 className="text-[15px] font-semibold text-[#0B2440] mb-2">Soporte humano real</h3>
                 <p className="text-[13.5px] text-gray-500 leading-relaxed">
                   Contestamos en menos de 2 horas. Personas reales, no bots.
                 </p>

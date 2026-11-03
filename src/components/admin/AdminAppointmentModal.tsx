@@ -273,13 +273,13 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
     }
 
     return createPortal(
-        <div className="fixed inset-0 bg-[#0A0F2D]/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-500">
+        <div className="fixed inset-0 bg-[#0B2440]/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-500">
             <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-300">
 
                 {/* Header Estilizado */}
                 <div className="px-5 py-5 sm:px-8 sm:pt-8 sm:pb-6 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
                     <div className="flex items-center gap-3 sm:gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#2563FF] shadow-sm">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#2458ED] shadow-sm">
                             <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div>
@@ -303,11 +303,11 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                         {/* Sección: Paciente */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-1">
-                                <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF]">Información del Paciente</label>
+                                <label className="text-[11px] font-black uppercase tracking-widest text-[#2458ED]">Información del Paciente</label>
                                 <button
                                     type="button"
                                     onClick={() => setIsNewPatient(!isNewPatient)}
-                                    className="text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-[#2563FF] transition-colors flex items-center gap-1.5"
+                                    className="text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-[#2458ED] transition-colors flex items-center gap-1.5"
                                 >
                                     {isNewPatient ? (
                                         <><Search size={14} strokeWidth={3} /> Usar Existente</>
@@ -371,7 +371,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                                         <div className="font-black text-gray-900">{paciente.apellido}, {paciente.nombre}</div>
                                                         <div className="text-xs text-gray-400 font-bold">DNI: {paciente.numero_documento}</div>
                                                     </div>
-                                                    <div className="opacity-0 group-hover/item:opacity-100 text-[#2563FF] font-black text-[10px] uppercase tracking-widest">
+                                                    <div className="opacity-0 group-hover/item:opacity-100 text-[#2458ED] font-black text-[10px] uppercase tracking-widest">
                                                         Seleccionar
                                                     </div>
                                                 </div>
@@ -387,7 +387,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                         {/* Sección: Detalles Médicos */}
                         <div className="space-y-6 animate-in fade-in duration-500">
                             {isNewPatient && (
-                                <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Detalles del Turno</label>
+                                <label className="text-[11px] font-black uppercase tracking-widest text-[#2458ED] px-1">Detalles del Turno</label>
                             )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
@@ -395,7 +395,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     <select
                                         value={formData.profesional_id || ''}
                                         onChange={(e) => setFormData({ ...formData, profesional_id: parseInt(e.target.value) })}
-                                        className="w-full h-12 px-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#2563FF] outline-none transition-all appearance-none"
+                                        className="w-full h-12 px-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#2458ED] outline-none transition-all appearance-none"
                                         required
                                     >
                                         <option value="">Seleccionar profesional</option>
@@ -412,7 +412,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     <select
                                         value={formData.servicio_id || ''}
                                         onChange={(e) => setFormData({ ...formData, servicio_id: parseInt(e.target.value) })}
-                                        className="w-full h-12 px-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#2563FF] outline-none transition-all appearance-none"
+                                        className="w-full h-12 px-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#2458ED] outline-none transition-all appearance-none"
                                         required
                                     >
                                         <option value="">Seleccionar servicio</option>
@@ -428,7 +428,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                             <div className="p-4 sm:p-6 bg-blue-50/30 rounded-2xl sm:rounded-[2rem] border border-blue-100/50 space-y-4 sm:space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Fecha</label>
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2458ED] px-1">Fecha</label>
                                         <Input
                                             type="date"
                                             value={formData.fecha}
@@ -438,7 +438,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Hora Inicio</label>
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2458ED] px-1">Hora Inicio</label>
                                         <Input
                                             type="time"
                                             value={formData.hora_inicio}
@@ -448,7 +448,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2563FF] px-1">Hora Fin</label>
+                                        <label className="text-[11px] font-black uppercase tracking-widest text-[#2458ED] px-1">Hora Fin</label>
                                         <Input
                                             type="time"
                                             value={formData.hora_fin}
@@ -608,7 +608,7 @@ export const AdminAppointmentModal: React.FC<AdminAppointmentModalProps> = ({ on
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="flex-[2] h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-[#2563FF] hover:bg-blue-700 text-white font-black text-[11px] sm:text-[12px] uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:translate-y-0"
+                                        className="flex-[2] h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-[#2458ED] hover:bg-blue-700 text-white font-black text-[11px] sm:text-[12px] uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:translate-y-0"
                                     >
                                         {loading ? 'Procesando...' : 'Confirmar'}
                                     </Button>

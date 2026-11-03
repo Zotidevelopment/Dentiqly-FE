@@ -63,11 +63,11 @@ export const BookingSummary: React.FC = () => {
             referrerPolicy="no-referrer-when-downgrade"
             className="grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
           ></iframe>
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-white/20 to-transparent"></div>
+          <div className="absolute inset-0 pointer-events-none bg-white/20"></div>
         </div>
       ) : googleMapsUrl ? (
         <div className="w-full h-48 bg-blue-50 flex flex-col items-center justify-center p-6 text-center gap-2">
-          <MapPin size={24} className="text-[#2563FF] opacity-40" />
+          <MapPin size={24} className="text-[#2458ED] opacity-40" />
           <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest">
             Link de mapa inválido.<br/>Usa un link de "Insertar mapa".
           </p>
@@ -78,9 +78,9 @@ export const BookingSummary: React.FC = () => {
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-xl font-black text-gray-900 leading-tight tracking-tight">{nombreClinica}</h3>
-            <p className="text-xs font-bold text-[#2563FF] uppercase tracking-widest mt-1">Sede Central</p>
+            <p className="text-xs font-bold text-[#2458ED] uppercase tracking-widest mt-1">Sede Central</p>
           </div>
-          <div className="bg-[#2563FF] text-white flex items-center gap-1 px-2.5 py-1 rounded-xl shadow-lg shadow-blue-500/20">
+          <div className="bg-[#2458ED] text-white flex items-center gap-1 px-2.5 py-1 rounded-xl shadow-lg shadow-blue-500/20">
             <Star size={10} className="fill-current" />
             <span className="text-[10px] font-black">5.0</span>
           </div>
@@ -89,7 +89,7 @@ export const BookingSummary: React.FC = () => {
         <div className="space-y-4 mb-8">
           <div className="flex items-start gap-3 group">
             <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-blue-50 transition-colors">
-              <MapPin size={16} className="text-gray-400 group-hover:text-[#2563FF] transition-colors" />
+              <MapPin size={16} className="text-gray-400 group-hover:text-[#2458ED] transition-colors" />
             </div>
             <p className="text-sm text-gray-600 font-medium leading-relaxed pt-1">
               {direccion}
@@ -97,7 +97,7 @@ export const BookingSummary: React.FC = () => {
           </div>
           <div className="flex items-center gap-3 group">
             <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-blue-50 transition-colors">
-              <Phone size={16} className="text-gray-400 group-hover:text-[#2563FF] transition-colors" />
+              <Phone size={16} className="text-gray-400 group-hover:text-[#2458ED] transition-colors" />
             </div>
             <p className="text-sm text-gray-600 font-medium pt-0.5">
               {telefono}
@@ -108,7 +108,7 @@ export const BookingSummary: React.FC = () => {
         <div className="border-t border-gray-100 pt-6">
           <div className="flex items-center gap-2 mb-5">
             <div className="p-1.5 bg-blue-50 rounded-lg">
-              <Clock size={14} className="text-[#2563FF]" />
+              <Clock size={14} className="text-[#2458ED]" />
             </div>
             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Horarios de Atención</h4>
           </div>

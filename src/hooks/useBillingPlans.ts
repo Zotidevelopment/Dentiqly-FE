@@ -10,6 +10,10 @@ export interface PlanDetail {
   currency: string
   interval: string
   discount?: number
+  /** Precio del primer mes con descuento (solo plan mensual). */
+  firstMonthPrice?: number
+  /** % de descuento del primer mes; 0 si no hay descuento para esta moneda. */
+  firstMonthDiscount?: number
 }
 
 export interface ExchangeRate {

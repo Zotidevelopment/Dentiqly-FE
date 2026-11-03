@@ -1,3 +1,4 @@
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState, useEffect } from "react"
 import { Outlet, NavLink, useNavigate } from "react-router-dom"
 import { patientPortalApi, clearPatientToken } from "../../api/patient-portal"
@@ -45,7 +46,7 @@ export const PatientLayout: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F7F8FA]">
         <div className="flex items-center gap-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563FF]" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2458ED]" />
           <span className="text-[#8A93A8] font-medium">Cargando...</span>
         </div>
       </div>
@@ -53,33 +54,35 @@ export const PatientLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#F7F8FA]">
+    <div className="dentiqly-workspace min-h-screen flex">
       {/* Mobile hamburger */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-[#0B1023] text-white shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-[#0B2440] text-white shadow-lg"
         onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label={sidebarOpen ? 'Cerrar navegación' : 'Abrir navegación'}
+        aria-expanded={sidebarOpen}
       >
         {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-72 bg-[#0B1023] transform transition-transform duration-300 lg:translate-x-0 flex flex-col ${
+        className={`dentiqly-sidebar fixed lg:static inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 lg:translate-x-0 flex flex-col ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand */}
         <div className="p-6 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-8 w-auto brightness-0 invert" />
+            <BrandLogo tone="inverse" alt="Dentiqly" className="h-8 w-auto" />
           </div>
-          <p className="text-white/30 text-xs font-medium mt-2 uppercase tracking-wider">Portal del Paciente</p>
+          <p className="text-white/60 text-xs font-medium mt-2">Portal del paciente</p>
         </div>
 
         {/* User info */}
         <div className="px-6 py-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2563FF] to-[#02E3FF] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#2458ED] flex items-center justify-center">
               <span className="text-white text-sm font-bold">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
@@ -90,7 +93,7 @@ export const PatientLayout: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <nav aria-label="Portal del paciente" className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -99,7 +102,7 @@ export const PatientLayout: React.FC = () => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-[#2563FF] text-white shadow-[0_4px_15px_rgba(37,99,255,0.3)]"
+                    ? "bg-[#2458ED] text-white shadow-[0_4px_15px_rgba(37,99,255,0.3)]"
                     : "text-white/50 hover:text-white hover:bg-white/[0.06]"
                 }`
               }
@@ -117,7 +120,7 @@ export const PatientLayout: React.FC = () => {
             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
           >
             <LogOut size={18} />
-            <span>Cerrar Sesion</span>
+            <span>Cerrar sesión</span>
           </button>
         </div>
       </aside>
@@ -131,13 +134,14 @@ export const PatientLayout: React.FC = () => {
       )}
 
       {/* Main content */}
-      <main className="flex-1 min-w-0">
+      <main className="dentiqly-workspace-main flex-1 min-w-0">
         {/* Top bar */}
-        <header className="sticky top-0 z-20 bg-[#F7F8FA]/80 backdrop-blur-xl border-b border-gray-100 px-6 lg:px-8 py-4">
+        <header className="dentiqly-workspace-header sticky top-0 z-20 bg-white px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm pl-12 lg:pl-0">
-            <span className="text-[#8A93A8]">Portal</span>
-            <ChevronRight className="w-3.5 h-3.5 text-[#8A93A8]" />
-            <span className="text-[#0B1023] font-semibold">Hola, {nombre}</span>
+            <BrandLogo className="h-7 w-auto lg:hidden" />
+            <span className="hidden lg:inline text-[#65788D]">Portal</span>
+            <ChevronRight className="hidden lg:block w-3.5 h-3.5 text-[#65788D]" />
+            <span className="hidden sm:inline text-[#0B2440] font-semibold truncate">Hola, {nombre}</span>
           </div>
         </header>
 

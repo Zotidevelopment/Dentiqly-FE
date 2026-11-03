@@ -1,6 +1,27 @@
+import { BrandLogo } from '../../brand/BrandLogo'
 import React, { useCallback } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Mail } from "lucide-react"
 import { TrialLink } from "../../ui/TrialLink"
+
+const PRODUCT_LINKS = [
+  { label: "Funcionalidades", href: "#funcionalidades" },
+  { label: "Demo interactiva", href: "#demo" },
+  { label: "Por qué Dentiqly", href: "#por-que-dentiqly" },
+  { label: "Precios", href: "#precios" },
+  { label: "Seguridad", href: "#seguridad" },
+  { label: "Preguntas frecuentes", href: "#faq" },
+]
+
+const FEATURE_LINKS = [
+  { label: "Agenda y turnos online", href: "#funcionalidades" },
+  { label: "Reservas online 24/7", href: "#funcionalidades" },
+  { label: "Recordatorios por email", href: "#funcionalidades" },
+  { label: "Odontograma digital", href: "#funcionalidades" },
+  { label: "Historia clínica digital", href: "#funcionalidades" },
+  { label: "Caja y liquidaciones", href: "#funcionalidades" },
+  { label: "Multi-sucursal", href: "#funcionalidades" },
+]
 
 export const FooterSection: React.FC = () => {
   const location = useLocation()
@@ -20,190 +41,79 @@ export const FooterSection: React.FC = () => {
     [isLanding, navigate]
   )
 
-  return (
-    <footer className="bg-[#0A0F2D] text-white pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+  const linkClass = "text-[14px] text-white/55 transition-colors hover:text-white"
+  const headingClass = "mb-5 text-[11.5px] font-bold uppercase tracking-[0.16em] text-white/40"
 
-          {/* Brand & Description */}
-          <div className="lg:col-span-1">
-            <img
-              src="/assets/dentiqly-logo.png"
-              alt="Dentiqly - Software de gestión dental para clínicas odontológicas"
-              width={104}
-              height={32}
-              className="h-8 w-auto mb-6 brightness-0 invert"
+  return (
+    <footer className="bg-[#070B1A] pb-10 pt-16 text-white sm:pt-20">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          {/* Marca */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-1">
+            <BrandLogo tone="inverse"
+              alt="Dentiqly, software de gestión para clínicas odontológicas"
+              className="h-7 w-auto"
             />
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              Dentiqly es el software dental todo en uno para clínicas odontológicas en Argentina.
-              Gestión de turnos online, historias clínicas digitales, odontogramas interactivos
-              y recordatorios automáticos por email.
+            <p className="mt-5 max-w-sm text-[14px] leading-relaxed text-white/55">
+              El software todo en uno para clínicas odontológicas: agenda y reservas online, historia clínica,
+              odontograma, recordatorios por email y caja. Hecho en Argentina.
             </p>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              <a href="mailto:hola@dentiqly.com" className="hover:text-[#2563FF] transition-colors">
-                hola@dentiqly.com
-              </a>
-            </div>
+            <a href="mailto:hola@dentiqly.com" className="mt-5 inline-flex items-center gap-2 text-[14px] text-white/70 transition-colors hover:text-white">
+              <Mail size={15} className="text-brand-blue-light" />
+              hola@dentiqly.com
+            </a>
           </div>
 
-          {/* Platform Links */}
-          <nav aria-label="Plataforma">
-            <h3 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">Plataforma</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Software dental
-                </a>
-              </li>
-              <li>
-                <a href="#funcionalidades-tabs" onClick={(e) => handleAnchorClick(e, "#funcionalidades-tabs")} className="hover:text-white transition-colors">
-                  Odontograma digital
-                </a>
-              </li>
-              <li>
-                <a href="#funcionalidades-tabs" onClick={(e) => handleAnchorClick(e, "#funcionalidades-tabs")} className="hover:text-white transition-colors">
-                  Gestión de turnos online
-                </a>
-              </li>
-              <li>
-                <a href="#funcionalidades-tabs" onClick={(e) => handleAnchorClick(e, "#funcionalidades-tabs")} className="hover:text-white transition-colors">
-                  Recordatorios por email
-                </a>
-              </li>
-              <li>
-                <a href="#seguridad" onClick={(e) => handleAnchorClick(e, "#seguridad")} className="hover:text-white transition-colors">
-                  Seguridad de datos
-                </a>
-              </li>
-              <li>
-                <a href="#precios" onClick={(e) => handleAnchorClick(e, "#precios")} className="hover:text-white transition-colors">
-                  Precios
-                </a>
-              </li>
-              <li>
-                <a href="#faq" onClick={(e) => handleAnchorClick(e, "#faq")} className="hover:text-white transition-colors">
-                  Preguntas frecuentes
-                </a>
-              </li>
+          <nav aria-label="Producto">
+            <h3 className={headingClass}>Producto</h3>
+            <ul className="space-y-3">
+              {PRODUCT_LINKS.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} onClick={(e) => handleAnchorClick(e, l.href)} className={linkClass}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          {/* Features Keywords */}
           <nav aria-label="Funcionalidades">
-            <h3 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">Funcionalidades</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Historia clínica dental digital
-                </a>
-              </li>
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Agenda dental online
-                </a>
-              </li>
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Gestión multi-sucursal
-                </a>
-              </li>
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Portal de pacientes
-                </a>
-              </li>
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Dashboard y métricas
-                </a>
-              </li>
-              <li>
-                <a href="#producto" onClick={(e) => handleAnchorClick(e, "#producto")} className="hover:text-white transition-colors">
-                  Recordatorios automáticos
-                </a>
-              </li>
+            <h3 className={headingClass}>Funcionalidades</h3>
+            <ul className="space-y-3">
+              {FEATURE_LINKS.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} onClick={(e) => handleAnchorClick(e, l.href)} className={linkClass}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          {/* Company */}
           <nav aria-label="Compañía">
-            <h3 className="font-bold text-white mb-6 text-sm uppercase tracking-wider">Compañía</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h3 className={headingClass}>Compañía</h3>
+            <ul className="space-y-3">
+              <li><Link to="/sobre-nosotros" className={linkClass}>Sobre nosotros</Link></li>
               <li>
-                <Link to="/sobre-nosotros" className="hover:text-white transition-colors">
-                  Sobre nosotros
-                </Link>
-              </li>
-              <li>
-                <TrialLink ctaLocation="footer" ctaLabel="Registrarse gratis" className="hover:text-white transition-colors">
-                  Registrarse gratis
+                <TrialLink ctaLocation="footer" ctaLabel="Empezar gratis" className={linkClass}>
+                  Empezar gratis
                 </TrialLink>
               </li>
-              <li>
-                <Link to="/login" className="hover:text-white transition-colors">
-                  Iniciar sesión
-                </Link>
-              </li>
-              <li>
-                <a href="mailto:hola@dentiqly.com" className="hover:text-white transition-colors">
-                  Contacto
-                </a>
-              </li>
+              <li><Link to="/login" className={linkClass}>Iniciar sesión</Link></li>
+              <li><a href="mailto:hola@dentiqly.com" className={linkClass}>Contacto</a></li>
             </ul>
-
-            <h3 className="font-bold text-white mt-8 mb-4 text-sm uppercase tracking-wider">Legal</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <Link to="/privacidad" className="hover:text-white transition-colors">
-                  Política de privacidad
-                </Link>
-              </li>
-              <li>
-                <Link to="/terminos" className="hover:text-white transition-colors">
-                  Términos de servicio
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookies" className="hover:text-white transition-colors">
-                  Política de cookies
-                </Link>
-              </li>
+            <h3 className={`${headingClass} mt-8`}>Legal</h3>
+            <ul className="space-y-3">
+              <li><Link to="/privacidad" className={linkClass}>Política de privacidad</Link></li>
+              <li><Link to="/terminos" className={linkClass}>Términos de servicio</Link></li>
+              <li><Link to="/cookies" className={linkClass}>Política de cookies</Link></li>
             </ul>
           </nav>
-
         </div>
 
-        {/* CTA Bar */}
-        <div className="border-t border-white/10 pt-10 mb-10">
-          <div className="bg-gradient-to-r from-[#2563FF]/20 to-[#0047FF]/10 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <p className="text-white font-semibold text-lg mb-1">
-                Probá Dentiqly gratis por 14 días
-              </p>
-              <p className="text-gray-400 text-sm">
-                Sin tarjeta de crédito. Gestión de turnos, historias clínicas y odontogramas desde el primer día.
-              </p>
-            </div>
-            <TrialLink
-              ctaLocation="footer"
-              ctaLabel="Comenzar prueba gratuita"
-              className="shrink-0 bg-[#2563FF] hover:bg-[#1d4ed8] text-white px-8 py-3 rounded-xl font-semibold transition-colors text-sm"
-            >
-              Comenzar prueba gratuita
-            </TrialLink>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} Dentiqly. Software de gestión dental. Todos los derechos reservados. Argentina.
-          </p>
-          <p className="text-gray-600 text-xs max-w-md text-center md:text-right">
-            Software para dentistas y clínicas odontológicas. Turnos online, historias clínicas digitales,
-            odontograma interactivo y recordatorios automáticos por email.
-          </p>
+        <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-white/[0.08] pt-7 text-[12.5px] text-white/40 md:flex-row md:items-center">
+          <p>&copy; {new Date().getFullYear()} Dentiqly. Todos los derechos reservados.</p>
+          <p>Software de gestión dental para clínicas de Argentina y Latinoamérica.</p>
         </div>
       </div>
     </footer>

@@ -17,6 +17,8 @@ import {
   Calendar,
 } from "lucide-react"
 import { useToast } from "../../hooks/use-toast"
+import { PlanSuscripcion } from "./PlanSuscripcion"
+import { Receipt } from "lucide-react"
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
 const tokens = sharedTokens
@@ -26,8 +28,14 @@ const labelStyle = sharedLabelStyle
 
 const inputStyle = sharedInputStyle
 
-export const SettingsManager: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"general" | "banking" | "horarios">("general")
+type PestanaConfiguracion = "general" | "banking" | "horarios" | "plan"
+const PESTANAS: PestanaConfiguracion[] = ["general", "horarios", "banking", "plan"]
+
+/** `initialTab` permite abrir directo una pestaña (ej. desde la guía de inicio). */
+export const SettingsManager: React.FC<{ initialTab?: string }> = ({ initialTab }) => {
+  const [activeTab, setActiveTab] = useState<PestanaConfiguracion>(
+    PESTANAS.includes(initialTab as PestanaConfiguracion) ? (initialTab as PestanaConfiguracion) : "general"
+  )
   const [settings, setSettings] = useState<Setting[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -238,10 +246,10 @@ export const SettingsManager: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 600, color: tokens.navy, letterSpacing: "-0.3px", margin: 0 }}>
-            Configuración del Sistema
+            Datos de la clínica
           </h1>
           <p style={{ fontSize: 13, color: tokens.grayMuted, marginTop: 3, fontWeight: 400 }}>
-            Personalizá los detalles de tu clínica y las preferencias de reserva
+            Dirección, teléfono, horarios de atención y datos para cobrar. Lo que cambies acá lo ven tus pacientes al reservar.
           </p>
         </div>
       </div>
@@ -249,20 +257,21 @@ export const SettingsManager: React.FC = () => {
       {/* ── Tabs ── */}
       <div style={{ display: "flex", gap: 6, marginBottom: 24, background: tokens.grayRow, padding: 4, borderRadius: 12, overflowX: "auto", maxWidth: "100%" }}>
         {[
-          { id: "general", label: "General", icon: Building2 },
-          { id: "horarios", label: "Horarios", icon: Clock },
-          { id: "banking", label: "Pagos y Cuentas", icon: CreditCard },
+          { id: "general", label: "Dirección y contacto", icon: Building2 },
+          { id: "horarios", label: "Horarios de atención", icon: Clock },
+          { id: "banking", label: "Cobros y seña", icon: CreditCard },
+          { id: "plan", label: "Plan y facturación", icon: Receipt },
         ].map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as "general" | "banking" | "horarios")}
+            onClick={() => setActiveTab(tab.id as PestanaConfiguracion)}
             style={{
               display: "flex", alignItems: "center", gap: 8, padding: "8px 18px", borderRadius: 9,
               border: "none", background: activeTab === tab.id ? tokens.white : "transparent",
               color: activeTab === tab.id ? tokens.blue : tokens.grayMuted,
               fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 500, cursor: "pointer",
               boxShadow: activeTab === tab.id ? "0 2px 8px rgba(0,0,0,0.04)" : "none",
-              transition: "all 0.15s", fontFamily: "Inter, -apple-system, sans-serif"
+              transition: "all 0.15s", fontFamily: "\"Instrument Sans\", system-ui, sans-serif"
             }}
           >
             <tab.icon size={15} />
@@ -282,15 +291,16 @@ export const SettingsManager: React.FC = () => {
                 </h3>
                 <div>
                   <label style={labelStyle}>Nombre de la Clínica</label>
-                  <input type="text" value={generalData.clinic_name} onChange={e => setGeneralData({...generalData, clinic_name: e.target.value})} style={inputStyle} placeholder="Ej: Dental Center" />
+                  <input type="text" value={generalData.clinic_name} onChange={e => setGeneralData({...generalData, clinic_name: e.target.value})} style={inputStyle} placeholder="Ej: Consultorio Dental Belgrano" />
                 </div>
                 <div>
                   <label style={labelStyle}>Dirección Principal</label>
-                  <input type="text" value={generalData.clinic_address} onChange={e => setGeneralData({...generalData, clinic_address: e.target.value})} style={inputStyle} />
+                  <input type="text" value={generalData.clinic_address} onChange={e => setGeneralData({...generalData, clinic_address: e.target.value})} style={inputStyle} placeholder="Ej: Av. Cabildo 1234, piso 2, CABA" />
                 </div>
                 <div>
                   <label style={labelStyle}>Teléfono de Contacto</label>
-                  <input type="text" value={generalData.clinic_phone} onChange={e => setGeneralData({...generalData, clinic_phone: e.target.value})} style={inputStyle} />
+                  <input type="tel" value={generalData.clinic_phone} onChange={e => setGeneralData({...generalData, clinic_phone: e.target.value})} style={inputStyle} placeholder="Ej: 11 2345 6789" />
+                  <p style={{ fontSize: 12, color: tokens.grayMuted, margin: "6px 0 0" }}>Aparece en la reserva online y en los emails a tus pacientes.</p>
                 </div>
 
                 <div style={{ borderTop: `1px solid ${tokens.grayRow}`, paddingTop: 20, marginTop: 10 }}>
@@ -380,17 +390,17 @@ export const SettingsManager: React.FC = () => {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: tokens.navy, margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 8 }}>
-                  <MapPin size={16} color={tokens.blue} /> Ubicación Digital
+                  <MapPin size={16} color={tokens.blue} /> Mapa para tus pacientes
                 </h3>
                 <div>
-                  <label style={labelStyle}>Google Maps Embed URL</label>
+                  <label style={labelStyle}>Mapa de Google (opcional)</label>
                   <textarea 
                     value={generalData.clinic_google_maps} 
                     onChange={e => setGeneralData({...generalData, clinic_google_maps: e.target.value})} 
                     style={{ ...inputStyle, height: 100, resize: "none", fontSize: 11, fontFamily: "monospace" }} 
-                    placeholder="Pega el link de 'Insertar mapa'..."
+                    placeholder="Pegá acá el código del mapa"
                   />
-                  <p style={{ fontSize: 11, color: tokens.grayMuted, marginTop: 8 }}>Este mapa se mostrará en el pie de página de las reservas.</p>
+                  <p style={{ fontSize: 12, color: tokens.grayMuted, marginTop: 8, lineHeight: 1.5 }}>Cómo conseguirlo: buscá tu consultorio en Google Maps, tocá <b>Compartir</b> → <b>Insertar un mapa</b> → <b>Copiar HTML</b> y pegalo acá. Se muestra al final de la página de reservas.</p>
                 </div>
               </div>
             </div>
@@ -525,6 +535,8 @@ export const SettingsManager: React.FC = () => {
             </div>
           </div>
         )}
+
+        {activeTab === "plan" && <PlanSuscripcion />}
 
         {activeTab === "banking" && (
           <form onSubmit={handleSaveBankData} style={{ padding: 32 }}>

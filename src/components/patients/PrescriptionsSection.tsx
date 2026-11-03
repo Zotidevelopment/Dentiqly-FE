@@ -5,7 +5,12 @@ import { useState, useEffect } from "react"
 import { Card } from "../ui/Card"
 import { Button } from "../ui/Button"
 import { Plus, Edit, Trash2, Calendar, X, Pill } from "lucide-react"
-import { prescripcionesApi, profesionalesApi } from "../../api"
+import { prescripcionesApi } from "../../api"
+import { useToast } from "../../hooks/use-toast"
+import { useProfesionalesActivos, nombreProfesional } from "./useProfesionalesActivos"
+
+interface Medicamento { medicamento: string; dosis: string; frecuencia: string; duracion: string }
+const MEDICAMENTO_VACIO: Medicamento = { medicamento: "", dosis: "", frecuencia: "", duracion: "" }
 import type { Prescripcion, CrearPrescripcionData } from "../../types"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { todayISO, formatLocalDate } from "../../utils/date"
@@ -22,17 +27,20 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
   const [selectedPrescripcion, setSelectedPrescripcion] = useState<Prescripcion | null>(null)
   const [formData, setFormData] = useState<Partial<CrearPrescripcionData>>({})
   const [confirmAction, setConfirmAction] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
-  const [defaultProfesionalId, setDefaultProfesionalId] = useState<number | null>(null)
+  // Todos los medicamentos de la receta. Antes el formulario editaba solo el
+  // primero y al guardar se perdían los demás.
+  const [medicamentos, setMedicamentos] = useState<Medicamento[]>([{ ...MEDICAMENTO_VACIO }])
+  const [profesionalId, setProfesionalId] = useState<number | "">("")
+  const [saving, setSaving] = useState(false)
+  const profesionales = useProfesionalesActivos()
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchPrescripciones()
-    profesionalesApi.listar({ estado: 'Activo', limit: 1 })
-      .then(res => {
-        const profs = res.data || res
-        if (Array.isArray(profs) && profs.length > 0) setDefaultProfesionalId(profs[0].id)
-      })
-      .catch(() => {})
   }, [pacienteId])
+
+  const actualizarMedicamento = (i: number, campo: keyof Medicamento, valor: string) =>
+    setMedicamentos((lista) => lista.map((m, j) => (j === i ? { ...m, [campo]: valor } : m)))
 
   const fetchPrescripciones = async () => {
     try {
@@ -51,20 +59,20 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
       paciente_id: String(pacienteId),
       fecha: todayISO(),
     })
+    setMedicamentos([{ ...MEDICAMENTO_VACIO }])
+    setProfesionalId(profesionales[0]?.id ?? "")
     setModalMode("create")
     setShowModal(true)
   }
 
   const handleEdit = (prescripcion: Prescripcion) => {
     setSelectedPrescripcion(prescripcion)
-    const med = ((prescripcion as any).medicamentos || [])[0] || {}
-    setFormData({
-      ...prescripcion,
-      medicamento: med.medicamento || '',
-      dosis: med.dosis || '',
-      frecuencia: med.frecuencia || '',
-      duracion: med.duracion || '',
-    })
+    const meds: Medicamento[] = ((prescripcion as any).medicamentos || []).map((m: any) => ({
+      medicamento: m.medicamento || "", dosis: m.dosis || "", frecuencia: m.frecuencia || "", duracion: m.duracion || "",
+    }))
+    setMedicamentos(meds.length ? meds : [{ ...MEDICAMENTO_VACIO }])
+    setProfesionalId((prescripcion as any).profesional_id ?? profesionales[0]?.id ?? "")
+    setFormData({ ...prescripcion })
     setModalMode("edit")
     setShowModal(true)
   }
@@ -94,20 +102,28 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
+    const profesional = profesionalId || profesionales[0]?.id
+    if (!profesional) {
+      toast({ variant: "destructive", title: "Falta el profesional", description: "Cargá al menos un profesional activo para emitir recetas." })
+      return
+    }
+    const validos = medicamentos
+      .map((m) => ({ medicamento: m.medicamento.trim(), dosis: m.dosis.trim(), frecuencia: m.frecuencia.trim(), duracion: m.duracion.trim() }))
+      .filter((m) => m.medicamento)
+    if (validos.length === 0) {
+      toast({ variant: "destructive", title: "Falta el medicamento", description: "Cargá al menos un medicamento." })
+      return
+    }
+    const payload: any = {
+      paciente_id: formData.paciente_id,
+      profesional_id: profesional,
+      fecha: formData.fecha,
+      medicamentos: validos,
+      indicaciones: formData.indicaciones ?? null,
+    }
     try {
-      const payload: any = {
-        paciente_id: formData.paciente_id,
-        profesional_id: defaultProfesionalId,
-        fecha: formData.fecha,
-        medicamentos: [{
-          medicamento: formData.medicamento,
-          dosis: formData.dosis,
-          frecuencia: formData.frecuencia,
-          duracion: formData.duracion,
-        }],
-        indicaciones: formData.indicaciones,
-      }
-
+      setSaving(true)
       if (modalMode === "create") {
         await prescripcionesApi.crear(payload)
       } else if (modalMode === "edit" && selectedPrescripcion) {
@@ -115,8 +131,11 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
       }
       setShowModal(false)
       fetchPrescripciones()
+      toast({ title: modalMode === "create" ? "Receta creada" : "Cambios guardados" })
     } catch (error) {
-      console.error("Error saving prescription:", error)
+      toast({ variant: "destructive", title: "No se pudo guardar", description: error instanceof Error ? error.message : "Intentá de nuevo." })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -254,54 +273,48 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Medicamento *</label>
-                  <input
-                    type="text"
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Profesional que prescribe *</label>
+                  <select
                     required
-                    value={formData.medicamento || ""}
-                    onChange={(e) => setFormData({ ...formData, medicamento: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ej: Ibuprofeno 600mg"
-                  />
+                    value={profesionalId}
+                    onChange={(e) => setProfesionalId(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="" disabled>Elegí un profesional</option>
+                    {profesionales.map((p) => <option key={p.id} value={p.id}>{nombreProfesional(p)}</option>)}
+                  </select>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Dosis *</label>
+                {medicamentos.map((med, i) => (
+                  <div key={i} className="rounded-xl border border-gray-200 p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Medicamento {medicamentos.length > 1 ? i + 1 : ""}</span>
+                      {medicamentos.length > 1 && (
+                        <button type="button" onClick={() => setMedicamentos((l) => l.filter((_, j) => j !== i))}
+                          className="text-xs font-semibold text-red-600 hover:underline">Quitar</button>
+                      )}
+                    </div>
                     <input
                       type="text"
-                      required
-                      value={formData.dosis || ""}
-                      onChange={(e) => setFormData({ ...formData, dosis: e.target.value })}
+                      required={i === 0}
+                      aria-label="Medicamento"
+                      value={med.medicamento}
+                      onChange={(e) => actualizarMedicamento(i, "medicamento", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ej: 1 comprimido"
+                      placeholder="Ej: Ibuprofeno 600mg"
                     />
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <input type="text" aria-label="Dosis" value={med.dosis} onChange={(e) => actualizarMedicamento(i, "dosis", e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Dosis: 1 comprimido" />
+                      <input type="text" aria-label="Frecuencia" value={med.frecuencia} onChange={(e) => actualizarMedicamento(i, "frecuencia", e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Cada 8 horas" />
+                      <input type="text" aria-label="Duración" value={med.duracion} onChange={(e) => actualizarMedicamento(i, "duracion", e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Por 7 días" />
+                    </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Frecuencia *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.frecuencia || ""}
-                      onChange={(e) => setFormData({ ...formData, frecuencia: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ej: Cada 8 horas"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Duración *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.duracion || ""}
-                      onChange={(e) => setFormData({ ...formData, duracion: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ej: 7 días"
-                    />
-                  </div>
-                </div>
+                ))}
+                <button type="button" onClick={() => setMedicamentos((l) => [...l, { ...MEDICAMENTO_VACIO }])}
+                  className="text-sm font-semibold text-blue-600 hover:underline">+ Agregar otro medicamento</button>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Indicaciones</label>
@@ -318,7 +331,7 @@ export const PrescriptionsSection: React.FC<PrescriptionsSectionProps> = ({ paci
                   <Button type="button" variant="outline" onClick={() => setShowModal(false)} className="w-full sm:w-auto">
                     Cancelar
                   </Button>
-                  <Button type="submit" className="w-full sm:w-auto">{modalMode === "create" ? "Crear Prescripción" : "Guardar Cambios"}</Button>
+                  <Button type="submit" disabled={saving} className="w-full sm:w-auto">{saving ? "Guardando..." : modalMode === "create" ? "Crear Prescripción" : "Guardar Cambios"}</Button>
                 </div>
               </form>
             )}

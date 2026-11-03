@@ -5,7 +5,7 @@ export const Header: React.FC = () => {
   return (
     <header className={`bg-white shadow-sm border-b border-[#E5E7EB]`}>
       {/* Top bar con información de contacto */}
-      <div className={`bg-[var(--brand-primary,#2563FF)] text-white`}>
+      <div className={`bg-[var(--brand-primary,#2458ED)] text-white`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-10 text-sm">
             <div className="flex items-center space-x-6">
@@ -29,11 +29,11 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <div className={`w-10 h-10 bg-[var(--brand-primary,#2563FF)] rounded-lg flex items-center justify-center`}>
+            <div className={`w-10 h-10 bg-[var(--brand-primary,#2458ED)] rounded-lg flex items-center justify-center`}>
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div className="ml-3">
-              <h1 className={`text-xl font-bold text-[#0A0F2D]`}>
+              <h1 className={`text-xl font-bold text-[#0B2440]`}>
                 Centro Odontológico
               </h1>
               <p className={`text-sm text-[#4B5563]`}>
@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
 
           <div className="hidden md:flex items-center space-x-4">
             <div className="text-right">
-              <p className={`text-sm font-medium text-[#0A0F2D]`}>
+              <p className={`text-sm font-medium text-[#0B2440]`}>
                 ¿Necesitas ayuda?
               </p>
               <p className={`text-xs text-[#4B5563]`}>

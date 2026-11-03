@@ -1,6 +1,8 @@
 import { apiClient } from "../lib/api-client"
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+// Misma normalización que api-client: VITE_API_URL puede venir sin "/api".
+let API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+if (!API_BASE_URL.endsWith("/api")) API_BASE_URL = API_BASE_URL.replace(/\/$/, "") + "/api"
 
 export interface LoginResponse {
   token: string
@@ -140,10 +142,16 @@ export const patientPortalApi = {
     return response.json()
   },
 
-  obtenerHorariosDisponibles: async (profesionalId: number, fecha: string): Promise<string[]> => {
-    const response = await fetch(`${API_BASE_URL}/profesionales/${profesionalId}/horarios?fecha=${fecha}`)
+  /** Horarios libres reales del profesional para esa fecha (con el token del paciente). */
+  obtenerHorariosDisponibles: async (profesionalId: number, fecha: string, duracion?: number): Promise<string[]> => {
+    const token = localStorage.getItem("patientToken")
+    const extra = duracion ? `&duracion=${duracion}` : ""
+    const response = await fetch(`${API_BASE_URL}/profesionales/${profesionalId}/horarios-disponibles?fecha=${encodeURIComponent(fecha)}${extra}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
     if (!response.ok) throw new Error("Error al obtener horarios")
-    return response.json()
+    const data = await response.json()
+    return Array.isArray(data?.horarios_disponibles) ? data.horarios_disponibles : []
   },
 }
 

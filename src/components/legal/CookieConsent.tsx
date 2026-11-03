@@ -142,7 +142,7 @@ export const CookieConsent: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4">
           <div className="flex gap-2.5 sm:gap-3 flex-1">
             <div className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-blue-50 items-center justify-center">
-              <Cookie className="text-[#2563FF]" size={18} />
+              <Cookie className="text-[#2458ED]" size={18} />
             </div>
             <div>
               <p id="cookie-consent-title" className="text-[13px] sm:text-sm font-bold text-gray-900">
@@ -152,14 +152,14 @@ export const CookieConsent: React.FC = () => {
               <p id="cookie-consent-desc" className="hidden sm:block text-[13px] text-gray-600 mt-0.5 leading-relaxed">
                 Nos sirven para medir qué funciona y mejorar el producto. Podés rechazarlas
                 y el sitio funciona igual. Más detalle en{' '}
-                <Link to="/cookies" className="text-[#2563FF] font-semibold hover:underline">
+                <Link to="/cookies" className="text-[#2458ED] font-semibold hover:underline">
                   la política de cookies
                 </Link>
                 .
               </p>
               <p className="sm:hidden text-[12px] text-gray-500 mt-0.5 leading-snug">
                 El sitio funciona igual si las rechazás.{' '}
-                <Link to="/cookies" className="text-[#2563FF] font-semibold">
+                <Link to="/cookies" className="text-[#2458ED] font-semibold">
                   Más info
                 </Link>
               </p>
@@ -170,14 +170,14 @@ export const CookieConsent: React.FC = () => {
             <button
               type="button"
               onClick={() => decidir('denied')}
-              className="flex-1 sm:flex-none px-4 py-2 sm:py-2.5 text-[13px] font-semibold text-gray-700 bg-white border border-gray-200 rounded-full hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563FF]/40 transition-colors"
+              className="flex-1 sm:flex-none px-4 py-2 sm:py-2.5 text-[13px] font-semibold text-gray-700 bg-white border border-gray-200 rounded-full hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2458ED]/40 transition-colors"
             >
               Rechazar
             </button>
             <button
               type="button"
               onClick={() => decidir('granted')}
-              className="flex-1 sm:flex-none px-5 py-2 sm:py-2.5 text-[13px] font-semibold text-white bg-[#2563FF] rounded-full hover:bg-[#1D4ED8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563FF]/40 transition-colors"
+              className="flex-1 sm:flex-none px-5 py-2 sm:py-2.5 text-[13px] font-semibold text-white bg-[#2458ED] rounded-full hover:bg-[#1744CD] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2458ED]/40 transition-colors"
             >
               Aceptar
             </button>

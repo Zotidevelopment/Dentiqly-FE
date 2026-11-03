@@ -36,9 +36,9 @@ export const ConsentSettings: React.FC = () => {
           type="button"
           onClick={() => elegir('granted')}
           aria-pressed={consent === 'granted'}
-          className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563FF]/40 ${
+          className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2458ED]/40 ${
             consent === 'granted'
-              ? 'bg-[#2563FF] text-white'
+              ? 'bg-[#2458ED] text-white'
               : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
           }`}
         >
@@ -48,9 +48,9 @@ export const ConsentSettings: React.FC = () => {
           type="button"
           onClick={() => elegir('denied')}
           aria-pressed={consent === 'denied'}
-          className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563FF]/40 ${
+          className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2458ED]/40 ${
             consent === 'denied'
-              ? 'bg-[#2563FF] text-white'
+              ? 'bg-[#2458ED] text-white'
               : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
           }`}
         >

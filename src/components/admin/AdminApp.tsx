@@ -1,3 +1,4 @@
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState, useEffect } from 'react'
 import { AdminLayout } from './AdminLayout'
 import { Dashboard } from './Dashboard'
@@ -17,11 +18,14 @@ import { SettingsManager } from './SettingsManager'
 import { UsersManager } from './UsersManager'
 import { AsistenciasManager } from './AsistenciasManager'
 import { ProtocolosManager } from './ProtocolosManager'
-import { apiClient } from '../../lib/api-client'
+import { apiClient, EVENTO_SUSCRIPCION_BLOQUEADA } from '../../lib/api-client'
+import { ClinicSetup } from './onboarding/ClinicSetup'
+import { RecorridoPanel } from './guia/RecorridoPanel'
+import { onboardingApi } from '../../api/onboarding'
 import { useAuth } from '../../hooks/useAuth'
-import { getPermissionsForRole, canAccessView } from '../../config/permissions'
+import { getPermissionsForRole, canAccessView, puede } from '../../config/permissions'
 import { OnboardingWizard } from './OnboardingWizard'
-import { AlertTriangle, XCircle, Clock, Sparkles, ArrowRight, X } from 'lucide-react'
+import { AlertTriangle, XCircle, Clock, Sparkles, ArrowRight, X, Loader2, CheckCircle2 } from 'lucide-react'
 
 interface SubscriptionStatus {
   subscription_status: 'pending_payment' | 'trialing' | 'active' | 'past_due' | 'suspended' | 'cancelled'
@@ -35,7 +39,7 @@ interface SubscriptionStatus {
   prices?: { monthly: number; annual: number }
 }
 
-const TrialExpiryModal: React.FC<{ daysLeft: number; slug?: string; onDismiss: () => void }> = ({ daysLeft, slug, onDismiss }) => {
+const TrialExpiryModal: React.FC<{ daysLeft: number; onActivate: () => void; onDismiss: () => void }> = ({ daysLeft, onActivate, onDismiss }) => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in-95 duration-300">
@@ -47,7 +51,7 @@ const TrialExpiryModal: React.FC<{ daysLeft: number; slug?: string; onDismiss: (
         </button>
 
         <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-amber-400 flex items-center justify-center mx-auto mb-4">
             <Clock className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
@@ -58,32 +62,33 @@ const TrialExpiryModal: React.FC<{ daysLeft: number; slug?: string; onDismiss: (
           </p>
         </div>
 
-        <div className="bg-gradient-to-r from-[#2563FF]/5 to-[#02E3FF]/5 rounded-2xl p-5 mb-6 border border-[#2563FF]/10">
+        <div className="bg-[#2458ED]/5 rounded-2xl p-5 mb-6 border border-[#2458ED]/10">
           <h3 className="font-bold text-gray-900 mb-3">Avanzá con nuestro plan:</h3>
           <div className="space-y-2 text-sm text-gray-600">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#2563FF] shrink-0" />
+              <Sparkles className="h-4 w-4 text-[#2458ED] shrink-0" />
               <span>Acceso ilimitado a todas las funcionalidades</span>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#2563FF] shrink-0" />
-              <span>Soporte prioritario 24/7</span>
+              <Sparkles className="h-4 w-4 text-[#2458ED] shrink-0" />
+              <span>Soporte por email</span>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#2563FF] shrink-0" />
+              <Sparkles className="h-4 w-4 text-[#2458ED] shrink-0" />
               <span>Sin pérdida de datos al activar</span>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
-          <a
-            href={slug ? `/${slug}/admin?activate=true` : '#'}
-            className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] text-center flex items-center justify-center gap-2"
+          <button
+            type="button"
+            onClick={onActivate}
+            className="w-full bg-[#2458ED] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] text-center flex items-center justify-center gap-2"
           >
             Avanzá con nuestro plan
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </button>
           <button
             onClick={onDismiss}
             className="text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
@@ -96,7 +101,8 @@ const TrialExpiryModal: React.FC<{ daysLeft: number; slug?: string; onDismiss: (
   )
 }
 
-const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal: () => void }> = ({ status, onShowModal }) => {
+/** Sin onShowModal/onActivate (roles que no pagan) se avisa en vez de mostrar botones. */
+const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal?: () => void; onActivate?: () => void }> = ({ status, onShowModal, onActivate }) => {
   const { subscription_status, trial_ends_at, grace_period_ends_at } = status
 
   if (subscription_status === 'trialing' && trial_ends_at) {
@@ -106,24 +112,24 @@ const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal: ()
     const isUrgent = daysLeft <= 4
 
     return (
-      <div className={`${isUrgent ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-b-2 border-amber-400' : 'bg-blue-50 border-b border-blue-200'} px-4 py-3 flex items-center justify-between`}>
+      <div className={`${isUrgent ? 'bg-amber-50 border-b-2 border-amber-400' : 'bg-blue-50 border-b border-blue-200'} px-4 py-3 flex items-center justify-between`}>
         <div className="flex items-center gap-2 text-sm">
           <Clock className={`h-4 w-4 shrink-0 ${isUrgent ? 'text-amber-600' : 'text-blue-600'}`} />
           <span className={isUrgent ? 'text-amber-900' : 'text-blue-800'}>
             Tu prueba gratuita vence en <strong>{daysLeft} día{daysLeft !== 1 ? 's' : ''}</strong>.
-            {isUrgent && ' Avanzá con nuestro plan para no perder tus datos.'}
+            {isUrgent && (onShowModal ? ' Avanzá con nuestro plan para no perder tus datos.' : ' Avisale al administrador de la clínica.')}
           </span>
         </div>
-        <button
+        {onShowModal && <button
           onClick={onShowModal}
           className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
             isUrgent
               ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm'
-              : 'bg-[#2563FF] text-white hover:bg-[#1D4ED8]'
+              : 'bg-[#2458ED] text-white hover:bg-[#1744CD]'
           }`}
         >
           Ver plan
-        </button>
+        </button>}
       </div>
     )
   }
@@ -138,11 +144,14 @@ const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal: ()
     )
   }
 
-  if (subscription_status === 'suspended') {
+  if (subscription_status === 'suspended' || subscription_status === 'cancelled') {
     return (
-      <div className="bg-red-50 border-b border-red-300 px-4 py-3 flex items-center gap-2 text-red-900 text-sm">
-        <XCircle className="h-4 w-4 shrink-0" />
-        <span>Tu suscripción está <strong>suspendida</strong>. Algunas funciones pueden estar limitadas. Contactá a soporte para reactivar tu cuenta.</span>
+      <div className="bg-red-50 border-b border-red-300 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-red-900 text-sm">
+        <span className="flex items-center gap-2">
+          <XCircle className="h-4 w-4 shrink-0" />
+          <span>Tu suscripción está <strong>{subscription_status === 'suspended' ? 'suspendida' : 'cancelada'}</strong>. Tus datos están guardados: {onActivate ? 'reactivá tu plan para seguir usando el panel.' : 'avisale al administrador de la clínica para reactivarla.'}</span>
+        </span>
+        {onActivate && <button onClick={onActivate} className="px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white hover:bg-red-700">Reactivar plan</button>}
       </div>
     )
   }
@@ -161,8 +170,61 @@ export const AdminApp: React.FC = () => {
   const [forceActivation, setForceActivation] = useState(() => {
     return window.location.search.includes('activate=true');
   });
+  // Clínica recién creada: se muestra el onboarding (ver onboardingController).
+  const [needsSetup, setNeedsSetup] = useState(false)
+  // Recorrido guiado del panel: se abre solo la primera vez en una clínica
+  // nueva y después desde "Ayuda".
+  const [recorridoAbierto, setRecorridoAbierto] = useState(false)
+  const claveRecorrido = `dq_recorrido_visto_${user?.id ?? 'usuario'}`
+  const abrirRecorridoSiNoLoVio = () => {
+    try {
+      if (!localStorage.getItem(claveRecorrido)) setRecorridoAbierto(true)
+    } catch { /* sin almacenamiento: no se fuerza el recorrido */ }
+  }
+  const cerrarRecorrido = () => {
+    setRecorridoAbierto(false)
+    try { localStorage.setItem(claveRecorrido, '1') } catch { /* no crítico */ }
+  }
+  // Vuelta de MercadoPago / LemonSqueezy: el webhook puede tardar unos segundos.
+  const [esperandoPago, setEsperandoPago] = useState(() => new URLSearchParams(window.location.search).get('payment') === 'success')
+
+  const limpiarParametrosURL = (...claves: string[]) => {
+    const url = new URL(window.location.href)
+    claves.forEach((c) => url.searchParams.delete(c))
+    window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash)
+  }
+
+  // La pantalla de pago se abre como una "página" más: el botón Atrás del
+  // navegador vuelve al panel en vez de sacar al usuario de Dentiqly.
+  const abrirActivacion = () => {
+    setShowTrialModal(false)
+    const url = new URL(window.location.href)
+    url.searchParams.set('activate', 'true')
+    window.history.pushState({ dqActivar: true }, '', url.pathname + url.search + url.hash)
+    setForceActivation(true)
+  }
+
+  const salirActivacion = () => {
+    if (window.history.state?.dqActivar) {
+      window.history.back() // el popstate de abajo cierra la pantalla
+      return
+    }
+    setForceActivation(false)
+    limpiarParametrosURL('activate', 'payment')
+  }
+
+  useEffect(() => {
+    const alNavegar = () => {
+      setForceActivation(new URLSearchParams(window.location.search).get('activate') === 'true')
+    }
+    window.addEventListener('popstate', alNavegar)
+    return () => window.removeEventListener('popstate', alNavegar)
+  }, [])
 
   const handleViewChange = (view: string) => {
+    // Al navegar desde el menú se descartan parámetros viejos (paciente abierto,
+    // búsqueda): antes "Pacientes" reabría la ficha del último paciente visto.
+    setNavParams({})
     if (canAccessView(user?.role, view)) {
       setCurrentView(view)
     } else {
@@ -186,9 +248,20 @@ export const AdminApp: React.FC = () => {
         const data = await apiClient.get<SubscriptionStatus>('/billing/status')
         setSubscriptionStatus(data)
 
+        if (user?.role === 'admin' && data.subscription_status !== 'pending_payment') {
+          try {
+            const estado = await onboardingApi.getStatus()
+            setNeedsSetup(Boolean(estado.setup?.needsSetup))
+            // Clínica que todavía no dio ningún turno: le mostramos el panel.
+            if (!estado.setup?.needsSetup && estado.setup?.counts?.turnos === 0) abrirRecorridoSiNoLoVio()
+          } catch {
+            // Si no se puede saber, no se bloquea el panel con el onboarding.
+          }
+        }
+
         if (data.subscription_status === 'trialing' && data.trial_ends_at) {
           const daysLeft = Math.max(0, Math.ceil((new Date(data.trial_ends_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-          if (daysLeft <= 4) {
+          if (daysLeft <= 4 && puede(user?.role, 'gestionarPlan')) {
             const dismissKey = `trial_modal_dismissed_${new Date().toISOString().slice(0, 10)}`
             if (!sessionStorage.getItem(dismissKey)) {
               setShowTrialModal(true)
@@ -202,33 +275,120 @@ export const AdminApp: React.FC = () => {
       }
     }
     fetchSubscriptionStatus()
+
+    // Si el backend bloquea una llamada por la suscripción (trial vencido a
+    // mitad del día, pago rechazado), se vuelve a leer el estado y el panel
+    // muestra el aviso que corresponde en lugar de quedar vacío.
+    const alBloquear = () => { fetchSubscriptionStatus() }
+    window.addEventListener(EVENTO_SUSCRIPCION_BLOQUEADA, alBloquear)
+    return () => window.removeEventListener(EVENTO_SUSCRIPCION_BLOQUEADA, alBloquear)
   }, [])
+
+  // Después de pagar: se consulta el estado cada 3 s hasta que el webhook
+  // active la clínica (máximo 1 minuto), en vez de volver a pedir el pago.
+  useEffect(() => {
+    if (!esperandoPago) return
+    if (subscriptionStatus?.subscription_status === 'active') {
+      setForceActivation(false)
+      limpiarParametrosURL('payment', 'activate')
+      const t = setTimeout(() => setEsperandoPago(false), 1800)
+      return () => clearTimeout(t)
+    }
+    let intentos = 0
+    const intervalo = setInterval(async () => {
+      intentos++
+      try {
+        const data = await apiClient.get<SubscriptionStatus>('/billing/status')
+        setSubscriptionStatus(data)
+      } catch { /* se reintenta */ }
+      if (intentos >= 20) {
+        clearInterval(intervalo)
+        setEsperandoPago(false)
+        limpiarParametrosURL('payment')
+      }
+    }, 3000)
+    return () => clearInterval(intervalo)
+  }, [esperandoPago, subscriptionStatus?.subscription_status])
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-3">
-          <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto animate-pulse-soft" />
-          <div className="w-8 h-8 border-2 border-[#2563FF] border-t-transparent rounded-full animate-spin" />
+          <BrandLogo alt="Dentiqly" className="h-10 w-auto animate-pulse-soft" />
+          <div className="w-8 h-8 border-2 border-[#2458ED] border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     )
   }
 
-  if (subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) {
+  if (esperandoPago) {
+    const activa = subscriptionStatus?.subscription_status === 'active'
+    return (
+      <div className="dentiqly-auth-recovery min-h-screen flex items-center justify-center p-6">
+        <div className="max-w-md w-full rounded-[22px] border border-[#DCE5EE] bg-white p-8 text-center shadow-[0_18px_40px_-28px_#0B244040]">
+          <span className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${activa ? 'bg-emerald-50 text-emerald-600' : 'bg-[#EAF2FF] text-[#2458ED]'}`}>
+            {activa ? <CheckCircle2 className="h-7 w-7" /> : <Loader2 className="h-7 w-7 animate-spin" />}
+          </span>
+          <h1 className="mt-5 text-[22px] font-semibold tracking-[-0.03em] text-[#0B2440]">
+            {activa ? '¡Pago confirmado!' : 'Estamos confirmando tu pago'}
+          </h1>
+          <p className="mt-2 text-sm text-[#53677E]">
+            {activa ? 'Tu plan ya está activo. Te llevamos a tu panel.' : 'Suele tardar unos segundos. No hace falta que pagues de nuevo ni que cierres esta pestaña.'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if ((subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) && !puede(user?.role, 'gestionarPlan')) {
+    if (subscriptionStatus?.subscription_status === 'pending_payment') {
+      return (
+        <div className="dentiqly-auth-recovery min-h-screen flex items-center justify-center p-6">
+          <div className="max-w-md w-full rounded-[22px] border border-[#DCE5EE] bg-white p-8 text-center shadow-[0_18px_40px_-28px_#0B244040]">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EAF2FF] text-[#2458ED]">
+              <Clock className="h-7 w-7" />
+            </span>
+            <h1 className="mt-5 text-[22px] font-semibold tracking-[-0.03em] text-[#0B2440]">La clínica todavía no está activa</h1>
+            <p className="mt-2 text-sm text-[#53677E]">
+              El administrador de {subscriptionStatus?.nombre || 'la clínica'} tiene que activar el plan. Cuando lo haga, vas a poder entrar al panel.
+            </p>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  if ((subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) && puede(user?.role, 'gestionarPlan')) {
     const isActivationFlow = window.location.search.includes('activate=true') || subscriptionStatus?.subscription_status !== 'pending_payment';
+    const puedeVolver = subscriptionStatus?.subscription_status !== 'pending_payment'
     return (
       <OnboardingWizard
         clinicaNombre={subscriptionStatus?.nombre}
         onComplete={() => window.location.reload()}
         initialStep={isActivationFlow ? 4 : 1}
+        onExit={puedeVolver ? salirActivacion : undefined}
       />
     );
   }
 
+  if (needsSetup) {
+    return (
+      <ClinicSetup
+        clinicaNombre={subscriptionStatus?.nombre || user?.clinica?.nombre || ''}
+        nombreAdmin={user?.nombre || ''}
+        slug={subscriptionStatus?.slug}
+        onFinish={(vista) => {
+          setNeedsSetup(false)
+          abrirRecorridoSiNoLoVio()
+          if (vista && canAccessView(user?.role, vista)) setCurrentView(vista)
+        }}
+      />
+    )
+  }
+
   const renderCurrentView = () => {
     if (!canAccessView(user?.role, currentView)) {
-      return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} />
+      return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} onRecorrido={() => setRecorridoAbierto(true)} />
     }
 
     switch (currentView) {
@@ -236,6 +396,7 @@ export const AdminApp: React.FC = () => {
         return <Dashboard
           slug={subscriptionStatus?.slug}
           onNavigate={handleNavigate}
+          onRecorrido={() => setRecorridoAbierto(true)}
         />
       case 'calendar':
         return <CalendarView onNavigate={handleNavigate} />
@@ -268,9 +429,9 @@ export const AdminApp: React.FC = () => {
       case 'usuarios':
         return <UsersManager />
       case 'settings':
-        return <SettingsManager />
+        return <SettingsManager key={navParams.tab || 'general'} initialTab={navParams.tab} />
       default:
-        return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} />
+        return <Dashboard slug={subscriptionStatus?.slug} onNavigate={handleNavigate} onRecorrido={() => setRecorridoAbierto(true)} />
     }
   }
 
@@ -290,14 +451,22 @@ export const AdminApp: React.FC = () => {
       onViewChange={handleViewChange}
       onSearch={(q) => handleNavigate('patients', { searchTerm: q })}
       subscriptionStatus={subscriptionStatus}
-      onActivatePlan={() => setForceActivation(true)}
+      onActivatePlan={abrirActivacion}
+      onAyuda={() => setRecorridoAbierto(true)}
     >
-      {subscriptionStatus && <SubscriptionBanner status={subscriptionStatus} onShowModal={() => setShowTrialModal(true)} />}
+      {subscriptionStatus && (
+        <SubscriptionBanner
+          status={subscriptionStatus}
+          onShowModal={puede(user?.role, 'gestionarPlan') ? () => setShowTrialModal(true) : undefined}
+          onActivate={puede(user?.role, 'gestionarPlan') ? abrirActivacion : undefined}
+        />
+      )}
       {renderCurrentView()}
-      {showTrialModal && (
+      {recorridoAbierto && <RecorridoPanel onTerminar={cerrarRecorrido} />}
+      {showTrialModal && !recorridoAbierto && (
         <TrialExpiryModal
           daysLeft={trialDaysLeft}
-          slug={subscriptionStatus?.slug}
+          onActivate={abrirActivacion}
           onDismiss={handleDismissTrialModal}
         />
       )}

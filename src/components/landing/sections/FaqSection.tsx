@@ -1,133 +1,79 @@
-import React, { useEffect, useRef, useState } from "react"
-import { ChevronDown } from "lucide-react"
+import React, { useState } from "react"
+import { Plus, Mail } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Eyebrow } from "../ui/SectionHeading"
+import { Reveal } from "../ui/Reveal"
 
-gsap.registerPlugin(ScrollTrigger)
-
-const FaqItem: React.FC<{ question: string; answer: string; index: number }> = ({
+const FaqItem: React.FC<{ question: string; answer: string; open: boolean; onToggle: () => void; id: string }> = ({
   question,
   answer,
-  index,
-}) => {
-  const [open, setOpen] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const answerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!contentRef.current || !answerRef.current) return
-    if (open) {
-      gsap.to(contentRef.current, {
-        height: answerRef.current.offsetHeight,
-        duration: 0.4,
-        ease: "power3.out",
-      })
-      gsap.to(answerRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.3,
-        delay: 0.1,
-        ease: "power3.out",
-      })
-    } else {
-      gsap.to(contentRef.current, {
-        height: 0,
-        duration: 0.3,
-        ease: "power3.inOut",
-      })
-      gsap.set(answerRef.current, { opacity: 0, y: -10 })
-    }
-  }, [open])
-
-  return (
-    <div
-      className={`faq-item border-b border-white/10 last:border-0 transition-colors duration-300 ${open ? "bg-white/[0.08]" : "hover:bg-white/[0.02]"
-        }`}
+  open,
+  onToggle,
+  id,
+}) => (
+  <div className={`border-b border-brand-ink/[0.07] transition-colors ${open ? "bg-brand-surface/60" : ""}`}>
+    <button
+      onClick={onToggle}
+      aria-expanded={open}
+      aria-controls={id}
+      className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left sm:px-6"
     >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-4 py-6 px-6 text-left group"
+      <span className={`text-[15.5px] font-semibold transition-colors ${open ? "text-brand-blue" : "text-brand-ink"}`}>{question}</span>
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-1 ring-inset transition-all duration-300 ${
+          open ? "rotate-45 bg-brand-blue text-white ring-brand-blue" : "text-brand-muted ring-brand-ink/15"
+        }`}
       >
-        <span className="text-base font-bold text-white group-hover:text-white/80 transition-colors">
-          {question}
-        </span>
-        <div
-          className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${open ? "bg-white border-white rotate-180" : "border-white/30 group-hover:border-white/60"
-            }`}
-        >
-          <ChevronDown className={`w-4 h-4 transition-colors ${open ? "text-[#0047FF]" : "text-white"}`} />
-        </div>
-      </button>
-      <div ref={contentRef} className="overflow-hidden h-0">
-        <div ref={answerRef} className="px-6 pb-6 opacity-0 -translate-y-2.5">
-          <p className="text-white/80 text-sm leading-relaxed">{answer}</p>
-        </div>
+        <Plus size={15} />
+      </span>
+    </button>
+    <div
+      id={id}
+      className="grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+      style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+    >
+      <div className="overflow-hidden">
+        <p className="px-5 pb-6 text-[14.5px] leading-relaxed text-brand-muted sm:px-6">{answer}</p>
       </div>
     </div>
-  )
-}
+  </div>
+)
 
 export const FaqSection: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null)
-  const { t } = useTranslation('landing')
-  const faqs = t('faq.items', { returnObjects: true }) as { question: string; answer: string }[]
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".faq-heading > *", {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-        },
-      })
-
-      gsap.from(".faq-item", {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".faq-list",
-          start: "top 85%",
-        },
-      })
-    }, sectionRef)
-
-    return () => ctx.revert()
-  }, [])
+  const { t } = useTranslation("landing")
+  const faqs = t("faq.items", { returnObjects: true }) as { question: string; answer: string }[]
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section ref={sectionRef} id="faq" className="py-28 sm:py-36 bg-[#FAFCFF]">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="faq-heading text-center mb-16">
-          <div className="flex justify-center mb-4">
-            <span className="inline-block bg-[#0047FF] text-white px-4 py-1.5 text-[13px] font-semibold tracking-wide rounded-full">
-              {t('faq.badge')}
-            </span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0B1023] tracking-tight">
-            {t('faq.title')}
+    <section id="faq" className="relative bg-white py-24 sm:py-32">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[0.8fr_1.4fr] lg:gap-20">
+        <Reveal className="lg:sticky lg:top-28 lg:self-start">
+          <Eyebrow>{t("faq.eyebrow")}</Eyebrow>
+          <h2 className="mt-5 font-display text-[2rem] font-semibold leading-[1.06] tracking-[-0.03em] text-brand-ink sm:text-[2.6rem]">
+            {t("faq.title")}
           </h2>
-        </div>
+          <p className="mt-4 text-[15.5px] leading-relaxed text-brand-muted">{t("faq.subtitle")}</p>
+          <a
+            href="mailto:hola@dentiqly.com"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-surface px-4 py-2.5 text-[14px] font-semibold text-brand-ink ring-1 ring-brand-ink/[0.07] transition-colors hover:bg-brand-blue-tint hover:text-brand-blue"
+          >
+            <Mail size={15} className="text-brand-blue" />
+            {t("faq.contact")}
+          </a>
+        </Reveal>
 
-        <div
-          className="faq-list bg-[#0047FF] rounded-3xl border border-[#0047FF]/20 shadow-[0_20px_50px_rgba(0,71,255,0.25)] overflow-hidden relative"
-          style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)`,
-            backgroundSize: "24px 24px",
-          }}
-        >
+        <Reveal delay={0.1} className="overflow-hidden rounded-[26px] ring-1 ring-brand-ink/[0.07]">
           {faqs.map((faq, i) => (
-            <FaqItem key={i} question={faq.question} answer={faq.answer} index={i} />
+            <FaqItem
+              key={faq.question}
+              id={`faq-panel-${i}`}
+              question={faq.question}
+              answer={faq.answer}
+              open={openIndex === i}
+              onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+            />
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   )

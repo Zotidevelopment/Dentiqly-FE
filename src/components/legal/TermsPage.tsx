@@ -23,7 +23,7 @@ export const TermsPage: React.FC = () => {
         Dentiqly es una plataforma SaaS (Software como Servicio) de gestion para clinicas dentales que incluye:
       </p>
       <ul>
-        <li>Gestion de agenda y turnos con recordatorios automaticos.</li>
+        <li>Gestion de agenda y turnos con recordatorios por email.</li>
         <li>Historias clinicas digitales y odontograma interactivo.</li>
         <li>Facturacion y control de caja.</li>
         <li>Portal de pacientes para autoservicio.</li>

@@ -3,6 +3,26 @@ if (API_BASE_URL && !API_BASE_URL.endsWith('/api')) {
   API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
 }
 
+/**
+ * Mensaje en castellano para mostrarle al usuario a partir de una respuesta de
+ * error. El backend responde de tres formas: { error }, { message } y, en las
+ * validaciones de express-validator, { errors: [{ msg }] }. Antes solo se leía
+ * la primera y el usuario veía "HTTP error! status: 400".
+ */
+export function mensajeDeError(status: number, data: any): string {
+  const delBackend = data?.error || data?.message || data?.errors?.[0]?.msg
+  if (typeof delBackend === "string" && delBackend.trim() && delBackend !== "Acceso denegado") return delBackend
+  if (status === 401) return "Tu sesión venció. Volvé a iniciar sesión."
+  if (status === 402 || status === 403) return data?.message || "No tenés acceso a esta acción."
+  if (status === 404) return "No encontramos lo que buscabas."
+  if (status === 429) return "Demasiados intentos. Esperá unos minutos y probá de nuevo."
+  if (status >= 500) return "Algo falló de nuestro lado. Probá de nuevo en unos segundos."
+  return "No se pudo completar la operación."
+}
+
+/** Evento que escucha el panel para re-chequear la suscripción. */
+export const EVENTO_SUSCRIPCION_BLOQUEADA = "dentiqly:suscripcion-bloqueada"
+
 export class ApiClient {
   private baseUrl: string
   private token: string | null = null
@@ -94,14 +114,20 @@ export class ApiClient {
 
     const url = this.resolveUrl(endpoint)
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
+    let response: Response
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers,
+      })
+    } catch {
+      throw new Error("No pudimos conectarnos. Revisá tu conexión a internet y probá de nuevo.")
+    }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Error desconocido" }))
-      const httpError: any = new Error(error.error || `HTTP error! status: ${response.status}`)
+      const error = await response.json().catch(() => ({}))
+      this.manejarErrorDeSesion(endpoint, response.status, error)
+      const httpError: any = new Error(mensajeDeError(response.status, error))
       // Preserve response information for error handling
       httpError.response = {
         status: response.status,
@@ -111,6 +137,29 @@ export class ApiClient {
     }
 
     return response.json()
+  }
+
+  /**
+   * Sesión vencida (el token dura 24 h) o suscripción bloqueada a mitad de uso.
+   * Antes el panel quedaba "vacío" sin explicación: agenda sin turnos,
+   * dashboard en cero. Ahora se manda al login o se re-chequea el plan.
+   */
+  private manejarErrorDeSesion(endpoint: string, status: number, data: any) {
+    if (typeof window === "undefined") return
+    const esLogin = endpoint.startsWith("/auth/login") || endpoint.startsWith("/saas")
+    if (status === 401 && this.token && !esLogin) {
+      this.clearToken()
+      localStorage.removeItem("user")
+      if (!window.location.pathname.startsWith("/login")) {
+        const volver = encodeURIComponent(window.location.pathname + window.location.search)
+        window.location.assign(`/login?expired=1&redirect=${volver}`)
+      }
+      return
+    }
+    const codigo = typeof data?.code === "string" ? data.code : ""
+    if ((status === 402 || status === 403) && (codigo.startsWith("SUBSCRIPTION_") || codigo.startsWith("CLINIC_") || codigo.startsWith("TRIAL_"))) {
+      window.dispatchEvent(new CustomEvent(EVENTO_SUSCRIPCION_BLOQUEADA, { detail: data }))
+    }
   }
 
   async get<T>(endpoint: string): Promise<T> {
@@ -162,8 +211,9 @@ export class ApiClient {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Error desconocido" }))
-      throw new Error(error.error || `HTTP error! status: ${response.status}`)
+      const error = await response.json().catch(() => ({}))
+      this.manejarErrorDeSesion(endpoint, response.status, error)
+      throw new Error(mensajeDeError(response.status, error))
     }
 
     return response.json()

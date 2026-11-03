@@ -1,5 +1,7 @@
 "use client"
 
+import { useAuth } from "../../hooks/useAuth"
+import { puede } from "../../config/permissions"
 import type React from "react"
 import { useState, useEffect } from "react"
 import {
@@ -22,10 +24,11 @@ import { apiClient } from "../../lib/api-client"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
 import { useToast } from "../../hooks/use-toast"
 import type { Paciente, CrearPacienteData, ObraSocial } from "../../types"
+import { getObraSocialNombre } from "../../utils/obraSocial"
 import { PatientDetailView } from "./PatientDetailView"
 import { AdminAppointmentModal } from "../admin/AdminAppointmentModal"
 import { ImageCropper } from "../ui/ImageCropper"
-import { todayISO } from "../../utils/date"
+import { todayISO, parseLocalDate } from "../../utils/date"
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper, getInitials, getAvatarStyle } from '../admin/adminDesign'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
@@ -34,7 +37,7 @@ const tokens = sharedTokens
 const calculateAge = (birthDate: string) => {
   if (!birthDate) return "—"
   const today = new Date()
-  const birth = new Date(birthDate)
+  const birth = parseLocalDate(birthDate)
   let age = today.getFullYear() - birth.getFullYear()
   const m = today.getMonth() - birth.getMonth()
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
@@ -54,6 +57,7 @@ interface PatientsViewProps {
 }
 
 export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, initialSearchTerm }) => {
+  const { user } = useAuth()
   const [patients, setPatients] = useState<Paciente[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -71,6 +75,9 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [cropperData, setCropperData] = useState<{ imageSrc: string; patientId: string } | null>(null)
+  // true cuando la obra social es texto libre ("Otra") en vez de una de la lista.
+  const [obraSocialOtra, setObraSocialOtra] = useState(false)
+  const [saving, setSaving] = useState(false)
   const { toast } = useToast()
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
@@ -123,12 +130,27 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
   const handleCreatePatient = () => {
     setFormData({ condicion: "Activo", tipo_facturacion: "B" })
+    setObraSocialOtra(false)
     setModalMode("create"); setShowModal(true)
   }
 
   const handleEditPatient = (patient: Paciente) => {
     setSelectedPatient(patient); setFormData(patient)
+    setObraSocialOtra(!patient.obra_social_id && !!patient.obra_social_nombre_custom?.trim())
     setModalMode("edit"); setShowModal(true)
+  }
+
+  const handleObraSocialSelect = (value: string) => {
+    if (value === "OTRA") {
+      setObraSocialOtra(true)
+      setFormData({ ...formData, obra_social_id: null, obra_social_nombre_custom: formData.obra_social_nombre_custom ?? "" })
+    } else if (value) {
+      setObraSocialOtra(false)
+      setFormData({ ...formData, obra_social_id: Number(value), obra_social_nombre_custom: null })
+    } else {
+      setObraSocialOtra(false)
+      setFormData({ ...formData, obra_social_id: null, obra_social_nombre_custom: null })
+    }
   }
 
   const handleViewPatient = (patient: Paciente) => {
@@ -149,11 +171,41 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
+    const customNombre = formData.obra_social_nombre_custom?.trim() || null
+    if (obraSocialOtra && !customNombre) {
+      toast({ variant: "destructive", title: "Falta la obra social", description: "Escribí el nombre de la obra social o elegí una de la lista." })
+      return
+    }
+    // Se mandan solo los campos del formulario. Las relaciones que vienen del
+    // listado (obraSocial, planes, archivos...) no viajan al update, y la obra
+    // social se manda con null explícito para que se pueda limpiar.
+    const {
+      obraSocial: _obraSocial, planesTratamiento: _planes, odontogramas: _odo, historialClinico: _hist,
+      prescripciones: _presc, archivos: _arch, ...campos
+    } = formData as Partial<CrearPacienteData> & Record<string, unknown>
+    const payload = {
+      ...campos,
+      obra_social_id: obraSocialOtra ? null : formData.obra_social_id ?? null,
+      obra_social_nombre_custom: obraSocialOtra ? customNombre : null,
+    }
     try {
-      if (modalMode === "create") await pacientesApi.crear(formData as CrearPacienteData)
-      else if (modalMode === "edit" && selectedPatient) await pacientesApi.actualizar(selectedPatient.id, formData)
+      setSaving(true)
+      if (modalMode === "create") {
+        await pacientesApi.crear(payload as CrearPacienteData)
+      } else if (modalMode === "edit" && selectedPatient) {
+        await pacientesApi.actualizar(selectedPatient.id, payload)
+        // La ficha abierta tiene que mostrar lo que se acaba de guardar.
+        const actualizado = await pacientesApi.obtener(selectedPatient.id)
+        setSelectedPatient(actualizado)
+      }
       setShowModal(false); fetchPatients()
-    } catch (e: any) { toast({ variant: "destructive", title: "Error", description: e.message || "Error al guardar el paciente" }) }
+      toast({ title: modalMode === "create" ? "Paciente creado" : "Cambios guardados" })
+    } catch (e: unknown) {
+      toast({ variant: "destructive", title: "No se pudo guardar", description: e instanceof Error ? e.message : "Error al guardar el paciente" })
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, patientId: string) => {
@@ -196,8 +248,8 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
       {viewMode === "detail" && selectedPatient ? (
         <PatientDetailView
           patient={selectedPatient}
-          onBack={() => setViewMode("list")}
-          onEdit={(p) => { setSelectedPatient(p); setFormData(p); setModalMode("edit"); setShowModal(true) }}
+          onBack={() => { setViewMode("list"); fetchPatients() }}
+          onEdit={handleEditPatient}
           onPhotoUpload={handlePhotoUpload}
           uploadingPhoto={uploadingPhoto}
           getPhotoUrl={getPhotoUrl}
@@ -216,6 +268,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
               </p>
             </div>
             <div className="flex flex-wrap gap-2.5">
+              {puede(user?.role, 'exportarPacientes') && (
               <button
                 onClick={() => exportApi.pacientes().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar" }))}
                 style={{
@@ -223,7 +276,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   background: tokens.white, color: tokens.grayText,
                   border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
                   fontSize: 13, fontWeight: 500, cursor: "pointer",
-                  fontFamily: "Inter, -apple-system, sans-serif",
+                  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                   transition: "all 0.15s",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
@@ -232,6 +285,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 <Download size={15} />
                 Exportar CSV
               </button>
+              )}
               <button
                 onClick={handleCreatePatient}
                 style={{
@@ -239,7 +293,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   background: tokens.blue, color: tokens.white,
                   border: "none", borderRadius: 10, padding: "9px 18px",
                   fontSize: 13, fontWeight: 700, cursor: "pointer",
-                  fontFamily: "Inter, -apple-system, sans-serif",
+                  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                   transition: "background 0.15s",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = tokens.blueHover)}
@@ -268,7 +322,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 style={{
                   border: "none", outline: "none", background: "transparent",
                   fontSize: 13, color: tokens.navy, flex: 1,
-                  fontFamily: "Inter, -apple-system, sans-serif",
+                  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
                 }}
               />
             </div>
@@ -393,7 +447,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                                   {patient.apellido}, {patient.nombre}
                                 </p>
                                 <p style={{ fontSize: 11.5, color: tokens.grayMuted, margin: "2px 0 0" }}>
-                                  {patient.obraSocial?.nombre || patient.obra_social_nombre_custom || "Sin obra social"}
+                                  {getObraSocialNombre(patient)}
                                 </p>
                               </div>
                             </div>
@@ -411,7 +465,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                               
                               let badgeStyles = {
                                 background: "#EFF6FF", // blue faint
-                                color: "#1D4ED8",
+                                color: "#1744CD",
                                 borderColor: "#BFDBFE"
                               };
                               
@@ -460,7 +514,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
                           {/* Nº Afiliado */}
                           <td style={{ padding: "11px 16px" }}>
-                            <div style={{ fontSize: 13, color: tokens.grayText, fontWeight: 600, fontFamily: "Inter, monospace" }}>
+                            <div style={{ fontSize: 13, color: tokens.grayText, fontWeight: 600, fontFamily: "var(--brand-font)" }}>
                               {patient.numero_afiliado || <span style={{ color: tokens.grayBorder, fontWeight: 400 }}>—</span>}
                             </div>
                           </td>
@@ -741,17 +795,30 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 <div>
                   <label style={labelStyle}>Obra Social</label>
                   <select
-                    value={formData.obra_social_id || ""}
-                    onChange={e => setFormData({ ...formData, obra_social_id: e.target.value ? Number(e.target.value) : undefined })}
+                    value={obraSocialOtra ? "OTRA" : formData.obra_social_id ? String(formData.obra_social_id) : ""}
+                    onChange={e => handleObraSocialSelect(e.target.value)}
                     style={{ ...inputStyle, borderColor: focusedField === "os" ? tokens.blue : tokens.grayBorder }}
                     onFocus={() => setFocusedField("os")}
                     onBlur={() => setFocusedField(null)}
                   >
-                    <option value="">Sin obra social</option>
+                    <option value="">Particular (sin obra social)</option>
                     {obrasSociales.map(os => (
                       <option key={os.id} value={os.id}>{os.nombre}</option>
                     ))}
+                    <option value="OTRA">Otra (escribir nombre)</option>
                   </select>
+                  {obraSocialOtra && (
+                    <input
+                      type="text"
+                      value={formData.obra_social_nombre_custom || ""}
+                      onChange={e => setFormData({ ...formData, obra_social_nombre_custom: e.target.value })}
+                      placeholder="Ej: OSDE 210"
+                      autoFocus
+                      style={{ ...inputStyle, marginTop: 8, borderColor: focusedField === "os-otra" ? tokens.blue : tokens.grayBorder }}
+                      onFocus={() => setFocusedField("os-otra")}
+                      onBlur={() => setFocusedField(null)}
+                    />
+                  )}
                 </div>
 
                 {/* Condición */}
@@ -865,7 +932,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                     padding: "9px 18px", fontSize: 13, fontWeight: 500,
                     border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 9,
                     background: tokens.white, color: tokens.grayText, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "all 0.12s",
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "all 0.12s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.grayBg }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.white }}
@@ -874,16 +941,17 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   style={{
                     padding: "9px 20px", fontSize: 13, fontWeight: 700,
                     background: tokens.blue, color: tokens.white,
-                    border: "none", borderRadius: 9, cursor: "pointer",
-                    fontFamily: "Inter, -apple-system, sans-serif", transition: "background 0.15s",
+                    border: "none", borderRadius: 9, cursor: saving ? "wait" : "pointer", opacity: saving ? 0.7 : 1,
+                    fontFamily: "\"Instrument Sans\", system-ui, sans-serif", transition: "background 0.15s",
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = tokens.blueHover }}
                   onMouseLeave={e => { e.currentTarget.style.background = tokens.blue }}
                 >
-                  {modalMode === "create" ? "Crear" : "Actualizar"} Paciente
+                  {saving ? "Guardando..." : modalMode === "create" ? "Crear paciente" : "Guardar cambios"}
                 </button>
               </div>
             </form>
@@ -907,7 +975,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
             paciente_id: selectedPatient.id,
             paciente_nombre: `${selectedPatient.apellido}, ${selectedPatient.nombre} (DNI: ${selectedPatient.numero_documento})`,
             fecha: todayISO(),
-            sobre_turno: true,
+            sobre_turno: false,
           }}
           onClose={() => setShowBookingModal(false)}
           onCreate={() => { setShowBookingModal(false); fetchPatients() }}

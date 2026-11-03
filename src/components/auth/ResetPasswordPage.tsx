@@ -1,3 +1,4 @@
+import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Lock, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
@@ -41,12 +42,12 @@ export const ResetPasswordPage: React.FC = () => {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFCFF] p-4">
+      <div className="dentiqly-auth-recovery min-h-screen flex items-center justify-center bg-[#FAFCFF] p-4">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-[#0B1023] mb-2">Enlace inválido</h1>
+          <h1 className="text-xl font-bold text-[#0B2440] mb-2">Enlace inválido</h1>
           <p className="text-sm text-[#8A93A8] mb-4">El enlace de recuperación no es válido o ha expirado.</p>
-          <Link to="/forgot-password" className="text-[#2563FF] font-bold text-sm hover:underline">
+          <Link to="/forgot-password" className="text-[#2458ED] font-bold text-sm hover:underline">
             Solicitar un nuevo enlace
           </Link>
         </div>
@@ -59,9 +60,9 @@ export const ResetPasswordPage: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <Link to="/">
-            <img src="/assets/dentiqly-logo.png" alt="Dentiqly" className="h-10 w-auto mx-auto mb-6" />
+            <BrandLogo alt="Dentiqly" className="h-10 w-auto mx-auto mb-6" />
           </Link>
-          <h1 className="text-2xl font-extrabold text-[#0B1023] mb-1">Nueva contraseña</h1>
+          <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Nueva contraseña</h1>
           <p className="text-[#8A93A8] text-sm">Ingresá tu nueva contraseña</p>
         </div>
 
@@ -84,7 +85,7 @@ export const ResetPasswordPage: React.FC = () => {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-[#0B1023] mb-1.5 uppercase tracking-wider">Nueva contraseña</label>
+                <label className="block text-xs font-bold text-[#0B2440] mb-1.5 uppercase tracking-wider">Nueva contraseña</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 text-[#8A93A8]" />
@@ -94,14 +95,14 @@ export const ResetPasswordPage: React.FC = () => {
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all text-[#0B2440]"
                     placeholder="Mínimo 6 caracteres"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0B1023] mb-1.5 uppercase tracking-wider">Confirmar contraseña</label>
+                <label className="block text-xs font-bold text-[#0B2440] mb-1.5 uppercase tracking-wider">Confirmar contraseña</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 text-[#8A93A8]" />
@@ -111,7 +112,7 @@ export const ResetPasswordPage: React.FC = () => {
                     required
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] focus:bg-white transition-all text-[#0B1023]"
+                    className="block w-full pl-9 pr-3 py-3 text-sm bg-[#F7F8FA] border border-transparent rounded-xl focus:ring-2 focus:ring-[#2458ED]/20 focus:border-[#2458ED] focus:bg-white transition-all text-[#0B2440]"
                     placeholder="Repetí la contraseña"
                   />
                 </div>
@@ -120,7 +121,7 @@ export const ResetPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2563FF] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1D4ED8] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-[#2458ED] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.25)] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

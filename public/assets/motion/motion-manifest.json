@@ -1,0 +1,16 @@
+{
+  "createdAt": "2026-11-02T22:12:17.966Z",
+  "duration": 8,
+  "fps": 15,
+  "width": 1120,
+  "height": 840,
+  "codec": "VP8",
+  "audio": false,
+  "source": "Original code-native motion graphics based on Dentiqly workflows. Illustrative demo data; not a screen recording.",
+  "variants": [
+    "booking",
+    "agenda",
+    "patient",
+    "finance"
+  ]
+}

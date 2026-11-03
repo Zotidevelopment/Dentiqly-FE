@@ -4,6 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        brand: {
+          blue: '#2563FF',
+          'blue-hover': '#1E4FE0',
+          'blue-deep': '#1E40AF',
+          'blue-light': '#63B3FF',
+          'blue-tint': '#EEF3FF',
+          navy: '#0B1023',
+          'navy-800': '#111A3A',
+          'navy-700': '#1A2550',
+          ink: '#0B1023',
+          muted: '#5B6480',
+          surface: '#F5F7FA',
+          mint: '#22C55E',
+        },
         dental: {
           primary: 'var(--brand-primary, #2563FF)',
           secondary: 'var(--brand-secondary, #02E3FF)',
@@ -16,6 +30,8 @@ export default {
       },
       fontFamily: {
         sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+        body: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',
@@ -43,11 +59,11 @@ export default {
       keyframes: {
         'fade-in': {
           from: { opacity: '0', transform: 'translateY(8px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '1', transform: 'none' },
         },
         'fade-in-up': {
           from: { opacity: '0', transform: 'translateY(20px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '1', transform: 'none' },
         },
         'slide-in-left': {
           from: { opacity: '0', transform: 'translateX(-16px)' },
