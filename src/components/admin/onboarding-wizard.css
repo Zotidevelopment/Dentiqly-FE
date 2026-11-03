@@ -520,3 +520,114 @@
     animation: none;
   }
 }
+
+/* ── Escritorio: todo entra en la pantalla, sin scroll ──
+   Los espacios verticales se achican con la altura de la ventana (vh). */
+.dentiqly-landing .dq-onb-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-top: 28px;
+  max-width: 480px;
+}
+.dentiqly-landing .dq-onb-features li {
+  font-size: 14px;
+  align-items: flex-start;
+}
+.dentiqly-landing .dq-onb-features svg {
+  color: #3d75b5;
+  margin-top: 3px;
+}
+@media (min-width: 960px) {
+  .dq-onb {
+    height: 100vh;
+    min-height: 600px;
+    padding-bottom: 2.5vh;
+  }
+  .dq-onb-header {
+    height: clamp(60px, 9vh, 80px);
+  }
+  .dq-onb-stage {
+    min-height: 0;
+    padding: clamp(20px, 4vh, 48px) 48px;
+  }
+  .dq-onb-stage > * {
+    max-height: 100%;
+  }
+
+  /* Paso 1 */
+  .dentiqly-landing .dq-onb-welcome .lp-hero-category {
+    margin-bottom: clamp(10px, 2vh, 20px);
+  }
+  .dentiqly-landing .dq-onb-welcome h1 {
+    font-size: clamp(34px, 5.6vh, 56px);
+  }
+  .dentiqly-landing .dq-onb-welcome .lp-hero-description {
+    margin-top: clamp(10px, 2vh, 20px);
+    font-size: clamp(15px, 1.9vh, 18px);
+  }
+  .dq-onb-roadmap {
+    margin-top: clamp(20px, 4vh, 40px);
+  }
+  .dq-onb-roadmap li {
+    padding: clamp(16px, 2.6vh, 24px) 24px;
+  }
+  .dq-onb-roadmap-top {
+    margin-bottom: clamp(10px, 2vh, 20px);
+  }
+  .dentiqly-landing .dq-onb-roadmap .lp-product-icon {
+    width: clamp(44px, 6vh, 58px);
+    height: clamp(44px, 6vh, 58px);
+    border-radius: 16px;
+  }
+  .dentiqly-landing .dq-onb-welcome .lp-hero-actions {
+    margin-top: clamp(16px, 3.5vh, 32px);
+  }
+
+  /* Pasos 2 a 4 */
+  .dq-onb-split-pay {
+    align-items: center;
+  }
+  .dq-onb-copy .lp-product-icon {
+    margin-bottom: clamp(12px, 2.6vh, 24px);
+  }
+  .dentiqly-landing .dq-onb-copy h2 {
+    font-size: clamp(30px, 4.6vh, 44px);
+  }
+  .dq-onb-copy > p:not(.lp-eyebrow) {
+    margin-top: clamp(10px, 2vh, 18px);
+  }
+  .dq-onb-card,
+  .dentiqly-landing .lp-price-card.dq-onb-price {
+    padding: clamp(20px, 3.4vh, 32px) 32px;
+  }
+  .dq-onb-card-header,
+  .dentiqly-landing .dq-onb-price .lp-price-card-header {
+    padding-bottom: clamp(14px, 2.4vh, 22px);
+  }
+  .dq-onb-fields {
+    margin-top: clamp(14px, 2.6vh, 24px);
+    gap: clamp(10px, 2vh, 18px) 20px;
+  }
+  .dq-onb-fields input,
+  .dq-onb-fields textarea {
+    padding-block: clamp(9px, 1.4vh, 12px);
+  }
+  .dq-onb-fields textarea {
+    height: clamp(56px, 9vh, 84px);
+  }
+  .dq-onb-actions {
+    margin-top: clamp(16px, 3vh, 28px);
+    padding-top: clamp(14px, 2.4vh, 22px);
+  }
+  .dentiqly-landing .dq-onb-price .lp-price-controls {
+    margin-top: clamp(14px, 2.4vh, 22px);
+  }
+  .dentiqly-landing .dq-onb-price .lp-price-amount {
+    min-height: 0;
+    padding-block: clamp(14px, 2.6vh, 23px) clamp(14px, 2.4vh, 20px);
+  }
+  .dq-onb-pay-footer {
+    margin-top: clamp(12px, 2.4vh, 22px);
+  }
+}

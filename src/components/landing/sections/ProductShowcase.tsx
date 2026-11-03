@@ -252,7 +252,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
             Quiero esto para mi clínica
             <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
           </TrialLink>
-          <p className="mt-3 text-[13px] text-brand-muted">14 días gratis · Sin tarjeta de crédito</p>
+          <p className="mt-3 text-[13px] text-brand-muted">7 días gratis · Sin tarjeta de crédito</p>
         </Reveal>}
       </div>
     </section>

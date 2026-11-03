@@ -350,7 +350,7 @@ export const LandingPage: React.FC = () => {
               </TrialLink>
             </div>
             <div className="lp-final-bottom">
-              <span>14 días para conocer una nueva forma de trabajar.</span>
+              <span>7 días para conocer una nueva forma de trabajar.</span>
               <span>Sin tarjeta. Sin instalaciones.</span>
             </div>
           </div>

@@ -3,14 +3,12 @@ import { BrandLogo } from '../brand/BrandLogo'
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Sparkles, CreditCard, Clock, ArrowLeft, Check } from 'lucide-react';
+import { ArrowRight, Building2, User, Mail, Lock, Loader2, Phone, Check } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { SEO, PAGE_SEO } from '../seo/SEO';
 import { trackSignupStarted } from '../../lib/analytics';
-import { useBillingPlans } from '../../hooks/useBillingPlans';
 import { ContinuarConGoogle, type SesionGoogle } from './ContinuarConGoogle';
 
-type Step = 'form' | 'plan';
 
 /**
  * Réplica de utils/slugify.js del backend, que es quien genera el slug real a
@@ -45,8 +43,6 @@ export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<Step>('form');
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   // signup_started se emite en la primera tecla, no al cargar la página:
   // llegar a /register ya lo cubre page_view. Lo que importa acá es la
   // intención real de completar el formulario.
@@ -70,7 +66,7 @@ export const RegisterPage: React.FC = () => {
     const slug = r.tenant?.slug || r.clinica?.slug;
     toast({
       title: r.nuevo ? "¡Bienvenido a Dentiqly!" : "Ya tenías una cuenta",
-      description: r.nuevo ? "Tu prueba gratuita de 14 días ya empezó." : "Te llevamos a tu panel.",
+      description: r.nuevo ? "Tu prueba gratuita de 7 días ya empezó." : "Te llevamos a tu panel.",
     });
     navigate(slug ? `/${slug}/admin` : '/admin');
   };
@@ -93,36 +89,23 @@ export const RegisterPage: React.FC = () => {
       });
       return;
     }
-    setStep('plan');
+    crearCuenta();
   };
 
-  const handlePlanSelect = async (planChoice: 'trial' | 'monthly' | 'annual') => {
+  // Toda clínica nueva arranca con la prueba gratis, sin tarjeta. La tarjeta
+  // se pide recién cuando la prueba vence (ver AdminApp → OnboardingWizard).
+  const crearCuenta = async () => {
     setLoading(true);
     try {
       const response = await register({
         ...formData,
-        plan_choice: planChoice,
+        plan_choice: 'trial',
       } as any);
-
-      if (planChoice === 'trial') {
-        toast({
-          title: "¡Bienvenido a Dentiqly!",
-          description: "Tu prueba gratuita de 14 días ha comenzado. ¡A trabajar!",
-        });
-        if (response.tenant?.slug) {
-          navigate(`/${response.tenant.slug}/admin`);
-        } else {
-          navigate('/admin');
-        }
-      } else {
-        toast({
-          title: "Clínica registrada",
-          description: "Redirigiendo al pago...",
-        });
-        if (response.tenant?.slug) {
-          navigate(`/${response.tenant.slug}/admin?activate=true&plan=${planChoice}`);
-        }
-      }
+      toast({
+        title: "¡Bienvenido a Dentiqly!",
+        description: "Tu prueba gratuita de 7 días ya empezó. ¡A trabajar!",
+      });
+      navigate(response.tenant?.slug ? `/${response.tenant.slug}/admin` : '/admin');
     } catch (error: any) {
       toast({
         title: "Error al registrarse",
@@ -142,22 +125,6 @@ export const RegisterPage: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Los precios vienen de /api/billing/plans, la misma fuente que usa la
-  // sección de precios de la landing. Antes estaban hardcodeados acá y no
-  // coincidían: la landing mostraba el anual con 17% off y el registro con
-  // 10%, sobre un total $58.000 más caro que el real.
-  const plans = useBillingPlans();
-  const monthlyUsd = plans?.usd.monthly.price;
-  const annualUsd = plans?.usd.annual.price;
-  const annualUsdPerMonth = plans
-    ? plans.usd.annual.pricePerMonth ?? Math.round(plans.usd.annual.price / 12)
-    : undefined;
-  const annualDiscount = plans?.usd.annual.discount;
-  const displayUsd = billingCycle === 'monthly' ? monthlyUsd : annualUsdPerMonth;
-  const displayArs = billingCycle === 'monthly'
-    ? plans?.ars.monthly.price
-    : plans?.ars.annual.pricePerMonth ?? (plans ? Math.round(plans.ars.annual.price / 12) : undefined);
-
   return (
     <>
     <SEO {...PAGE_SEO.register} />
@@ -173,8 +140,6 @@ export const RegisterPage: React.FC = () => {
             </Link>
           </div>
 
-          {step === 'form' ? (
-            <>
               <div className="mb-5">
                 <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Crear nueva clínica</h1>
                 <p className="text-[var(--brand-secondary)] text-sm font-semibold">Configurá tu espacio de trabajo en segundos.</p>
@@ -308,180 +273,26 @@ export const RegisterPage: React.FC = () => {
                   <div className="pt-1">
                     <button
                       type="submit"
-                      className="w-full bg-[#2458ED] text-white py-3 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.2)] hover:shadow-[0_12px_30px_rgba(37,99,255,0.3)] flex items-center justify-center gap-2"
+                      disabled={loading}
+                      className="disabled:opacity-60 w-full bg-[#2458ED] text-white py-3 px-6 rounded-xl font-bold text-sm hover:bg-[#1744CD] transition-all shadow-[0_8px_20px_rgba(37,99,255,0.2)] hover:shadow-[0_12px_30px_rgba(37,99,255,0.3)] flex items-center justify-center gap-2"
                     >
-                      Continuar
-                      <ArrowRight className="h-4 w-4" />
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                      {loading ? 'Creando tu clínica…' : 'Crear cuenta y empezar gratis'}
+                      {loading ? null : <ArrowRight className="h-4 w-4" />}
                     </button>
                   </div>
 
-                  <p className="text-center text-[11px] text-[#8A93A8] mt-3">
+                  <p className="flex items-center justify-center gap-1.5 text-center text-[12px] font-medium text-[#53677E] mt-3">
+                    <Check className="h-3.5 w-3.5 text-[#2458ED]" />
+                    7 días gratis · Sin tarjeta de crédito
+                  </p>
+                  <p className="text-center text-[11px] text-[#8A93A8] mt-2">
                     Al registrarte, aceptás nuestros{' '}
                     <Link to="/terminos" className="text-[#2458ED] hover:text-[#1744CD] font-semibold transition-colors">Términos de Servicio</Link> y{' '}
                     <Link to="/privacidad" className="text-[#2458ED] hover:text-[#1744CD] font-semibold transition-colors">Política de Privacidad</Link>.
                   </p>
                 </form>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="mb-5">
-                <button
-                  onClick={() => setStep('form')}
-                  className="flex items-center gap-1.5 text-xs text-[#8A93A8] hover:text-[#0B2440] transition-colors mb-3"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  Volver
-                </button>
-                <h1 className="text-2xl font-extrabold text-[#0B2440] mb-1">Elegí tu plan</h1>
-                <p className="text-[var(--brand-secondary)] text-sm font-semibold">
-                  Registrando: <span className="text-[#0B2440] font-bold">{formData.nombre_clinica}</span>
-                </p>
-              </div>
-
-              {/* Trial Option */}
-              <button
-                onClick={() => handlePlanSelect('trial')}
-                disabled={loading}
-                className="w-full mb-3 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#2458ED]/30 p-5 text-left hover:border-[#2458ED] hover:shadow-[0_8px_30px_rgba(2,227,255,0.1)] transition-all group disabled:opacity-50"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-[#2458ED]/20 flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-[#2458ED]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#0B2440] text-base">Prueba Gratuita</h3>
-                      <p className="text-xs text-[#8A93A8]">14 días sin compromiso</p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#2458ED]/10 text-[#0891B2] text-[10px] font-bold uppercase">
-                    Gratis
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-[#8A93A8]">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span>Acceso completo sin tarjeta de crédito</span>
-                </div>
-                <div className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-[#2458ED] group-hover:text-[#0891B2] transition-colors">
-                  Comenzar prueba gratuita
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              </button>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-150"></div>
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase">
-                  <span className="bg-[#FAFCFF] px-3 text-[#8A93A8] font-bold tracking-wider">o avanzá con el plan</span>
-                </div>
-              </div>
-
-              {/* Billing cycle toggle */}
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <button
-                  onClick={() => setBillingCycle('monthly')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    billingCycle === 'monthly'
-                      ? 'bg-[#2458ED] text-white shadow-md'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
-                  Mensual
-                </button>
-                <button
-                  onClick={() => setBillingCycle('annual')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                    billingCycle === 'annual'
-                      ? 'bg-[#2458ED] text-white shadow-md'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
-                  Anual
-                  {annualDiscount !== undefined && (
-                    <span className={`text-[10px] px-1 py-0.5 rounded-md ${
-                      billingCycle === 'annual' ? 'bg-white/20 text-white' : 'bg-green-150 text-green-700'
-                    }`}>
-                      -{annualDiscount}%
-                    </span>
-                  )}
-                </button>
-              </div>
-
-              {/* Paid Plan Card */}
-              <button
-                onClick={() => handlePlanSelect(billingCycle)}
-                disabled={loading}
-                className="w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border-2 border-[#2458ED]/20 p-5 text-left hover:border-[#2458ED] hover:shadow-[0_8px_30px_rgba(37,99,255,0.1)] transition-all group disabled:opacity-50"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-[#2458ED]/20 flex items-center justify-center">
-                      <CreditCard className="h-5 w-5 text-[#2458ED]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#0B2440] text-base">Plan Pro</h3>
-                      <p className="text-xs text-[#8A93A8]">
-                        {billingCycle === 'monthly' ? 'Suscripción mensual' : 'Suscripción anual'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    {/* Mientras /billing/plans no responde no se muestra ningún
-                        número: un precio provisorio que después cambia es peor
-                        que un espacio en blanco de medio segundo. */}
-                    <p className="text-xl font-extrabold text-[#0B2440]">
-                      {displayUsd !== undefined ? `USD ${displayUsd}` : '—'}
-                    </p>
-                    <p className="text-[10px] text-[#8A93A8]">
-                      / mes
-                      {displayArs !== undefined && (
-                        <span className="block">
-                          aprox. ${displayArs.toLocaleString('es-AR')} ARS
-                        </span>
-                      )}
-                      {billingCycle === 'annual' && annualUsd !== undefined && (
-                        <span className="block text-green-650 font-bold">
-                          USD {annualUsd} /año
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-3.5">
-                  {[
-                    'Usuarios ilimitados',
-                    'Agenda online',
-                    'Historias clínicas',
-                    'Control de caja',
-                    'Recordatorios por email',
-                    'Soporte prioritario',
-                  ].map((feat, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-                      <Check className="h-3 w-3 text-[#2458ED] shrink-0" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#2458ED] group-hover:text-[#1744CD] transition-colors">
-                  {loading ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Procesando...
-                    </>
-                  ) : (
-                    <>
-                      Avanzar con el plan de pago
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </>
-                  )}
-                </div>
-              </button>
-            </>
-          )}
 
           <div className="mt-5 text-center">
             <p className="text-xs text-[#8A93A8]">

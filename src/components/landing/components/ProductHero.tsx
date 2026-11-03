@@ -183,7 +183,7 @@ export function ProductHero() {
         <p className="lp-hero-reassurance">
           <span>
             <Check size={15} />
-            14 días gratis
+            7 días gratis
           </span>
           <span>
             <Check size={15} />

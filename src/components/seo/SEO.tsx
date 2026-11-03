@@ -13,7 +13,7 @@ interface SEOProps {
 
 const BASE_URL = 'https://dentiqly.com'
 const DEFAULT_TITLE = 'Dentiqly - Software de Gestión Dental | Turnos, Historias Clínicas y Odontogramas'
-const DEFAULT_DESCRIPTION = 'Dentiqly conecta la agenda, las historias clínicas, los odontogramas y los cobros de tu consultorio. Probalo gratis durante 14 días, sin tarjeta de crédito.'
+const DEFAULT_DESCRIPTION = 'Dentiqly conecta la agenda, las historias clínicas, los odontogramas y los cobros de tu consultorio. Probalo gratis durante 7 días, sin tarjeta de crédito.'
 const DEFAULT_IMAGE = `${BASE_URL}${brand.assets.social}`
 
 export const SEO: React.FC<SEOProps> = ({
@@ -66,7 +66,7 @@ export const PAGE_SEO = {
   },
   register: {
     title: 'Registrarse Gratis - Prueba 14 Días',
-    description: 'Registrate gratis en Dentiqly y probá el software dental más completo durante 14 días. Sin tarjeta de crédito. Gestión de turnos, historias clínicas y odontogramas.',
+    description: 'Registrate gratis en Dentiqly y probá el software dental más completo durante 7 días. Sin tarjeta de crédito. Gestión de turnos, historias clínicas y odontogramas.',
     canonical: '/register',
   },
   login: {

@@ -109,7 +109,7 @@ const SubscriptionBanner: React.FC<{ status: SubscriptionStatus; onShowModal?: (
     const daysLeft = Math.max(0, Math.ceil((new Date(trial_ends_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     if (daysLeft > 7) return null
 
-    const isUrgent = daysLeft <= 4
+    const isUrgent = daysLeft <= 2
 
     return (
       <div className={`${isUrgent ? 'bg-amber-50 border-b-2 border-amber-400' : 'bg-blue-50 border-b border-blue-200'} px-4 py-3 flex items-center justify-between`}>
@@ -261,7 +261,7 @@ export const AdminApp: React.FC = () => {
 
         if (data.subscription_status === 'trialing' && data.trial_ends_at) {
           const daysLeft = Math.max(0, Math.ceil((new Date(data.trial_ends_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-          if (daysLeft <= 4 && puede(user?.role, 'gestionarPlan')) {
+          if (daysLeft <= 2 && puede(user?.role, 'gestionarPlan')) {
             const dismissKey = `trial_modal_dismissed_${new Date().toISOString().slice(0, 10)}`
             if (!sessionStorage.getItem(dismissKey)) {
               setShowTrialModal(true)
@@ -359,14 +359,17 @@ export const AdminApp: React.FC = () => {
   }
 
   if ((subscriptionStatus?.subscription_status === 'pending_payment' || forceActivation) && puede(user?.role, 'gestionarPlan')) {
-    const isActivationFlow = window.location.search.includes('activate=true') || subscriptionStatus?.subscription_status !== 'pending_payment';
-    const puedeVolver = subscriptionStatus?.subscription_status !== 'pending_payment'
+    // Toda clínica arranca con la prueba gratis y configura el panel con
+    // ClinicSetup. Acá se llega solo para pagar: o porque la prueba venció
+    // (pending_payment, sin salida) o porque eligió activar antes (?activate).
+    const pruebaTerminada = subscriptionStatus?.subscription_status === 'pending_payment'
     return (
       <OnboardingWizard
         clinicaNombre={subscriptionStatus?.nombre}
         onComplete={() => window.location.reload()}
-        initialStep={isActivationFlow ? 4 : 1}
-        onExit={puedeVolver ? salirActivacion : undefined}
+        initialStep={4}
+        pruebaTerminada={pruebaTerminada}
+        onExit={pruebaTerminada ? undefined : salirActivacion}
       />
     );
   }

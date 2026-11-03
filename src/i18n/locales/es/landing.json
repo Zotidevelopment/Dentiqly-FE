@@ -12,7 +12,7 @@
     "headline": "Tu clínica dental, ordenada y en",
     "headlineHighlight": "piloto automático.",
     "subheadline": "Agenda online 24/7, recordatorios por email, odontograma digital y caja en un solo panel. Para clínicas que quieren crecer sin sumar trabajo administrativo.",
-    "ctaPrimary": "Empezar gratis 14 días",
+    "ctaPrimary": "Empezar gratis 7 días",
     "ctaDemo": "Ver demo interactiva",
     "trust1": "Sin tarjeta de crédito",
     "trust2": "Listo en 10 minutos",
@@ -28,7 +28,7 @@
     "professional": "Profesional",
     "enterprise": "Enterprise",
     "usdMonth": "USD por mes, por clínica",
-    "trial": "14 días de prueba gratis. Sin tarjeta de crédito.",
+    "trial": "7 días de prueba gratis. Sin tarjeta de crédito.",
     "cta": "Empezar prueba gratis",
     "allFeatures": "Ver las +33 funcionalidades",
     "enterpriseDesc": "Para grupos con muchas sucursales o necesidades especiales: integraciones a medida, migración dedicada y soporte prioritario.",
@@ -153,7 +153,7 @@
       },
       {
         "question": "¿Hay período de prueba gratuito?",
-        "answer": "Sí. Tenés 14 días con acceso completo a todas las funcionalidades, sin tarjeta de crédito. Si al terminar no querés seguir, no pagás nada."
+        "answer": "Sí. Tenés 7 días con acceso completo a todas las funcionalidades, sin tarjeta de crédito. Si al terminar no querés seguir, no pagás nada."
       }
     ]
   },
@@ -164,7 +164,7 @@
     "subtitle": "Creá tu cuenta gratis en dos minutos. Si preferís que te lo mostremos primero, dejanos tus datos y coordinamos una demo personalizada.",
     "ctaButton": "Crear mi cuenta gratis",
     "bullets": [
-      "14 días gratis con todas las funcionalidades",
+      "7 días gratis con todas las funcionalidades",
       "Migración de tus datos sin costo",
       "Soporte humano del equipo que construyó Dentiqly"
     ],

@@ -28,6 +28,8 @@ interface OnboardingWizardProps {
   initialStep?: number
   /** Si la clínica ya puede usar el panel (trial vigente), permite salir. */
   onExit?: () => void
+  /** La prueba gratis venció: hay que pagar para seguir usando el panel. */
+  pruebaTerminada?: boolean
 }
 
 const FUNCIONES = [
@@ -70,7 +72,7 @@ const Icono: React.FC<{ name: ProductIconAnyName; size?: number }> = ({ name, si
   </span>
 )
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, initialStep = 1, onExit }) => {
+export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, initialStep = 1, onExit, pruebaTerminada = false }) => {
   const { toast } = useToast()
   const [step, setStep] = useState(initialStep)
   const [saving, setSaving] = useState(false)
@@ -405,15 +407,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           <div className="dq-onb-split dq-onb-split-pay dq-onb-enter">
             <section className="dq-onb-copy">
               <Icono name="plan" />
-              <p className="lp-eyebrow">{soloActivacion ? 'Plan Profesional' : 'Último paso'}</p>
-              <h2>Activá {nombre} y seguí atendiendo sin cortes.</h2>
+              <p className="lp-eyebrow">{pruebaTerminada ? 'Tu prueba gratis terminó' : soloActivacion ? 'Plan Profesional' : 'Último paso'}</p>
+              <h2>{pruebaTerminada ? <>Activá {nombre} para seguir atendiendo.</> : <>Activá {nombre} y seguí atendiendo sin cortes.</>}</h2>
               <p>
-                Un solo plan con todo incluido. Tus pacientes, turnos e historias clínicas quedan guardados como están.
+                {pruebaTerminada
+                  ? 'Todo lo que cargaste en la prueba sigue ahí: pacientes, turnos e historias clínicas. Activá el plan y retomás donde lo dejaste.'
+                  : 'Un solo plan con todo incluido. Tus pacientes, turnos e historias clínicas quedan guardados como están.'}
               </p>
-              <ul className="lp-pricing-promises dq-onb-promises">
-                <li><Check size={16} /><span><strong>Tu equipo, incluido.</strong> Usuarios y profesionales ilimitados.</span></li>
-                <li><Check size={16} /><span><strong>Sin ataduras.</strong> Cancelás cuando quieras desde la app.</span></li>
-                <li><Check size={16} /><span><strong>Pago seguro.</strong> Con tarjeta de crédito o débito.</span></li>
+              {/* Las funciones van acá y no en la tarjeta, para que todo entre sin scroll. */}
+              <ul className="lp-check-list dq-onb-features">
+                {FUNCIONES.map((f) => (
+                  <li key={f}><Check size={16} />{f}</li>
+                ))}
               </ul>
             </section>
 
@@ -483,14 +488,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
                 {paying ? <Loader2 size={19} className="animate-spin" /> : <ArrowUpRight size={19} />}
               </button>
               <p className="lp-price-trial">
-                Se renueva solo {annual ? 'cada año' : 'cada mes'} · Cancelás cuando quieras
+                Se renueva solo {annual ? 'cada año' : 'cada mes'} · Cancelás cuando quieras · Pago seguro
               </p>
-
-              <ul className="lp-check-list lp-price-features">
-                {FUNCIONES.map((f) => (
-                  <li key={f}><Check size={16} />{f}</li>
-                ))}
-              </ul>
 
               <div className="dq-onb-pay-footer">
                 {soloActivacion ? (

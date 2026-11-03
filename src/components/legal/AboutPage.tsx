@@ -38,7 +38,7 @@ const principios: { icono: ProductIconName; titulo: string; texto: string }[] = 
     icono: "finance",
     titulo: "Un precio claro",
     texto:
-      "Un solo plan por clínica, con usuarios y profesionales ilimitados. 14 días gratis y cancelás desde la app.",
+      "Un solo plan por clínica, con usuarios y profesionales ilimitados. 7 días gratis y cancelás desde la app.",
   },
 ];
 
@@ -106,7 +106,7 @@ export const AboutPage: React.FC = () => {
             <p className="lp-hero-reassurance">
               <span>
                 <Check size={15} />
-                14 días gratis
+                7 días gratis
               </span>
               <span>
                 <Check size={15} />
@@ -208,7 +208,7 @@ export const AboutPage: React.FC = () => {
               <h2>
                 Probalo en tu clínica
                 <br />
-                durante 14 días.
+                durante 7 días.
               </h2>
               <TrialLink ctaLocation="about" ctaLabel="Crear mi cuenta gratis" className="lp-final-link">
                 <ArrowRight size={19} />
@@ -216,7 +216,7 @@ export const AboutPage: React.FC = () => {
               </TrialLink>
             </div>
             <div className="lp-final-bottom">
-              <span>14 días para conocer una nueva forma de trabajar.</span>
+              <span>7 días para conocer una nueva forma de trabajar.</span>
               <span>Sin tarjeta. Sin instalaciones.</span>
             </div>
           </div>

@@ -12,7 +12,7 @@
     "headline": "Your dental clinic, organized and on",
     "headlineHighlight": "autopilot.",
     "subheadline": "24/7 online booking, email reminders, digital dental charts and cash flow in a single panel. For clinics that want to grow without adding admin work.",
-    "ctaPrimary": "Start free for 14 days",
+    "ctaPrimary": "Start free for 7 days",
     "ctaDemo": "See interactive demo",
     "trust1": "No credit card",
     "trust2": "Ready in 10 minutes",
@@ -28,7 +28,7 @@
     "professional": "Professional",
     "enterprise": "Enterprise",
     "usdMonth": "USD per month, per clinic",
-    "trial": "14-day free trial. No credit card required.",
+    "trial": "7-day free trial. No credit card required.",
     "cta": "Start free trial",
     "allFeatures": "See all 33+ features",
     "enterpriseDesc": "For groups with many locations or special needs: custom integrations, dedicated migration and priority support.",
@@ -153,7 +153,7 @@
       },
       {
         "question": "Is there a free trial?",
-        "answer": "Yes. You get 14 days with full access to every feature, no credit card required. If you don't want to continue, you pay nothing."
+        "answer": "Yes. You get 7 days with full access to every feature, no credit card required. If you don't want to continue, you pay nothing."
       }
     ]
   },
@@ -164,7 +164,7 @@
     "subtitle": "Create your free account in two minutes. If you'd rather see it first, leave your details and we'll set up a personalized demo.",
     "ctaButton": "Create my free account",
     "bullets": [
-      "14 days free with every feature",
+      "7 days free with every feature",
       "Free data migration",
       "Human support from the team that built Dentiqly"
     ],

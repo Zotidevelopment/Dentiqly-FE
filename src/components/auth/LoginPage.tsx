@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
 
   const entrarConGoogle = (r: SesionGoogle) => {
     const slug = r.clinica?.slug || r.tenant?.slug;
-    toast({ title: r.nuevo ? "¡Bienvenido a Dentiqly!" : "¡Bienvenido de nuevo!", description: r.nuevo ? "Tu prueba gratuita de 14 días ya empezó." : "Sesión iniciada con Google." });
+    toast({ title: r.nuevo ? "¡Bienvenido a Dentiqly!" : "¡Bienvenido de nuevo!", description: r.nuevo ? "Tu prueba gratuita de 7 días ya empezó." : "Sesión iniciada con Google." });
     if (!r.nuevo && volverA && slug && volverA.startsWith(`/${slug}/`)) navigate(volverA);
     else if (r.user?.role === 'superadmin') navigate('/admin');
     else navigate(slug ? `/${slug}/admin` : '/admin');

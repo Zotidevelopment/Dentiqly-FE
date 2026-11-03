@@ -109,7 +109,7 @@ export function LandingPricing() {
             <li>
               <CheckCircle2 size={20} />
               <span>
-                <strong>Primero, conocelo.</strong> 14 días de prueba sin
+                <strong>Primero, conocelo.</strong> 7 días de prueba sin
                 tarjeta de crédito.
               </span>
             </li>
@@ -212,7 +212,7 @@ export function LandingPricing() {
             Empezar mi prueba gratis <ArrowUpRight size={19} />
           </TrialLink>
           <p className="lp-price-trial">
-            14 días para probarlo · Sin tarjeta de crédito
+            7 días para probarlo · Sin tarjeta de crédito
           </p>
           <ul className="lp-check-list lp-price-features">
             {[
@@ -241,7 +241,7 @@ export function LandingPricing() {
 const questions = [
   [
     "¿Cómo empiezo la prueba gratuita?",
-    "Creá tu cuenta, configurá tu clínica y sumá tus profesionales y servicios. Tenés 14 días para explorar las funcionalidades con tu equipo. No necesitás ingresar una tarjeta de crédito para empezar.",
+    "Creá tu cuenta, configurá tu clínica y sumá tus profesionales y servicios. Tenés 7 días para explorar las funcionalidades con tu equipo. No necesitás ingresar una tarjeta de crédito para empezar.",
   ],
   [
     "¿Necesito instalar algo?",

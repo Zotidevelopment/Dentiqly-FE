@@ -157,7 +157,7 @@ export const ContinuarConGoogle: React.FC<Props> = ({ texto = "continue_with", o
               <h2 id="google-clinica-titulo" className="mt-4 text-[21px] font-semibold tracking-[-0.02em] text-[#0B2440]">
                 {nombreGoogle ? `¡Hola, ${nombreGoogle.split(" ")[0]}!` : "¡Ya casi!"} ¿Cómo se llama tu clínica?
               </h2>
-              <p className="mt-1.5 text-[14px] text-[#53677E]">Es lo único que falta. Empezás con 14 días gratis, sin tarjeta.</p>
+              <p className="mt-1.5 text-[14px] text-[#53677E]">Es lo único que falta. Empezás con 7 días gratis, sin tarjeta.</p>
 
               <label htmlFor="google-clinica" className="mt-5 block text-[13px] font-semibold text-[#0B2440]">Nombre de la clínica</label>
               <input id="google-clinica" autoFocus required minLength={2} maxLength={100} value={nombreClinica}
