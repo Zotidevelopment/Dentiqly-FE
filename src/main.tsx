@@ -14,6 +14,18 @@ import { initTracking } from './lib/tracking';
 // inicial que emite RouteTracker encuentre los dos destinos ya en pie.
 initTracking();
 
+// Después de un deploy, una pestaña abierta todavía pide los chunks viejos
+// (otro hash) y falla el import dinámico. Recargamos una vez para traer la
+// versión nueva; el sessionStorage evita un bucle si el error sigue.
+window.addEventListener('vite:preloadError', (event) => {
+  const clave = 'dentiqly:recarga-por-deploy';
+  const ultima = Number(sessionStorage.getItem(clave) || 0);
+  if (Date.now() - ultima < 10_000) return;
+  event.preventDefault();
+  sessionStorage.setItem(clave, String(Date.now()));
+  window.location.reload();
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>

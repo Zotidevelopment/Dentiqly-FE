@@ -10,25 +10,17 @@ import {
 import { configuracionApi } from '../../api/configuracion'
 import { useBillingPlans } from '../../hooks/useBillingPlans'
 import { useToast } from '../../hooks/use-toast'
-import { useAuth } from '../../hooks/useAuth'
-import {
-  Building2,
-  MapPin,
-  Phone,
-  CreditCard,
-  ArrowRight,
-  ArrowLeft,
-  Check,
-  Loader2,
-  ShieldCheck,
-  Sparkles,
-  MessageSquare,
-  Banknote,
-  Rocket,
-  Globe,
-  Lock,
-  RefreshCw,
-} from 'lucide-react'
+import { ProductIcon, type ProductIconAnyName } from '../landing/ui/ProductIcon'
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, Loader2 } from 'lucide-react'
+import '../landing/landing.css'
+import '../landing/product-motion.css'
+import './onboarding-wizard.css'
+
+/**
+ * Configuración inicial y activación del plan, con el mismo sistema visual de
+ * la landing (clases lp-* + onboarding-wizard.css): panel celeste con las
+ * líneas del hero, íconos de producto y la tarjeta de precio de la landing.
+ */
 
 interface OnboardingWizardProps {
   clinicaNombre?: string
@@ -39,36 +31,47 @@ interface OnboardingWizardProps {
 }
 
 const FUNCIONES = [
-  'Agenda y turnos ilimitados',
-  'Pacientes e historia clínica',
-  'Odontograma interactivo',
-  'Reservas online 24 h',
-  'Obras sociales y liquidaciones',
-  'Caja y cuenta corriente',
-  'Portal de pacientes',
-  'Soporte por email',
+  'Agenda y reservas online',
+  'Historias clínicas y archivos',
+  'Odontograma y planes de tratamiento',
+  'Recordatorios por email en un clic',
+  'Caja, cuentas corrientes y liquidaciones',
+  'Equipo, roles y hasta 3 sucursales',
 ]
 
-/** Bandera dibujada: los emoji de banderas no se ven en Windows ("AR"). */
-const BanderaArgentina: React.FC = () => (
-  <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="shrink-0 overflow-hidden rounded-[2px] ring-1 ring-black/10">
-    <rect width="18" height="4" fill="#74ACDF" />
-    <rect y="4" width="18" height="4" fill="#FFFFFF" />
-    <rect y="8" width="18" height="4" fill="#74ACDF" />
-    <circle cx="9" cy="6" r="1.4" fill="#F6B40E" />
-  </svg>
+const PASOS: { num: number; label: string; icono: ProductIconAnyName; titulo: string; texto: string }[] = [
+  { num: 2, label: 'Tu clínica', icono: 'clinic', titulo: 'Datos de tu clínica', texto: 'Nombre, dirección y teléfono que ven tus pacientes al reservar.' },
+  { num: 3, label: 'Cobros', icono: 'finance', titulo: 'Datos para cobrar señas', texto: 'Tu CBU o alias, para que te transfieran al reservar. Es opcional.' },
+  { num: 4, label: 'Activar', icono: 'plan', titulo: 'Activá tu plan', texto: 'Elegís mensual o anual y pagás con tarjeta. Cancelás cuando quieras.' },
+]
+
+/** Líneas decorativas del hero de la landing. */
+const ArteHero: React.FC = () => (
+  <div className="lp-hero-art" aria-hidden="true">
+    <svg className="lp-hero-orbit" viewBox="0 0 440 580" fill="none">
+      <rect x="83" y="35" width="310" height="460" rx="155" stroke="currentColor" />
+      <rect x="40" y="-8" width="396" height="546" rx="198" stroke="currentColor" />
+      <path d="M238 112V201C238 236 209 265 174 265H83" stroke="currentColor" strokeDasharray="5 7" />
+      <circle cx="238" cy="112" r="7" fill="#f8fbff" stroke="currentColor" strokeWidth="2" />
+      <circle cx="83" cy="265" r="7" fill="#d0e1fc" stroke="currentColor" strokeWidth="2" />
+    </svg>
+    <svg className="lp-hero-route" viewBox="0 0 380 260" fill="none">
+      <path d="M-30 215H100C144 215 180 179 180 135V125C180 81 216 45 260 45H400" stroke="currentColor" />
+      <path d="M-30 242H100C159 242 207 194 207 135V125C207 96 231 72 260 72H400" stroke="currentColor" strokeDasharray="3 8" />
+      <circle cx="180" cy="135" r="7" fill="#eaf2ff" stroke="currentColor" strokeWidth="2" />
+      <circle cx="300" cy="45" r="5" fill="currentColor" />
+    </svg>
+  </div>
 )
 
-const PASOS_CONFIG = [
-  { num: 1, label: 'Bienvenida' },
-  { num: 2, label: 'Tu clínica' },
-  { num: 3, label: 'Cobros' },
-  { num: 4, label: 'Activar' },
-]
+const Icono: React.FC<{ name: ProductIconAnyName; size?: number }> = ({ name, size = 34 }) => (
+  <span className={`lp-product-icon lp-product-icon-${name}`}>
+    <ProductIcon name={name} size={size} />
+  </span>
+)
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombre, initialStep = 1, onExit }) => {
   const { toast } = useToast()
-  const { user } = useAuth()
   const [step, setStep] = useState(initialStep)
   const [saving, setSaving] = useState(false)
   const [paying, setPaying] = useState(false)
@@ -114,6 +117,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     }
   }
 
+  const irAActivar = () => {
+    // Paso 4 es "Activar": llegar acá significa que la clínica terminó de
+    // configurarse. Lo que sigue es la decisión de pago, no configuración.
+    trackOnboardingCompleted()
+    setStep(4)
+  }
+
   const handleSaveBankData = async () => {
     setSaving(true)
     try {
@@ -122,10 +132,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
           await configuracionApi.crear({ clave: key, valor: value, tipo: 'string', categoria: 'banking' })
         }
       }
-      // Paso 4 es "Activar": llegar acá significa que la clínica terminó de
-      // configurarse. Lo que sigue es la decisión de pago, no configuración.
-      trackOnboardingCompleted()
-      setStep(4)
+      irAActivar()
     } catch {
       toast({ variant: "destructive", title: "Error", description: "Error al guardar los datos bancarios. Intentá nuevamente." })
     } finally {
@@ -133,16 +140,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     }
   }
 
-  const [billingPlan, setBillingPlan] = useState<'monthly' | 'annual' | 'test'>('monthly')
-  const [region, setRegion] = useState<'argentina' | 'internacional'>('argentina')
-  const showTestPlan = user?.role === 'superadmin' || user?.email === 'riostiziano6@gmail.com' || window.location.search.includes('test=true')
+  const [annual, setAnnual] = useState(false)
+  const [currency, setCurrency] = useState<'ars' | 'usd'>('ars')
+  // Pago de prueba de USD 1: no se muestra nunca en la pantalla. Solo existe
+  // entrando con ?test=true en la dirección, para probar el cobro real.
+  const pagoDePrueba = new URLSearchParams(window.location.search).get('test') === 'true'
 
   const plans = useBillingPlans()
-  const planKey = region === 'argentina' ? 'ars' : 'usd'
-  const monthlyPrice = plans?.[planKey].monthly.price
-  const annualPrice = plans?.[planKey].annual.price
-  const annualPerMonth = plans ? (plans[planKey].annual.pricePerMonth ?? Math.round(plans[planKey].annual.price / 12)) : undefined
-  const annualDiscount = plans?.[planKey].annual.discount
+  const plan = plans?.[currency][annual ? 'annual' : 'monthly']
+  const amount = plan ? (annual ? (plan.pricePerMonth ?? Math.round(plan.price / 12)) : plan.price) : undefined
+  const annualDiscount = plans?.[currency].annual.discount
 
   // Descuento del primer mes: solo para clínicas que nunca pagaron (lo decide el backend).
   const [descuentoClinica, setDescuentoClinica] = useState(0)
@@ -151,28 +158,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
       .then((r) => setDescuentoClinica(r.first_month_discount || 0))
       .catch(() => {})
   }, [])
-  const planMensual = plans?.[planKey].monthly
-  const conPrimerMes =
-    billingPlan === 'monthly' && descuentoClinica > 0 &&
-    (planMensual?.firstMonthDiscount ?? 0) > 0 && planMensual?.firstMonthPrice !== undefined
+  const primerMes =
+    !annual && descuentoClinica > 0 && plan?.firstMonthDiscount && plan.firstMonthPrice !== undefined
+      ? { precio: plan.firstMonthPrice, off: plan.firstMonthDiscount }
+      : null
 
-  const formatPrice = (n: number) =>
-    region === 'argentina' ? `$${n.toLocaleString('es-AR')}` : `USD ${n}`
+  const format = (n: number) =>
+    new Intl.NumberFormat('es-AR', { maximumFractionDigits: currency === 'ars' ? 0 : 2 }).format(n)
 
-  // El cobro es siempre en dólares (LemonSqueezy). En Argentina se muestra el
-  // equivalente aproximado en pesos y, en letra chica, cuánto es en USD.
-  const usdACobrar = !plans ? undefined
-    : billingPlan === 'annual' ? plans.usd.annual.price
-      : conPrimerMes && plans.usd.monthly.firstMonthPrice !== undefined ? plans.usd.monthly.firstMonthPrice
-        : plans.usd.monthly.price
+  // El cobro es siempre en dólares (Lemon Squeezy). En pesos se muestra el
+  // equivalente aproximado y, en letra chica, cuánto se cobra en USD.
+  const usdPlan = plans?.usd[annual ? 'annual' : 'monthly']
+  const usdACobrar = !usdPlan ? undefined : primerMes && usdPlan.firstMonthPrice !== undefined ? usdPlan.firstMonthPrice : usdPlan.price
 
-  const precioActual =
-    billingPlan === 'test' ? 'USD 1'
-      : billingPlan === 'monthly'
-        ? (conPrimerMes ? formatPrice(planMensual!.firstMonthPrice!) : monthlyPrice !== undefined ? formatPrice(monthlyPrice) : undefined)
-        : (annualPrice !== undefined ? formatPrice(annualPrice) : undefined)
-
-  const handlePayment = async () => {
+  const handlePayment = async (billingPlan: 'monthly' | 'annual' | 'test') => {
     setPaying(true)
     try {
       trackCheckoutStarted({
@@ -208,339 +207,311 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ clinicaNombr
     window.location.assign(url.pathname + url.search)
   }
 
-  const inputClass =
-    'w-full px-4 py-3 text-[14px] bg-white border border-[#DCE5EE] rounded-xl focus:ring-2 focus:ring-[#2458ED]/15 focus:border-[#2458ED] transition-all text-[#0B2440] placeholder:text-[#93A3B8] outline-none'
-  const labelClass = 'block text-[13px] font-semibold text-[#0B2440] mb-1.5'
-
-  const segmento = (activo: boolean) =>
-    `flex-1 inline-flex items-center justify-center gap-2 rounded-[10px] px-3 py-2.5 text-[14px] font-semibold transition-all ${
-      activo ? 'bg-white text-[#0B2440] shadow-[0_2px_8px_#0B244014]' : 'text-[#65788D] hover:text-[#0B2440]'
-    }`
+  const nombre = clinicaNombre || 'tu clínica'
 
   return (
-    <div className="dentiqly-auth dq-dark-stage min-h-screen flex flex-col">
-      <div className="pointer-events-none absolute inset-0 dentiqly-brand-pattern opacity-60" aria-hidden="true" />
-
-      {/* Barra superior */}
-      <header className="relative z-10 flex items-center justify-between gap-4 px-5 py-5 sm:px-8">
-        <div className="flex min-w-0 items-center gap-3">
-          <BrandLogo tone="inverse" alt="Dentiqly" className="h-7 w-auto shrink-0" />
-          <span className="hidden h-5 w-px bg-white/20 sm:block" aria-hidden="true" />
-          <span className="hidden truncate text-[13px] font-medium text-white/60 sm:block">
-            {soloActivacion ? 'Activar plan' : 'Configuración inicial'}
-          </span>
+    <div className="dentiqly-landing dq-onb">
+      <header className="dq-onb-header">
+        <div className="dq-onb-brand">
+          <BrandLogo alt="Dentiqly" className="dq-onb-logo" />
+          <span className="dq-onb-brand-label">{soloActivacion ? 'Activar plan' : 'Configuración inicial'}</span>
         </div>
 
         {!soloActivacion && (
-          <ol className="hidden items-center gap-1.5 md:flex" aria-label="Pasos">
-            {PASOS_CONFIG.map((s, i) => (
-              <li key={s.num} className="flex items-center gap-1.5">
-                <span
-                  className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-semibold ${
-                    step === s.num ? 'bg-[#2458ED] text-white' : step > s.num ? 'bg-white/10 text-white/80' : 'text-white/40'
-                  }`}
-                >
-                  {step > s.num ? <Check className="h-3.5 w-3.5" /> : <span>{s.num}</span>}
-                  {s.label}
-                </span>
-                {i < PASOS_CONFIG.length - 1 && <span className={`h-px w-4 ${step > s.num ? 'bg-[#2458ED]' : 'bg-white/15'}`} />}
+          <ol className="dq-onb-steps" aria-label="Pasos">
+            {[{ num: 1, label: 'Bienvenida' }, ...PASOS].map((s) => (
+              <li
+                key={s.num}
+                className={step === s.num ? 'is-current' : step > s.num ? 'is-done' : undefined}
+                aria-current={step === s.num ? 'step' : undefined}
+              >
+                <span>{step > s.num ? <Check size={13} strokeWidth={2.6} /> : s.num}</span>
+                {s.label}
               </li>
             ))}
           </ol>
         )}
+        {soloActivacion && <span aria-hidden="true" />}
 
         {onExit ? (
-          <button
-            type="button"
-            onClick={onExit}
-            className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl bg-white/10 px-4 py-2.5 text-[13.5px] font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver al panel
+          <button type="button" onClick={onExit} className="lp-button lp-button-outline dq-onb-exit">
+            <ArrowLeft size={16} /> Volver al panel
           </button>
         ) : (
-          <span className="hidden w-[140px] md:block" aria-hidden="true" />
+          <span className="dq-onb-exit-spacer" aria-hidden="true" />
         )}
       </header>
 
-      <main className="relative z-10 flex flex-1 items-start justify-center px-4 pb-12 pt-2 sm:items-center sm:px-6">
-        {/* ── Paso 4: activar el plan ── */}
-        {step === 4 ? (
-          <div className="dq-fade-in grid w-full max-w-[1080px] items-center gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-            <section className="text-white">
-              <p className="text-[13px] font-semibold text-[#8FB2FF]">Plan Pro · todo incluido</p>
-              <h1 className="mt-3 text-[32px] font-semibold leading-[1.08] tracking-[-0.04em] sm:text-[44px]">
-                Activá {clinicaNombre || 'tu clínica'} y seguí atendiendo sin cortes.
+      <main className="dq-onb-stage">
+        <ArteHero />
+
+        {!soloActivacion && (
+          <p className="dq-onb-mobile-step">Paso {step} de 4</p>
+        )}
+
+        {/* ── Paso 1: bienvenida ── */}
+        {step === 1 && (
+          <div className="dq-onb-welcome dq-onb-enter">
+            <div className="lp-hero-intro">
+              <p className="lp-hero-category">Te lleva unos 3 minutos</p>
+              <h1>
+                Bienvenido a Dentiqly.{' '}
+                <br />
+                <span>Dejemos {nombre} lista.</span>
               </h1>
-              <p className="mt-4 max-w-md text-[15.5px] leading-relaxed text-white/70">
-                Un solo plan con todas las funciones. Tus pacientes, turnos e historias clínicas quedan guardados como están.
+              <p className="lp-hero-description">
+                Tres pasos cortos y empezás a dar turnos. Todo lo que cargues ahora lo podés cambiar después desde “Datos de la clínica”.
               </p>
-              <ul className="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-                {FUNCIONES.map((f) => (
-                  <li key={f} className="flex items-center gap-2.5 text-[14px] text-white/85">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2458ED]/30 text-[#8FB2FF]">
-                      <Check className="h-3 w-3" strokeWidth={3} />
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-8 hidden flex-wrap gap-x-6 gap-y-2 text-[13px] text-white/55 lg:flex">
-                <span className="inline-flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Pago seguro</span>
-                <span className="inline-flex items-center gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> Cancelás cuando quieras</span>
-                <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Tus datos, siempre tuyos</span>
-              </div>
+            </div>
+
+            <ol className="dq-onb-roadmap">
+              {PASOS.map((p, i) => (
+                <li key={p.num}>
+                  <div className="dq-onb-roadmap-top">
+                    <Icono name={p.icono} />
+                    <span>0{i + 1}</span>
+                  </div>
+                  <h3>{p.titulo}</h3>
+                  <p>{p.texto}</p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="lp-hero-actions">
+              <button type="button" onClick={() => setStep(2)} className="lp-button">
+                Comenzar <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Paso 2: datos de la clínica ── */}
+        {step === 2 && (
+          <div className="dq-onb-split dq-onb-enter">
+            <section className="dq-onb-copy">
+              <Icono name="clinic" />
+              <p className="lp-eyebrow">Paso 1 de 3</p>
+              <h2>Tu clínica, como la ven tus pacientes.</h2>
+              <p>
+                Estos datos aparecen en tu página de reservas y en los emails que reciben tus pacientes.
+              </p>
             </section>
 
-            <section className="rounded-[26px] bg-white p-6 shadow-[0_40px_80px_-40px_#000] sm:p-8" aria-label="Elegí tu plan">
-              <p className="text-[13px] font-semibold text-[#0B2440]">¿Desde dónde sos?</p>
-              <div className="mt-2 flex gap-1 rounded-xl bg-[#EEF3FA] p-1">
-                <button type="button" onClick={() => setRegion('argentina')} className={segmento(region === 'argentina')} aria-pressed={region === 'argentina'}>
-                  <BanderaArgentina /> Argentina
+            <form
+              className="dq-onb-card"
+              onSubmit={(e) => { e.preventDefault(); handleSaveClinicData() }}
+            >
+              <div className="dq-onb-card-header">
+                <span>DATOS DE LA CLÍNICA</span>
+                <span className="lp-price-tag">Se puede cambiar después</span>
+              </div>
+              <div className="dq-onb-fields">
+                <label>
+                  Nombre de la clínica
+                  <input type="text" value={clinicData.clinic_name} onChange={e => setClinicData({ ...clinicData, clinic_name: e.target.value })} placeholder="Ej: Consultorio Dental Belgrano" />
+                </label>
+                <label>
+                  Teléfono o WhatsApp
+                  <input type="tel" value={clinicData.clinic_phone} onChange={e => setClinicData({ ...clinicData, clinic_phone: e.target.value })} placeholder="11 2345 6789" />
+                </label>
+                <label className="dq-onb-wide">
+                  Dirección
+                  <input type="text" value={clinicData.clinic_address} onChange={e => setClinicData({ ...clinicData, clinic_address: e.target.value })} placeholder="Av. Cabildo 1234, CABA" />
+                </label>
+                <label className="dq-onb-wide">
+                  <span>Mapa de Google <small>opcional</small></span>
+                  <textarea rows={3} value={clinicData.clinic_google_maps} onChange={e => setClinicData({ ...clinicData, clinic_google_maps: e.target.value })} placeholder="Google Maps → Compartir → Insertar un mapa, y pegá el código acá" />
+                </label>
+              </div>
+              <div className="dq-onb-actions">
+                <button type="button" onClick={() => setStep(1)} className="dq-onb-back">
+                  <ArrowLeft size={16} /> Atrás
                 </button>
-                <button type="button" onClick={() => setRegion('internacional')} className={segmento(region === 'internacional')} aria-pressed={region === 'internacional'}>
-                  <Globe className="h-4 w-4" /> Otro país
+                <button type="submit" disabled={saving} className="lp-button">
+                  {saving ? <Loader2 size={17} className="animate-spin" /> : null}
+                  Siguiente <ArrowRight size={17} />
                 </button>
               </div>
+            </form>
+          </div>
+        )}
 
-              <p className="mt-5 text-[13px] font-semibold text-[#0B2440]">¿Cada cuánto?</p>
-              <div className="mt-2 flex gap-1 rounded-xl bg-[#EEF3FA] p-1">
-                <button type="button" onClick={() => setBillingPlan('monthly')} className={segmento(billingPlan === 'monthly')} aria-pressed={billingPlan === 'monthly'}>
-                  Mensual
+        {/* ── Paso 3: datos para cobrar señas ── */}
+        {step === 3 && (
+          <div className="dq-onb-split dq-onb-enter">
+            <section className="dq-onb-copy">
+              <Icono name="finance" />
+              <p className="lp-eyebrow">Paso 2 de 3</p>
+              <h2>Cobrá la seña cuando reservan.</h2>
+              <p>
+                Cuando un paciente reserva online, le mostramos estos datos para que te transfiera la seña y te mande el comprobante.
+              </p>
+              <ul className="lp-check-list">
+                <li><Check size={16} /> Es opcional: lo podés dejar para después</li>
+                <li><Check size={16} /> La plata va directo a tu cuenta</li>
+              </ul>
+            </section>
+
+            <form
+              className="dq-onb-card"
+              onSubmit={(e) => { e.preventDefault(); handleSaveBankData() }}
+            >
+              <div className="dq-onb-card-header">
+                <span>DATOS PARA COBRAR</span>
+                <span className="lp-price-tag">Opcional</span>
+              </div>
+              <div className="dq-onb-fields">
+                <label>
+                  Banco o billetera
+                  <input type="text" value={bankData.bank_name} onChange={e => setBankData({ ...bankData, bank_name: e.target.value })} placeholder="Ej: Banco Galicia" />
+                </label>
+                <label>
+                  Titular de la cuenta
+                  <input type="text" value={bankData.bank_account_holder} onChange={e => setBankData({ ...bankData, bank_account_holder: e.target.value })} placeholder="Nombre y apellido" />
+                </label>
+                <label>
+                  CBU / CVU
+                  <input type="text" inputMode="numeric" value={bankData.bank_cbu} onChange={e => setBankData({ ...bankData, bank_cbu: e.target.value })} placeholder="22 números" />
+                </label>
+                <label>
+                  Alias
+                  <input type="text" value={bankData.bank_alias} onChange={e => setBankData({ ...bankData, bank_alias: e.target.value })} placeholder="mi.consultorio" />
+                </label>
+                <label className="dq-onb-wide">
+                  WhatsApp para recibir comprobantes
+                  <input type="tel" value={bankData.bank_whatsapp} onChange={e => setBankData({ ...bankData, bank_whatsapp: e.target.value })} placeholder="11 2345 6789" />
+                </label>
+              </div>
+              <div className="dq-onb-actions">
+                <button type="button" onClick={() => setStep(2)} className="dq-onb-back">
+                  <ArrowLeft size={16} /> Atrás
                 </button>
-                <button type="button" onClick={() => setBillingPlan('annual')} className={segmento(billingPlan === 'annual')} aria-pressed={billingPlan === 'annual'}>
-                  Anual
-                  {annualDiscount !== undefined && (
-                    <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11.5px] font-bold text-emerald-700">-{annualDiscount}%</span>
-                  )}
-                </button>
-                {showTestPlan && (
-                  <button type="button" onClick={() => setBillingPlan('test')} className={segmento(billingPlan === 'test')} aria-pressed={billingPlan === 'test'}>
-                    Prueba
+                <div className="dq-onb-actions-end">
+                  <button type="button" onClick={irAActivar} className="dq-onb-back">
+                    Omitir
                   </button>
-                )}
+                  <button type="submit" disabled={saving} className="lp-button">
+                    {saving ? <Loader2 size={17} className="animate-spin" /> : null}
+                    Siguiente <ArrowRight size={17} />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* ── Paso 4: activar el plan ── */}
+        {step === 4 && (
+          <div className="dq-onb-split dq-onb-split-pay dq-onb-enter">
+            <section className="dq-onb-copy">
+              <Icono name="plan" />
+              <p className="lp-eyebrow">{soloActivacion ? 'Plan Profesional' : 'Último paso'}</p>
+              <h2>Activá {nombre} y seguí atendiendo sin cortes.</h2>
+              <p>
+                Un solo plan con todo incluido. Tus pacientes, turnos e historias clínicas quedan guardados como están.
+              </p>
+              <ul className="lp-pricing-promises dq-onb-promises">
+                <li><Check size={16} /><span><strong>Tu equipo, incluido.</strong> Usuarios y profesionales ilimitados.</span></li>
+                <li><Check size={16} /><span><strong>Sin ataduras.</strong> Cancelás cuando quieras desde la app.</span></li>
+                <li><Check size={16} /><span><strong>Pago seguro.</strong> Con tarjeta de crédito o débito.</span></li>
+              </ul>
+            </section>
+
+            <div className="lp-price-card dq-onb-price">
+              <div className="lp-price-card-header">
+                <span>PROFESIONAL</span>
+                <span className="lp-price-tag">Todo conectado.</span>
+              </div>
+              <div className="lp-price-controls">
+                <div role="group" aria-label="Período de facturación" className="lp-price-period">
+                  <button type="button" aria-pressed={!annual} onClick={() => setAnnual(false)}>
+                    Mensual
+                  </button>
+                  <button type="button" aria-pressed={annual} onClick={() => setAnnual(true)}>
+                    Anual {annualDiscount ? <span>−{annualDiscount}%</span> : ''}
+                  </button>
+                </div>
+                <label className="lp-currency">
+                  <span className="sr-only">Moneda</span>
+                  <select value={currency} onChange={(e) => setCurrency(e.target.value as 'ars' | 'usd')}>
+                    <option value="ars">ARS</option>
+                    <option value="usd">USD</option>
+                  </select>
+                  <ChevronDown size={13} />
+                </label>
               </div>
 
-              <div className="mt-6 rounded-[18px] bg-[#F5F8FF] px-5 py-5">
-                <div className="flex items-end justify-between gap-3">
-                  <div className="min-w-0">
-                    {precioActual === undefined ? (
-                      <div className="h-10 w-40 animate-pulse rounded-lg bg-[#DCE5EE]" />
-                    ) : (
-                      <p className="text-[38px] font-semibold leading-none tracking-[-0.04em] text-[#0B2440] tabular-nums">{precioActual}</p>
-                    )}
-                    <p className="mt-2 text-[13.5px] text-[#65788D]">
-                      {billingPlan === 'test'
-                        ? 'cobro único de prueba'
-                        : conPrimerMes && monthlyPrice !== undefined
-                          ? <>el primer mes · después <b className="text-[#0B2440]">{formatPrice(monthlyPrice)}</b> por mes</>
-                          : billingPlan === 'monthly'
-                            ? 'por mes'
-                            : 'por año'}
-                    </p>
+              <div className="lp-price-amount" aria-live="polite">
+                {amount === undefined ? (
+                  <div className="lp-price-loading" role="status">
+                    <Loader2 size={21} className="animate-spin" /> Cargando precio…
                   </div>
-                  {conPrimerMes && (
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1.5 text-[12.5px] font-semibold text-emerald-700">
-                      {planMensual!.firstMonthDiscount}% off
-                    </span>
-                  )}
-                  {billingPlan === 'annual' && annualPerMonth !== undefined && (
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1.5 text-[12.5px] font-semibold text-emerald-700">
-                      {formatPrice(annualPerMonth)}/mes
-                    </span>
-                  )}
-                </div>
+                ) : (
+                  <>
+                    <div>
+                      <span className="lp-price-symbol">$</span>
+                      <strong>{format(amount)}</strong>
+                      <span className="lp-price-currency">{currency.toUpperCase()}</span>
+                    </div>
+                    <p>{annual ? 'por mes, pagando el año' : 'por mes, por clínica'}</p>
+                  </>
+                )}
+                {primerMes && (
+                  <p className="lp-price-intro">
+                    <span>{primerMes.off}% off</span> Tu primer mes: $ {format(primerMes.precio)} {currency.toUpperCase()}
+                  </p>
+                )}
+                {annual && plan && (
+                  <small>Un pago anual de $ {format(plan.price)} {currency.toUpperCase()}.</small>
+                )}
+                {currency === 'ars' && usdPlan && (
+                  <small>
+                    Precio aproximado. Se cobra en dólares (USD{' '}
+                    {primerMes ? `${usdPlan.firstMonthPrice} el primer mes, después ${usdPlan.price}` : usdPlan.price}
+                    {annual ? ' por año' : ''}) con tu tarjeta.
+                  </small>
+                )}
               </div>
 
               <button
                 type="button"
-                onClick={handlePayment}
+                onClick={() => handlePayment(annual ? 'annual' : 'monthly')}
                 disabled={paying}
-                className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#2458ED] px-6 py-4 text-[15.5px] font-semibold text-white shadow-[0_14px_30px_-12px_#2458ED] transition-colors hover:bg-[#1744CD] disabled:cursor-not-allowed disabled:opacity-60"
+                className="lp-button"
               >
-                {paying ? (
-                  <><Loader2 className="h-5 w-5 animate-spin" /> Abriendo el pago…</>
-                ) : (
-                  <><CreditCard className="h-5 w-5" /> Pagar con tarjeta</>
-                )}
+                {paying ? 'Abriendo el pago…' : 'Pagar con tarjeta'}
+                {paying ? <Loader2 size={19} className="animate-spin" /> : <ArrowUpRight size={19} />}
               </button>
-              <p className="mt-3 text-center text-[12.5px] leading-snug text-[#65788D]">
-                {billingPlan === 'test'
-                  ? 'Te llevamos al pago. Cuando termines, volvés acá y tu plan se activa solo.'
-                  : <>Se renueva solo {billingPlan === 'annual' ? 'cada año' : 'cada mes'} con tu tarjeta. Cancelás cuando quieras desde “Datos de la clínica”.</>}
+              <p className="lp-price-trial">
+                Se renueva solo {annual ? 'cada año' : 'cada mes'} · Cancelás cuando quieras
               </p>
-              {region === 'argentina' && billingPlan !== 'test' && usdACobrar !== undefined && (
-                <p className="mt-1.5 text-center text-[11.5px] leading-snug text-[#93A3B8]">
-                  Precio aproximado en pesos. Se cobra en dólares (USD {usdACobrar}) con tu tarjeta de crédito o débito.
-                </p>
-              )}
 
-              <div className="mt-6 flex flex-col-reverse items-stretch gap-2 border-t border-[#EEF2F7] pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <ul className="lp-check-list lp-price-features">
+                {FUNCIONES.map((f) => (
+                  <li key={f}><Check size={16} />{f}</li>
+                ))}
+              </ul>
+
+              <div className="dq-onb-pay-footer">
                 {soloActivacion ? (
-                  onExit ? (
-                    <button type="button" onClick={onExit} className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-[#53677E] hover:bg-[#F5F8FF] hover:text-[#0B2440]">
-                      <ArrowLeft className="h-4 w-4" /> Volver al panel
-                    </button>
-                  ) : <span />
+                  // "Volver al panel" ya está arriba, en la barra.
+                  <span />
                 ) : (
-                  <button type="button" onClick={() => setStep(3)} className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-[#53677E] hover:bg-[#F5F8FF] hover:text-[#0B2440]">
-                    <ArrowLeft className="h-4 w-4" /> Atrás
+                  <button type="button" onClick={() => setStep(3)} className="dq-onb-back">
+                    <ArrowLeft size={15} /> Atrás
                   </button>
                 )}
-                <button type="button" onClick={yaPague} className="inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold text-[#2458ED] hover:bg-[#EAF2FF]">
-                  Ya pagué, actualizar estado <Check className="h-4 w-4" />
+                <button type="button" onClick={yaPague} className="dq-onb-link">
+                  Ya pagué, actualizar estado <ArrowRight size={15} />
                 </button>
               </div>
-            </section>
-          </div>
-        ) : (
-          /* ── Pasos 1 a 3: configuración básica (clínicas que pagan antes de usar) ── */
-          <div className="dq-fade-in w-full max-w-[680px] overflow-hidden rounded-[26px] bg-white shadow-[0_40px_80px_-40px_#000]">
-            {step === 1 && (
-              <div className="flex flex-col items-center p-8 text-center sm:p-12">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0B2440] shadow-[0_14px_30px_-12px_#0B2440]">
-                  <Sparkles className="h-8 w-8 text-[#8FB2FF]" />
-                </div>
-                <h1 className="mb-2 text-[30px] font-semibold tracking-[-0.03em] text-[#0B2440]">¡Bienvenido a Dentiqly!</h1>
-                <p className="mb-8 max-w-md text-[15px] leading-relaxed text-[#53677E]">
-                  Vamos a dejar <span className="font-semibold text-[#0B2440]">{clinicaNombre || 'tu clínica'}</span> lista en unos pocos pasos.
-                </p>
 
-                <div className="mb-8 w-full max-w-sm space-y-2.5 text-left">
-                  {[
-                    { icon: Building2, text: 'Completá los datos de tu clínica' },
-                    { icon: CreditCard, text: 'Cargá tus datos para cobrar señas' },
-                    { icon: Rocket, text: 'Activá tu plan y empezá' },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-xl bg-[#F5F8FF] p-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0B2440] text-[#8FB2FF]">
-                        <item.icon className="h-4 w-4" />
-                      </div>
-                      <span className="text-[14px] font-medium text-[#0B2440]">{item.text}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="flex items-center gap-2 rounded-xl bg-[#2458ED] px-8 py-3.5 text-[15px] font-semibold text-white shadow-[0_14px_30px_-12px_#2458ED] transition-colors hover:bg-[#1744CD]"
-                >
-                  Comenzar <ArrowRight className="h-4 w-4" />
+              {pagoDePrueba && (
+                <button type="button" onClick={() => handlePayment('test')} disabled={paying} className="dq-onb-test">
+                  Pago de prueba (USD 1)
                 </button>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="p-7 sm:p-10">
-                <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0B2440] text-[#8FB2FF]">
-                    <Building2 className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-[21px] font-semibold tracking-[-0.02em] text-[#0B2440]">Datos de tu clínica</h2>
-                    <p className="text-[13px] text-[#65788D]">Es lo que ven tus pacientes al reservar</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="wiz-nombre" className={labelClass}>Nombre de la clínica</label>
-                      <input id="wiz-nombre" type="text" value={clinicData.clinic_name} onChange={e => setClinicData({ ...clinicData, clinic_name: e.target.value })} className={inputClass} placeholder="Ej: Consultorio Dental Belgrano" />
-                    </div>
-                    <div>
-                      <label htmlFor="wiz-tel" className={labelClass}>Teléfono o WhatsApp</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#93A3B8]" />
-                        <input id="wiz-tel" type="tel" value={clinicData.clinic_phone} onChange={e => setClinicData({ ...clinicData, clinic_phone: e.target.value })} className={`${inputClass} pl-9`} placeholder="11 2345 6789" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="wiz-dir" className={labelClass}>Dirección</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#93A3B8]" />
-                      <input id="wiz-dir" type="text" value={clinicData.clinic_address} onChange={e => setClinicData({ ...clinicData, clinic_address: e.target.value })} className={`${inputClass} pl-9`} placeholder="Av. Cabildo 1234, CABA" />
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="wiz-maps" className={labelClass}>Mapa de Google <span className="font-normal text-[#93A3B8]">(opcional)</span></label>
-                    <textarea id="wiz-maps" value={clinicData.clinic_google_maps} onChange={e => setClinicData({ ...clinicData, clinic_google_maps: e.target.value })} className={`${inputClass} h-20 resize-none font-mono text-xs`} placeholder="Pegá el link de Google Maps → Compartir → Insertar un mapa" />
-                  </div>
-                </div>
-
-                <div className="mt-8 flex items-center justify-between border-t border-[#EEF2F7] pt-6">
-                  <button type="button" onClick={() => setStep(1)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-[#53677E] hover:bg-[#F5F8FF] hover:text-[#0B2440]">
-                    <ArrowLeft className="h-4 w-4" /> Atrás
-                  </button>
-                  <button type="button" onClick={handleSaveClinicData} disabled={saving} className="flex items-center gap-2 rounded-xl bg-[#2458ED] px-6 py-3 text-[14.5px] font-semibold text-white hover:bg-[#1744CD] disabled:opacity-50">
-                    {saving && <Loader2 className="h-4 w-4 animate-spin" />} Siguiente <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="p-7 sm:p-10">
-                <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0B2440] text-[#8FB2FF]">
-                    <Banknote className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-[21px] font-semibold tracking-[-0.02em] text-[#0B2440]">Datos para cobrar</h2>
-                    <p className="text-[13px] text-[#65788D]">Para recibir señas por transferencia · opcional</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="wiz-banco" className={labelClass}>Banco o billetera</label>
-                      <input id="wiz-banco" type="text" value={bankData.bank_name} onChange={e => setBankData({ ...bankData, bank_name: e.target.value })} className={inputClass} placeholder="Ej: Banco Galicia" />
-                    </div>
-                    <div>
-                      <label htmlFor="wiz-titular" className={labelClass}>Titular de la cuenta</label>
-                      <input id="wiz-titular" type="text" value={bankData.bank_account_holder} onChange={e => setBankData({ ...bankData, bank_account_holder: e.target.value })} className={inputClass} placeholder="Nombre y apellido" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label htmlFor="wiz-cbu" className={labelClass}>CBU / CVU</label>
-                      <input id="wiz-cbu" type="text" inputMode="numeric" value={bankData.bank_cbu} onChange={e => setBankData({ ...bankData, bank_cbu: e.target.value })} className={inputClass} placeholder="22 números" />
-                    </div>
-                    <div>
-                      <label htmlFor="wiz-alias" className={labelClass}>Alias</label>
-                      <input id="wiz-alias" type="text" value={bankData.bank_alias} onChange={e => setBankData({ ...bankData, bank_alias: e.target.value })} className={inputClass} placeholder="mi.consultorio.mp" />
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="wiz-wa" className={labelClass}>WhatsApp para recibir comprobantes</label>
-                    <div className="relative">
-                      <MessageSquare className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#93A3B8]" />
-                      <input id="wiz-wa" type="text" value={bankData.bank_whatsapp} onChange={e => setBankData({ ...bankData, bank_whatsapp: e.target.value })} className={`${inputClass} pl-9`} placeholder="11 2345 6789" />
-                    </div>
-                  </div>
-                  <p className="rounded-xl bg-[#EAF2FF] px-4 py-3 text-[13px] leading-relaxed text-[#53677E]">
-                    Estos datos se muestran al paciente cuando reserva online, para que te transfiera la seña. Los cambiás cuando quieras en “Datos de la clínica”.
-                  </p>
-                </div>
-
-                <div className="mt-8 flex items-center justify-between border-t border-[#EEF2F7] pt-6">
-                  <button type="button" onClick={() => setStep(2)} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-[#53677E] hover:bg-[#F5F8FF] hover:text-[#0B2440]">
-                    <ArrowLeft className="h-4 w-4" /> Atrás
-                  </button>
-                  <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => { trackOnboardingCompleted(); setStep(4) }} className="rounded-xl px-3 py-2.5 text-[14px] font-semibold text-[#53677E] hover:bg-[#F5F8FF] hover:text-[#0B2440]">
-                      Omitir
-                    </button>
-                    <button type="button" onClick={handleSaveBankData} disabled={saving} className="flex items-center gap-2 rounded-xl bg-[#2458ED] px-6 py-3 text-[14.5px] font-semibold text-white hover:bg-[#1744CD] disabled:opacity-50">
-                      {saving && <Loader2 className="h-4 w-4 animate-spin" />} Siguiente <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </main>

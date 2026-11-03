@@ -1,7 +1,9 @@
 export type ProductIconName = 'booking' | 'agenda' | 'patient' | 'finance'
+/** Íconos extra de la misma familia, fuera del selector de producto. */
+export type ProductIconAnyName = ProductIconName | 'clinic' | 'plan'
 
 /** A small family of dental-workflow symbols, drawn on the same 40px grid. */
-export function ProductIcon({ name, size = 32, className = '' }: { name: ProductIconName; size?: number; className?: string }) {
+export function ProductIcon({ name, size = 32, className = '' }: { name: ProductIconAnyName; size?: number; className?: string }) {
   return <svg width={size} height={size} viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     {name === 'booking' && <>
       <rect x="6" y="8" width="26" height="25" rx="6" fill="var(--icon-fill, #D7E8FF)" />
@@ -30,6 +32,19 @@ export function ProductIcon({ name, size = 32, className = '' }: { name: Product
       <path d="M35 23H27C25 23 24 25 24 27C24 29 25 31 27 31H35" fill="var(--icon-paper, #FFFFFF)" />
       <circle cx="28" cy="27" r="1" fill="currentColor" stroke="none" />
       <path d="M11 25H17M11 29H14" />
+    </>}
+    {name === 'clinic' && <>
+      <path d="M8 35V16L20 8L32 16V35" fill="var(--icon-fill, #D7E8FF)" />
+      <path d="M4 35H36" />
+      <path d="M17 35V27C17 26 18 25 19 25H21C22 25 23 26 23 27V35" fill="var(--icon-paper, #FFFFFF)" />
+      <path d="M13 20H15M25 20H27" />
+      <circle cx="29" cy="10" r="7" fill="var(--icon-paper, #FFFFFF)" />
+      <path d="M29 7V13M26 10H32" />
+    </>}
+    {name === 'plan' && <>
+      <path d="M20 5L33 10V19C33 27 27 33 20 36C13 33 7 27 7 19V10L20 5Z" fill="var(--icon-fill, #D7E8FF)" />
+      <circle cx="20" cy="20" r="8" fill="var(--icon-paper, #FFFFFF)" />
+      <path d="M16.5 20L19 22.5L24 17.5" />
     </>}
   </svg>
 }
