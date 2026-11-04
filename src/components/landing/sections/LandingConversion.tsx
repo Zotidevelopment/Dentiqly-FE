@@ -177,17 +177,18 @@ export function LandingPricing() {
               <>
                 <div>
                   <span className="lp-price-symbol">$</span>
-                  <strong>{format(amount!)}</strong>
+                  {/* Mensual con promo: el número grande es el primer mes; el precio real va abajo. */}
+                  <strong>{format(primerMes ? primerMes.precio : amount!)}</strong>
                   <span className="lp-price-currency">
                     {currency.toUpperCase()}
                   </span>
                 </div>
-                <p>por mes, por clínica</p>
+                <p>{primerMes ? "tu primer mes, por clínica" : "por mes, por clínica"}</p>
               </>
             )}
             {status === "ready" && primerMes && (
               <p className="lp-price-intro">
-                <span>{primerMes.off}% off</span> Tu primer mes: $ {format(primerMes.precio)} {currency.toUpperCase()}
+                <span>{primerMes.off}% off</span> Desde el segundo mes, $ {format(amount!)} {currency.toUpperCase()}/mes
               </p>
             )}
             {status === "ready" && annual && plan && (

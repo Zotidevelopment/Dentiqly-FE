@@ -1245,10 +1245,12 @@
   gap: 7px;
   margin-top: 10px;
   font-size: 12px;
-  font-weight: 600;
-  color: var(--lp-ink);
+  font-weight: 500;
+  color: var(--lp-muted);
 }
 .lp-price-intro span {
+  flex-shrink: 0;
+  white-space: nowrap;
   border-radius: 999px;
   background: #e7f8ef;
   color: #08794a;
