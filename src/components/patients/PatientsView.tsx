@@ -18,7 +18,11 @@ import {
   Mail,
   ArrowUpDown,
   Download,
+  Upload,
+  RotateCcw,
 } from "lucide-react"
+import { ImportarPacientesModal } from "./importar/ImportarPacientesModal"
+import { leerUltimaImportacion, borrarUltimaImportacion, type UltimaImportacion } from "../../lib/importador/enviar"
 import { pacientesApi, obrasSocialesApi, exportApi } from "../../api"
 import { apiClient } from "../../lib/api-client"
 import { ConfirmationModal } from "../ui/ConfirmationModal"
@@ -78,6 +82,28 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
   // true cuando la obra social es texto libre ("Otra") en vez de una de la lista.
   const [obraSocialOtra, setObraSocialOtra] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  // Última importación (se puede deshacer durante 7 días desde acá).
+  const [ultimaImportacion, setUltimaImportacion] = useState<UltimaImportacion | null>(() => leerUltimaImportacion())
+  const [deshaciendo, setDeshaciendo] = useState(false)
+  const puedeImportar = puede(user?.role, 'importarPacientes')
+
+  const deshacerUltimaImportacion = async () => {
+    if (!ultimaImportacion) return
+    if (!window.confirm(`¿Deshacer la importación de "${ultimaImportacion.archivo}"? Se borran los pacientes que creó (los que ya tienen turnos u otros datos cargados se conservan).`)) return
+    setDeshaciendo(true)
+    try {
+      const r = await pacientesApi.deshacerImportacion(ultimaImportacion.id)
+      toast({ title: "Importación deshecha", description: `Se borraron ${r.eliminados} pacientes${r.conservados ? `. ${r.conservados} se conservaron porque ya tienen datos cargados` : ""}.` })
+      borrarUltimaImportacion()
+      setUltimaImportacion(null)
+      fetchPatients()
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "No se pudo deshacer", description: e?.message || "Probá de nuevo" })
+    } finally {
+      setDeshaciendo(false)
+    }
+  }
   const { toast } = useToast()
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
@@ -268,6 +294,24 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
               </p>
             </div>
             <div className="flex flex-wrap gap-2.5">
+              {puedeImportar && (
+              <button
+                onClick={() => setShowImport(true)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: tokens.white, color: tokens.grayText,
+                  border: `0.5px solid ${tokens.grayBorder}`, borderRadius: 10, padding: "9px 18px",
+                  fontSize: 13, fontWeight: 500, cursor: "pointer",
+                  fontFamily: "\"Instrument Sans\", system-ui, sans-serif",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tokens.grayBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = tokens.white)}
+              >
+                <Upload size={15} />
+                Importar
+              </button>
+              )}
               {puede(user?.role, 'exportarPacientes') && (
               <button
                 onClick={() => exportApi.pacientes().catch(() => toast({ variant: "destructive", title: "Error", description: "Error al exportar" }))}
@@ -304,6 +348,21 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
               </button>
             </div>
           </div>
+
+          {/* ── Última importación: se puede deshacer ── */}
+          {puedeImportar && ultimaImportacion && (
+            <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-[#DCE5EE] bg-[#F5F8FF] px-4 py-2.5 text-[13px] text-[#0B2440]">
+              <span className="flex-1">
+                Importaste <b>{ultimaImportacion.creados.toLocaleString("es-AR")} pacientes</b> de “{ultimaImportacion.archivo}” el {new Date(ultimaImportacion.fecha).toLocaleDateString("es-AR", { day: "numeric", month: "long" })}.
+              </span>
+              <button type="button" disabled={deshaciendo} onClick={deshacerUltimaImportacion} className="inline-flex items-center gap-1.5 font-semibold text-red-700 hover:underline disabled:opacity-50">
+                <RotateCcw size={14} /> Deshacer
+              </button>
+              <button type="button" onClick={() => { borrarUltimaImportacion(); setUltimaImportacion(null) }} className="text-[#65788D] hover:text-[#0B2440]" aria-label="Ocultar">
+                <X size={15} />
+              </button>
+            </div>
+          )}
 
           {/* ── Controls ── */}
           <div className="flex flex-col sm:flex-row gap-3 mb-5 sm:items-center">
@@ -399,8 +458,18 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                         <Users size={36} color={tokens.grayBorder} style={{ margin: "0 auto 12px", display: "block" }} />
                         <p style={{ fontSize: 14, fontWeight: 500, color: tokens.grayMuted }}>No hay pacientes registrados</p>
                         <p style={{ fontSize: 13, color: tokens.grayMuted, marginTop: 4, opacity: 0.7 }}>
-                          Comenzá registrando tu primer paciente
+                          {searchTerm ? "Probá con otra búsqueda" : "Comenzá registrando tu primer paciente"}
                         </p>
+                        {!searchTerm && puedeImportar && (
+                          <button
+                            type="button"
+                            onClick={() => setShowImport(true)}
+                            className="mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white"
+                            style={{ background: tokens.blue }}
+                          >
+                            <Upload size={15} /> Importar mis pacientes desde Excel u otro sistema
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ) : (
@@ -745,9 +814,10 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
                 {/* Fecha nacimiento */}
                 <div>
-                  <label style={labelStyle}>Fecha de Nacimiento *</label>
+                  {/* Obligatoria al crear; al editar puede quedar vacía (pacientes importados sin fecha). */}
+                  <label style={labelStyle}>Fecha de Nacimiento{modalMode === "create" ? " *" : ""}</label>
                   <input
-                    type="date" required
+                    type="date" required={modalMode === "create"}
                     value={formData.fecha_nacimiento || ""}
                     onChange={e => setFormData({ ...formData, fecha_nacimiento: e.target.value })}
                     style={{ ...inputStyle, borderColor: focusedField === "fnac" ? tokens.blue : tokens.grayBorder }}
@@ -758,9 +828,9 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
 
                 {/* Sexo */}
                 <div>
-                  <label style={labelStyle}>Sexo *</label>
+                  <label style={labelStyle}>Sexo{modalMode === "create" ? " *" : ""}</label>
                   <select
-                    required
+                    required={modalMode === "create"}
                     value={formData.sexo || ""}
                     onChange={e => setFormData({ ...formData, sexo: e.target.value as any })}
                     style={{ ...inputStyle, borderColor: focusedField === "sexo" ? tokens.blue : tokens.grayBorder }}
@@ -992,6 +1062,13 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
           </div>
         </div>
       )}
+
+      {/* ── Importador ── */}
+      <ImportarPacientesModal
+        abierto={showImport}
+        onCerrar={() => { setShowImport(false); setUltimaImportacion(leerUltimaImportacion()) }}
+        onImportado={() => { fetchPatients(); setUltimaImportacion(leerUltimaImportacion()) }}
+      />
 
       {/* ── Confirmation modal ── */}
       <ConfirmationModal

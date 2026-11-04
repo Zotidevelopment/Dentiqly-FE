@@ -54,6 +54,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
  */
 export type Accion =
   | 'exportarPacientes'      // GET /export/pacientes
+  | 'importarPacientes'      // POST /pacientes/importar
   | 'exportarTurnos'         // GET /export/turnos
   | 'registrarPagosPaciente' // POST/DELETE /cuenta-corriente/:pacienteId
   | 'enviarRecordatorios'    // POST /recordatorios/enviar(-masivo)
@@ -62,6 +63,7 @@ export type Accion =
 
 const ACCIONES: Record<Accion, UserRole[]> = {
   exportarPacientes: ['admin', 'superadmin'],
+  importarPacientes: ['admin', 'superadmin'],
   exportarTurnos: ['admin', 'recepcionista', 'superadmin'],
   registrarPagosPaciente: ['admin', 'recepcionista'],
   enviarRecordatorios: ['admin', 'recepcionista'],

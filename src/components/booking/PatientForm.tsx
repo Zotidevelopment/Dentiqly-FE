@@ -326,7 +326,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onPatientData, loading
           <Input
             label="Fecha de Nacimiento *"
             type="date"
-            value={formData.fecha_nacimiento}
+            value={formData.fecha_nacimiento ?? ""}
             onChange={(e) => handleChange("fecha_nacimiento", e.target.value)}
             error={errors.fecha_nacimiento}
             className="bg-white"

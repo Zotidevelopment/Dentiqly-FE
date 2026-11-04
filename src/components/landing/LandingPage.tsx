@@ -18,6 +18,7 @@ import {
   LandingPricing,
   LandingQuestions,
   LandingContact,
+  LandingMigration,
 } from "./sections/LandingConversion";
 import { ProductHero } from "./components/ProductHero";
 import { ProductMotion } from "./components/ProductMotion";
@@ -307,7 +308,7 @@ export const LandingPage: React.FC = () => {
                 ["Creá tu cuenta", "Empezá tu prueba gratis, sin tarjeta."],
                 [
                   "Configurá tu consultorio",
-                  "Sumá profesionales, servicios y horarios.",
+                  "Sumá profesionales, servicios e importá tus pacientes.",
                 ],
                 [
                   "Agendá tu primer paciente",
@@ -326,6 +327,7 @@ export const LandingPage: React.FC = () => {
             </ol>
           </div>
         </section>
+        <LandingMigration />
         <LandingPricing />
         <LandingQuestions />
         <LandingContact />

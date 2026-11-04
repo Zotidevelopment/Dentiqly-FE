@@ -280,12 +280,12 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     <span className="text-[12px] text-[#8A93A8]">Nacimiento</span>
                     <span className="text-[13px] font-medium text-[#0B2440]">
                       {patient.fecha_nacimiento ? formatLocalDate(patient.fecha_nacimiento, { day: "2-digit", month: "2-digit", year: "numeric" }) : "-"}
-                      <span className="text-[#8A93A8] ml-1 font-normal">({calculateAge(patient.fecha_nacimiento)} años)</span>
+                      {patient.fecha_nacimiento && <span className="text-[#8A93A8] ml-1 font-normal">({calculateAge(patient.fecha_nacimiento)} años)</span>}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Sexo</span>
-                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.sexo}</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">{patient.sexo || "-"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[12px] text-[#8A93A8]">Ocupación</span>

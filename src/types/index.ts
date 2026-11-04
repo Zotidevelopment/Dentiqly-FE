@@ -72,8 +72,9 @@ export interface Paciente {
   numero_documento: string
   obra_social_id?: number
   condicion: string
-  fecha_nacimiento: string
-  sexo: 'Masculino' | 'Femenino' | 'Otro'
+  // Pueden faltar en pacientes importados de planillas.
+  fecha_nacimiento: string | null
+  sexo: 'Masculino' | 'Femenino' | 'Otro' | null
   direccion?: string
   telefono?: string
   email?: string
@@ -110,8 +111,8 @@ export interface CrearPacienteData {
   numero_documento: string
   obra_social_id?: number | null
   condicion?: string
-  fecha_nacimiento: string
-  sexo: 'Masculino' | 'Femenino' | 'Otro'
+  fecha_nacimiento: string | null
+  sexo: 'Masculino' | 'Femenino' | 'Otro' | null
   direccion?: string
   telefono?: string
   email?: string

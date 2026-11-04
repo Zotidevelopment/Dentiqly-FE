@@ -954,6 +954,72 @@ export const handleMockRequest = async (endpoint: string, method: string, body?:
       return nuevo
     }
   }
+  // Importador (demo): misma respuesta que el backend, guardada en el navegador.
+  if (path === "/api/pacientes/importar" && method === "POST") {
+    const data = typeof body === "string" ? JSON.parse(body) : body
+    const pacs = getStorageItem(KEYS.PACIENTES, defaultPacientes)
+    const obras = getStorageItem(KEYS.OBRAS_SOCIALES, defaultObrasSociales)
+    const simulacion = data.dry_run === true
+    const porDoc = new Map(pacs.map((p) => [p.numero_documento, p]))
+    const clave = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "")
+    const resultados: any[] = []
+    const obrasNuevas: string[] = []
+    for (const p of data.pacientes ?? []) {
+      const doc = p.numero_documento || (p.dni_provisorio ? `SD-${Math.random().toString(36).slice(2, 10).toUpperCase()}` : null)
+      if (!doc) { resultados.push({ fila: p.fila, resultado: "error", motivo: "Falta el DNI" }); continue }
+      if (porDoc.has(doc)) {
+        const omitir = simulacion || data.opciones?.duplicados === "omitir"
+        resultados.push(omitir ? { fila: p.fila, resultado: "omitido", motivo: "Ya existe un paciente con ese DNI" } : { fila: p.fila, resultado: "actualizado" })
+        continue
+      }
+      let obraSocial: ObraSocial | undefined
+      if (p.obra_social?.id) obraSocial = obras.find((o) => o.id === p.obra_social.id)
+      else if (p.obra_social?.nombre) {
+        obraSocial = obras.find((o) => clave(o.nombre) === clave(p.obra_social.nombre))
+        if (!obraSocial) {
+          if (!obrasNuevas.includes(p.obra_social.nombre)) obrasNuevas.push(p.obra_social.nombre)
+          if (!simulacion) {
+            obraSocial = { id: Math.max(0, ...obras.map((o) => o.id)) + 1, nombre: p.obra_social.nombre } as ObraSocial
+            obras.push(obraSocial)
+          }
+        }
+      }
+      if (!simulacion) {
+        const { fila: _fila, dni_provisorio: _prov, obra_social: _os, ...datos } = p
+        const nuevo = {
+          ...datos,
+          numero_documento: doc,
+          id: `pac-imp-${Date.now().toString(36)}-${resultados.length}`,
+          condicion: "Activo",
+          tipo_facturacion: "B",
+          obra_social_id: obraSocial?.id ?? null,
+          obraSocial,
+          importacion_id: data.importacion_id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        } as unknown as Paciente
+        pacs.push(nuevo)
+        porDoc.set(doc, nuevo)
+      }
+      resultados.push({ fila: p.fila, resultado: "creado" })
+    }
+    if (!simulacion) { setStorageItem(KEYS.PACIENTES, pacs); setStorageItem(KEYS.OBRAS_SOCIALES, obras) }
+    const contar = (r: string) => resultados.filter((x) => x.resultado === r).length
+    return {
+      importacion_id: data.importacion_id,
+      simulacion,
+      resumen: { creados: contar("creado"), actualizados: contar("actualizado"), omitidos: contar("omitido"), errores: contar("error") },
+      obras_sociales_nuevas: obrasNuevas,
+      resultados,
+    }
+  }
+  if (path.startsWith("/api/pacientes/importaciones/") && method === "DELETE") {
+    const id = path.split("/").pop()
+    const pacs = getStorageItem(KEYS.PACIENTES, defaultPacientes)
+    const quedan = pacs.filter((p: any) => p.importacion_id !== id)
+    setStorageItem(KEYS.PACIENTES, quedan)
+    return { encontrados: pacs.length - quedan.length, eliminados: pacs.length - quedan.length, conservados: 0 }
+  }
   if (path.startsWith("/api/pacientes/")) {
     const pacs = getStorageItem(KEYS.PACIENTES, defaultPacientes)
     const id = path.split("/").pop() || ""

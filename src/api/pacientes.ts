@@ -59,4 +59,57 @@ export const pacientesApi = {
   eliminar: async (id: string): Promise<void> => {
     return apiClient.delete<void>(`/pacientes/${id}`)
   },
+
+  /** Importación masiva (ver lib/importador). Con dry_run no guarda nada: sirve para la vista previa. */
+  importar: async (datos: {
+    importacion_id: string
+    pacientes: PacienteParaImportar[]
+    opciones: { duplicados: ModoDuplicados; crear_obras_sociales: boolean }
+    dry_run?: boolean
+  }): Promise<ResultadoImportacion> => {
+    return apiClient.post<ResultadoImportacion>("/pacientes/importar", datos)
+  },
+
+  deshacerImportacion: async (importacionId: string): Promise<{ encontrados: number; eliminados: number; conservados: number }> => {
+    return apiClient.delete(`/pacientes/importaciones/${importacionId}`)
+  },
+}
+
+export type ModoDuplicados = "omitir" | "completar" | "actualizar"
+
+export interface PacienteParaImportar {
+  fila: number
+  apellido: string
+  nombre: string
+  tipo_documento: "DNI" | "Pasaporte" | "Cédula"
+  numero_documento: string | null
+  dni_provisorio?: boolean
+  fecha_nacimiento: string | null
+  sexo: "Masculino" | "Femenino" | "Otro" | null
+  email: string | null
+  telefono: string | null
+  direccion: string | null
+  ocupacion: string | null
+  recomendado_por: string | null
+  numero_afiliado: string | null
+  condicion_iva: string | null
+  informacion_adicional: string | null
+  obra_social: { id: number } | { nombre: string; crear: boolean } | null
+}
+
+export interface ResultadoFilaImportacion {
+  fila: number
+  resultado: "creado" | "actualizado" | "omitido" | "error"
+  motivo?: string
+  avisos?: string[]
+  paciente_id?: string
+  campos?: string[]
+}
+
+export interface ResultadoImportacion {
+  importacion_id: string
+  simulacion: boolean
+  resumen: { creados: number; actualizados: number; omitidos: number; errores: number }
+  obras_sociales_nuevas: string[]
+  resultados: ResultadoFilaImportacion[]
 }

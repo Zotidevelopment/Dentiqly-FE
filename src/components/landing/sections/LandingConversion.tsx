@@ -8,6 +8,9 @@ import {
   Loader2,
   Mail,
   Plus,
+  FileSpreadsheet,
+  ScanSearch,
+  Handshake,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { TrialLink } from "../../ui/TrialLink";
@@ -111,6 +114,13 @@ export function LandingPricing() {
               <span>
                 <strong>Primero, conocelo.</strong> 7 días de prueba sin
                 tarjeta de crédito.
+              </span>
+            </li>
+            <li>
+              <CheckCircle2 size={20} />
+              <span>
+                <strong>Migración incluida.</strong> Traé tus pacientes desde
+                Excel u otro sistema, o te los pasamos nosotros sin costo.
               </span>
             </li>
           </ul>
@@ -239,6 +249,106 @@ export function LandingPricing() {
   );
 }
 
+const MAPEO_EJEMPLO = [
+  ["Ape. y Nom.", "GARCIA, María José", "Nombre y apellido"],
+  ["Nro Doc", "30.111.222", "DNI"],
+  ["F. Nac", "15/03/1980", "Fecha de nacimiento"],
+  ["O. Social", "O.S.D.E. 210", "Obra social"],
+  ["Cel.", "11 4567-8901 / 4444-5555", "Teléfono"],
+];
+
+/** Migración de pacientes: la objeción número uno de las clínicas al cambiar de sistema. */
+export function LandingMigration() {
+  return (
+    <section id="migracion" className="lp-section lp-migration">
+      <div className="lp-container lp-migration-grid">
+        <div className="lp-migration-copy">
+          <p className="lp-eyebrow">Migración incluida</p>
+          <h2>
+            Traé tus pacientes.
+            <br />
+            <span className="lp-muted-heading">Sin cargarlos de nuevo.</span>
+          </h2>
+          <p>
+            Subí el Excel, la planilla o la exportación de tu sistema anterior.
+            Dentiqly reconoce las columnas, te muestra cómo va a quedar cada
+            paciente y recién ahí los importa.
+          </p>
+          <ul className="lp-migration-points">
+            <li>
+              <FileSpreadsheet size={20} />
+              <span>
+                <strong>Desde cualquier archivo.</strong> Excel, CSV, Google
+                Sheets, copias .sql y archivos .dbf de sistemas viejos.
+              </span>
+            </li>
+            <li>
+              <ScanSearch size={20} />
+              <span>
+                <strong>Revisás antes de importar.</strong> Ves errores,
+                repetidos y pacientes que ya tenías. Nada se guarda hasta que
+                confirmás, y si algo no quedó bien, lo deshacés.
+              </span>
+            </li>
+            <li>
+              <Handshake size={20} />
+              <span>
+                <strong>O lo hacemos nosotros.</strong> Mandanos lo que tengas
+                y migramos tus pacientes sin costo.
+              </span>
+            </li>
+          </ul>
+          <div className="lp-migration-actions">
+            <TrialLink
+              ctaLocation="migration"
+              ctaLabel="Empezar e importar mis pacientes"
+              className="lp-button"
+            >
+              Empezar e importar mis pacientes <ArrowUpRight size={19} />
+            </TrialLink>
+            <a
+              href="mailto:hola@dentiqly.com?subject=Migraci%C3%B3n%20de%20pacientes"
+              className="lp-text-link"
+            >
+              Quiero que lo hagan ustedes <ArrowUpRight size={16} />
+            </a>
+          </div>
+        </div>
+        <div className="lp-migration-card" aria-hidden="true">
+          <div className="lp-migration-card-head">
+            <span className="lp-migration-file">
+              <FileSpreadsheet size={16} /> pacientes-2019.xlsx
+            </span>
+            <span className="lp-migration-count">1.248 pacientes</span>
+          </div>
+          <div className="lp-migration-rows">
+            {MAPEO_EJEMPLO.map(([columna, ejemplo, campo]) => (
+              <div key={columna} className="lp-migration-row">
+                <div>
+                  <strong>{columna}</strong>
+                  <span>{ejemplo}</span>
+                </div>
+                <ArrowRight size={15} />
+                <div className="lp-migration-field">
+                  <Check size={14} /> {campo}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="lp-migration-card-foot">
+            <span>Columnas reconocidas automáticamente</span>
+            <span className="lp-migration-formats">
+              {[".xlsx", ".csv", ".sql", ".dbf", ".json"].map((f) => (
+                <em key={f}>{f}</em>
+              ))}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const questions = [
   [
     "¿Cómo empiezo la prueba gratuita?",
@@ -258,7 +368,7 @@ const questions = [
   ],
   [
     "¿Puedo trasladar los pacientes que tengo en otro sistema?",
-    "Escribinos y contanos qué sistema o planillas usás. Nuestro equipo puede orientarte sobre la migración y revisar qué información se puede trasladar antes de que hagas el cambio.",
+    "Sí. Desde Pacientes → Importar subís tu Excel, CSV o la exportación de tu sistema anterior (también sirven copias .sql y archivos .dbf de programas viejos). Dentiqly reconoce las columnas, te muestra cómo va a quedar cada paciente y recién ahí los importa. Si preferís no hacerlo vos, mandanos el archivo a hola@dentiqly.com y migramos tus pacientes sin costo.",
   ],
   [
     "¿Puedo gestionar más de una sucursal?",

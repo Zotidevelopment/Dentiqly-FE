@@ -35,6 +35,7 @@ export type CtaLocation =
   | 'product_showcase'
   | 'performance'
   | 'pricing'
+  | 'migration'
   | 'cta_section'
   | 'footer'
   | 'about'
