@@ -90,6 +90,8 @@ export interface Paciente {
   contacto_emergencia?: string
   telefono_emergencia?: string
   tratamiento?: string
+  orden_medica_tipo?: 'Digital' | 'Papel' | null
+  orden_medica_fecha?: string | null
   createdAt: string
   updatedAt: string
 
@@ -125,6 +127,8 @@ export interface CrearPacienteData {
   observaciones?: string
   obra_social_nombre_custom?: string | null
   tratamiento?: string
+  orden_medica_tipo?: 'Digital' | 'Papel' | null
+  orden_medica_fecha?: string | null
 }
 
 // Profesional types

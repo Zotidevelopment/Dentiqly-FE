@@ -22,9 +22,11 @@ import { useToast } from "../../hooks/use-toast"
 
 interface AsistenciasSectionProps {
   pacienteId: string
+  /** Tratamiento cargado en la ficha (FKT, RPG...). Se muestra al registrar la sesión. */
+  tratamiento?: string
 }
 
-export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ pacienteId }) => {
+export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ pacienteId, tratamiento }) => {
   const [cycles, setCycles] = useState<AsistenciaCiclo[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({})
@@ -574,6 +576,10 @@ export const AsistenciasSection: React.FC<AsistenciasSectionProps> = ({ paciente
               </button>
             </div>
             <form onSubmit={handleRegistrarSesion} className="p-5 space-y-4">
+              <div className="flex items-center justify-between bg-[#EAF2FF] border border-[#2458ED]/10 rounded-xl px-3 py-2">
+                <span className="text-xs font-bold text-gray-500 uppercase">Tratamiento del paciente</span>
+                <span className="text-sm font-bold text-[#2458ED]">{tratamiento || "Sin cargar"}</span>
+              </div>
               <div>
                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">Fecha de la Sesión</label>
                  <input

@@ -303,6 +303,18 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     <span className="text-[12px] text-[#8A93A8]">Tratamiento</span>
                     <span className="text-[13px] font-medium text-[#0B2440]">{patient.tratamiento || "-"}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Orden médica</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">
+                      {patient.orden_medica_tipo ? (patient.orden_medica_tipo === "Digital" ? "Sí, digital" : "Sí, en papel") : "No"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[#8A93A8]">Fecha de la orden</span>
+                    <span className="text-[13px] font-medium text-[#0B2440]">
+                      {patient.orden_medica_fecha ? formatLocalDate(patient.orden_medica_fecha, { day: "2-digit", month: "2-digit", year: "numeric" }) : "-"}
+                    </span>
+                  </div>
                   <div className="flex justify-between items-center pt-2.5 border-t border-gray-100">
                     <span className="text-[12px] text-[#8A93A8]">Asistencias registradas</span>
                     <span className="text-[13px] font-bold text-green-700">
@@ -367,7 +379,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           {activeTab === "archivos" && <FilesSection pacienteId={patient.id} />}
           {activeTab === "cuenta_corriente" && <CuentaCorrienteSection pacienteId={patient.id} />}
           {activeTab === "recordatorios" && <RemindersSection pacienteId={patient.id} />}
-          {activeTab === "asistencias" && <AsistenciasSection pacienteId={patient.id} />}
+          {activeTab === "asistencias" && <AsistenciasSection pacienteId={patient.id} tratamiento={patient.tratamiento} />}
           {activeTab === "turnos" && <TurnosSection pacienteId={patient.id} />}
         </div>
       </div>

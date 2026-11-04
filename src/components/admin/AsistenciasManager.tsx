@@ -570,7 +570,10 @@ export const AsistenciasManager: React.FC = () => {
                       {p.nombre?.[0]}{p.apellido?.[0]}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-800">{p.nombre} {p.apellido}</div>
+                      <div className="text-sm font-semibold text-gray-800">
+                        {p.nombre} {p.apellido}
+                        {p.tratamiento && <span className="ml-2 inline-block px-1.5 py-0.5 rounded bg-[#EAF2FF] text-[#2458ED] text-[10px] font-bold">{p.tratamiento}</span>}
+                      </div>
                       <div className="text-[10px] text-gray-400">
                         {p.numero_documento && `DNI ${p.numero_documento}`}
                         {p.numero_documento && " • "}
@@ -670,6 +673,9 @@ export const AsistenciasManager: React.FC = () => {
             </div>
             <div>
               <span className="font-bold text-[#0B2440]">{selectedFreePatient.nombre} {selectedFreePatient.apellido}</span>
+              <span className={`ml-2 ${selectedFreePatient.tratamiento ? "inline-block px-1.5 py-0.5 rounded bg-[#EAF2FF] text-[#2458ED] text-[10px] font-bold" : "text-[10px] text-gray-400"}`}>
+                {selectedFreePatient.tratamiento ? `Tratamiento: ${selectedFreePatient.tratamiento}` : "Sin tratamiento cargado"}
+              </span>
               <div className="text-gray-400 text-xs mt-0.5">
                 {selectedFreePatient.numero_documento && `DNI ${selectedFreePatient.numero_documento}`}
                 {selectedFreePatient.numero_documento && " • "}
@@ -940,6 +946,7 @@ export const AsistenciasManager: React.FC = () => {
                   <tr>
                     <th className="px-4 py-3">Hora</th>
                     <th className="px-4 py-3">Paciente</th>
+                    <th className="px-4 py-3">Tratamiento</th>
                     <th className="px-4 py-3">Obra Social</th>
                     <th className="px-4 py-3">Profesional / Servicio</th>
                     <th className="px-4 py-3">Estado</th>
@@ -964,6 +971,11 @@ export const AsistenciasManager: React.FC = () => {
                           {appt.paciente?.numero_documento && (
                             <div className="text-[10px] text-gray-400">DNI {appt.paciente.numero_documento}</div>
                           )}
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          {appt.paciente?.tratamiento
+                            ? <span className="inline-block px-1.5 py-0.5 rounded bg-[#EAF2FF] text-[#2458ED] text-[10px] font-bold">{appt.paciente.tratamiento}</span>
+                            : <span className="text-gray-300">—</span>}
                         </td>
                         <td className="px-4 py-3.5 whitespace-nowrap">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${osName === "PARTICULARES" ? "bg-gray-100 text-gray-600" : "bg-blue-50 text-blue-700"}`}>

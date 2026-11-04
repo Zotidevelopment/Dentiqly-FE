@@ -28,7 +28,7 @@ import { getObraSocialNombre } from "../../utils/obraSocial"
 import { PatientDetailView } from "./PatientDetailView"
 import { AdminAppointmentModal } from "../admin/AdminAppointmentModal"
 import { ImageCropper } from "../ui/ImageCropper"
-import { todayISO, parseLocalDate } from "../../utils/date"
+import { todayISO, parseLocalDate, formatLocalDate } from "../../utils/date"
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper, getInitials, getAvatarStyle } from '../admin/adminDesign'
 
 /* ─── Dentiqly design tokens ─────────────────────────────────────────── */
@@ -129,7 +129,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
   }
 
   const handleCreatePatient = () => {
-    setFormData({ condicion: "Activo", tipo_facturacion: "B" })
+    setFormData({ tipo_facturacion: "B" })
     setObraSocialOtra(false)
     setModalMode("create"); setShowModal(true)
   }
@@ -354,7 +354,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                       { label: "N° Afiliado", sortable: true },
                       { label: "Documento", sortable: true },
                       { label: "Edad / Sexo", sortable: true },
-                      { label: "Estado", sortable: false },
+                      { label: "Orden médica", sortable: false },
                       { label: "", sortable: false },
                     ].map((col, i) => (
                       <th key={i} style={{
@@ -435,12 +435,6 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                                     {getInitials(patient.nombre, patient.apellido)}
                                   </div>
                                 )}
-                                <div style={{
-                                  width: 8, height: 8, borderRadius: "50%",
-                                  border: `1.5px solid ${tokens.white}`,
-                                  background: patient.condicion === "Activo" ? tokens.green : tokens.grayDot,
-                                  position: "absolute", bottom: -1, right: -1,
-                                }} />
                               </div>
                               <div>
                                 <p style={{ fontSize: 13, fontWeight: 600, color: tokens.navy, margin: 0, whiteSpace: "nowrap" }}>
@@ -539,17 +533,34 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                             </div>
                           </td>
 
-                          {/* Status */}
+                          {/* Orden médica */}
                           <td style={{ padding: "11px 16px" }}>
-                            <span style={{
-                              display: "inline-flex", alignItems: "center",
-                              padding: "3px 10px", borderRadius: 6,
-                              fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
-                              background: patient.condicion === "Activo" ? tokens.greenFaint : tokens.grayPill,
-                              color: patient.condicion === "Activo" ? tokens.greenText : tokens.grayPillTx,
-                            }}>
-                              {patient.condicion || "Inactivo"}
-                            </span>
+                            {patient.orden_medica_tipo ? (
+                              <div style={{ whiteSpace: "nowrap" }}>
+                                <span style={{
+                                  display: "inline-flex", alignItems: "center",
+                                  padding: "3px 10px", borderRadius: 6,
+                                  fontSize: 11, fontWeight: 600,
+                                  background: tokens.greenFaint, color: tokens.greenText,
+                                }}>
+                                  {patient.orden_medica_tipo === "Digital" ? "Digital" : "Papel"}
+                                </span>
+                                {patient.orden_medica_fecha && (
+                                  <span style={{ fontSize: 11.5, color: tokens.grayMuted, marginLeft: 6 }}>
+                                    {formatLocalDate(patient.orden_medica_fecha, { day: "2-digit", month: "2-digit", year: "numeric" })}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{
+                                display: "inline-flex", alignItems: "center",
+                                padding: "3px 10px", borderRadius: 6,
+                                fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
+                                background: tokens.grayPill, color: tokens.grayPillTx,
+                              }}>
+                                Sin orden
+                              </span>
+                            )}
                           </td>
 
                           {/* Actions */}
@@ -821,19 +832,42 @@ export const PatientsView: React.FC<PatientsViewProps> = ({ initialPatientId, in
                   )}
                 </div>
 
-                {/* Condición */}
+                {/* Orden médica */}
                 <div>
-                  <label style={labelStyle}>Condición</label>
+                  <label style={labelStyle}>¿Trajo orden médica?</label>
                   <select
-                    value={formData.condicion || "Activo"}
-                    onChange={e => setFormData({ ...formData, condicion: e.target.value })}
-                    style={{ ...inputStyle, borderColor: focusedField === "cond" ? tokens.blue : tokens.grayBorder }}
-                    onFocus={() => setFocusedField("cond")}
+                    value={formData.orden_medica_tipo || ""}
+                    onChange={e => {
+                      const tipo = (e.target.value || null) as "Digital" | "Papel" | null
+                      setFormData({ ...formData, orden_medica_tipo: tipo, ...(tipo ? {} : { orden_medica_fecha: null }) })
+                    }}
+                    style={{ ...inputStyle, borderColor: focusedField === "orden" ? tokens.blue : tokens.grayBorder }}
+                    onFocus={() => setFocusedField("orden")}
                     onBlur={() => setFocusedField(null)}
                   >
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
+                    <option value="">No</option>
+                    <option value="Digital">Sí, digital</option>
+                    <option value="Papel">Sí, en papel</option>
                   </select>
+                </div>
+
+                {/* Fecha de la orden médica */}
+                <div>
+                  <label style={labelStyle}>Fecha de la orden médica</label>
+                  <input
+                    type="date"
+                    value={formData.orden_medica_fecha || ""}
+                    disabled={!formData.orden_medica_tipo}
+                    onChange={e => setFormData({ ...formData, orden_medica_fecha: e.target.value || null })}
+                    style={{
+                      ...inputStyle,
+                      borderColor: focusedField === "orden-fecha" ? tokens.blue : tokens.grayBorder,
+                      opacity: formData.orden_medica_tipo ? 1 : 0.5,
+                      cursor: formData.orden_medica_tipo ? "text" : "not-allowed",
+                    }}
+                    onFocus={() => setFocusedField("orden-fecha")}
+                    onBlur={() => setFocusedField(null)}
+                  />
                 </div>
 
                 {/* Dirección */}
