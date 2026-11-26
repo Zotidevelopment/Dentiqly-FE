@@ -182,12 +182,15 @@ export const MisTurnos: React.FC = () => {
                   </Link>
                   {puedeAccionar(turno) && (
                     <>
-                      <Link
-                        to={`/paciente/turnos/${turno.id}/reprogramar`}
-                        className="px-4 py-2 rounded-xl font-bold text-sm bg-[#2458ED] text-white hover:bg-[#1744CD] transition-colors"
-                      >
-                        Reprogramar
-                      </Link>
+                      {/* Los turnos que agendó la clínica se cambian hablando con la clínica. */}
+                      {turno.origen === "paciente" && (
+                        <Link
+                          to={`/paciente/turnos/${turno.id}/reprogramar`}
+                          className="px-4 py-2 rounded-xl font-bold text-sm bg-[#2458ED] text-white hover:bg-[#1744CD] transition-colors"
+                        >
+                          Reprogramar
+                        </Link>
+                      )}
                       <Link
                         to={`/paciente/turnos/${turno.id}/cancelar`}
                         className="px-4 py-2 rounded-xl font-bold text-sm bg-red-500 text-white hover:bg-red-600 transition-colors"

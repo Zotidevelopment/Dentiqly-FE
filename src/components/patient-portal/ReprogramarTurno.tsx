@@ -111,6 +111,28 @@ export const ReprogramarTurno: React.FC = () => {
     )
   }
 
+  // Entrando con el link directo a un turno que agendó la clínica: el
+  // backend igual lo rechaza, acá se explica en vez de mostrar el calendario.
+  if (turno && turno.origen !== "paciente" && !completado) {
+    return (
+      <div className="max-w-md mx-auto text-center py-12">
+        <h2 className="text-2xl font-bold mb-4" style={{ color: dentalColors.gray800 }}>
+          Este turno no se puede reprogramar desde acá
+        </h2>
+        <p className="mb-8" style={{ color: dentalColors.gray600 }}>
+          Lo agendó la clínica. Si necesitás cambiar el día u horario, comunicate con la clínica.
+        </p>
+        <Link
+          to={`/paciente/turnos/${id}`}
+          className="px-6 py-3 rounded-lg font-medium text-white inline-block"
+          style={{ backgroundColor: dentalColors.primary }}
+        >
+          Volver al turno
+        </Link>
+      </div>
+    )
+  }
+
   if (completado) {
     return (
       <div className="max-w-md mx-auto text-center py-12">

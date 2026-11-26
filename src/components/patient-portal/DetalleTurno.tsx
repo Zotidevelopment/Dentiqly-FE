@@ -165,15 +165,22 @@ export const DetalleTurno: React.FC = () => {
         </div>
       </div>
 
+      {puedeAccionar() && turno.origen !== "paciente" && (
+        <p className="mb-4 text-sm" style={{ color: dentalColors.gray800 }}>
+          Este turno lo agendó la clínica. Si necesitás cambiar el día u horario, comunicate con la clínica.
+        </p>
+      )}
       {puedeAccionar() && (
         <div className="flex flex-col sm:flex-row gap-4">
-          <Link
-            to={`/paciente/turnos/${turno.id}/reprogramar`}
-            className="flex-1 text-center px-6 py-3 rounded-lg font-medium text-white"
-            style={{ backgroundColor: dentalColors.primary }}
-          >
-            Reprogramar Turno
-          </Link>
+          {turno.origen === "paciente" && (
+            <Link
+              to={`/paciente/turnos/${turno.id}/reprogramar`}
+              className="flex-1 text-center px-6 py-3 rounded-lg font-medium text-white"
+              style={{ backgroundColor: dentalColors.primary }}
+            >
+              Reprogramar Turno
+            </Link>
+          )}
           <Link
             to={`/paciente/turnos/${turno.id}/cancelar`}
             className="flex-1 text-center px-6 py-3 rounded-lg font-medium text-white bg-red-500 hover:bg-red-600"

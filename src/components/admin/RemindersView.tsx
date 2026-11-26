@@ -28,6 +28,7 @@ import { turnosApi, recordatoriosApi } from '../../api'
 import { useToast } from '../../hooks/use-toast'
 import { ConfirmationModal } from '../ui/ConfirmationModal'
 import type { Turno } from '../../types'
+import type { ResultadoEnvioMasivo } from '../../api/recordatorios'
 import { toISODate } from '../../utils/date'
 import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as sharedInputStyle, pageWrapper } from './adminDesign'
 
@@ -35,6 +36,10 @@ import { tokens as sharedTokens, labelStyle as sharedLabelStyle, inputStyle as s
 const tokens = sharedTokens
 const labelStyle = sharedLabelStyle
 const inputStyle = sharedInputStyle
+
+// Igual que ESTADOS_SIN_RECORDATORIO en recordatorioController del backend.
+const ESTADOS_SIN_RECORDATORIO = ['Cancelado', 'Ausente', 'Atendido', 'Completado', 'En sala de espera', 'Atendiéndose']
+const emailValido = (email?: string | null) => !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 
 export const RemindersView: React.FC = () => {
   const { user } = useAuth()
@@ -52,7 +57,7 @@ export const RemindersView: React.FC = () => {
   const [sentIds, setSentIds] = useState<Set<number>>(new Set())
   const [errorIds, setErrorIds] = useState<Set<number>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
-  const [massResult, setMassResult] = useState<{ enviados: number; errores: number; total: number } | null>(null)
+  const [massResult, setMassResult] = useState<ResultadoEnvioMasivo | null>(null)
 
   // Template editor
   const [showTemplateEditor, setShowTemplateEditor] = useState(false)
@@ -101,11 +106,16 @@ export const RemindersView: React.FC = () => {
         fecha_hasta: selectedDate,
         limit: 200,
       })
+      // Misma lista que usa el backend para el envío masivo. Antes se mostraba
+      // solo una lista fija de estados y quedaban afuera, por ejemplo, los
+      // turnos "Esperando confirmación".
       const turnosFecha = (response.data || []).filter(
-        (t: Turno) => t.fecha === selectedDate && ['Pendiente', 'Confirmado', 'Creado', 'Confirmado por email', 'Confirmado por SMS', 'Confirmado por Whatsapp'].includes(t.estado)
+        (t: Turno) => t.fecha === selectedDate && !ESTADOS_SIN_RECORDATORIO.includes(t.estado)
       )
       turnosFecha.sort((a: Turno, b: Turno) => a.hora_inicio.localeCompare(b.hora_inicio))
       setTurnos(turnosFecha)
+      // Lo enviado queda guardado en el turno: al recargar se sigue viendo.
+      setSentIds(new Set(turnosFecha.filter((t: Turno) => t.recordatorio_enviado).map((t: Turno) => t.id)))
     } catch (error) {
       console.error('Error fetching turnos:', error)
       toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los turnos" })
@@ -126,7 +136,8 @@ export const RemindersView: React.FC = () => {
       setSentIds((prev) => new Set(prev).add(turnoId))
     } catch (error) {
       console.error('Error sending reminder:', error)
-      toast({ variant: "destructive", title: "Error", description: "Error al enviar el recordatorio" })
+      const detalle = error instanceof Error && error.message ? error.message : "Error al enviar el recordatorio"
+      toast({ variant: "destructive", title: "No se envió", description: detalle })
       setErrorIds((prev) => new Set(prev).add(turnoId))
     } finally {
       setSendingId(null)
@@ -138,8 +149,11 @@ export const RemindersView: React.FC = () => {
       setSendingAll(true)
       const result = await recordatoriosApi.enviarMasivo(selectedDate)
       setMassResult(result)
-      const allIds = new Set(turnos.map(t => t.id))
-      setSentIds(allIds)
+      // Solo se marcan como enviados los que el servidor confirmó. Antes se
+      // marcaban todos, incluso los sin email o los que fallaron, y parecía
+      // que a todos les había llegado.
+      setSentIds((prev) => new Set([...prev, ...(result.enviados_ids || [])]))
+      setErrorIds((prev) => new Set([...prev, ...(result.fallidos_ids || [])]))
     } catch (error) {
       console.error('Error:', error)
       toast({ variant: "destructive", title: "Error", description: "Error al enviar recordatorios masivos" })
@@ -204,7 +218,8 @@ export const RemindersView: React.FC = () => {
     return pName.includes(term) || prName.includes(term)
   })
 
-  const turnosWithEmail = turnos.filter(t => t.paciente?.email)
+  const turnosWithEmail = turnos.filter(t => emailValido(t.paciente?.email) && !sentIds.has(t.id))
+  const turnosSinEmail = turnos.filter(t => !emailValido(t.paciente?.email))
 
   const pageStyle: React.CSSProperties = {
     ...pageWrapper,
@@ -336,10 +351,19 @@ export const RemindersView: React.FC = () => {
 
       {/* ── Stats / Result Banner ── */}
       {massResult && (
-        <div style={{ background: tokens.greenFaint, padding: "12px 18px", borderRadius: 12, border: `0.5px solid ${tokens.green}33`, marginBottom: 20, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ background: tokens.greenFaint, padding: "12px 18px", borderRadius: 12, border: `0.5px solid ${tokens.green}33`, marginBottom: 12, display: "flex", alignItems: "center", gap: 10 }}>
           <CheckCircle size={18} color={tokens.green} />
           <p style={{ fontSize: 13, color: tokens.greenText, margin: 0, fontWeight: 500 }}>
-            Resultados del envío: {massResult.enviados} exitosos, {massResult.errores} fallidos. Total: {massResult.total}
+            Se enviaron {massResult.enviados} recordatorios.
+            {(massResult.fallidos_ids?.length || 0) > 0 && ` ${massResult.fallidos_ids.length} no se pudieron enviar (marcados con ERROR).`}
+          </p>
+        </div>
+      )}
+      {!loading && turnosSinEmail.length > 0 && (
+        <div style={{ background: tokens.redFaint, padding: "12px 18px", borderRadius: 12, marginBottom: 20, display: "flex", alignItems: "center", gap: 10 }}>
+          <AlertCircle size={18} color={tokens.redText} />
+          <p style={{ fontSize: 13, color: tokens.redText, margin: 0, fontWeight: 500 }}>
+            {turnosSinEmail.length === 1 ? '1 paciente no va a recibir el recordatorio' : `${turnosSinEmail.length} pacientes no van a recibir el recordatorio`} porque no tiene{turnosSinEmail.length === 1 ? '' : 'n'} un email válido en su ficha (marcados SIN EMAIL). Cargalo en la ficha del paciente y volvé a esta pantalla.
           </p>
         </div>
       )}
@@ -395,7 +419,7 @@ export const RemindersView: React.FC = () => {
                   const isSent = sentIds.has(t.id)
                   const isSending = sendingId === t.id
                   const hasError = errorIds.has(t.id)
-                  const hasEmail = !!t.paciente?.email
+                  const hasEmail = emailValido(t.paciente?.email)
                   const isLast = idx === filteredTurnos.length - 1
                   
                   return (

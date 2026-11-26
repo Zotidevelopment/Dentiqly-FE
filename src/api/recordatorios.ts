@@ -1,14 +1,24 @@
 import { apiClient } from "../lib/api-client"
 import { isFirstTime, trackWhatsappReminderSent } from "../lib/analytics"
 
+export interface ResultadoEnvioMasivo {
+  message: string
+  enviados: number
+  errores: number
+  total: number
+  enviados_ids: number[]
+  sin_email_ids: number[]
+  fallidos_ids: number[]
+}
+
 export const recordatoriosApi = {
   async enviar(turno_id: number): Promise<{ message: string; messageId?: string }> {
     const res = await apiClient.post<{ message: string; messageId?: string }>("/recordatorios/enviar", { turno_id })
     trackWhatsappReminderSent(isFirstTime("whatsapp_reminder"), false)
     return res
   },
-  async enviarMasivo(fecha: string): Promise<{ message: string; enviados: number; errores: number; total: number }> {
-    const res = await apiClient.post<{ message: string; enviados: number; errores: number; total: number }>("/recordatorios/enviar-masivo", { fecha })
+  async enviarMasivo(fecha: string): Promise<ResultadoEnvioMasivo> {
+    const res = await apiClient.post<ResultadoEnvioMasivo>("/recordatorios/enviar-masivo", { fecha })
     trackWhatsappReminderSent(isFirstTime("whatsapp_reminder"), true)
     return res
   },

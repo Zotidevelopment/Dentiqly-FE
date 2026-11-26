@@ -270,6 +270,10 @@ export interface Turno {
   sobre_turno?: boolean
   /** true si pasó a "Ausente" por el cierre automático del día, no a mano. */
   ausencia_automatica?: boolean
+  /** 'staff' = lo agendó la clínica; 'paciente' = reserva online. Solo estos últimos se reprograman desde el portal. */
+  origen?: 'staff' | 'paciente'
+  /** true si ya se le mandó el recordatorio por email para la fecha actual del turno. */
+  recordatorio_enviado?: boolean
 }
 
 export interface CrearTurnoData {
